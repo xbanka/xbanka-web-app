@@ -1,9 +1,12 @@
-import React from 'react'
+import SignUp from "@/components/auth/sign-up";
+import React from "react";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <div className="bg-background">
+      <SignUp />
+    </div>
+  );
+};
 
-export default page
+export default page;
