@@ -1,8 +1,8 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LucideIcon } from "lucide-react";
 import { ErrorField } from "./field-error";
 
 interface SelectFieldProps {
-  icon?: React.ComponentType;
+  icon?: LucideIcon;
   placeholder: string;
   options: { label: string; value: string }[];
   error?: { message: string };
@@ -19,20 +19,18 @@ export const SelectField = ({
   <div>
     <div className="relative flex items-center">
       {Icon && (
-        <span className="absolute left-3 text-placeholder pointer-events-none z-10 flex items-center">
-          <Icon />
-        </span>
+          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
       )}
       <select
-        className={`border-input flex h-9 w-full min-w-0 rounded-lg border bg-transparent px-4 py-2.5 text-base shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-9" : "px-4 pr-9"}`}
+        className={`border-input flex h-9 w-full min-w-0 rounded-lg border bg-transparent px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
         defaultValue=""
         {...registration}
       >
-        <option value="" disabled hidden>
+        <option className="font-normal text-[14px] leading-6" value="" disabled hidden>
           {placeholder}
         </option>
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
+          <option className="" key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}

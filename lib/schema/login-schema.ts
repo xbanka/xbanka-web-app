@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const loginSchema = z.object({
+export const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 
   password: z
@@ -10,6 +10,8 @@ export const loginSchema = z.object({
     .regex(/[a-z]/, "Must include a lowercase letter")
     .regex(/[^A-Za-z0-9]/, "Must include a symbol")
     .regex(/[A-Za-z]/, "Must include a letter"),
+  referral: z.string().optional(),
+  
 });
 
-export type LoginFormData = z.infer<typeof loginSchema>;
+export type SignupFormData = z.infer<typeof signUpSchema>;

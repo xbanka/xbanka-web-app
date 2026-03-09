@@ -4,7 +4,7 @@ import { Camera } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 
-function Step4({ onSkip }) {
+function Step4({ onSkip, step, TOTAL, handleNext }) {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [streaming, setStreaming] = useState(false);
@@ -46,10 +46,24 @@ function Step4({ onSkip }) {
           <canvas ref={canvasRef} width={640} height={480} className={taken ? "rounded-2xl block w-full" : "hidden"} />
         </div>
         <p className="text-xs text-text text-center">Good lighting. Neutral background. No hats or glasses.</p>
-        {!streaming && !taken && <Button onClick={startCamera}>Take Selfie</Button>}
+        {
+          <div>
+            <div className="flex flex-col md:flex-row gap-4 mt-1">
+                <Button variant={"outline"} size="lg" className="flex-1">Cancel</Button>
+                <Button
+                  size="lg"
+                  className="flex-3"
+                  type={step === TOTAL - 1 ? "submit" : "button"}
+                  onClick={step === TOTAL - 1 ? undefined : handleNext}
+                >
+                  {step === TOTAL - 1 ? "Submit" : "Take selfie"}
+                </Button>
+              </div>
+          </div>
+        }
+        {/* {!streaming && !taken && <Button onClick={startCamera}>Take Selfie</Button>}
         {streaming && <Button onClick={takeSelfie}>Capture</Button>}
-        {taken && <Button onClick={() => { setTaken(false); startCamera(); }}>Retake Selfie</Button>}
-        <Button onClick={onSkip} />
+        {taken && <Button onClick={() => { setTaken(false); startCamera(); }}>Retake Selfie</Button>} */}
       </div>
     </>
   );

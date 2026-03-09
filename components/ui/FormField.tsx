@@ -32,6 +32,7 @@ export function FormField({
   value,
   onChange,
 }: FormFieldProps) {
+  
   return (
     <div className={cn("space-y-2")}>
       {label && (
@@ -55,23 +56,6 @@ export function FormField({
       </div>
       {error && (
         <ErrorField message={error.message} />
-        // <p className="text-sm text-red-500 flex items-center gap-1">
-        //   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-        //     <circle cx="10" cy="10" r="10" />
-        //     <text
-        //       x="50%"
-        //       y="50%"
-        //       textAnchor="middle"
-        //       dy=".3em"
-        //       fill="white"
-        //       fontSize="12"
-        //       fontWeight="bold"
-        //     >
-        //       !
-        //     </text>
-        //   </svg>
-        //   {/* {error} */}
-        // </p>
       )}
     </div>
   );
