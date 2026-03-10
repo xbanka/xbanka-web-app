@@ -1,20 +1,23 @@
 import { ChevronDown, LucideIcon } from "lucide-react";
 import { ErrorField } from "./field-error";
+import { FieldError, UseFormRegister } from "react-hook-form";
 
 interface SelectFieldProps {
+  id: string;
   icon?: LucideIcon;
   placeholder: string;
   options: { label: string; value: string }[];
-  error?: { message: string };
-  registration?: any;
+  error?: FieldError;
+  register?: UseFormRegister<any>;
 }
 
 export const SelectField = ({
+  id,
   icon: Icon,
   placeholder,
   options,
   error,
-  registration,
+  register,
 }: SelectFieldProps) => (
   <div>
     <div className="relative flex items-center">
@@ -24,7 +27,7 @@ export const SelectField = ({
       <select
         className={`border-input flex h-9 w-full min-w-0 rounded-lg border bg-transparent px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
         defaultValue=""
-        {...registration}
+        {...(register && register(id))}
       >
         <option className="font-normal text-[14px] leading-6" value="" disabled hidden>
           {placeholder}

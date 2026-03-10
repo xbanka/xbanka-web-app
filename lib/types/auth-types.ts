@@ -2,6 +2,7 @@ export interface SignupFormData {
     email: string;
     password: string;
     referralCode?: string;
+    redirectUrl?: string;
 }
 
 export interface LoginFormData {

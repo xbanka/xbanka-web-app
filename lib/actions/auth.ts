@@ -1,10 +1,12 @@
+import { redirect } from "next/dist/server/api-utils";
 import AxiosInstance from "../AxiosInstance/AxiosInstance"
 
 export const signup = async (email: string, password: string, referralCode: string) => {
     const response = await AxiosInstance.post("/auth/signup", {
       email,
       password,
-      referralCode
+      referralCode,
+      redirectUrl: process.env.REDIRECT_BASE_URL + "verify-email"
     })
     return {
       success: true,
@@ -25,9 +27,9 @@ export const login = async (email: string, password: string) => {
     };
 }
 
-export const verifyEmail = async (email: string) => {
+export const verifyEmail = async (token: string) => {
     const response = await AxiosInstance.post("/auth/verify-email", {
-      email
+      token
     })
     return {
       success: true,

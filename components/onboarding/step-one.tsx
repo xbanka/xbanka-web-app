@@ -1,20 +1,55 @@
 import { Calendar, Lock, Phone, User } from "lucide-react";
 import { FormField } from "../ui/FormField";
 import { SelectField } from "../ui/select";
-import { Card } from "../ui/Card";
 import { FormHeader } from "../ui/FormHeader";
-import { FieldError } from "react-hook-form";
+import { FieldError, useForm } from "react-hook-form";
 import PhoneNumberField from "../ui/Phonenumberfield";
 import { useState } from "react";
-import { COUNTRIES, Country } from "@/lib/countries";
+import { COUNTRIES, Country, countryOptions } from "@/lib/countries";
+import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserStore } from "@/store/verify-id.store";
+import { useUserProfile } from "@/lib/services/onboarding.service";
+import { Button } from "../ui/button";
 
 export interface StepOneProps {
   register?: any;
   errors?: FieldError;
 }
 
-function Step1({ register, errors }: StepOneProps) {
+function Step1() {
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
+  const userId = useUserStore((s) => s.userId);
+  console.log(userId);
+
+  const { isError, isPending, error, data, mutate } = useUserProfile();
+  const {
+    register,
+    reset,
+    formState: { errors, isValid },
+    handleSubmit,
+  } = useForm<step1FormValues>({
+    resolver: zodResolver(step1Schema),
+    mode: "onTouched",
+  });
+
+  const onsubmit = async (data: step1FormValues) => {
+    if (!userId) return;
+    const payload = {
+      userId,
+      firstName: data.firstName,
+      lastName: data.firstName,
+      dateOfBirth: data.dateOfBirth,
+      phoneNumber: data.phoneNumber,
+      gender: data.gender,
+      country: data.country,
+    };
+    mutate(payload, {
+      onSuccess: () => {
+        reset();
+      },
+    });
+  };
 
   return (
     <>
@@ -23,57 +58,73 @@ function Step1({ register, errors }: StepOneProps) {
         title="Let's set up your account"
         subtitle="Provide a few details to set up your xbanka account"
       />
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit(onsubmit)} className="space-y-4">
         <FormField
-          id="fullName"
+          id="firstName"
           icon={User}
-          placeholder="Full name"
-          error={errors}
+          placeholder="First name"
+          error={errors.firstName}
           register={register}
         />
         <FormField
-          id="dob"
+          id="lastName"
+          icon={User}
+          placeholder="Last name"
+          error={errors.lastName}
+          register={register}
+        />
+        <FormField
+          id="dateOfBirth"
           icon={Calendar}
           placeholder="Date of Birth"
           type="date"
-          error={errors}
+          error={errors.dateOfBirth}
           register={register}
         />
         <PhoneNumberField
-        selectedCountry={country}
-            onCountryChange={setCountry}
-          id="phone"
+          selectedCountry={country}
+          onCountryChange={setCountry}
+          id="phoneNumber"
           placeholder="Phone number"
-          error={errors}
+          error={errors.country}
           register={register}
         />
         <SelectField
+          id="gender"
           icon={User}
           placeholder="Gender"
-          error={errors}
+          error={errors.gender}
           options={[
             { value: "male", label: "Male" },
             { value: "female", label: "Female" },
             { value: "other", label: "Other" },
           ]}
-          registration={register("gender", {
-            required: "Please select your gender",
-          })}
+          register={register}
         />
         <SelectField
+          id="country"
           icon={Lock}
           placeholder="Country of Residence"
-          error={errors}
-          options={[
-            { value: "ng", label: "Nigeria" },
-            { value: "gh", label: "Ghana" },
-            { value: "ke", label: "Kenya" },
-          ]}
-          registration={register("country", {
-            required: "Please select your country",
-          })}
+          error={errors.country}
+          options={countryOptions}
+          register={register}
         />
-      </div>
+
+        <div className="flex flex-col md:flex-row gap-4 mt-1">
+          <Button variant="outline" size="lg" className="flex-1">
+            Cancel
+          </Button>
+          <Button
+            size="lg"
+            className="flex-3"
+            disabled={!isValid}
+            variant={isValid ? "default" : "disabled"}
+            type="submit"
+          >
+            Submit
+          </Button>
+        </div>
+      </form>
     </>
   );
 }

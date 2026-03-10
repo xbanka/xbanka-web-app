@@ -8,6 +8,7 @@ import Step3 from "./step-three";
 import Step4 from "./step-four";
 import Step5 from "./step-five";
 import { Card } from "../ui/Card";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const STEPS = [
   { label: "Basic Information" },
@@ -17,90 +18,53 @@ const STEPS = [
   { label: "Proof of Address" },
 ];
 
-const STEP_FIELDS = [
-  ["name", "dob", "phone", "gender", "country"],
-  ["bvn"],
-  ["idType", "idNumber"],
-  [], // selfie — no RHF fields
-  ["address", "poaCountry", "state", "docType"],
-];
-
 export default function OnboardingForm() {
   const [step, setStep] = useState(0);
-  const [done, setDone] = useState(false);
-
-  const {
-    register,
-    trigger,
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    mode: "onTouched",
-  });
 
   const TOTAL = 5;
-
   const progress = ((step + 1) / TOTAL) * 100;
-  const isSelfieStep = step === 3;
-
-  const handleNext = async () => {
-    const fields = STEP_FIELDS[step];
-    const valid = fields.length === 0 || (await trigger(fields));
-    if (!valid) return;
-    step < TOTAL - 1 ? setStep((s) => s + 1) : setDone(true);
-  };
-
-  const onSubmit = () => setDone(true);
-
-  const stepProps = {
-    register,
-    errors,
-    control,
-    ...(isSelfieStep ? { onSkip: handleNext } : {}),
-  };
 
   const StepComponents = [Step1, Step2, Step3, Step4, Step5];
   const StepComp = StepComponents[step];
 
-  if (done) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="w-full max-w-lg bg-card-background border border-border rounded-2xl p-14 flex flex-col items-center gap-5 text-center">
-          <div className="w-16 h-16 rounded-full bg-Green flex items-center justify-center">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-card-text">
-            You're all set! 🎉
-          </h2>
-          <p className="text-sm text-text leading-relaxed">
-            Your XBanka account is being verified. We'll notify you once it's
-            ready.
-          </p>
-          <button
-            onClick={() => {
-              setStep(0);
-              setDone(false);
-            }}
-            className="mt-2 px-10 h-12 rounded-xl bg-Green text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            Back to Start
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // if (done) {
+  //   return (
+  //     <div className="min-h-screen bg-background flex items-center justify-center px-4">
+  //       <div className="w-full max-w-lg bg-card-background border border-border rounded-2xl p-14 flex flex-col items-center gap-5 text-center">
+  //         <div className="w-16 h-16 rounded-full bg-Green flex items-center justify-center">
+  //           <svg
+  //             width="28"
+  //             height="28"
+  //             viewBox="0 0 24 24"
+  //             fill="none"
+  //             stroke="#fff"
+  //             strokeWidth="2.5"
+  //             strokeLinecap="round"
+  //             strokeLinejoin="round"
+  //           >
+  //             <polyline points="20 6 9 17 4 12" />
+  //           </svg>
+  //         </div>
+  //         <h2 className="text-2xl font-bold text-card-text">
+  //           You're all set! 🎉
+  //         </h2>
+  //         <p className="text-sm text-text leading-relaxed">
+  //           Your XBanka account is being verified. We'll notify you once it's
+  //           ready.
+  //         </p>
+  //         <button
+  //           onClick={() => {
+  //             setStep(0);
+  //             setDone(false);
+  //           }}
+  //           className="mt-2 px-10 h-12 rounded-xl bg-Green text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+  //         >
+  //           Back to Start
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="">
@@ -124,22 +88,7 @@ export default function OnboardingForm() {
 
       {/* Card */}
       <Card>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <StepComp TOTAL={TOTAL} step={step} handleNext={handleNext} {...stepProps} />
-            {!isSelfieStep && (
-              <div className="flex flex-col md:flex-row gap-4 mt-1">
-                <Button variant={"outline"} size="lg" className="flex-1" onClick={handleNext}>Cancel</Button>
-                <Button
-                  size="lg"
-                  className="flex-3"
-                  type={step === TOTAL - 1 ? "submit" : "button"}
-                  onClick={step === TOTAL - 1 ? undefined : handleNext}
-                >
-                  {step === TOTAL - 1 ? "Submit" : "Continue"}
-                </Button>
-              </div>
-            )}
-        </form>
+          <StepComp step={step} setStep={setStep} />
       </Card>
     </div>
   );

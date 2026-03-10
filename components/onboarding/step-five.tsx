@@ -3,9 +3,24 @@ import { FormField } from "../ui/FormField";
 import { SelectField } from "../ui/select";
 import { AttachmentFile, AttachmentUpload } from "../ui/UploadAttachment";
 import { useState } from "react";
+import { useUserStore } from "@/store/verify-id.store";
+import { useForm } from "react-hook-form";
+import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-function Step5({ register, errors }) {
+function Step5() {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  const userId = useUserStore((s) => s.userId);
+
+  const {
+      register,
+      reset,
+      formState: { errors, isValid },
+      handleSubmit,
+    } = useForm<step5FormValues>({
+      resolver: zodResolver(step5Schema),
+      mode: "onTouched",
+    });
 
   return (
     <>
@@ -33,15 +48,17 @@ function Step5({ register, errors }) {
         />
         <div className="grid grid-cols-2 gap-3">
           <SelectField
+            id="residenceCountry"
             placeholder="Country of Residence"
-            error={errors.poaCountry}
+            error={errors.residenceCountry}
             options={[
               { value: "ng", label: "Nigeria" },
               { value: "gh", label: "Ghana" },
             ]}
-            registration={register("poaCountry", { required: "Required" })}
+            register={register}
           />
           <SelectField
+          id="state"
             placeholder="State"
             error={errors.state}
             options={[
@@ -50,21 +67,20 @@ function Step5({ register, errors }) {
               { value: "ph", label: "Port Harcourt" },
               { value: "kno", label: "Kano" },
             ]}
-            registration={register("state", { required: "Required" })}
+            register={register}
           />
         </div>
         <SelectField
+        id="residenceDocumentType"
           icon={IdCard}
           placeholder="Select document of choice"
-          error={errors.docType}
+          error={errors.residenceDocumentType}
           options={[
             { value: "utility", label: "Utility Bill" },
             { value: "bank", label: "Bank Statement" },
             { value: "tenancy", label: "Tenancy Agreement" },
           ]}
-          registration={register("docType", {
-            required: "Please select a document type",
-          })}
+          register={register}
         />
         <AttachmentUpload value={attachments} onChange={setAttachments} />
       </div>

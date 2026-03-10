@@ -24,6 +24,11 @@ export const COUNTRIES: Country[] = [
   { name: "Singapore", code: "SG", flag: "🇸🇬", dialCode: "+65", format: "XXXX XXXX" },
 ]
 
+export const countryOptions = COUNTRIES.map((c) => ({
+  value: c.name,
+  label: `${c.flag} ${c.name}`,
+}));
+
 export const getCountryByDialCode = (dialCode: string): Country | undefined => {
   return COUNTRIES.find(c => c.dialCode === dialCode)
 }

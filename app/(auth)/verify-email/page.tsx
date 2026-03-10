@@ -1,4 +1,4 @@
-import VerifyPage from "@/components/auth/verify";
+import VerifyPage from "@/components/auth/verify-email";
 
 
 export default async function Verify({ searchParams }: { searchParams: Promise<{ token?: string }>; }) {

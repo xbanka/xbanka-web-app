@@ -35,7 +35,7 @@ export const useLogin = () => {
 export const useVerifyMail = () => {
 //   const router = useRouter();
   const mutate = useMutation({
-    mutationFn: (data: SignupFormData) => verifyEmail(data.email),
+    mutationFn: (data: string) => verifyEmail(data),
     onSuccess: (result) => {
         toast.success(result.data.message)
     },
