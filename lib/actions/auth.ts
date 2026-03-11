@@ -6,7 +6,7 @@ export const signup = async (email: string, password: string, referralCode: stri
       email,
       password,
       referralCode,
-      redirectUrl: process.env.REDIRECT_BASE_URL + "verify-email"
+      redirectUrl: process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "verify-email"
     })
     return {
       success: true,

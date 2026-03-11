@@ -9,19 +9,20 @@ export interface ThemeState {
   toggleTheme: () => void;
 }
 
-export const useThemeStore = create(
+export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: null,
+      theme: "light",
       setTheme: (theme: Theme) => {
-        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-theme", theme ?? "light");
         set({ theme });
       },
-      toggleTheme: () => {
-        const next = get().theme === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        set({ theme: next });
-      },
+      toggleTheme: () =>
+        set((state) => {
+          const next = state.theme === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          return { theme: next };
+        }),
     }),
     { name: "theme-preference" },
   ),
