@@ -13,14 +13,12 @@ import { useUserProfile } from "@/lib/services/onboarding.service";
 import { Button } from "../ui/button";
 
 export interface StepOneProps {
-  register?: any;
-  errors?: FieldError;
+  setStep: (n: number) => void;
 }
 
-function Step1() {
+function Step1({setStep}: StepOneProps) {
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
   const userId = useUserStore((s) => s.userId);
-  console.log(userId);
 
   const { isError, isPending, error, data, mutate } = useUserProfile();
   const {
@@ -34,6 +32,7 @@ function Step1() {
   });
 
   const onsubmit = async (data: step1FormValues) => {
+    console.log(userId);
     if (!userId) return;
     const payload = {
       userId,
@@ -47,6 +46,7 @@ function Step1() {
     mutate(payload, {
       onSuccess: () => {
         reset();
+        setStep(1)
       },
     });
   };

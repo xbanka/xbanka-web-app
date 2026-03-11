@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { profile, selfie, verifyBvn } from "../actions/onboarding";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { address, identity, profile, selfie, verifyBvn } from "../actions/onboarding";
 import { handleApiError } from "../errors/error";
 import { toast } from "sonner";
 import { profilePayload, verifyBvnPayload } from "../types/onboarding-types";
@@ -39,9 +39,9 @@ export const useVerifyBvn = () => {
   return mutate;
 };
 
-export const useVerifySelfie = () => {
+export const useIdentity = () => {
   const mutate = useMutation({
-    mutationFn: (data: any) => selfie(data.userId, data.selfieUrl),
+    mutationFn: (formData: FormData) => identity(formData),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },
@@ -50,4 +50,33 @@ export const useVerifySelfie = () => {
     },
   });
   return mutate;
+};
+
+ 
+
+export const useAddressProof = () => {
+  const mutate = useMutation({
+    mutationFn: (formData: FormData) => address(formData),
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+};
+
+export const useVerifySelfie = () => {
+  return useMutation({
+    mutationFn: (formData: FormData) => selfie(formData),
+
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
 };

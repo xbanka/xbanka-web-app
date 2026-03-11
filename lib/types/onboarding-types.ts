@@ -3,6 +3,13 @@ export interface verifyBvnPayload {
   bvn: string;
 }
 
+export interface identityPayload {
+  userId: string,
+  idType: string,
+  idNumber: string,
+  idImageUrl: File | string,
+}
+
 export interface profilePayload {
   userId: string;
   firstName: string;

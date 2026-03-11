@@ -28,13 +28,14 @@ function Step2({ step, setStep }: Step2Props) {
     mode: "onTouched",
   });
 
-  const handleVerify = (data: step2FormValues) => {
+  const onSubmit = (data: step2FormValues) => {
     if (!userId) return;
     const payload = { userId, bvn: data.bvn }
     verifyBvn(payload,
       {
         onSuccess: () => {
           reset();
+          setStep(2)
         },
       },
     );
@@ -51,7 +52,7 @@ function Step2({ step, setStep }: Step2Props) {
           share it with anyone.
         </p>
       </div>
-      <form className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
         <FormField
           id="bvn"
           icon={IdCard}

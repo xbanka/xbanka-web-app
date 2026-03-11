@@ -41,7 +41,7 @@ export function AttachmentUpload({
       });
     });
 
-    onChange([...value, ...newFiles]);
+    onChange(newFiles.slice(0, 1));
   };
 
   const removeFile = (index: number) => {
@@ -69,7 +69,6 @@ export function AttachmentUpload({
         <input
           ref={inputRef}
           type="file"
-          multiple
           accept={accept}
           hidden
           onChange={(e) => handleFiles(e.target.files)}

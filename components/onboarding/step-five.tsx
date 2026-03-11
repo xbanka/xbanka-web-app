@@ -7,20 +7,92 @@ import { useUserStore } from "@/store/verify-id.store";
 import { useForm } from "react-hook-form";
 import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../ui/button";
+import { useAddressProof } from "@/lib/services/onboarding.service";
+import { useRouter } from "next/navigation";
 
-function Step5() {
+interface Step5Props {
+  setStep: (n: number) => void;
+  step: number;
+}
+
+function Step5({ setStep }: Step5Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
   const userId = useUserStore((s) => s.userId);
+  const { mutate, isPending, data, isSuccess } = useAddressProof();
+  const router = useRouter();
+  console.log(userId)
 
   const {
-      register,
-      reset,
-      formState: { errors, isValid },
-      handleSubmit,
-    } = useForm<step5FormValues>({
-      resolver: zodResolver(step5Schema),
-      mode: "onTouched",
+    register,
+    reset,
+    formState: { errors, isValid },
+    handleSubmit,
+  } = useForm<step5FormValues>({
+    resolver: zodResolver(step5Schema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = (data: step5FormValues) => {
+    if (!userId) return;
+
+    const formData = new FormData();
+
+    formData.append("userId", userId);
+    formData.append("address", data.address);
+    formData.append("landmark", data.landmark);
+    formData.append("country", data.country);
+    formData.append("state", data.state);
+    formData.append("documentType", data.residenceDocumentType);
+
+    if (!attachments.length) return;
+
+    formData.append("proofOfAddressImage", attachments[0].file);
+
+    mutate(formData, {
+      onSuccess: () => {
+        reset();
+        setShowSuccess(true)
+        setAttachments([]);
+      },
     });
+  };
+
+  if (showSuccess && isSuccess && data?.success) {
+    return (
+      <>
+          <div className="w-16 h-16 rounded-full bg-Green flex items-center justify-center">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-card-text">
+            You're all set! 🎉
+          </h2>
+          <p className="text-sm text-text leading-relaxed">
+            Your are done with your XBanka account onboarding.
+          </p>
+          <Button
+            onClick={() => {
+              setStep(0);
+              setShowSuccess(false);
+            }}
+          >
+            Back to Start
+          </Button>
+      </>
+    );
+  }
 
   return (
     <>
@@ -32,7 +104,7 @@ function Step5() {
           Please provide the address exactly as it appears on your document
         </p>
       </div>
-      <div className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
         <FormField
           id="address"
           icon={MapPin}
@@ -41,16 +113,16 @@ function Step5() {
           register={register}
         />
         <FormField
-          id="address"
+          id="landmark"
           icon={MapPin}
           placeholder="Popular Landmark (optional)"
           register={register}
         />
         <div className="grid grid-cols-2 gap-3">
           <SelectField
-            id="residenceCountry"
+            id="country"
             placeholder="Country of Residence"
-            error={errors.residenceCountry}
+            error={errors.country}
             options={[
               { value: "ng", label: "Nigeria" },
               { value: "gh", label: "Ghana" },
@@ -58,7 +130,7 @@ function Step5() {
             register={register}
           />
           <SelectField
-          id="state"
+            id="state"
             placeholder="State"
             error={errors.state}
             options={[
@@ -71,19 +143,37 @@ function Step5() {
           />
         </div>
         <SelectField
-        id="residenceDocumentType"
+          id="residenceDocumentType"
           icon={IdCard}
           placeholder="Select document of choice"
           error={errors.residenceDocumentType}
           options={[
-            { value: "utility", label: "Utility Bill" },
-            { value: "bank", label: "Bank Statement" },
-            { value: "tenancy", label: "Tenancy Agreement" },
+            { value: "utility_bill", label: "Utility Bill" },
+            { value: "bank_statement", label: "Bank Statement" },
+            { value: "tenancy_agreement", label: "Tenancy Agreement" },
           ]}
           register={register}
         />
         <AttachmentUpload value={attachments} onChange={setAttachments} />
-      </div>
+        <div className="flex flex-col md:flex-row gap-4 mt-1">
+          <Button variant="outline" size="lg" className="flex-1">
+            Cancel
+          </Button>
+          <Button
+            size="lg"
+            className="flex-3"
+            disabled={!isValid || isPending || attachments.length === 0}
+            variant={
+              isPending || !isValid || attachments.length === 0
+                ? "disabled"
+                : "default"
+            }
+            type="submit"
+          >
+            Submit
+          </Button>
+        </div>
+      </form>
     </>
   );
 }

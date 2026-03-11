@@ -38,8 +38,8 @@ export type step4FormValues = z.infer<typeof step4Schema>;
 
 export const step5Schema = z.object({
   address: z.string().min(5),
-  landmark: z.string().optional(),
-  residenceCountry: z.string(),
+  landmark: z.string(),
+  country: z.string(),
   state: z.string(),
   residenceDocumentType: z.enum([
     "utility_bill",
