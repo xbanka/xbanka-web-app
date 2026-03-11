@@ -7,7 +7,7 @@ import { useVerifyBvn } from "@/lib/services/onboarding.service";
 import { Button } from "../ui/button";
 import { step2FormValues, step2Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 
 interface Step2Props {
   setStep: (n: number) => void;
@@ -16,7 +16,7 @@ interface Step2Props {
 
 function Step2({ step, setStep }: Step2Props) {
   const { mutate: verifyBvn, isPending } = useVerifyBvn();
-  const userId = useUserStore((s) => s.userId);
+  const userId = useUserIdStore((s) => s.userId);
 
   const {
     register,

@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
 import { Button } from "../ui/button";
 import { useIdentity } from "@/lib/services/onboarding.service";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 
 interface Step3Props {
   setStep: (n: number) => void;
@@ -19,7 +19,7 @@ interface Step3Props {
 function Step3({ setStep }: Step3Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending } = useIdentity();
-  const userId = useUserStore((s) => s.userId);
+  const userId = useUserIdStore((s) => s.userId);
 
   const {
     register,

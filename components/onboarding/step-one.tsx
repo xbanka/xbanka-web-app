@@ -8,7 +8,7 @@ import { useState } from "react";
 import { COUNTRIES, Country, countryOptions } from "@/lib/countries";
 import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { useUserProfile } from "@/lib/services/onboarding.service";
 import { Button } from "../ui/button";
 
@@ -18,7 +18,7 @@ export interface StepOneProps {
 
 function Step1({setStep}: StepOneProps) {
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
-  const userId = useUserStore((s) => s.userId);
+  const userId = useUserIdStore((s) => s.userId);
 
   const { isError, isPending, error, data, mutate } = useUserProfile();
   const {

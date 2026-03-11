@@ -5,7 +5,7 @@ import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
-import { SignupFormData, signUpSchema } from "@/lib/schema/login-schema";
+import { SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -13,9 +13,11 @@ import PasswordField from "../ui/password-field";
 import Image from "next/image";
 import { useSignup } from "@/lib/services/auth.service";
 import { useState } from "react";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const { loginWithGoogle } = useGoogleAuth();
   const methods = useForm<SignupFormData>({
     resolver: zodResolver(signUpSchema),
     mode: "onChange",
@@ -85,9 +87,9 @@ const SignUp = () => {
         }
       />
       <div className="space-y-3">
-        <Button variant="outline" className="p-2 w-full">
+        <Button onClick={loginWithGoogle} variant="outline" className="p-2 w-full">
           <Image width={20} height={20} alt="google" src="/googleIcon.svg" />
-          Google sign up text
+          Sign up with Google
         </Button>
         <div className="flex items-center gap-2">
           <span className="h-0.5 w-full bg-border"></span>

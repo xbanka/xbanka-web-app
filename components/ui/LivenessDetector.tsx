@@ -16,7 +16,7 @@ import {
 } from "@mediapipe/tasks-vision";
 import { Button } from "./button";
 import { useVerifySelfie } from "@/lib/services/onboarding.service";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { base64ToFile } from "@/lib/base64ToFile";
 
 let _faceLandmarker: FaceLandmarker | null = null;
@@ -78,7 +78,7 @@ const LivenessDetector = forwardRef<
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const userId = useUserStore((s) => s.userId);
+  const userId = useUserIdStore((s) => s.userId);
   const {
     mutate: verifySelfie,
     isPending,

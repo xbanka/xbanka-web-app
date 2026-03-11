@@ -1,7 +1,7 @@
 "use client";
 
 import { useVerifySelfie } from "@/lib/services/onboarding.service";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 import LivenessDetector from "../ui/LivenessDetector";
 import { base64ToFile } from "@/lib/base64ToFile";
 
