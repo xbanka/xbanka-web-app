@@ -5,21 +5,17 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { Card } from "../ui/Card";
 import Image from "next/image";
-import { useResendVerifyMail, useVerifyMail } from "@/lib/services/auth.service";
+import {
+  useVerifyMail,
+} from "@/lib/services/auth.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 
 const VerifyPage = ({ token }: { token?: string }) => {
   const { data, mutate, isSuccess, isPending, error, isError } =
     useVerifyMail();
 
-  const { mutate: resendMutate, isPending: resendPending, error: resendError } = useResendVerifyMail()
-
   const hasVerified = React.useRef(false);
   const setUserId = useUserIdStore((s) => s.setUserId);
-
-  const handleResendVerification = () => {
-    resendMutate("deji@gmail.com")
-  }
 
   useEffect(() => {
     if (!token || hasVerified.current) return;
@@ -61,25 +57,22 @@ const VerifyPage = ({ token }: { token?: string }) => {
   if (isError) {
     return (
       <Card className="w-full max-w-sm mx-auto">
-          <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
+        <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
           <Image src={"/mail.svg"} alt="mail" className="" fill />
         </div>
-          <div className="space-y-4">
+        <div className="space-y-4">
           <h2 className="text-[36px] leading-11 font-bold text-card-text">
             Verification Failed
           </h2>
-          <Button onClick={handleResendVerification} className="font-normal leading-6 text-[16px] text-text px-7">
-            { resendPending ? "Sending..." : "Resend verification email"}
-          </Button>
-        </div>
           <p className="text-gray-600 text-[16px]">
             {error.message || "Invalid or expired token."}
           </p>
-          <Link href="/affiliate/signup">
-            <Button size="sm" className="w-full">
-              Back to Signup
-            </Button>
-          </Link>
+        </div>
+        <Link href="/affiliate/signup">
+          <Button size="sm" className="w-full">
+            Back to Signup
+          </Button>
+        </Link>
       </Card>
     );
   }

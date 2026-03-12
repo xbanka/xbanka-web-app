@@ -11,13 +11,21 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import PasswordField from "../ui/password-field";
 import Image from "next/image";
-import { useSignup } from "@/lib/services/auth.service";
-import { useState } from "react";
+import { useResendVerifyMail, useSignup } from "@/lib/services/auth.service";
+import { useEffect, useState } from "react";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { maskEmail } from "@/lib/maskEmail";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [countdown, setCountdown] = useState(0);
   const { loginWithGoogle } = useGoogleAuth();
+  const {
+    mutate: resendMutate,
+    isPending: resendPending,
+    error: resendError,
+  } = useResendVerifyMail();
   const methods = useForm<SignupFormData>({
     resolver: zodResolver(signUpSchema),
     mode: "onChange",
@@ -41,15 +49,32 @@ const SignUp = () => {
   const onSubmit = (data: SignupFormData) => {
     mutate(data, {
       onSuccess: () => {
-        (reset(), setShowSuccess(true));
+        (reset(),
+          setShowSuccess(true),
+          setUserEmail(data.email),
+          setCountdown(60));
       },
     });
   };
 
+  const handleResendVerification = () => {
+    resendMutate(userEmail);
+    setCountdown(60);
+  };
+
+  useEffect(() => {
+    if (countdown === 0) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown]);
+
   if (showSuccess && isSuccess && data?.success) {
     return (
-      <Card className="">
-        <div className="text-center space-y-6">
+      <Card className="space-y-6 text-center">
           <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
             <Image src={"/mail.svg"} alt="mail" className="" fill />
           </div>
@@ -58,8 +83,11 @@ const SignUp = () => {
               Verify your email address
             </h2>
             <p className="font-normal leading-6 text-[16px] text-text px-7">
-              We sent a verification link to eyebiokinjoseph1@gmail.com Check
-              your inbox or spam to verify your account
+              We sent a verification link to{" "}
+              <strong className="text-text-border">
+                {maskEmail(userEmail)}
+              </strong>{" "}
+              Check your inbox or spam to verify your account
             </p>
           </div>
           <Link href="/sign-in">
@@ -67,7 +95,20 @@ const SignUp = () => {
               Ok
             </Button>
           </Link>
-        </div>
+          <div className="text-center mt-6 font-normal leading-6 text-[16px] text-text">
+            Did not get the email?{" "}
+            <Button
+              disabled={countdown > 0 || resendPending}
+              onClick={handleResendVerification}
+              className="w-full border-none bg-transparent text-blue-500"
+            >
+              {resendPending
+                ? "Sending..."
+                : countdown > 0
+                  ? `Resend in ${countdown}s`
+                  : "Resend verification email"}
+            </Button>
+          </div>
       </Card>
     );
   }
@@ -87,7 +128,11 @@ const SignUp = () => {
         }
       />
       <div className="space-y-3">
-        <Button onClick={loginWithGoogle} variant="outline" className="p-2 w-full">
+        <Button
+          onClick={loginWithGoogle}
+          variant="outline"
+          className="p-2 w-full"
+        >
           <Image width={20} height={20} alt="google" src="/googleIcon.svg" />
           Sign up with Google
         </Button>
