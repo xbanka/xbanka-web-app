@@ -1,10 +1,10 @@
 import { IdCard } from "lucide-react";
-import { FormField } from "../ui/FormField";
+import { FormField } from "../../ui/FormField";
 import {
   useForm
 } from "react-hook-form";
 import { useVerifyBvn } from "@/lib/services/onboarding.service";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { step2FormValues, step2Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";

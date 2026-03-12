@@ -2,7 +2,7 @@
 
 import { useVerifySelfie } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
-import LivenessDetector from "../ui/LivenessDetector";
+import LivenessDetector from "../../ui/LivenessDetector";
 import { base64ToFile } from "@/lib/base64ToFile";
 
 interface Step4Props {

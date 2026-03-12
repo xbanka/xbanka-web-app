@@ -25,7 +25,7 @@ export const SelectField = ({
           <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
       )}
       <select
-        className={`border-input flex h-9 w-full min-w-0 rounded-lg border bg-transparent px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
+        className={`border-input flex h-9 w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
         defaultValue=""
         {...(register && register(id))}
       >

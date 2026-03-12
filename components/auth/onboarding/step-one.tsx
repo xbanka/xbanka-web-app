@@ -1,16 +1,16 @@
 import { Calendar, Lock, Phone, User } from "lucide-react";
-import { FormField } from "../ui/FormField";
-import { SelectField } from "../ui/select";
-import { FormHeader } from "../ui/FormHeader";
+import { FormField } from "../../ui/FormField";
+import { SelectField } from "../../ui/select";
+import { FormHeader } from "../../ui/FormHeader";
 import { FieldError, useForm } from "react-hook-form";
-import PhoneNumberField from "../ui/Phonenumberfield";
+import PhoneNumberField from "../../ui/Phonenumberfield";
 import { useState } from "react";
 import { COUNTRIES, Country, countryOptions } from "@/lib/countries";
 import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { useUserProfile } from "@/lib/services/onboarding.service";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 export interface StepOneProps {
   setStep: (n: number) => void;

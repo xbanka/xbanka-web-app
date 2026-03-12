@@ -5,7 +5,7 @@ import Step2 from "./step-two";
 import Step3 from "./step-three";
 import Step4 from "./step-four";
 import Step5 from "./step-five";
-import { Card } from "../ui/Card";
+import { Card } from "../../ui/Card";
 
 const STEPS = [
   { label: "Basic Information" },

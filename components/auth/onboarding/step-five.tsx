@@ -1,13 +1,13 @@
 import { IdCard, MapPin } from "lucide-react";
-import { FormField } from "../ui/FormField";
-import { SelectField } from "../ui/select";
-import { AttachmentFile, AttachmentUpload } from "../ui/UploadAttachment";
+import { FormField } from "../../ui/FormField";
+import { SelectField } from "../../ui/select";
+import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useState } from "react";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { useForm } from "react-hook-form";
 import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useAddressProof } from "@/lib/services/onboarding.service";
 import { useRouter } from "next/navigation";
 

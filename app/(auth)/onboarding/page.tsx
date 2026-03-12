@@ -1,4 +1,4 @@
-import OnboardingForm from "@/components/onboarding/OnboardingForm";
+import OnboardingForm from "@/components/auth/onboarding/OnboardingForm";
 import { Copy } from "lucide-react";
 import React from "react";
 

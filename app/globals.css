@@ -11,6 +11,7 @@
   --card-text: #1b1d20;
   --disabled-text: #a4aab4;
   --disabled-background: #e9ebee;
+  --input-background: #F9F9F9;
   --input: #dadde2;
   --placeholder: #4b5563;
   --text: #4b5563;
@@ -23,6 +24,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-input: var(--input);
+  --color-input-background: var(--input-background);
   --color-border: var(--border);
   --color-border-active: var(--border-active);
   --color-Green: var(--Green);
@@ -47,6 +49,7 @@
   --disabled-text: #c2c7cf;
   --disabled-background: #374151;
   --input: #374151;
+  --input-background: #202225;
   --placeholder: #9ca3af;
   --text: #a4aab4;
 }

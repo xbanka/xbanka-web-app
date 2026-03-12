@@ -1,14 +1,14 @@
 "use client";
 
 import { IdCard } from "lucide-react";
-import { SelectField } from "../ui/select";
-import { FormField } from "../ui/FormField";
-import { AttachmentFile, AttachmentUpload } from "../ui/UploadAttachment";
+import { SelectField } from "../../ui/select";
+import { FormField } from "../../ui/FormField";
+import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useIdentity } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 
