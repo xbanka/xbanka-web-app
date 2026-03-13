@@ -22,9 +22,9 @@ export function Sidebar({
   };
 
 const sidebarContent = (
-    <div className="flex flex-col h-full bg-[#1b1d20] text-white/90 select-none">
+    <div className="flex flex-col h-full bg-card-background text-text select-none border-r border-border">
       {/* Logo + collapse */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
+      <div className="flex items-center justify-between p-4 border-b border-border">
         {!collapsed && (
           <span className="text-xl font-bold tracking-tight text-white">
             xbanka
@@ -32,12 +32,12 @@ const sidebarContent = (
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex items-center justify-center w-7 h-7 rounded-md hover:bg-white/10 transition-colors text-white/60"
+          className="hidden md:flex items-center justify-center rounded-lg transition-colors text-card-text"
         >
           {collapsed ? (
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-6 h-6 border border-input rounded-lg p-3 bg-border text-card-text" />
           ) : (
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-6 h-6 border border-input rounded-lg p-3 bg-border text-card-text" />
           )}
         </button>
         {/* Mobile close */}
@@ -50,11 +50,11 @@ const sidebarContent = (
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
+      <nav className="flex-1 overflow-y-auto py-4.5 px-4 space-y-3">
         {NAV.map((section) => (
-          <div key={section.title}>
+          <div key={section.title} className="space-y-2">
             {!collapsed && (
-              <p className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-white/35">
+              <p className="text-[12px] font-normal leading-4.5 tracking-widest text-text">
                 {section.title}
               </p>
             )}
@@ -64,18 +64,18 @@ const sidebarContent = (
                 const active = activePage === item.id;
                 return (
                   <li key={item.id}>
-                    <button
+                    <div
                       onClick={() => navigate(item.id)}
                       title={collapsed ? item.label : undefined}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
+                      className={`w-full flex font-medium leading-5.5 items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors
                         ${
                           active
-                            ? "bg-Green text-white font-medium"
-                            : "text-white/65 hover:bg-white/8 hover:text-white"
+                            ? "border border-input bg-border text-card-text"
+                            : "bg-card-background text-text hover:bg-text/8 hover:text-text"
                         }
                         ${collapsed ? "justify-center" : ""}`}
                     >
-                      <Icon className="w-4 h-4 shrink-0" />
+                      <Icon className={ `${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`} />
                       {!collapsed && (
                         <>
                           <span className="flex-1 text-left">{item.label}</span>
@@ -88,7 +88,7 @@ const sidebarContent = (
                           )}
                         </>
                       )}
-                    </button>
+                    </div>
                   </li>
                 );
               })}
