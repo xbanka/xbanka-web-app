@@ -15,6 +15,18 @@ export const signup = async (email: string, password: string, referralCode: stri
     };
 }
 
+export const resendEmailVerification = async (email: string) => {
+    const response = await AxiosInstance.post("/auth/signup", {
+      email,
+      redirectUrl: process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "verify-email"
+    })
+    return {
+      success: true,
+      data: response.data,
+      status: response.status,
+    };
+}
+
 export const login = async (email: string, password: string) => {
     const response = await AxiosInstance.post("/auth/login", {
       email,

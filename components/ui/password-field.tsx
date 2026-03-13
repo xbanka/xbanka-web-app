@@ -71,7 +71,7 @@ const PasswordField = ({
       {password.length > 0 && (
         <div>
           <div style={{ width: `${strengthPercent}%` }} />
-          <p>{strengthLabel}</p>
+          <p className="font-normal text-[12px] leading-4.5">{strengthLabel}</p>
         </div>
       )}
 

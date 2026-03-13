@@ -31,7 +31,9 @@ export default function PhoneNumberField({
 }: PhoneNumberFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">("bottom");
+  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
+    "bottom",
+  );
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -41,7 +43,7 @@ export default function PhoneNumberField({
     (country) =>
       country.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       country.dialCode.includes(searchTerm) ||
-      country.code.toLowerCase().includes(searchTerm.toLowerCase())
+      country.code.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Calculate whether dropdown should open upward or downward
@@ -66,7 +68,10 @@ export default function PhoneNumberField({
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
         setSearchTerm("");
       }
@@ -94,12 +99,15 @@ export default function PhoneNumberField({
   };
 
   const inputBase =
-    "flex h-11 w-full min-w-0 rounded-lg border bg-transparent px-4 py-2.5 text-sm text-card-text placeholder:text-placeholder outline-none shadow-xs transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50";
+    "flex items-center h-10 w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-sm text-card-text placeholder:text-placeholder outline-none shadow-xs transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50";
 
   return (
     <div className="space-y-2">
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-card-text">
+        <label
+          htmlFor={id}
+          className="block text-sm font-medium text-card-text"
+        >
           {label}
         </label>
       )}
@@ -116,7 +124,7 @@ export default function PhoneNumberField({
               ${isOpen ? "border-border-active ring-[3px] ring-border-active/20" : ""}`}
           >
             <span className="text-lg leading-none">{selectedCountry.flag}</span>
-            <span className="text-sm font-medium text-card-text min-w-[2.5rem]">
+            <span className="text-sm font-medium text-card-text min-w-10">
               {selectedCountry.dialCode}
             </span>
             <ChevronDown
@@ -127,7 +135,7 @@ export default function PhoneNumberField({
           {/* ── Dropdown ──────────────────────────────────────────── */}
           {isOpen && (
             <div
-              className={`absolute left-0 z-50 w-60 rounded-xl border border-border bg-card-background shadow-lg overflow-hidden
+              className={`absolute left-0 z-50 w-60 rounded-xl border border-border bg-input-background shadow-lg overflow-hidden
                 ${dropdownPosition === "bottom" ? "top-full mt-1.5" : "bottom-full mb-1.5"}`}
             >
               {/* Search */}
@@ -157,10 +165,16 @@ export default function PhoneNumberField({
                           className={`w-full px-3 py-2 text-left text-sm flex items-center gap-3 transition-colors hover:bg-border/40
                             ${isSelected ? "bg-border-active/10" : ""}`}
                         >
-                          <span className="text-lg leading-none shrink-0">{country.flag}</span>
+                          <span className="text-lg leading-none shrink-0">
+                            {country.flag}
+                          </span>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-card-text truncate">{country.name}</p>
-                            <p className="text-xs text-placeholder">{country.dialCode}</p>
+                            <p className="font-medium text-card-text truncate">
+                              {country.name}
+                            </p>
+                            <p className="text-xs text-placeholder">
+                              {country.dialCode}
+                            </p>
                           </div>
                           {isSelected && (
                             <span className="w-2 h-2 rounded-full bg-Green shrink-0" />

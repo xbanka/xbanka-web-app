@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
+import { Providers } from "@/components/Layout/provider";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,14 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <QueryProvider>
-    <html lang="en" data-theme="light">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeToggle />
-        {children}
-      </body>
-    </html>
+      <Providers>
+        <html lang="en" data-theme="light">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            {children}
+          </body>
+        </html>
+      </Providers>
     </QueryProvider>
   );
 }

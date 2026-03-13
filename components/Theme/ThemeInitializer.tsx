@@ -4,7 +4,7 @@ import { ThemeState, useThemeStore } from "@/store/theme.store";
 import { useEffect } from "react";
 
 export function ThemeInitializer() {
-  const { theme, setTheme } = useThemeStore() as ThemeState;
+  const { theme, setTheme } = useThemeStore();
 
   useEffect(() => {
     // If user already has a preference, do nothing

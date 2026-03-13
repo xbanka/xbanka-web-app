@@ -5,7 +5,7 @@ import Step2 from "./step-two";
 import Step3 from "./step-three";
 import Step4 from "./step-four";
 import Step5 from "./step-five";
-import { Card } from "../ui/Card";
+import { Card } from "../../ui/Card";
 
 const STEPS = [
   { label: "Basic Information" },
@@ -16,7 +16,7 @@ const STEPS = [
 ];
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
 
   const TOTAL = 5;
   const progress = ((step + 1) / TOTAL) * 100;

@@ -1,16 +1,18 @@
 import { Calendar, Lock, Phone, User } from "lucide-react";
-import { FormField } from "../ui/FormField";
-import { SelectField } from "../ui/select";
-import { FormHeader } from "../ui/FormHeader";
-import { FieldError, useForm } from "react-hook-form";
-import PhoneNumberField from "../ui/Phonenumberfield";
+import { FormField } from "../../ui/FormField";
+import { SelectField } from "../../ui/select";
+import { FormHeader } from "../../ui/FormHeader";
+import { useForm } from "react-hook-form";
+import PhoneNumberField from "../../ui/Phonenumberfield";
 import { useState } from "react";
 import { COUNTRIES, Country, countryOptions } from "@/lib/countries";
 import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserStore } from "@/store/verify-id.store";
-import { useUserProfile } from "@/lib/services/onboarding.service";
-import { Button } from "../ui/button";
+import { useUserIdStore } from "@/store/verify-id.store";
+import { useSkipStep, useUserProfile } from "@/lib/services/onboarding.service";
+import { Button } from "../../ui/button";
+import { ErrorField } from "@/components/ui/field-error";
+import { useRouter } from "next/navigation";
 
 export interface StepOneProps {
   setStep: (n: number) => void;
@@ -18,9 +20,11 @@ export interface StepOneProps {
 
 function Step1({setStep}: StepOneProps) {
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
-  const userId = useUserStore((s) => s.userId);
+  const router = useRouter();
+  const userId = useUserIdStore((s) => s.userId);
 
-  const { isError, isPending, error, data, mutate } = useUserProfile();
+  const { isPending, error, mutate } = useUserProfile();
+  const { isPending: skipPending, error: skipError, mutate: skipMutate } = useSkipStep();
   const {
     register,
     reset,
@@ -32,8 +36,6 @@ function Step1({setStep}: StepOneProps) {
   });
 
   const onsubmit = async (data: step1FormValues) => {
-    console.log(userId);
-    if (!userId) return;
     const payload = {
       userId,
       firstName: data.firstName,
@@ -50,6 +52,15 @@ function Step1({setStep}: StepOneProps) {
       },
     });
   };
+
+  const handleSkip = () => {
+    skipMutate(userId, {
+      onSuccess: () => {
+        reset();
+        router.push("/sign-in");
+      },
+    });
+  }
 
   return (
     <>
@@ -109,20 +120,23 @@ function Step1({setStep}: StepOneProps) {
           options={countryOptions}
           register={register}
         />
-
-        <div className="flex flex-col md:flex-row gap-4 mt-1">
-          <Button variant="outline" size="lg" className="flex-1">
-            Cancel
-          </Button>
-          <Button
-            size="lg"
-            className="flex-3"
-            disabled={!isValid}
-            variant={isValid ? "default" : "disabled"}
-            type="submit"
-          >
-            Submit
-          </Button>
+        <ErrorField message={error?.message || skipError?.message} />
+        <div className="space-y-3.25">
+          <div className="flex flex-col md:flex-row gap-4 mt-1">
+            <Button disabled variant="outline" size="lg" className="flex-1">
+              Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-3"
+              disabled={!isValid}
+              variant={isValid ? "default" : "disabled"}
+              type="submit"
+            >
+              { isPending ? "Submitting..." : "Submit"}
+            </Button>
+          </div>
+          <h1 onClick={handleSkip} className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer">{skipPending ? "Skipping..." : "Skip for later"}</h1>
         </div>
       </form>
     </>
