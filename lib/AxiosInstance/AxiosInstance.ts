@@ -31,9 +31,9 @@ AxiosInstance.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("/api/auth/erp/login") &&
-      !originalRequest.url.includes("/api/auth/erp/register") &&
-      !originalRequest.url.includes("/api/auth/erp/verify")
+      !originalRequest.url.includes("/auth/login") &&
+      !originalRequest.url.includes("/auth/signup") &&
+      !originalRequest.url.includes("/auth/verify-email")
     ) {
       originalRequest._retry = true;
 
@@ -55,7 +55,7 @@ AxiosInstance.interceptors.response.use(
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
         if (typeof window !== "undefined") {
-          window.location.href = "/signin";
+          window.location.href = "/sign-in";
         }
         return Promise.reject(refreshError);
       }

@@ -64,7 +64,6 @@ function Step5({ setStep }: Step5Props) {
         setShowSuccess(true);
         setAttachments([]);
         clearUserId();
-        router.push("/sign-in");
       },
     });
   };
@@ -105,6 +104,7 @@ function Step5({ setStep }: Step5Props) {
           onClick={() => {
             setStep(0);
             setShowSuccess(false);
+            router.push("/");
           }}
         >
           Back to Start

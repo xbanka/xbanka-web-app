@@ -13,8 +13,10 @@ export default function GoogleCallbackClient() {
     const token = params.get("token");
 
     if (token) {
-      // store token if needed
-      router.push("/dashboard");
+      localStorage.setItem("token", token);
+    //   router.push("https://app.xbankang.com");
+
+    window.location.href = process.env.NEXT_PUBLIC_DASHBOARD_URL!;
     } else {
       router.push("/sign-in");
     }

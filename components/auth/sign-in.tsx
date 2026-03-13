@@ -5,7 +5,7 @@ import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
-import { SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
+import { logInFormData, logInSchema, SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -17,16 +17,15 @@ import { useRouter } from "next/navigation";
 import { ThemeToggle } from "../ui/ThemeToggle";
 
 const SignIn = () => {
-  const router = useRouter;
+  const router = useRouter();
   const { loginWithGoogle } = useGoogleAuth();
-  const methods = useForm<SignupFormData>({
-    resolver: zodResolver(signUpSchema),
+  const methods = useForm<logInFormData>({
+    resolver: zodResolver(logInSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
       email: "",
       password: "",
-      referral: "",
     },
   });
 
@@ -39,10 +38,11 @@ const SignIn = () => {
   const { error, mutate, isPending } = useLogin();
   console.log(error);
 
-  const onSubmit = (data: SignupFormData) => {
+  const onSubmit = (data: logInFormData) => {
     mutate(data, {
       onSuccess: () => {
         reset();
+        router.push("/");
       },
     });
   };
