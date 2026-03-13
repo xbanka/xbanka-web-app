@@ -66,7 +66,7 @@ const VerifyPage = ({ token }: { token?: string }) => {
             {error.message || "Invalid or expired token."}
           </p>
         </div>
-        <Link href="/affiliate/signup">
+        <Link href="/sign-up">
           <Button size="sm" className="w-full">
             Back to Signup
           </Button>
