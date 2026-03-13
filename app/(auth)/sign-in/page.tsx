@@ -3,7 +3,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>
+    <div className='min-h-screen grid place-items-center'>
       <SignIn />
     </div>
   )

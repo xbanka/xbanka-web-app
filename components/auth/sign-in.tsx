@@ -7,14 +7,14 @@ import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
 import { SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import PasswordField from "../ui/password-field";
 import Image from "next/image";
-import { useLogin, useSignup } from "@/lib/services/auth.service";
-import { useState } from "react";
+import { useLogin } from "@/lib/services/auth.service";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 const SignIn = () => {
   const router = useRouter;
@@ -49,6 +49,7 @@ const SignIn = () => {
 
   return (
     <Card className="space-y-6">
+      <ThemeToggle />
       <FormHeader
         title="Welcome to XBanka"
         subtitle={

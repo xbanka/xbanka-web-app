@@ -99,7 +99,7 @@ export default function PhoneNumberField({
   };
 
   const inputBase =
-    "flex items-center h-9 w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-sm text-card-text placeholder:text-placeholder outline-none shadow-xs transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50";
+    "flex items-center h-10 w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-sm text-card-text placeholder:text-placeholder outline-none shadow-xs transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50";
 
   return (
     <div className="space-y-2">

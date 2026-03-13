@@ -13,8 +13,7 @@ export function ThemeToggle() {
       className="rounded-md px-3 py-2 text-sm flex flex-col items-end max-w-150 mx-auto"
     >
       <div className="flex flex-col items-center">
-        {theme === "dark" ? <Moon className="animate-moon-tilt" /> : <Sun className="animate-sun-roll" /> }
-        {theme === "dark" ? "Light mode" : "Dark mode"}
+        {theme === "dark" ? <Moon size={20} className="animate-moon-tilt" /> : <Sun size={20} className="animate-sun-roll" /> }
       </div>
     </div>
   );

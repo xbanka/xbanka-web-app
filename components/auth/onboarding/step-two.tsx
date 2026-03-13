@@ -1,13 +1,16 @@
 import { IdCard } from "lucide-react";
 import { FormField } from "../../ui/FormField";
-import {
-  useForm
-} from "react-hook-form";
-import { useVerifyBvn } from "@/lib/services/onboarding.service";
+import { useForm } from "react-hook-form";
+import { useSkipStep, useVerifyBvn } from "@/lib/services/onboarding.service";
 import { Button } from "../../ui/button";
-import { step2FormValues, step2Schema } from "@/lib/schema/onboarding-schema";
+import {
+  step2FormValues,
+  step2Schema,
+} from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";
+import { ErrorField } from "@/components/ui/field-error";
+import { useRouter } from "next/navigation";
 
 interface Step2Props {
   setStep: (n: number) => void;
@@ -15,7 +18,14 @@ interface Step2Props {
 }
 
 function Step2({ step, setStep }: Step2Props) {
-  const { mutate: verifyBvn, isPending } = useVerifyBvn();
+  const router = useRouter();
+  const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
+  const {
+    isPending: skipPending,
+    error: skipError,
+    mutate: skipMutate,
+  } = useSkipStep();
+
   const userId = useUserIdStore((s) => s.userId);
 
   const {
@@ -29,16 +39,22 @@ function Step2({ step, setStep }: Step2Props) {
   });
 
   const onSubmit = (data: step2FormValues) => {
-    if (!userId) return;
-    const payload = { userId, bvn: data.bvn }
-    verifyBvn(payload,
-      {
-        onSuccess: () => {
-          reset();
-          setStep(2)
-        },
+    const payload = { userId, bvn: data.bvn };
+    verifyBvn(payload, {
+      onSuccess: () => {
+        reset();
+        setStep(2);
       },
-    );
+    });
+  };
+
+  const handleSkip = () => {
+    skipMutate(userId, {
+      onSuccess: () => {
+        reset();
+        router.push("/sign-in");
+      },
+    });
   };
 
   return (
@@ -60,23 +76,28 @@ function Step2({ step, setStep }: Step2Props) {
           error={errors.bvn}
           register={register}
         />
-        <div className="flex flex-col md:flex-row gap-4 mt-1">
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1"
+        <ErrorField message={error?.message || skipError?.message} />
+        <div className="space-y-3.25">
+          <div className="flex flex-col md:flex-row gap-4 mt-1">
+            <Button onClick={()=> setStep(0)} variant="outline" size="lg" className="flex-1">
+              Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-3"
+              disabled={!isValid || isPending}
+              variant={isPending || !isValid ? "disabled" : "default"}
+              type="submit"
+            >
+              {isPending ? "Verifying..." : "Continue"}
+            </Button>
+          </div>
+          <h1
+            onClick={handleSkip}
+            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
           >
-            Cancel
-          </Button>
-          <Button
-            size="lg"
-            className="flex-3"
-            disabled={!isValid || isPending}
-            variant={isPending || !isValid ? "disabled" : "default"}
-            type="submit"
-          >
-            {isPending ? "Verifying..." : "Continue"}
-          </Button>
+            {skipPending ? "Skipping..." : "Skip for later"}
+          </h1>
         </div>
       </form>
     </>
