@@ -10,7 +10,7 @@ export const signup = async (email: string, password: string, referralCode: stri
       email,
       password,
       referralCode,
-      redirectUrl: `${baseUrl}verify-email`
+      redirectUrl: `${window.location.origin}/verify-email`
     })
     return {
       success: true,
@@ -22,7 +22,7 @@ export const signup = async (email: string, password: string, referralCode: stri
 export const resendEmailVerification = async (email: string) => {
     const response = await AxiosInstance.post("/auth/signup", {
       email,
-      redirectUrl: `${baseUrl}verify-email`
+      redirectUrl: `${window.location.origin}/verify-email`
     })
     return {
       success: true,
