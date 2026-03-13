@@ -16,7 +16,7 @@ const STEPS = [
 ];
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
 
   const TOTAL = 5;
   const progress = ((step + 1) / TOTAL) * 100;
