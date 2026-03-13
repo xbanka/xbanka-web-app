@@ -1,12 +1,17 @@
 import { redirect } from "next/dist/server/api-utils";
 import AxiosInstance from "../AxiosInstance/AxiosInstance"
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_REDIRECT_BASE_URL ??
+  window.location.origin + "/";
+
 export const signup = async (email: string, password: string, referralCode: string) => {
+    console.log(baseUrl)
     const response = await AxiosInstance.post("/auth/signup", {
       email,
       password,
       referralCode,
-      redirectUrl: process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "verify-email"
+      redirectUrl: `${baseUrl}verify-email`
     })
     return {
       success: true,
