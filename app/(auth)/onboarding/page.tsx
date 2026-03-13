@@ -1,10 +1,8 @@
-import OnboardingForm from "@/components/onboarding/OnboardingForm";
-import { Copy } from "lucide-react";
-import React from "react";
+import OnboardingForm from "@/components/auth/onboarding/OnboardingForm";
 
 const page = () => {
   return (
-    <div className="">
+    <div className="min-h-screen grid place-items-center">
       <OnboardingForm />
     </div>
   );

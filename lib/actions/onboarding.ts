@@ -4,11 +4,11 @@ import AxiosInstance from "../AxiosInstance/AxiosInstance";
 export const profile = async (
   userId: string,
   firstName: string,
-  lastName:   string,
+  lastName: string,
   dateOfBirth: string,
   phoneNumber: string,
   gender: string,
-  country: string
+  country: string,
 ) => {
   const response = await AxiosInstance.post("/users/profile", {
     userId,
@@ -18,6 +18,17 @@ export const profile = async (
     gender,
     country,
     phoneNumber,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const skipStep = async (userId: string) => {
+  const response = await AxiosInstance.post("/users/skip-step", {
+    userId,
   });
   return {
     success: true,

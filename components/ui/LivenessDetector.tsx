@@ -15,9 +15,13 @@ import {
   NormalizedLandmark,
 } from "@mediapipe/tasks-vision";
 import { Button } from "./button";
-import { useVerifySelfie } from "@/lib/services/onboarding.service";
-import { useUserStore } from "@/store/verify-id.store";
+import {
+  useSkipStep,
+  useVerifySelfie,
+} from "@/lib/services/onboarding.service";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { base64ToFile } from "@/lib/base64ToFile";
+import { useRouter } from "next/navigation";
 
 let _faceLandmarker: FaceLandmarker | null = null;
 
@@ -78,12 +82,18 @@ const LivenessDetector = forwardRef<
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const userId = useUserStore((s) => s.userId);
+  const router = useRouter();
+  const userId = useUserIdStore((s) => s.userId);
   const {
     mutate: verifySelfie,
     isPending,
     error: selfieError,
   } = useVerifySelfie();
+  const {
+    isPending: skipPending,
+    error: skipError,
+    mutate: skipMutate,
+  } = useSkipStep();
 
   const [cameraStarted, setCameraStarted] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -98,6 +108,15 @@ const LivenessDetector = forwardRef<
   const [error, setError] = useState<string | null>(null);
 
   const prevLandmarks = useRef<NormalizedLandmark[] | null>(null);
+
+  const handleSkip = () => {
+    skipMutate(userId, {
+      onSuccess: () => {
+        setError(null);
+        router.push("/sign-in");
+      },
+    });
+  };
 
   const startCamera = useCallback(async () => {
     try {
@@ -330,7 +349,11 @@ const LivenessDetector = forwardRef<
           /> */}
         </div>
       )}
-      {selfieError && <p className="bg-mainRed">{selfieError.message}</p>}
+      {(selfieError || skipError) && (
+        <p className="bg-mainRed">
+          {selfieError?.message || skipError?.message}
+        </p>
+      )}
 
       {captured && (
         <div>
@@ -341,27 +364,40 @@ const LivenessDetector = forwardRef<
           </Button>
         </div>
       )}
-      <div className="flex flex-col md:flex-row gap-4 mt-1">
-        <Button variant="outline" size="lg" className="flex-1">
-          Skip
-        </Button>
-        {!cameraStarted && !captured && (
-          <Button size="lg" className="flex-3" onClick={startCamera}>
-            Open Camera
+      <div className="space-y-3.25">
+        <div className="flex flex-col md:flex-row gap-4 mt-1">
+          <Button
+            onClick={() => setStep(2)}
+            variant="outline"
+            size="lg"
+            className="flex-1"
+          >
+            Back
           </Button>
-        )}
+          {!cameraStarted && !captured && (
+            <Button size="lg" className="flex-3" onClick={startCamera}>
+              Open Camera
+            </Button>
+          )}
 
-        {cameraStarted && !captured && (
-          <Button size="lg" className="flex-3" disabled>
-            Detecting face...
-          </Button>
-        )}
+          {cameraStarted && !captured && (
+            <Button size="lg" className="flex-3" disabled>
+              Detecting face...
+            </Button>
+          )}
 
-        {captured && (
-          <Button size="lg" className="flex-3" onClick={() => setStep(4)}>
-            {isPending ? "Verifying..." : "Next"}
-          </Button>
-        )}
+          {captured && (
+            <Button size="lg" className="flex-3" onClick={() => setStep(4)}>
+              {isPending ? "Verifying..." : "Next"}
+            </Button>
+          )}
+        </div>
+        <h1
+          onClick={handleSkip}
+          className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
+        >
+          {skipPending ? "Skipping..." : "Skip for later"}
+        </h1>
       </div>
     </div>
   );

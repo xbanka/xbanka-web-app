@@ -6,14 +6,14 @@ import React, { useEffect } from "react";
 import { Card } from "../ui/Card";
 import Image from "next/image";
 import { useVerifyMail } from "@/lib/services/auth.service";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 
 const VerifyPage = ({ token }: { token?: string }) => {
   const { data, mutate, isSuccess, isPending, error, isError } =
     useVerifyMail();
 
   const hasVerified = React.useRef(false);
-  const setUserId = useUserStore((s) => s.setUserId);
+  const setUserId = useUserIdStore((s) => s.setUserId);
 
   useEffect(() => {
     if (!token || hasVerified.current) return;
@@ -54,39 +54,37 @@ const VerifyPage = ({ token }: { token?: string }) => {
 
   if (isError) {
     return (
-      <Card className="w-full max-w-sm mx-auto">
-        <div className="text-center space-y-3">
-          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <Mail className="w-5 h-5 text-red-600" />
-          </div>
-          <h2 className="text-[20px] font-bold text-gray-900">
+      <Card className="w-full mx-auto">
+        <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
+          <Image src={"/mail.svg"} alt="mail" className="" fill />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-[36px] leading-11 font-bold text-card-text">
             Verification Failed
           </h2>
-          <p className="text-gray-600 text-[16px]">
+          <p className="text-text text-[16px]">
             {error.message || "Invalid or expired token."}
           </p>
-          <Link href="/affiliate/signup">
-            <Button size="sm" className="w-full">
-              Back to Signup
-            </Button>
-          </Link>
         </div>
+        <Link href="/affiliate/signup">
+          <Button size="sm" className="w-full">
+            Back to Signup
+          </Button>
+        </Link>
       </Card>
     );
   }
 
   if (isPending || (!isSuccess && !isError)) {
     return (
-      <Card className="w-full max-w-sm mx-auto">
-        <div className="text-center space-y-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-            <Mail className="w-5 h-5" />
-          </div>
-          <h2 className="text-[20px] font-bold text-gray-900">
-            Verifying your email...
-          </h2>
-          <p className="text-gray-600 text-[16px]">Please wait a moment.</p>
+      <Card className="w-full mx-auto">
+        <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
+          <Image src={"/mail.svg"} alt="mail" className="" fill />
         </div>
+        <h2 className="text-[20px] font-bold text-card-text">
+          Verifying your email...
+        </h2>
+        <p className="text-text text-[16px]">Please wait a moment.</p>
       </Card>
     );
   }

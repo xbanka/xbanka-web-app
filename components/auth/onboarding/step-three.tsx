@@ -1,16 +1,18 @@
 "use client";
 
 import { IdCard } from "lucide-react";
-import { SelectField } from "../ui/select";
-import { FormField } from "../ui/FormField";
-import { AttachmentFile, AttachmentUpload } from "../ui/UploadAttachment";
+import { SelectField } from "../../ui/select";
+import { FormField } from "../../ui/FormField";
+import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
-import { Button } from "../ui/button";
-import { useIdentity } from "@/lib/services/onboarding.service";
-import { useUserStore } from "@/store/verify-id.store";
+import { Button } from "../../ui/button";
+import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
+import { useUserIdStore } from "@/store/verify-id.store";
+import { ErrorField } from "@/components/ui/field-error";
+import { useRouter } from "next/navigation";
 
 interface Step3Props {
   setStep: (n: number) => void;
@@ -18,8 +20,14 @@ interface Step3Props {
 
 function Step3({ setStep }: Step3Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  const { mutate, isPending } = useIdentity();
-  const userId = useUserStore((s) => s.userId);
+  const { mutate, isPending, error } = useIdentity();
+  const userId = useUserIdStore((s) => s.userId);
+  const router = useRouter();
+  const {
+    isPending: skipPending,
+    error: skipError,
+    mutate: skipMutate,
+  } = useSkipStep();
 
   const {
     register,
@@ -32,7 +40,6 @@ function Step3({ setStep }: Step3Props) {
   });
 
   const onSubmit = (data: step3FormValues) => {
-    if (!userId) return;
     const formData = new FormData();
 
     formData.append("userId", userId);
@@ -51,6 +58,16 @@ function Step3({ setStep }: Step3Props) {
       },
     });
   };
+
+  const handleSkip = () => {
+    skipMutate(userId, {
+      onSuccess: () => {
+        reset();
+        router.push("/sign-in");
+      },
+    });
+  };
+
   return (
     <>
       <div className="text-center space-y-2">
@@ -86,23 +103,32 @@ function Step3({ setStep }: Step3Props) {
           id="idNumber"
         />
         <AttachmentUpload value={attachments} onChange={setAttachments} />
-        <div className="flex flex-col md:flex-row gap-4 mt-1">
-          <Button variant="outline" size="lg" className="flex-1">
-            Cancel
-          </Button>
-          <Button
-            size="lg"
-            className="flex-3"
-            disabled={!isValid || isPending || attachments.length === 0}
-            variant={
-              isPending || !isValid || attachments.length === 0
-                ? "disabled"
-                : "default"
-            }
-            type="submit"
+        <ErrorField message={error?.message || skipError?.message} />
+        <div className="space-y-3.25">
+          <div className="flex flex-col md:flex-row gap-4 mt-1">
+            <Button onClick={()=> setStep(1)} variant="outline" size="lg" className="flex-1">
+              Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-3"
+              disabled={!isValid || isPending || attachments.length === 0}
+              variant={
+                isPending || !isValid || attachments.length === 0
+                  ? "disabled"
+                  : "default"
+              }
+              type="submit"
+            >
+              {isPending ? "Verifying..." : "Continue"}
+            </Button>
+          </div>
+          <h1
+            onClick={handleSkip}
+            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
           >
-            {isPending ? "Verifying..." : "Continue"}
-          </Button>
+            {skipPending ? "Skipping..." : "Skip for later"}
+          </h1>
         </div>
       </form>
     </>

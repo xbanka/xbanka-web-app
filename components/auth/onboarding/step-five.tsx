@@ -1,15 +1,19 @@
 import { IdCard, MapPin } from "lucide-react";
-import { FormField } from "../ui/FormField";
-import { SelectField } from "../ui/select";
-import { AttachmentFile, AttachmentUpload } from "../ui/UploadAttachment";
+import { FormField } from "../../ui/FormField";
+import { SelectField } from "../../ui/select";
+import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useState } from "react";
-import { useUserStore } from "@/store/verify-id.store";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { useForm } from "react-hook-form";
 import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/button";
-import { useAddressProof } from "@/lib/services/onboarding.service";
+import { Button } from "../../ui/button";
+import {
+  useAddressProof,
+  useSkipStep,
+} from "@/lib/services/onboarding.service";
 import { useRouter } from "next/navigation";
+import { ErrorField } from "@/components/ui/field-error";
 
 interface Step5Props {
   setStep: (n: number) => void;
@@ -19,10 +23,16 @@ interface Step5Props {
 function Step5({ setStep }: Step5Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
-  const userId = useUserStore((s) => s.userId);
-  const { mutate, isPending, data, isSuccess } = useAddressProof();
+  const userId = useUserIdStore((s) => s.userId);
+  const clearUserId = useUserIdStore((s) => s.clearUserId);
+  const { mutate, isPending, data, isSuccess, error } = useAddressProof();
   const router = useRouter();
-  console.log(userId)
+
+  const {
+    isPending: skipPending,
+    error: skipError,
+    mutate: skipMutate,
+  } = useSkipStep();
 
   const {
     register,
@@ -35,8 +45,6 @@ function Step5({ setStep }: Step5Props) {
   });
 
   const onSubmit = (data: step5FormValues) => {
-    if (!userId) return;
-
     const formData = new FormData();
 
     formData.append("userId", userId);
@@ -53,8 +61,19 @@ function Step5({ setStep }: Step5Props) {
     mutate(formData, {
       onSuccess: () => {
         reset();
-        setShowSuccess(true)
+        setShowSuccess(true);
         setAttachments([]);
+        clearUserId();
+        router.push("/sign-in");
+      },
+    });
+  };
+
+  const handleSkip = () => {
+    skipMutate(userId, {
+      onSuccess: () => {
+        reset();
+        router.push("/sign-in");
       },
     });
   };
@@ -62,34 +81,34 @@ function Step5({ setStep }: Step5Props) {
   if (showSuccess && isSuccess && data?.success) {
     return (
       <>
-          <div className="w-16 h-16 rounded-full bg-Green flex items-center justify-center">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-card-text">
-            You're all set! 🎉
-          </h2>
-          <p className="text-sm text-text leading-relaxed">
-            Your are done with your XBanka account onboarding.
-          </p>
-          <Button
-            onClick={() => {
-              setStep(0);
-              setShowSuccess(false);
-            }}
+        <div className="w-16 h-16 mx-auto rounded-full bg-Green flex items-center justify-center">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            Back to Start
-          </Button>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-card-text">
+          You're all set! 🎉
+        </h2>
+        <p className="text-sm text-text leading-relaxed">
+          Your are done with your XBanka account onboarding.
+        </p>
+        <Button
+          onClick={() => {
+            setStep(0);
+            setShowSuccess(false);
+          }}
+        >
+          Back to Start
+        </Button>
       </>
     );
   }
@@ -155,23 +174,32 @@ function Step5({ setStep }: Step5Props) {
           register={register}
         />
         <AttachmentUpload value={attachments} onChange={setAttachments} />
-        <div className="flex flex-col md:flex-row gap-4 mt-1">
-          <Button variant="outline" size="lg" className="flex-1">
-            Cancel
-          </Button>
-          <Button
-            size="lg"
-            className="flex-3"
-            disabled={!isValid || isPending || attachments.length === 0}
-            variant={
-              isPending || !isValid || attachments.length === 0
-                ? "disabled"
-                : "default"
-            }
-            type="submit"
+        <ErrorField message={error?.message || skipError?.message} />
+        <div className="space-y-3.25">
+          <div className="flex flex-col md:flex-row gap-4 mt-1">
+            <Button onClick={()=> setStep(3)} variant="outline" size="lg" className="flex-1">
+              Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-3"
+              disabled={!isValid || isPending || attachments.length === 0}
+              variant={
+                isPending || !isValid || attachments.length === 0
+                  ? "disabled"
+                  : "default"
+              }
+              type="submit"
+            >
+              Submit
+            </Button>
+          </div>
+          <h1
+            onClick={handleSkip}
+            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
           >
-            Submit
-          </Button>
+            {skipPending ? "Skipping..." : "Skip for later"}
+          </h1>
         </div>
       </form>
     </>

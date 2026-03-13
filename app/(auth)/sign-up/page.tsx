@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="bg-background">
+    <div className="bg-background min-h-screen grid place-items-center">
       <SignUp />
     </div>
   );
