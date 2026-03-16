@@ -24,7 +24,7 @@ export function Sidebar({
 const sidebarContent = (
     <div className="flex flex-col h-full bg-card-background text-text select-none border-r border-border">
       {/* Logo + collapse */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
+      <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
           <span className="text-xl font-bold tracking-tight text-white">
             xbanka
@@ -32,12 +32,12 @@ const sidebarContent = (
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex items-center justify-center rounded-lg transition-colors text-card-text"
+          className="hidden md:flex items-center justify-center border border-input rounded-lg p-3 bg-border transition-colors text-card-text hover:bg-border/40"
         >
           {collapsed ? (
-            <ChevronRight className="w-6 h-6 border border-input rounded-lg p-3 bg-border text-card-text" />
+            <ChevronRight className="w-3 h-3"/>
           ) : (
-            <ChevronLeft className="w-6 h-6 border border-input rounded-lg p-3 bg-border text-card-text" />
+            <ChevronLeft className="w-3 h-3" />
           )}
         </button>
         {/* Mobile close */}
