@@ -6,6 +6,7 @@ const PUBLIC_ROUTES = [
   "/sign-up",
   "/onboarding",
   "/google",
+  "/auth/google/callback",
   "/google/callback",
   "/verify-mail",
 ];
