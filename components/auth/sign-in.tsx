@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "../ui/Card";
+import { Card } from "../ui/FormCard";
 import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";

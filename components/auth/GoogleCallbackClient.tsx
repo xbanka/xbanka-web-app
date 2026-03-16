@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUserStore } from "@/store/user.store";
+import Cookies from "js-cookie";
 
 export default function GoogleCallbackClient() {
   const router = useRouter();
@@ -11,15 +12,22 @@ export default function GoogleCallbackClient() {
 
   useEffect(() => {
     const token = params.get("token");
+    console.log("Received token:", token); // Debug log
 
-    if (token) {
-      localStorage.setItem("token", token);
-    //   router.push("https://app.xbankang.com");
-
-    window.location.href = process.env.NEXT_PUBLIC_DASHBOARD_URL!;
-    } else {
-      router.push("/sign-in");
+    if (!token) {
+      router.replace("/sign-in");
+      return;
     }
+
+    // store token securely
+    Cookies.set("access_token", token, {
+      expires: 7, // days
+      sameSite: "lax",
+      // secure: process.env.NODE_ENV === "production",
+      secure: true,
+    });
+
+    router.replace("/");
   }, [params, router]);
 
   return <p>Signing you in...</p>;

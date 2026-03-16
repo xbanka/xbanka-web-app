@@ -9,7 +9,7 @@ export default function DashboardPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+        <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">
           Welcome to Xbanka, Josh 👋
         </h1>
       </div>
