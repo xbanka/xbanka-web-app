@@ -43,6 +43,17 @@ export const login = async (email: string, password: string) => {
     };
 }
 
+export const verifyDevice = async (token: string) => {
+    const response = await AxiosInstance.post("/auth/verify-device", {
+      token
+    })
+    return {
+      success: true,
+      data: response.data,
+      status: response.status,
+    };
+}
+
 export const verifyEmail = async (token: string) => {
     const response = await AxiosInstance.post("/auth/verify-email", {
       token

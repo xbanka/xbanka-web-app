@@ -1,4 +1,4 @@
-function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     Completed: "bg-green-500/10 text-green-500",
     "In Progress": "bg-blue-500/10 text-blue-400",

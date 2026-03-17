@@ -26,7 +26,6 @@ export const useSignup = () => {
 };
 
 export const useLogin = () => {
-  //   const router = useRouter();
   const mutate = useMutation({
     mutationFn: (data: logInFormData) => login(data.email, data.password),
     onSuccess: (result) => {

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getDeviceId, getDeviceInfo } from "../device";
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -18,6 +19,12 @@ AxiosInstance.interceptors.request.use(
         message: "You are offline. Please check your internet connection.",
       });
     }
+    const deviceId = getDeviceId();
+    const { deviceName, deviceType } = getDeviceInfo();
+
+    config.headers["x-device-id"] = deviceId;
+    config.headers["x-device-name"] = deviceName;
+    config.headers["x-device-type"] = deviceType;
     return config;
   },
   (error) => Promise.reject(error),

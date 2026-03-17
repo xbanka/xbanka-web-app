@@ -1,5 +1,6 @@
 import { NAV } from "@/lib/nav";
 import { ChevronLeft, ChevronRight, LogOut, X } from "lucide-react";
+import Link from "next/link";
 
 export function Sidebar({
   activePage,
@@ -62,8 +63,9 @@ const sidebarContent = (
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const active = activePage === item.id;
+                const route = item.id === "dashboard" ? "" : item.id;
                 return (
-                  <li key={item.id}>
+                  <Link href={`/${route}`} key={item.id}>
                     <div
                       onClick={() => navigate(item.id)}
                       title={collapsed ? item.label : undefined}
@@ -89,7 +91,7 @@ const sidebarContent = (
                         </>
                       )}
                     </div>
-                  </li>
+                  </Link>
                 );
               })}
             </ul>

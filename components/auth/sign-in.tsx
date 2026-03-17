@@ -5,7 +5,12 @@ import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
-import { logInFormData, logInSchema, SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
+import {
+  logInFormData,
+  logInSchema,
+  SignupFormData,
+  signUpSchema,
+} from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -43,6 +48,7 @@ const SignIn = () => {
       onSuccess: () => {
         reset();
         router.push("/");
+        console.log("successful")
       },
     });
   };
