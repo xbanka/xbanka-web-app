@@ -40,10 +40,10 @@
   --color-placeholder: var(--placeholder);
   --color-mainRed: var(--mainRed);
   --color-text: var(--text);
-  --color-giftcard-blue: var(--giftcard-blue)
-  --color-giftcard-green: var(--giftcard-green)
-  --color-giftcard-yellow: var(--giftcard-yellow)
-  --color-giftcard-pink: var(--giftcard-pink)
+  --color-giftcard-blue: var(--giftcard-blue);
+  --color-giftcard-green: var(--giftcard-green);
+  --color-giftcard-yellow: var(--giftcard-yellow);
+  --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple)
 }
 

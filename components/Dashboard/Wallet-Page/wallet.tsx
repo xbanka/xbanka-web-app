@@ -13,7 +13,7 @@ export default function WalletPage() {
   const [tab, setTab] = useState<WalletTab>("total");
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto">
+    <div className="space-y-4 max-w-7xl mx-auto">
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
