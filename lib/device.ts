@@ -38,5 +38,6 @@ export function getDeviceInfo() {
   return {
     deviceName,
     deviceType,
+    userAgent
   };
 }

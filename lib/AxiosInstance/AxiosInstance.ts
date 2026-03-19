@@ -61,10 +61,10 @@ AxiosInstance.interceptors.response.use(
         }
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
-        if (typeof window !== "undefined") {
-          window.location.href = "/sign-in";
-        }
-        return Promise.reject(refreshError);
+        // if (typeof window !== "undefined") {
+        //   window.location.href = "/sign-in";
+        // }
+        // return Promise.reject(refreshError);
       }
     }
     // NETWORK / TIMEOUT HANDLING

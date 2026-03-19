@@ -9,6 +9,7 @@ const PUBLIC_ROUTES = [
   "/auth/google/callback",
   "/google/callback",
   "/verify-mail",
+  "/verify-device",
 ];
 
 export function middleware(request: NextRequest) {

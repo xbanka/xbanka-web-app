@@ -1,10 +1,13 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
+import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
 
 export const ValueBalance = () => {
   const [hidden, setHidden] = useState(false);
+  const { data, error, isPending } = UseGetAllWalletBalances()
+  console.log("wallet balane", data)
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
