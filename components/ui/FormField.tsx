@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utis";
+import { cn } from "@/lib/utils";
 import * as React from "react";
 import { Input } from "./input";
 import { Icon, LucideIcon } from "lucide-react";

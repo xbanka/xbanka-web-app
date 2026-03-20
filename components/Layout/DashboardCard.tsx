@@ -1,6 +1,5 @@
 import { cardProps } from "@/lib/types/card-types";
-import { cn } from "@/lib/utis";
-import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export const DashboardCard = ({ children, className }: cardProps) => {
   return (
