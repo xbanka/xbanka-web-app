@@ -1,4 +1,5 @@
 "use client"
+import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 
@@ -14,7 +15,7 @@ export function MarketHighlight() {
   const [tab, setTab] = useState<"trending" | "new">("trending");
   const [mode, setMode] = useState<"spot" | "futures">("spot");
   return (
-    <div className="bg-card-background border border-border rounded-2xl p-4">
+    <DashboardCard>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-card-text">Market Highlight</h3>
         <button className="text-xs text-Green hover:underline">See all</button>
@@ -52,6 +53,6 @@ export function MarketHighlight() {
           </div>
         ))}
       </div>
-    </div>
+    </DashboardCard>
   );
 }

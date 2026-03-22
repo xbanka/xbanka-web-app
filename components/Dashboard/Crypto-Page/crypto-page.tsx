@@ -5,6 +5,8 @@ import { SellTab } from "./sell-tab";
 import { RecentTransactions } from "./recent-transactions";
 import { BuyTab } from "./buy-tab";
 import { HowTo } from "./steps";
+import { DashboardCard } from "@/components/Layout/DashboardCard";
+import { Button } from "@/components/ui/button";
 
 type CryptoTab = "buy" | "sell" | "convert";
 
@@ -36,23 +38,24 @@ export function CryptoPage() {
       {tab === "buy" && (
         <div className="space-y-4">
           {/* Buy / Sell sub-tabs */}
-          <div className="flex w-64 bg-background border border-border rounded-xl p-1">
-            {(["buy", "sell"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setTradeMode(m)}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-colors
-                  ${tradeMode === m ? "bg-Green text-white" : "text-text hover:text-card-text"}`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-          <div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="lg:col-span-2 space-y-3 w-full border border-r-amber-500">
+          <div className="space-y-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <DashboardCard className="lg:col-span-2 space-y-3 w-full">
+                <div className="flex bg-card-background border border-border rounded-lg p-1 w-full">
+                  {(["buy", "sell"] as const).map((m) => (
+                    <Button
+                    variant={tradeMode === m ? "default" : "outline"}
+                      key={m}
+                      onClick={() => setTradeMode(m)}
+                      className={`flex-1 py-2 px-3 rounded-lg border-none text-sm font-semibold capitalize transition-colors
+                  ${tradeMode === m ? "bg-[#042F2E] text-white" : "text-text hover:text-card-text"}`}
+                    >
+                      {m}
+                    </Button>
+                  ))}
+                </div>
                 {tradeMode === "buy" ? <BuyTab /> : <SellTab />}
-              </div>
+              </DashboardCard>
               <RecentTransactions />
             </div>
             {tradeMode === "buy" ? (

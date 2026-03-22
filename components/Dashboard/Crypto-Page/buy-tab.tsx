@@ -5,6 +5,7 @@ import { RecentTransactions } from "./recent-transactions";
 import { HowTo } from "./steps";
 import { ConfirmModal } from "./confirm-modal";
 import { useState } from "react";
+import { DashboardCard } from "@/components/Layout/DashboardCard";
 
 export function BuyTab() {
   const [payAmount, setPayAmount] = useState("45,000.00");
@@ -13,8 +14,8 @@ export function BuyTab() {
  
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 space-y-3">
+      <div className=" gap-4">
+        <div className="space-y-3">
           <AmountRow
             label="You Pay"
             available="₦40,000"

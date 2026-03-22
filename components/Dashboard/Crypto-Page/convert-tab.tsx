@@ -3,13 +3,14 @@ import { ArrowUpDown } from "lucide-react";
 import { AmountRow } from "./amount-input";
 import { useState } from "react";
 import { MarketHighlight } from "./market-highlight";
+import { DashboardCard } from "@/components/Layout/DashboardCard";
 
 export function ConvertTab() {
   const [fromAmount, setFromAmount] = useState("823.50");
  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="lg:col-span-2 space-y-3">
+      <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="From"
           available="0.00034 BTC"
@@ -57,7 +58,7 @@ export function ConvertTab() {
           {" "}and{" "}
           <span className="text-Green cursor-pointer hover:underline">Privacy Policy</span>
         </p>
-      </div>
+      </DashboardCard>
       <MarketHighlight />
     </div>
   );
