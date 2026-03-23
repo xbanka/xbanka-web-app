@@ -36,7 +36,7 @@ export function QuickActions() {
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {actions.map((a) => (
-          <Link href={`/${a.page}`}>
+          <Link key={a.title} href={`/${a.page}`}>
             <div
               key={a.title}
               className={`relative cursor-pointer flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}

@@ -1,11 +1,14 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
+import { sumWallets } from "../sumBalances";
 
 export const getAllWalletBalances = async() => {
   const response = await AxiosInstance.get("/wallets");
+  const total = sumWallets(response.data);
 
   return {
     success: true,
     data: response.data,
+    totalBalance: total,
     status: response.status,
   };
 };

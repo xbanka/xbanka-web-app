@@ -27,7 +27,7 @@ export default function WalletPage() {
       {/* Tabs */}
       <DashboardCard className="space-y-3">
         <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5">
-          {(["total", "flat", "crypto"] as WalletTab[]).map((t) => (
+          {(["total", "fiat", "crypto"] as WalletTab[]).map((t) => (
             <Button
               size="sm"
               variant={tab === t ? "disabled" : "outline"}
@@ -43,13 +43,13 @@ export default function WalletPage() {
           ))}
         </div>
         {tab === "total" && <ValueBalance />}
-        {tab === "flat" && <FiatBalance />}
+        {tab === "fiat" && <FiatBalance />}
         {tab === "crypto" && <CryptoBalance />}
       </DashboardCard>
 
       {/* Tab content */}
       {tab === "total" && <TotalValueView />}
-      {tab === "flat" && <FlatView />}
+      {tab === "fiat" && <FlatView />}
       {tab === "crypto" && <CryptoView />}
     </div>
   );

@@ -44,7 +44,7 @@ export function CryptoPage() {
                 <div className="flex bg-card-background border border-border rounded-lg p-1 w-full">
                   {(["buy", "sell"] as const).map((m) => (
                     <Button
-                    variant={tradeMode === m ? "default" : "outline"}
+                      variant={tradeMode === m ? "default" : "outline"}
                       key={m}
                       onClick={() => setTradeMode(m)}
                       className={`flex-1 py-2 px-3 rounded-lg border-none text-sm font-semibold capitalize transition-colors

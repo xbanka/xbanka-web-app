@@ -1,1 +1,1 @@
-type WalletTab = "total" | "flat" | "crypto";
+type WalletTab = "total" | "fiat" | "crypto";
