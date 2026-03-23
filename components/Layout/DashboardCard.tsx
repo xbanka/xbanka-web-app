@@ -1,8 +1,15 @@
-import { cardProps } from "@/lib/types/card-types"
-import { ReactNode } from "react"
+import { cardProps } from "@/lib/types/card-types";
+import { cn } from "@/lib/utils";
 
-export const DashboardCard = ({children}: cardProps) => {
+export const DashboardCard = ({ children, className }: cardProps) => {
   return (
-    <div className="bg-card-background border border-border rounded-xl p-5 space-y-4">{children}</div>
-  )
-}
+    <div
+      className={cn(
+        "bg-card-background border border-border rounded-xl p-5 space-y-4",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+};

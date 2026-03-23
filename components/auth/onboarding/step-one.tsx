@@ -20,7 +20,6 @@ export interface StepOneProps {
 
 function Step1({setStep}: StepOneProps) {
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
-  const router = useRouter();
   const userId = useUserIdStore((s) => s.userId);
 
   const { isPending, error, mutate } = useUserProfile();
@@ -57,7 +56,7 @@ function Step1({setStep}: StepOneProps) {
     skipMutate(userId, {
       onSuccess: () => {
         reset();
-        router.push("/sign-in");
+        setStep(1)
       },
     });
   }

@@ -13,3 +13,10 @@ export interface LoginFormData {
 export interface VerifyEmailData {
     email: string;
 }
+
+export interface VerifyDeviceData {
+  userId: string,
+  deviceId: string,
+  code: string
+
+}

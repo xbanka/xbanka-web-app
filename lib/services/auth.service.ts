@@ -4,11 +4,14 @@ import {
   login,
   resendEmailVerification,
   signup,
+  verifyDevice,
   verifyEmail,
 } from "../actions/auth";
 import { handleApiError } from "../errors/error";
-import { SignupFormData } from "../types/auth-types";
+import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
 import { logInFormData } from "../schema/auth-schema";
+import { useRouter } from "next/navigation";
+import { authToken } from "../authToken";
 
 export const useSignup = () => {
   //   const router = useRouter();
@@ -26,11 +29,41 @@ export const useSignup = () => {
 };
 
 export const useLogin = () => {
-  //   const router = useRouter();
+  const router = useRouter();
   const mutate = useMutation({
     mutationFn: (data: logInFormData) => login(data.email, data.password),
+    onSuccess: (res) => {
+      const result = res.data;
+      const token = result.data.access_token;
+      authToken.set(token);
+
+      console.log("token", token);
+      console.log("successful", result);
+
+      if (result.data.status === "DEVICE_VERIFICATION_REQUIRED") {
+        // store temporarily
+        localStorage.setItem("verifyUserId", result.data.userId);
+        localStorage.setItem("verifyDeviceId", result.data.deviceId);
+
+        router.push("/verify-device");
+      } else {
+        router.push("/");
+      }
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+};
+
+export const useVerifyDevice = () => {
+  const router = useRouter();
+  const mutate = useMutation({
+    mutationFn: (data: VerifyDeviceData) => verifyDevice(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      router.push("/");
     },
     onError: (err) => {
       handleApiError(err);

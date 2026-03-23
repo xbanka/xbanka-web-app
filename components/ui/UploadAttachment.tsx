@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Upload, Trash2, FileText, Image as ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utis";
+import { cn } from "@/lib/utils";
 
 export interface AttachmentFile {
   file: File;
