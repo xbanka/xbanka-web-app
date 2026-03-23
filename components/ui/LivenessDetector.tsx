@@ -113,7 +113,7 @@ const LivenessDetector = forwardRef<
     skipMutate(userId, {
       onSuccess: () => {
         setError(null);
-        router.push("/sign-in");
+        setStep(4);
       },
     });
   };

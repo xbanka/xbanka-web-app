@@ -1,5 +1,6 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ArrowUpRight, BlocksIcon, LucideGift, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 export function QuickActions() {
   const actions = [
@@ -8,7 +9,7 @@ export function QuickActions() {
       sub: "BTC, ETH, USDT, USDC",
       gradient: "bg-[#042F2E]",
       iconColor: "bg-[#0F766E]",
-      page: "crypto" as PageId,
+      page: "crypto",
       icon: BlocksIcon,
     },
     {
@@ -16,7 +17,7 @@ export function QuickActions() {
       sub: "Amazon, Visa, Starbucks + more",
       gradient: "bg-[#36002E]",
       iconColor: "bg-[#9A0283]",
-      page: "giftcards" as PageId,
+      page: "gift-cards",
       icon: LucideGift,
     },
     {
@@ -24,7 +25,7 @@ export function QuickActions() {
       sub: "Airtime, Data, Electricity + more",
       gradient: "bg-[#051D33]",
       iconColor: "bg-[#004C99]",
-      page: "bills" as PageId,
+      page: "bills",
       icon: BlocksIcon,
     },
   ];
@@ -35,19 +36,21 @@ export function QuickActions() {
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {actions.map((a) => (
-          <button
-            key={a.title}
-            className={`relative flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}
-          >
-            <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 opacity-60" />
-            <div className={`${a.iconColor} p-2.5 rounded-lg`}>
-              <a.icon className="w-4 h-4" />
+          <Link href={`/${a.page}`}>
+            <div
+              key={a.title}
+              className={`relative cursor-pointer flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}
+            >
+              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 opacity-60" />
+              <div className={`${a.iconColor} p-2.5 rounded-lg`}>
+                <a.icon className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="font-medium text-sm text-card-text leading-5">{a.title}</p>
+                <p className="font-medium text-[12px] text-text leading-5">{a.sub}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm text-card-text leading-5">{a.title}</p>
-              <p className="font-medium text-[12px] text-text leading-5">{a.sub}</p>
-            </div>
-          </button>
+          </Link>
         ))}
       </div>
     </DashboardCard>

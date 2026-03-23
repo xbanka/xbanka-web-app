@@ -1,3 +1,5 @@
+"use client";
+import { UseGetDashboardData, UseGetDashboardPayoutTrend } from "@/lib/services/dashboard.service";
 import { AssetValueCard } from "./asset-vaue-card";
 import { MarketOverview } from "./market-overview";
 import { OnboardingJourney } from "./onboarding-journey";
@@ -5,6 +7,9 @@ import { QuickActions } from "./quick-actions";
 import { TopGiftCards } from "./top-gift-card";
 
 export default function DashboardPage() {
+  const {data } = UseGetDashboardData()
+  const {data: payOut } = UseGetDashboardPayoutTrend()
+  console.log("data and payout", data, payOut)
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}
