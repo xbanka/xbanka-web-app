@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Download, Eye, EyeOff, RefreshCcw, Send } from "lucide-react";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
+import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
+import { sumCryptoFiatEquivalent } from "@/lib/sumBalances";
 
 export const CryptoBalance = () => {
   const [hidden, setHidden] = useState(false);
+  const { data, error, isPending } = UseGetCryptoWallet()
   return (
     <div>
       <DashboardCard className="border-[#0F766E] bg-[#042F2E]">
@@ -25,7 +28,7 @@ export const CryptoBalance = () => {
             </div>
             <div className="flex items-baseline gap-2">
               <p className="text-3xl sm:text-4xl font-bold">
-                {hidden ? "₦•••••••" : "₦2,000,000.45"}
+                {hidden ? "₦•••••••" : data?.data ? `₦${sumCryptoFiatEquivalent(data?.data?.data).toLocaleString()}` : "₦0.00" }
               </p>
               <span className="text-white/60 text-xs">≈ $1,103 USDT</span>
             </div>
