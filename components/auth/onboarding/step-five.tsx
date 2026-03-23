@@ -104,7 +104,7 @@ function Step5({ setStep }: Step5Props) {
           onClick={() => {
             setStep(0);
             setShowSuccess(false);
-            router.push("/");
+            router.push("/sign-in");
           }}
         >
           Back to Start

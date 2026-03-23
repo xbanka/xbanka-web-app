@@ -18,7 +18,6 @@ interface Step2Props {
 }
 
 function Step2({ step, setStep }: Step2Props) {
-  const router = useRouter();
   const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
   const {
     isPending: skipPending,
@@ -52,7 +51,7 @@ function Step2({ step, setStep }: Step2Props) {
     skipMutate(userId, {
       onSuccess: () => {
         reset();
-        router.push("/sign-in");
+        setStep(2);
       },
     });
   };

@@ -1,5 +1,6 @@
 import { Bell, Menu } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import UserDropdown from "./dropDownMenu";
 
 export function Topbar({
   setMobileOpen,
@@ -21,17 +22,13 @@ export function Topbar({
           <Bell className="w-3 h-3" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-Green rounded-full" />
         </button>
-        <div className="flex items-center gap-2 cursor-pointer">
-          <div className="w-8 h-8 rounded-[43.75px] bg-Green flex items-center justify-center text-white text-sm font-semibold">
-            CJ
-          </div>
-          <div className="hidden sm:block text-right">
-            <p className="text-[14px] font-medium leading-5.5 text-card-text">
-              CoolJoe
-            </p>
-            <p className="text-[12px] font-normal text-text leading-5.5">UID: 22345678</p>
-          </div>
-        </div>
+        <UserDropdown
+          name="CoolJoe"
+          uid="22345678"
+          tier={2}
+          avatarInitials="CJ"
+          onLogout={() => console.log("logout")}
+        />
       </div>
     </header>
   );

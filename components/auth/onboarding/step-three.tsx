@@ -63,7 +63,7 @@ function Step3({ setStep }: Step3Props) {
     skipMutate(userId, {
       onSuccess: () => {
         reset();
-        router.push("/sign-in");
+        setStep(3);
       },
     });
   };

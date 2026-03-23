@@ -1,5 +1,5 @@
 import { cardProps } from "@/lib/types/card-types";
-import { cn } from "@/lib/utis";
+import { cn } from "@/lib/utils";
 
 export const Card = ({ className, children }: cardProps) => {
   return (

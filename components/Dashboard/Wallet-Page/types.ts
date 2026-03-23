@@ -1,0 +1,1 @@
+type WalletTab = "total" | "flat" | "crypto";

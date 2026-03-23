@@ -1,5 +1,6 @@
 import { redirect } from "next/dist/server/api-utils";
 import AxiosInstance from "../AxiosInstance/AxiosInstance"
+import { VerifyDeviceData } from "../types/auth-types";
 
 const baseUrl =
   process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "/";
@@ -35,6 +36,19 @@ export const login = async (email: string, password: string) => {
     const response = await AxiosInstance.post("/auth/login", {
       email,
       password,
+    })
+    return {
+      success: true,
+      data: response.data,
+      status: response.status,
+    };
+}
+
+export const verifyDevice = async (data: VerifyDeviceData) => {
+    const response = await AxiosInstance.post("/auth/verify-device", {
+      userId: data.userId,
+      deviceId: data.deviceId,
+      code: data.code
     })
     return {
       success: true,

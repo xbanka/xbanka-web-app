@@ -5,7 +5,10 @@ import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
-import { logInFormData, logInSchema, SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
+import {
+  logInFormData,
+  logInSchema
+} from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -13,11 +16,9 @@ import PasswordField from "../ui/password-field";
 import Image from "next/image";
 import { useLogin } from "@/lib/services/auth.service";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
-import { useRouter } from "next/navigation";
 import { ThemeToggle } from "../ui/ThemeToggle";
 
 const SignIn = () => {
-  const router = useRouter();
   const { loginWithGoogle } = useGoogleAuth();
   const methods = useForm<logInFormData>({
     resolver: zodResolver(logInSchema),
@@ -42,7 +43,6 @@ const SignIn = () => {
     mutate(data, {
       onSuccess: () => {
         reset();
-        router.push("/");
       },
     });
   };
