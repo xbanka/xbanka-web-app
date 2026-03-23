@@ -1,12 +1,12 @@
 import axios from "axios";
 import { getDeviceId, getDeviceInfo } from "../device";
+import { authToken } from "../authToken";
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
   timeout: 10000,
 });
 
@@ -19,6 +19,12 @@ AxiosInstance.interceptors.request.use(
         message: "You are offline. Please check your internet connection.",
       });
     }
+    const token = authToken.get();
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     const deviceId = getDeviceId();
     const { deviceName, deviceType } = getDeviceInfo();
 
@@ -35,38 +41,38 @@ AxiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/login") &&
-      !originalRequest.url.includes("/auth/signup") &&
-      !originalRequest.url.includes("/auth/verify-email")
-    ) {
-      originalRequest._retry = true;
+    // if (
+    //   error.response?.status === 401 &&
+    //   !originalRequest._retry &&
+    //   !originalRequest.url.includes("/auth/login") &&
+    //   !originalRequest.url.includes("/auth/signup") &&
+    //   !originalRequest.url.includes("/auth/verify-email")
+    // ) {
+    //   originalRequest._retry = true;
 
-      try {
-        const refreshResponse = await AxiosInstance.post(
-          "/api/auth/erp/refresh",
-          {},
-          { withCredentials: true },
-        );
+    //   try {
+    //     const refreshResponse = await AxiosInstance.post(
+    //       "/api/auth/erp/refresh",
+    //       {},
+    //       { withCredentials: true },
+    //     );
 
-        const newAccessToken = refreshResponse.data?.access_token;
-        if (newAccessToken) {
-          // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          originalRequest.headers = {
-            ...(originalRequest.headers || {}),
-            Authorization: `Bearer ${newAccessToken}`,
-          };
-        }
-        return AxiosInstance(originalRequest);
-      } catch (refreshError) {
-        if (typeof window !== "undefined") {
-          window.location.href = "/sign-in";
-        }
-        return Promise.reject(refreshError);
-      }
-    }
+    //     const newAccessToken = refreshResponse.data?.access_token;
+    //     if (newAccessToken) {
+    //       // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+    //       originalRequest.headers = {
+    //         ...(originalRequest.headers || {}),
+    //         Authorization: `Bearer ${newAccessToken}`,
+    //       };
+    //     }
+    //     return AxiosInstance(originalRequest);
+    //   } catch (refreshError) {
+    //     if (typeof window !== "undefined") {
+    //       window.location.href = "/sign-in";
+    //     }
+    //     return Promise.reject(refreshError);
+    //   }
+    // }
     // NETWORK / TIMEOUT HANDLING
     let apiMessage = "Something went wrong";
     let status = error.response?.status || 500;

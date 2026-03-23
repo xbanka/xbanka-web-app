@@ -11,6 +11,7 @@ import { handleApiError } from "../errors/error";
 import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
 import { logInFormData } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
+import { authToken } from "../authToken";
 
 export const useSignup = () => {
   //   const router = useRouter();
@@ -33,7 +34,10 @@ export const useLogin = () => {
     mutationFn: (data: logInFormData) => login(data.email, data.password),
     onSuccess: (res) => {
       const result = res.data;
+      const token = result.data.access_token;
+      authToken.set(token);
 
+      console.log("token", token);
       console.log("successful", result);
 
       if (result.data.status === "DEVICE_VERIFICATION_REQUIRED") {

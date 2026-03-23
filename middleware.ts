@@ -15,23 +15,23 @@ const PUBLIC_ROUTES = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
+  // const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+  //   pathname.startsWith(route)
+  // );
 
-  // Example cookie name
-  const token = request.cookies.get("access_token")?.value;
+  // // Example cookie name
+  // const token = request.cookies.get("access_token")?.value;
 
-  // Allow public routes
-  if (isPublicRoute) {
-    return NextResponse.next();
-  }
+  // // Allow public routes
+  // if (isPublicRoute) {
+  //   return NextResponse.next();
+  // }
 
-  // If no token, redirect to login
-  if (!token) {
-    const loginUrl = new URL("/sign-in", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  // // If no token, redirect to login
+  // if (!token) {
+  //   const loginUrl = new URL("/sign-in", request.url);
+  //   return NextResponse.redirect(loginUrl);
+  // }
 
   return NextResponse.next();
 }
