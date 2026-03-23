@@ -98,7 +98,8 @@ export function TransactionHistory({ isCrypto = false }: { isCrypto?: boolean })
                   <td className="py-2.5 text-card-text">{tx.type}</td>
                   <td className="py-2.5 font-medium text-card-text">{tx.amount}</td>
                   <td className="py-2.5 text-text font-mono">{tx.ref}</td>
-                  <td className="py-2.5 text-text">{tx.note}</td>
+                  {/* <td className="py-2.5 text-text">{tx.note}</td> */}
+                  <td className="py-2.5 text-text">{tx.ref}</td>
                   <td className="py-2.5"><StatusBadge status={tx.status} /></td>
                 </tr>
               ))}

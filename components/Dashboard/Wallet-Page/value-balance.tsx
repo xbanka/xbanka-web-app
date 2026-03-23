@@ -6,8 +6,8 @@ import React, { useState } from "react";
 
 export const ValueBalance = () => {
   const [hidden, setHidden] = useState(false);
-  const { data, error, isPending } = UseGetAllWalletBalances()
-  console.log("wallet balane", data)
+  const { data, error, isPending } = UseGetAllWalletBalances();
+  console.log("wallet balance", data);
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
@@ -27,21 +27,39 @@ export const ValueBalance = () => {
               </button>
             </div>
             <p className="text-3xl sm:text-4xl font-bold text-card-text">
-              {hidden ? "₦•••••••" : "₦12,345,234.45"}
+              {hidden
+                ? "₦•••••••"
+                : data?.data?.totalBalance
+                  ? `₦${data.data.totalBalance.toLocaleString()}`
+                  : "₦0"}
             </p>
-            <p className="text-[#A6F4C5] text-xs font-medium leading-5">+₦240,000 (0.85) today</p>
+            <p className="text-[#A6F4C5] text-xs font-medium leading-5">
+              +₦240,000 (0.85) today
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="border-l-3 border-[#004C99] bg-border px-4 py-3">
-              <p className="text-text font-medium leading-5 text-[12px]">Flat</p>
+              <p className="text-text font-medium leading-5 text-[12px]">
+                Fiat
+              </p>
               <p className="font-medium leading-5 text-sm text-card-text">
-                {hidden ? "₦•••" : "₦10,345,234.00"}
+                {hidden
+                  ? "₦•••"
+                  : data?.data?.data[0]?.balance
+                    ? data?.data?.data[0]?.balance
+                    : "₦0"}
               </p>
             </div>
             <div className="border-l-3 border-[#2DD4BF] bg-border px-4 py-3">
-              <p className="text-text font-medium leading-5 text-[12px]">Crypto</p>
+              <p className="text-text font-medium leading-5 text-[12px]">
+                Crypto
+              </p>
               <p className="font-medium leading-5 text-sm text-card-text">
-                {hidden ? "₦•••" : "₦2,000,000.45"}
+                {hidden
+                  ? "₦•••"
+                  : data?.data?.data[1]?.balance
+                    ? data?.data?.data[1]?.balance
+                    : "₦0"}
               </p>
             </div>
           </div>
