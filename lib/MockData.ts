@@ -1,4 +1,4 @@
-import { AppleIcon } from "lucide-react";
+import { AppleIcon, BarChart2, Bell, Clock, Repeat } from "lucide-react";
 
 export const MARKET = [
   { name: "Bitcoin", symbol: "BTC", price: "92,300", change: "3.21", up: true },
@@ -197,5 +197,118 @@ export const HOW_TO_STEPS = [
     n: 4,
     title: "Receive Crypto",
     desc: "Your crypto will be credited to your wallet instantly",
+  },
+];
+
+export type GiftTab = "overview" | "sell" | "history";
+ 
+// ─── Mock data ───────────────────────────────────────────────────────────────
+export const CARD_RATES = [
+  { name: "Apple", bg: "#6C47FF", rate: "₦100 per $1", change: "+1.8%", up: true },
+  { name: "Amazon", bg: "#FF9900", rate: "₦120 per $1", change: "+1.8%", up: true },
+  { name: "Google Play", bg: "#34A853", rate: "₦85 per $1", change: "+1.8%", up: true },
+  { name: "Netflix", bg: "#E50914", rate: "₦120 per $1", change: "+1.8%", up: true },
+  { name: "Spotify", bg: "#1DB954", rate: "₦120 per $1", change: "+1.8%", up: true },
+  { name: "Xbox", bg: "#107C10", rate: "₦120 per $1", change: "+1.8%", up: true },
+];
+ 
+export const GIFT_TRANSACTIONS = [
+  { date: "19 Nov, 2025", time: "2:45 PM", ref: "TD13245625VDR8", cardType: "Amazon", amount: "$100.00", payout: "₦85,000", region: "US", status: "Completed" },
+  { date: "19 Nov, 2025", time: "2:45 PM", ref: "TD13245625VDR8", cardType: "Amazon", amount: "$100.00", payout: "₦85,000", region: "UK", status: "In Progress" },
+  { date: "19 Nov, 2025", time: "2:45 PM", ref: "TD13245625VDR8", cardType: "Amazon", amount: "$100.00", payout: "₦85,000", region: "UK", status: "Pending" },
+  { date: "19 Nov, 2025", time: "2:45 PM", ref: "TD13245625VDR8", cardType: "Amazon", amount: "$100.00", payout: "₦85,000", region: "UK", status: "Completed" },
+];
+
+// ─── Mock data ───────────────────────────────────────────────────────────────
+export const CATEGORIES = [
+  {
+    id: "airtime",
+    name: "Airtime & Data",
+    desc: "Top up your mobile phone & others",
+    icon: "📱",
+    color: "bg-blue-500",
+  },
+  {
+    id: "electricity",
+    name: "Electricity",
+    desc: "Pay your power bills",
+    icon: "⚡",
+    color: "bg-green-500",
+  },
+  {
+    id: "internet",
+    name: "Internet",
+    desc: "Renew your broadband",
+    icon: "🌐",
+    color: "bg-yellow-500",
+  },
+  {
+    id: "cable",
+    name: "Cable TV",
+    desc: "Subscribe to your favorite channels",
+    icon: "📺",
+    color: "bg-red-500",
+  },
+  {
+    id: "betting",
+    name: "Betting",
+    desc: "Top up your betting account",
+    icon: "🎰",
+    color: "bg-purple-500",
+  },
+  {
+    id: "government",
+    name: "Government",
+    desc: "Taxes, licenses & permits",
+    icon: "🏛️",
+    color: "bg-pink-500",
+  },
+  {
+    id: "education",
+    name: "Education",
+    desc: "Pay for school fees & courses",
+    icon: "🎓",
+    color: "bg-teal-500",
+  },
+  {
+    id: "others",
+    name: "Others",
+    desc: "More services and billers",
+    icon: "⚙️",
+    color: "bg-Green",
+  },
+];
+ 
+export const RECENT_TRANSACTIONS = [
+  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+];
+ 
+export const QUICK_ACTIONS = [
+  {
+    label: "Repeat Last Payment",
+    sub: "MTN Airtime - ₦1,500",
+    icon: Repeat,
+    color: "bg-blue-500/10 text-blue-500",
+  },
+  {
+    label: "Schedule Payment",
+    sub: "Set up recurring bills",
+    icon: Clock,
+    color: "bg-green-500/10 text-green-500",
+  },
+  {
+    label: "Set Reminders",
+    sub: "Set reminders before due dates",
+    icon: Bell,
+    color: "bg-Green/10 text-Green",
+  },
+  {
+    label: "View Analytics",
+    sub: "View spending patterns",
+    icon: BarChart2,
+    color: "bg-pink-500/10 text-pink-500",
   },
 ];

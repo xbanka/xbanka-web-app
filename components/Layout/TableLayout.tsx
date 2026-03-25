@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -36,6 +35,7 @@ interface DataTableLayoutProps<T> {
   isError?: boolean;
   errorMessage?: string;
   className?: string;
+  pageTotal?: number;
 }
 
 export function DataTableLayout<T>({
@@ -51,11 +51,12 @@ export function DataTableLayout<T>({
   isError = false,
   errorMessage = "Failed to load data.",
   className,
+  pageTotal
 }: DataTableLayoutProps<T>) {
   const [localPage, setLocalPage] = useState(1);
   const page = currentPage ?? localPage;
   const totalItems = totalCount ?? data?.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = pageTotal ? pageTotal : Math.ceil(totalItems / itemsPerPage);
 
   const paginatedData = !onPageChange
     ? data.slice((page - 1) * itemsPerPage, page * itemsPerPage)
@@ -99,20 +100,20 @@ export function DataTableLayout<T>({
   return (
     <div
       className={cn(
-        "w-full max-w-full border border-border rounded-lg",
+        "w-full max-w-full bg-border border border-border p-3 rounded-lg",
         className
       )}
     >
-      <div className="hidden md:block w-full rounded-lg">
+      <div className="hidden md:flex w-full rounded-lg">
         <div className="relative w-full overflow-x-auto rounded-lg">
-          <div className=" min-w-full">
+          <div className="min-w-full">
             <Table className={cn("w-full table-fixed", isLoading || isError ? "pointer-events-none" : "")}>
               <TableHeader>
-                <TableRow className="bg-[#FAFAFA]">
+                <TableRow className="">
                   {columns.map((col) => (
                     <TableHead
                       key={col.key as string}
-                      className={`truncate font-medium py-2 px-5 text-[12px] leading-4 text-[#606368] ${
+                      className={`truncate font-medium py-1.5 px-4 text-[12px] border-b border-[#374151] leading-5 text-text ${
                         col.className ?? ""
                       }`}
                     >
@@ -140,7 +141,7 @@ export function DataTableLayout<T>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="text-center py-6 text-red-500"
+                      className="text-center py-6 text-mainRed"
                     >
                       {errorMessage}
                     </TableCell>
@@ -148,7 +149,7 @@ export function DataTableLayout<T>({
                 )}
 
                 {!isLoading && !isError && paginatedData?.length === 0 && (
-                  <TableRow>
+                  <TableRow className="border-none">
                     <TableCell
                       colSpan={columns.length}
                       className="text-center text-[#111827] text-[14px] font-medium leading-4.5 py-6"
@@ -168,7 +169,7 @@ export function DataTableLayout<T>({
                       {columns.map((col) => (
                         <TableCell
                           className={cn(
-                            "py-4.75 px-5 text-left whitespace-nowrap overflow-hidden text-ellipsis",
+                            "py-0.5 border-b border-[#374151] px-4 text-left whitespace-nowrap overflow-hidden text-ellipsis",
                             col.className
                           )}
                           key={col.key as string}
