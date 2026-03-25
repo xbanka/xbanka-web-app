@@ -14,7 +14,6 @@ export default function AccountPage() {
  
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
-      <h1 className="text-xl sm:text-2xl font-bold text-card-text">Account</h1>
  
       {/* Sub-nav tabs */}
       <div className="flex gap-1 border-b border-border overflow-x-auto">

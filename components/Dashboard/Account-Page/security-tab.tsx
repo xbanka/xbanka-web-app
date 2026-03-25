@@ -1,12 +1,14 @@
+import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { List, Lock, Mail, Phone, ShieldCheck, Smartphone } from "lucide-react";
+import { SecurityOverviewCard } from "./security-overview-card";
 
 export function SecurityTab() {
   const securityItems = [
     { icon: Lock,         label: "Password",             status: "Set",         statusColor: "text-green-500", note: "" },
     { icon: Mail,         label: "Email",                status: "Active",      statusColor: "text-green-500", note: "" },
-    { icon: Phone,        label: "Phone",                status: "Active",      statusColor: "text-green-500", note: "" },
-    { icon: Smartphone,   label: "Google Authenticator", status: "Not enabled", statusColor: "text-yellow-500", note: "" },
-    { icon: List,         label: "Whitelist",            status: "Not Configured", statusColor: "text-text", note: "" },
+    { icon: Smartphone,        label: "Phone",                status: "Active",      statusColor: "text-green-500", note: "" },
+    { icon: Phone,   label: "Google Authenticator", status: "Not enabled", statusColor: "text-yellow-500", note: "" },
+    { icon: Lock,         label: "Whitelist",            status: "Not Configured", statusColor: "text-text", note: "" },
   ];
  
   const authItems = [
@@ -30,27 +32,26 @@ export function SecurityTab() {
   return (
     <div className="space-y-5">
       {/* Security health */}
-      <div className="bg-card-background border border-border rounded-2xl p-5 space-y-4">
-        <div>
-          <h3 className="text-sm font-semibold text-card-text">Security Overview</h3>
-          <p className="text-xs text-text mt-0.5">Your account security health is at 80%. Good</p>
+      <DashboardCard className="space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-[16px] font-medium leading-6 text-card-text">Security Overview</h3>
+          <p className="text-[14px] font-medium leading-5.5 text-text">Your account security health is at 80%. Good</p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3">
           {securityItems.map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={i} className="flex flex-col items-center gap-2 bg-background border border-border rounded-xl px-4 py-3 min-w-[100px]">
-                <Icon className="w-5 h-5 text-text" />
-                <p className="text-xs font-medium text-card-text">{item.label}</p>
-                <span className={`text-[10px] font-semibold ${item.statusColor}`}>{item.status}</span>
-                {item.label === "Google Authenticator" && (
-                  <div className="w-2 h-2 rounded-full bg-yellow-400" />
-                )}
-              </div>
+              <SecurityOverviewCard
+              icon={Icon}
+              label={item.label}
+              statusColor={item.statusColor}
+              status={status}
+              key={i}
+              />
             );
           })}
         </div>
-      </div>
+      </DashboardCard>
  
       {/* Authentication */}
       <div className="bg-card-background border border-border rounded-2xl p-5 space-y-3">

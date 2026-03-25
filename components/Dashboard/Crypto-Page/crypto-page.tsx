@@ -16,7 +16,7 @@ export function CryptoPage() {
   const tabs: { id: CryptoTab; label: string }[] = [
     { id: "buy", label: "Buy & Sell" },
     { id: "convert", label: "Convert" },
-    { id: "p2p", label: "P2P Trading" },
+    // { id: "p2p", label: "P2P Trading" },
   ];
   // Buy & Sell share a sub-tab
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
@@ -24,7 +24,7 @@ export function CryptoPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Main tabs */}
-      <div className="flex gap-1 border-b border-border">
+      <div className="flex gap-4">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -69,7 +69,7 @@ export function CryptoPage() {
         </div>
       )}
       {tab === "convert" && <ConvertTab />}
-      {tab === "p2p" && <P2PPage embedded />}
+      {/* {tab === "p2p" && <P2PPage embedded />} */}
     </div>
   );
 }
