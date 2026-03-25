@@ -312,3 +312,13 @@ export const QUICK_ACTIONS = [
     color: "bg-pink-500/10 text-pink-500",
   },
 ];
+
+export const P2P_LISTINGS = Array(7).fill(null).map((_, i) => ({
+  name: "John Doe",
+  stats: "1,500 successful trades • 99% Completion rate",
+  meta: `${5 + i} mins • Joined ${1 + i} years ago`,
+  price: "1,490",
+  amount: "8,200.45 USDT",
+  limit: "₦40,000 - ₦600,000",
+  method: "Bank Transfer",
+}));

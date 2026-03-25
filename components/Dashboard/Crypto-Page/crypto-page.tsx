@@ -7,14 +7,16 @@ import { BuyTab } from "./buy-tab";
 import { HowTo } from "./steps";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
+import { P2PPage } from "./p2p-tab";
 
-type CryptoTab = "buy" | "sell" | "convert";
+type CryptoTab = "buy" | "sell" | "convert" | "p2p";
 
 export function CryptoPage() {
   const [tab, setTab] = useState<CryptoTab>("buy");
   const tabs: { id: CryptoTab; label: string }[] = [
     { id: "buy", label: "Buy & Sell" },
     { id: "convert", label: "Convert" },
+    { id: "p2p", label: "P2P Trading" },
   ];
   // Buy & Sell share a sub-tab
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
@@ -67,6 +69,7 @@ export function CryptoPage() {
         </div>
       )}
       {tab === "convert" && <ConvertTab />}
+      {tab === "p2p" && <P2PPage embedded />}
     </div>
   );
 }

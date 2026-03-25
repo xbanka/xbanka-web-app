@@ -14,3 +14,5 @@ interface NavSection {
   title: string;
   items: NavItem[];
 }
+
+type AccountTab = "info" | "security" | "identity";
