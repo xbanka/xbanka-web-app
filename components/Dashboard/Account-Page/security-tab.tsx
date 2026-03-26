@@ -4,9 +4,9 @@ import { SecurityOverviewCard } from "./security-overview-card";
 
 export function SecurityTab() {
   const securityItems = [
-    { icon: Lock,         label: "Password",             status: "Set",         statusColor: "text-green-500", note: "" },
-    { icon: Mail,         label: "Email",                status: "Active",      statusColor: "text-green-500", note: "" },
-    { icon: Smartphone,        label: "Phone",                status: "Active",      statusColor: "text-green-500", note: "" },
+    { icon: Lock,         label: "Password",             status: "Set",         statusColor: "text-text", note: "" },
+    { icon: Mail,         label: "Email",                status: "Active",      statusColor: "text-text", note: "" },
+    { icon: Smartphone,        label: "Phone",                status: "Active",      statusColor: "text-text", note: "" },
     { icon: Phone,   label: "Google Authenticator", status: "Not enabled", statusColor: "text-yellow-500", note: "" },
     { icon: Lock,         label: "Whitelist",            status: "Not Configured", statusColor: "text-text", note: "" },
   ];
@@ -45,7 +45,7 @@ export function SecurityTab() {
               icon={Icon}
               label={item.label}
               statusColor={item.statusColor}
-              status={status}
+              status={item.status}
               key={i}
               />
             );
@@ -54,15 +54,15 @@ export function SecurityTab() {
       </DashboardCard>
  
       {/* Authentication */}
-      <div className="bg-card-background border border-border rounded-2xl p-5 space-y-3">
-        <h3 className="text-sm font-semibold text-card-text">Authentication</h3>
-        <div className="divide-y divide-border">
+      <DashboardCard className="space-y-3">
+        <h3 className="text-[16px] font-medium leading-6 text-card-text">Authentication</h3>
+        <div className="space-y-3">
           {authItems.map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={i} className="flex items-center justify-between py-3 gap-3">
+              <div key={i} className="flex items-center justify-between px-3 py-2 bg-border gap-3 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-Green/10 flex items-center justify-center">
+                  <div className="w-8 h-8 p-2 rounded-lg bg-[#042F2E] flex items-center justify-center">
                     <Icon className="w-4 h-4 text-Green" />
                   </div>
                   <div>
@@ -84,7 +84,7 @@ export function SecurityTab() {
             );
           })}
         </div>
-      </div>
+      </DashboardCard>
  
       {/* Trusted Devices */}
       <div className="bg-card-background border border-border rounded-2xl p-5 space-y-3">

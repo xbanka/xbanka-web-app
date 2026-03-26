@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { securityOverviewCardProps } from "./types";
 
 export const SecurityOverviewCard = ({
@@ -5,21 +6,26 @@ export const SecurityOverviewCard = ({
   statusColor,
   status,
   icon: Icon,
-  key
+  key,
 }: securityOverviewCardProps) => {
   return (
     <div
       key={key}
-      className="w-full bg-background border border-border rounded-xl px-4 py-3"
+      className="w-full bg-border border border-border rounded-xl p-5 space-y-3"
     >
-      <Icon className="w-5 h-5 text-text" />
-      <p className="text-xs font-medium text-card-text">{label}</p>
-      <span className={`text-[10px] font-semibold ${statusColor}`}>
-        {status}
-      </span>
-      {label === "Google Authenticator" && (
+      <div className="flex items-center justify-between">
+        <Icon className="w-4 h-4 text-text" />
+        <Image alt="seal-check" width={16} height={16} src="/SealCheck.svg" />
+      </div>
+      <div className="">
+        <p className="text-[14px] leading-5 font-medium text-card-text">{label}</p>
+        <span className={`text-[12px] font-normal leading-4 ${statusColor}`}>
+          {status}
+        </span>
+      </div>
+      {/* {label === "Google Authenticator" && (
         <div className="w-2 h-2 rounded-full bg-yellow-400" />
-      )}
+      )} */}
     </div>
   );
 };
