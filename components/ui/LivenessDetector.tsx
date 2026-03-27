@@ -350,7 +350,7 @@ const LivenessDetector = forwardRef<
         </div>
       )}
       {(selfieError || skipError) && (
-        <p className="bg-mainRed">
+        <p className="bg-error-text">
           {selfieError?.message || skipError?.message}
         </p>
       )}

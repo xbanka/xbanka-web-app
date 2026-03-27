@@ -9,6 +9,8 @@ interface SelectFieldProps {
   options: { label: string; value: string }[];
   error?: FieldError;
   register?: UseFormRegister<any>;
+  onChange?: any;
+  value?: string | null
 }
 
 export const SelectField = ({
@@ -18,6 +20,8 @@ export const SelectField = ({
   options,
   error,
   register,
+  onChange,
+  value
 }: SelectFieldProps) => (
   <div>
     <div className="relative flex items-center">
@@ -28,6 +32,8 @@ export const SelectField = ({
         className={`border-input flex h-10 items-center w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
         defaultValue=""
         {...(register && register(id))}
+        value={value ?? ""}
+        onChange={onChange}
       >
         <option className="text-[14px]" value="" disabled hidden>
           {placeholder}

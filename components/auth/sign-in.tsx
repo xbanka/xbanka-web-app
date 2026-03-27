@@ -92,7 +92,7 @@ const SignIn = () => {
           register={methods.register}
           error={methods.formState.errors?.password}
         />
-        <h1 className="text-mainRed">{error?.message}</h1>
+        <h1 className="text-error-text">{error?.message}</h1>
         <Button
           type="submit"
           size={"lg"}

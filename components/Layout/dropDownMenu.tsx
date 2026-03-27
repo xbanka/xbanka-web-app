@@ -170,7 +170,7 @@ export default function UserDropdown({
                 setOpen(false);
                 onLogout?.();
               }}
-              className="flex items-center gap-3 px-4 py-2.5 w-full text-sm text-mainRed hover:bg-mainRed/10 transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 w-full text-sm text-error-text hover:bg-error-text/10 transition-colors"
             >
               <LogOut className="w-4 h-4 shrink-0" />
               <span>Log out</span>

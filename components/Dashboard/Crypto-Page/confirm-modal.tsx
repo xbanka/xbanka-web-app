@@ -79,7 +79,7 @@ export function ConfirmModal({
           <button
             onClick={onConfirm}
             className={`flex-1 h-10 rounded-xl text-sm font-semibold text-white transition-colors
-              ${mode === "buy" ? "bg-Green hover:bg-Green/90" : "bg-mainRed hover:bg-mainRed/90"}`}
+              ${mode === "buy" ? "bg-Green hover:bg-Green/90" : "bg-error-text hover:bg-error-text/90"}`}
           >
             Confirm {mode === "buy" ? "Purchase" : "Sale"}
           </button>

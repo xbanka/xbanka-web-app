@@ -146,7 +146,7 @@ export function OtpInput({
               "caret-transparent select-none",
               // States
               error
-                ? "border-mainRed focus:border-mainRed focus:ring-[3px] focus:ring-mainRed/20"
+                ? "border-error-text focus:border-error-text focus:ring-[3px] focus:ring-error-text/20"
                 : isFilled(i)
                   ? "border-border-active bg-border-active/5"
                   : focused === i
@@ -159,7 +159,7 @@ export function OtpInput({
 
       {/* Hint / error */}
       {error ? (
-        <p className="flex items-center gap-1.5 text-xs text-mainRed self-start">
+        <p className="flex items-center gap-1.5 text-xs text-error-text self-start">
           <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <circle cx="10" cy="10" r="10" />
             <text x="50%" y="50%" textAnchor="middle" dy=".35em" fill="white" fontSize="11" fontWeight="bold">!</text>

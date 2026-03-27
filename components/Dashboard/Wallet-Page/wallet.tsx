@@ -8,12 +8,43 @@ import { ValueBalance } from "./value-balance";
 import { FiatBalance } from "./fiat-balance";
 import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
+import { ArrowUpRight, X } from "lucide-react";
+import { VerifyBvnModal } from "./verify-bvn-modal";
 
 export default function WalletPage() {
   const [tab, setTab] = useState<WalletTab>("total");
 
+   const [isVerified, setIsVerified] = useState(false);
+  const [showVerifyBanner, setShowVerifyBanner] = useState(true);
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+ 
+  // ── Add Funds modal
+  const [addFundsOpen, setAddFundsOpen] = useState(false);
+
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
+      {!isVerified && showVerifyBanner && (
+        <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-lg bg-[#042F2E] border-l-3 border-[#0F766E]">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-[#5EEAD4] leading-5">
+                Complete your verification to unlock your wallet
+              </p>
+              <p className="text-xs font-medium leading-5 text-[#5EEAD4] truncate">
+                Verify your BVN to add funds, send money, and do more
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <div
+              onClick={() => setVerifyModalOpen(true)}
+              className="text-xs cursor-pointer font-medium leading-5 text-[#5EEAD4] hover:text-[#5EEAD4]/60 transition-colors whitespace-nowrap flex items-center gap-2"
+            >
+              Verify Now<ArrowUpRight className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
@@ -51,6 +82,21 @@ export default function WalletPage() {
       {tab === "total" && <TotalValueView />}
       {tab === "fiat" && <FlatView />}
       {tab === "crypto" && <CryptoView />}
+
+      <VerifyBvnModal
+        open={verifyModalOpen}
+        onClose={() => setVerifyModalOpen(false)}
+        onVerified={() => {
+          setIsVerified(true);
+          setShowVerifyBanner(false);
+        }}
+      />
+ 
+      {/* <AddFundsModal
+        open={addFundsOpen}
+        onClose={() => setAddFundsOpen(false)}
+        onSuccess={() => setAddFundsOpen(false)}
+      /> */}
     </div>
   );
 }

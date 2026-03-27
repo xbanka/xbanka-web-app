@@ -163,7 +163,7 @@ const SignUp = () => {
             placeholder="Referral if any"
             register={methods.register}
           />
-          <h1 className="text-mainRed">{error?.message}</h1>
+          <h1 className="text-error-text">{error?.message}</h1>
           <Button
             type="submit"
             size={"lg"}

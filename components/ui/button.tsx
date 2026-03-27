@@ -22,7 +22,7 @@ const buttonVariants = cva(
         disabled: 'bg-border text-disabled-text cursor-not-allowed hover:bg-muted',   
       },
       size: {
-        default: 'h-10 p-2',
+        default: 'h-12 py-2 px-3',
         // default: 'h-9 px-4 py-2 has-[>svg]:px-3',
         sm: 'h-10 rounded-md gap-1.5 px-3 py-2',
         // sm: 'h-10 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',

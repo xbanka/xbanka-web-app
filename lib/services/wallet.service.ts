@@ -81,7 +81,7 @@ export const UseGetBankAcounts = () => {
 
 export const UseGetTransactionHistory = (page = 1, limit = 10) => {
   return useQuery({
-    queryKey: ["bank-accounts", page, limit],
+    queryKey: ["transaction-history", page, limit],
     queryFn: async () => {
       try {
         const response = await getTransactionHistory({ page, limit });

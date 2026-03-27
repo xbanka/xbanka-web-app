@@ -60,7 +60,7 @@ export const getTransactionHistory = async({
   page?: number;
   limit?: number;
 }) => {
-  const response = await AxiosInstance.get("/wallets/transactions", {
+  const response = await AxiosInstance.get("/wallet/transactions", {
     params: { page, limit },
   });
 
