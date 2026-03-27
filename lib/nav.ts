@@ -17,7 +17,7 @@ export const NAV: NavSection[] = [
       { id: "wallet", label: "Wallet", icon: Wallet },
       { id: "account", label: "Account", icon: User },
       { id: "gift-cards", label: "Gift Cards", icon: CreditCard },
-      { id: "bills", label: "Bill Payments", icon: Receipt },
+      { id: "bill-payment", label: "Bill Payments", icon: Receipt },
     ],
   },
   {

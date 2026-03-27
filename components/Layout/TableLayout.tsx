@@ -141,7 +141,7 @@ export function DataTableLayout<T>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="text-center py-6 text-mainRed"
+                      className="text-center py-6 text-error-text"
                     >
                       {errorMessage}
                     </TableCell>

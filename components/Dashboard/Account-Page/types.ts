@@ -7,3 +7,12 @@ export interface securityOverviewCardProps {
   icon: LucideIcon;
   key: string | number;
 }
+
+export interface littleCardProps {
+  key: number;
+  Icon: LucideIcon;
+  action: string;
+  label: string;
+  desc: string;
+  status?: string;
+}

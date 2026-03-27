@@ -1,3 +1,4 @@
+"use client"
 import { CATEGORIES, QUICK_ACTIONS, RECENT_TRANSACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
 import { ArrowUpRight, ChevronRight, Search } from "lucide-react";

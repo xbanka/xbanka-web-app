@@ -1,4 +1,4 @@
-type PageId = "dashboard" | "wallet" | "account" | "gift-cards" | "bills" |
+type PageId = "dashboard" | "wallet" | "account" | "gift-cards" | "bill-payment" |
   "crypto" | "p2p" | "market" | "transactions" | "analytics" |
   "settings" | "affiliate" | "referrals" | "help";
  
