@@ -1,10 +1,10 @@
-import GiftCardsPage from '@/components/Dashboard/Gift-Card-Page/gift-card-page'
+import AccountPage from '@/components/Dashboard/Account-Page/account-page'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <GiftCardsPage />
+        <AccountPage />
     </div>
   )
 }

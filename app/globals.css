@@ -15,7 +15,8 @@
   --input-background: #F9F9F9;
   --placeholder: #4b5563;
   --text: #4b5563;
-  --mainRed: #c00f0c;
+  --error-text: #FF8882;
+  --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
@@ -38,8 +39,9 @@
   --color-card-background: var(--card-background);
   --color-card-text: var(--card-text);
   --color-placeholder: var(--placeholder);
-  --color-mainRed: var(--mainRed);
   --color-text: var(--text);
+  --color-error-text: var(--error-text);
+  --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
   --color-giftcard-green: var(--giftcard-green);
   --color-giftcard-yellow: var(--giftcard-yellow);
@@ -62,6 +64,8 @@
   --input-background: #202225;
   --placeholder: #9ca3af;
   --text: #a4aab4;
+  --error-text: #FF8882;
+  --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
