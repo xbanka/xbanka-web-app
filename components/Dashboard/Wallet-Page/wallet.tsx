@@ -24,7 +24,7 @@ export default function WalletPage() {
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
       {!isVerified && showVerifyBanner && (
-        <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-lg bg-[#042F2E] border-l-3 border-[#0F766E]">
+        <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-[20px] bg-[#042F2E] border-l-3 border-[#0F766E]">
           <div className="flex items-center gap-3 min-w-0">
             <div className="min-w-0">
               <p className="text-sm font-medium text-[#5EEAD4] leading-5">

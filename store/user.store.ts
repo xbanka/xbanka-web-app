@@ -1,21 +1,12 @@
+import { UserProfileTypes } from "@/lib/types/profile-types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type User = {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  gender: string;
-  country: string;
-};
-
 type UserStore = {
-  user: User | null;
+  user: UserProfileTypes | null;
 
-  setUser: (user: User) => void;
-  updateUser: (data: Partial<User>) => void;
+  setUser: (user: UserProfileTypes) => void;
+  updateUser: (data: Partial<UserProfileTypes>) => void;
   clearUser: () => void;
 };
 

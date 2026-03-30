@@ -1,6 +1,7 @@
 import { Bell, Menu } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import UserDropdown from "./dropDownMenu";
+import { useUserProfile } from "@/lib/services/onboarding.service";
 
 export function Topbar({
   setMobileOpen,

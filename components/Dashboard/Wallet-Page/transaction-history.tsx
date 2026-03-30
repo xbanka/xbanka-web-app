@@ -9,14 +9,17 @@ import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { StatusBadge } from "@/lib/statusBadge";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import { Search } from "lucide-react";
-import { useState } from "react";
-import { toLowerCase } from "zod";
+import { useMemo, useState } from "react";
+
+export interface TransactionHistoryProps {
+  isCrypto?: boolean;
+  tableType?: "FIAT" | "CRYPTO" | "GIFTCARD";
+}
 
 export function TransactionHistory({
   isCrypto = false,
-}: {
-  isCrypto?: boolean;
-}) {
+  tableType,
+}: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
   const [selectedType, setSelectedType] = useState("");
   const tabs = ["All", "Pending", "Completed", "In Progress", "Failed"];
@@ -31,23 +34,32 @@ export function TransactionHistory({
   const [page, setPage] = useState(1);
   console.log("transactionHistory", transactionHistory);
 
-  const filteredData =
-    transactionHistory?.data?.data?.items?.filter((item: TransactionTypes) => {
-      const matchesSearch =
-        item?.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item?.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item?.reference?.toLowerCase().includes(searchQuery.toLowerCase());
+  const transactions = transactionHistory?.data?.data?.items || [];
+  const fiatTransactions = transactions.filter((tx: TransactionTypes) =>
+    tableType ? tx.category === tableType : tx,
+  );
 
-      const matchesStatus =
-        filter.toLowerCase() === "all" ||
-        item.status?.toLowerCase() === filter.toLowerCase();
+  const filteredData = useMemo(() => {
+    return (
+      fiatTransactions?.filter((item: TransactionTypes) => {
+        const searchStr = searchQuery.toLowerCase();
+        const matchesSearch =
+          item?.type?.toLowerCase().includes(searchStr) ||
+          item?.type?.toLowerCase().includes(searchStr) ||
+          item?.reference?.toLowerCase().includes(searchStr);
 
-      const matchesTransactionType =
-        selectedType.toLowerCase() === "all" ||
-        item.type?.toLowerCase() === filter.toLowerCase();
+        const matchesStatus =
+          filter.toLowerCase() === "all" ||
+          item.status?.toLowerCase() === filter.toLowerCase();
 
-      return matchesSearch && matchesStatus && matchesTransactionType;
-    }) || [];
+        const matchesTransactionType =
+          selectedType.toLowerCase() === "all" ||
+          item.type?.toLowerCase() === filter.toLowerCase();
+
+        return matchesSearch && matchesStatus && matchesTransactionType;
+      }) || []
+    );
+  }, [fiatTransactions, filter, selectedType, searchQuery, tableType]);
 
   const columns = [
     {
@@ -84,6 +96,48 @@ export function TransactionHistory({
       header: "Note",
       render: (item: TransactionTypes) => (
         <span className="font-medium text-gray-700">{item.note}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (item: TransactionTypes) => <StatusBadge status={item.status} />,
+    },
+  ];
+
+  const cryptoColumns = [
+    {
+      key: "createdAt",
+      header: "Date & Time",
+      render: (item: TransactionTypes) => (
+        <span>{formatDate(item.createdAt)}</span>
+      ),
+    },
+    {
+      key: "type",
+      header: "Transaction Type",
+      render: (item: TransactionTypes) => <span>{item.type}</span>,
+    },
+    {
+      key: "currency",
+      header: "Asset",
+      render: (item: TransactionTypes) => <span>{item.currency}</span>,
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      render: (item: TransactionTypes) => (
+        <span className="font-medium">{item.amount}</span>
+      ),
+    },
+    {
+      key: "reference",
+      header: "Reference ID",
+      render: (item: TransactionTypes) => (
+        <span className="font-medium text-gray-700">{item.reference}</span>
+        // <span className="font-medium text-gray-700">
+        //   ₦{Number(item.amount).toLocaleString()}
+        // </span>
       ),
     },
     {
@@ -145,39 +199,19 @@ export function TransactionHistory({
 
       <div className="overflow-x-auto">
         {isCrypto ? (
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-text border-b border-border">
-                <th className="text-left pb-2 font-medium">Date & Time</th>
-                <th className="text-left pb-2 font-medium">Type</th>
-                <th className="text-left pb-2 font-medium">Asset</th>
-                <th className="text-left pb-2 font-medium">Amount</th>
-                <th className="text-left pb-2 font-medium">Note</th>
-                <th className="text-left pb-2 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {data.map((tx, i) => (
-                <tr key={i} className="hover:bg-border/20 transition-colors">
-                  <td className="py-2.5">
-                    <p className="text-card-text font-medium">{tx.date}</p>
-                    <p className="text-text">{tx.time}</p>
-                  </td>
-                  <td className="py-2.5 text-card-text">{tx.type}</td>
-                  <td className="py-2.5 text-card-text">{(tx as any).asset}</td>
-                  <td
-                    className={`py-2.5 font-medium ${(tx as any).amount?.startsWith("+") ? "text-green-500" : "text-red-500"}`}
-                  >
-                    {(tx as any).amount}
-                  </td>
-                  <td className="py-2.5 text-text font-mono">{tx.ref}</td>
-                  <td className="py-2.5">
-                    <StatusBadge status={tx.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <DataTableLayout
+            data={filteredData}
+            columns={cryptoColumns}
+            isError={isError}
+            isLoading={isPending}
+            errorMessage={error?.message}
+            rowKey={(item) => item.id}
+            itemsPerPage={10}
+            pageTotal={transactionHistory?.data?.data?.meta.totalPages}
+            currentPage={page}
+            onPageChange={setPage}
+            emptyMessage="No transaction history available."
+          />
         ) : (
           <DataTableLayout
             data={filteredData}

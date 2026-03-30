@@ -2,13 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useUserStore } from "@/store/user.store";
 import Cookies from "js-cookie";
 
 export default function GoogleCallbackClient() {
   const router = useRouter();
   const params = useSearchParams();
-  const setUser = useUserStore((s) => s.setUser);
 
   useEffect(() => {
     const token = params.get("token");

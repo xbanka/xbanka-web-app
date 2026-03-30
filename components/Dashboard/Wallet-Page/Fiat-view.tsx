@@ -27,7 +27,7 @@ export function FlatView() {
           ))}
         </div>
       </div>
-      <TransactionHistory />
+      <TransactionHistory tableType="FIAT" />
     </div>
   );
 }
