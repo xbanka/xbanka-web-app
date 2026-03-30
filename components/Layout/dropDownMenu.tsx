@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { MENU_ITEMS } from "@/lib/nav";
 import { useUserStore } from "@/store/user.store";
+import { useUserProfile } from "@/lib/services/onboarding.service";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 interface UserDropdownProps {
   name?: string;
@@ -37,6 +39,9 @@ export default function UserDropdown({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const userData = useUserStore((state) => state.user)
+
+  const {data, isPending, error} = UseProfileUser();
+  console.log("user Profle data",data, userData)
 
   // Close on outside click
   useEffect(() => {
@@ -79,11 +84,11 @@ export default function UserDropdown({
         {/* Name + uid */}
         <div className="hidden sm:block text-left min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-xs font-semibold text-card-text leading-none truncate max-w-[80px]">
-              {userData?.firstName} {userData?.lastName}
+            <p className="text-xs font-semibold text-card-text leading-none truncate">
+              {userData?.firstName}
             </p>
           </div>
-          <p className="text-[10px] text-text mt-0.5">UID: {userData?.userId}</p>
+          <p className="text-[10px] text-text mt-0.5 max-w-28 truncate">UID: {userData?.userId}</p>
         </div>
 
         <ChevronDown

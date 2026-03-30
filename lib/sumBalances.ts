@@ -9,6 +9,11 @@ export const sumCryptoFiatEquivalent = (wallets: any[]) => {
     return total + (wallet.fiatEquivalent?.amount || 0.00);
   }, 0);
 };
+export const sumCryptoBalance = (wallets: any[]) => {
+  return wallets.reduce((total, wallet) => {
+    return total + (wallet.balance || 0.00);
+  }, 0);
+};
 
 export const getWalletValueInNGN = (wallet: any) => {
   if (wallet.type === "FIAT") return wallet.balance || 0.00;

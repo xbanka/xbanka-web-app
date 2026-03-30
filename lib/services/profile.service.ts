@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
 
-export const userProfile = () => {
+export const UseProfileUser = () => {
   const userData = useUserStore((state) => state.setUser);
   const mutate = useQuery({
     queryKey: ["user-profile"],
@@ -13,7 +13,7 @@ export const userProfile = () => {
       try {
         const response = await UserProfile();
         console.log("profile response", response);
-        userData(response);
+        userData(response.data);
         return response;
       } catch (err) {
         handleApiError(err);

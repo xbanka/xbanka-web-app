@@ -8,7 +8,6 @@ export function Topbar({
 }: {
   setMobileOpen: (v: boolean) => void;
 }) {
-  const {data, isPending, error} = useUserProfile();
   return (
     <header className="flex items-center justify-between px-4 sm:px-8 py-2 border-b border-border bg-card-background shrink-0">
       <button
