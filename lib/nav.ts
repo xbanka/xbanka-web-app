@@ -1,7 +1,10 @@
 import {
   LayoutDashboard, Wallet, User, CreditCard, Receipt,
   Bitcoin, ArrowLeftRight, TrendingUp, ClipboardList, BarChart2,
-  Settings, Users, Gift, HelpCircle
+  Settings, Users, Gift, HelpCircle,
+  ShieldCheck,
+  BadgeCheck,
+  Star
 } from "lucide-react";
 
 export const NAV: NavSection[] = [
@@ -44,4 +47,14 @@ export const NAV: NavSection[] = [
       { id: "help", label: "Help & Support", icon: HelpCircle },
     ],
   },
+];
+
+export const MENU_ITEMS = [
+  { icon: User, label: "My Profile", href: "#" },
+  { icon: ShieldCheck, label: "Security", href: "#" },
+  { icon: BadgeCheck, label: "Verification Status", href: "#" },
+  { icon: Gift, label: "Refer & Earn", href: "#" },
+  { icon: Star, label: "Rewards", href: "#" },
+  { icon: Settings, label: "Settings", href: "#" },
+  { icon: HelpCircle, label: "Help & Support", href: "#" },
 ];

@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Wifi,
 } from "lucide-react";
+import { MENU_ITEMS } from "@/lib/nav";
+import { useUserStore } from "@/store/user.store";
 
 interface UserDropdownProps {
   name?: string;
@@ -21,16 +23,6 @@ interface UserDropdownProps {
   onLogout?: () => void;
 }
 
-const MENU_ITEMS = [
-  { icon: User, label: "My Profile", href: "#" },
-  { icon: ShieldCheck, label: "Security", href: "#" },
-  { icon: BadgeCheck, label: "Verification Status", href: "#" },
-  { icon: Gift, label: "Refer & Earn", href: "#" },
-  { icon: Star, label: "Rewards", href: "#" },
-  { icon: Settings, label: "Settings", href: "#" },
-  { icon: HelpCircle, label: "Help & Support", href: "#" },
-];
-
 const TIER_COLORS: Record<number, string> = {
   1: "bg-gray-500/20 text-gray-400 border-gray-500/30",
   2: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
@@ -38,14 +30,13 @@ const TIER_COLORS: Record<number, string> = {
 };
 
 export default function UserDropdown({
-  name = "CoolJoe",
-  uid = "22345678",
   tier = 2,
   avatarInitials = "CJ",
   onLogout,
 }: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const userData = useUserStore((state) => state.user)
 
   // Close on outside click
   useEffect(() => {
@@ -89,15 +80,10 @@ export default function UserDropdown({
         <div className="hidden sm:block text-left min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-xs font-semibold text-card-text leading-none truncate max-w-[80px]">
-              {name}
+              {userData?.firstName} {userData?.lastName}
             </p>
-            <span
-              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${TIER_COLORS[tier] ?? TIER_COLORS[1]}`}
-            >
-              Tier {tier}
-            </span>
           </div>
-          <p className="text-[10px] text-text mt-0.5">UID: {uid}</p>
+          <p className="text-[10px] text-text mt-0.5">UID: {userData?.userId}</p>
         </div>
 
         <ChevronDown
@@ -130,14 +116,14 @@ export default function UserDropdown({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-card-text">{name}</p>
+                  <p className="text-sm font-semibold text-card-text">{userData?.firstName} {userData?.lastName}</p>
                   <span
                     className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${TIER_COLORS[tier] ?? TIER_COLORS[1]}`}
                   >
                     Tier {tier}
                   </span>
                 </div>
-                <p className="text-xs text-text mt-0.5">UID: {uid}</p>
+                <p className="text-xs text-text mt-0.5">UID: {userData?.userId}</p>
               </div>
             </div>
 

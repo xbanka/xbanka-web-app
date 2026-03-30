@@ -1,24 +1,8 @@
 import axios from "axios";
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
 
-export const profile = async (
-  userId: string,
-  firstName: string,
-  lastName: string,
-  dateOfBirth: string,
-  phoneNumber: string,
-  gender: string,
-  country: string,
-) => {
-  const response = await AxiosInstance.post("/users/profile", {
-    userId,
-    lastName,
-    firstName,
-    dateOfBirth,
-    gender,
-    country,
-    phoneNumber,
-  });
+export const profile = async () => {
+  const response = await AxiosInstance.post("/users/profile");
   return {
     success: true,
     data: response.data,
