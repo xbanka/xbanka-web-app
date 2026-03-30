@@ -10,7 +10,6 @@ type TransactionStatus = "COMPLETED" | "PENDING" | "FAILED";
 
 export interface TransactionTypes{
   id: string;
-  userId: string;
   type: TransactionType;
   status: TransactionStatus;
   amount: number;
@@ -19,5 +18,5 @@ export interface TransactionTypes{
   note: string;
   metadata: string | null;
   createdAt: string;
-  updatedAt: string;
+  category: "FIAT" | "CRYPTO" | "GIFTCARD"
 };
