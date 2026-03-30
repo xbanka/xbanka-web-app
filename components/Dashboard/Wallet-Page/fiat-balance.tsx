@@ -3,6 +3,7 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
+import { WalletTransactionTypes } from "@/lib/types/transaction-types";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 
@@ -34,11 +35,11 @@ export const FiatBalance = () => {
               {hidden
                 ? "₦•••••••"
                 : data?.data
-                  ? `₦${sumFiatBalances(data?.data?.data).toLocaleString()}`
+                  ? `₦${sumFiatBalances(wallets).toLocaleString()}`
                   : "₦0.00"}
             </p>
             <span className="text-text text-xs font-normal leading-4.5">
-              ≈ ₦{latestWallet?.balance ?? 0}
+              ≈ ₦{latestWallet?.balance ?? 0} today
             </span>
           </div>
           <div className="flex items-center gap-4">

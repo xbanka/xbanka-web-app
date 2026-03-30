@@ -6,7 +6,7 @@ export const sumFiatBalances = (wallets: any[]) => {
 
 export const sumCryptoFiatEquivalent = (wallets: any[]) => {
   return wallets.reduce((total, wallet) => {
-    return total + (wallet.fiatEquivalent?.amount || 0.00);
+    return total + (wallet?.fiatEquivalent?.amount || 0.00);
   }, 0);
 };
 export const sumCryptoBalance = (wallets: any[]) => {

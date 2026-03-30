@@ -84,11 +84,11 @@ export default function UserDropdown({
         {/* Name + uid */}
         <div className="hidden sm:block text-left min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-xs font-semibold text-card-text leading-none truncate">
+            <p className="text-[14px] font-medium text-card-text leading-5 truncate">
               {userData?.firstName}
             </p>
           </div>
-          <p className="text-[10px] text-text mt-0.5 max-w-28 truncate">UID: {userData?.userId}</p>
+          <p className="text-[12px] font-normal leading-5.5 text-text max-w-28 truncate">UID: {userData?.userId}</p>
         </div>
 
         <ChevronDown

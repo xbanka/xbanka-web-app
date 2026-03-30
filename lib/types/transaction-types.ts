@@ -5,10 +5,14 @@ export type TransactionMetadata = {
 
 type Currency = "NGN";
 
-type TransactionType = "DEPOSIT" | "TRANSFER_OUT" | "WITHDRAWAL" | "TRANSFER_IN" ;
+type TransactionType =
+  | "DEPOSIT"
+  | "TRANSFER_OUT"
+  | "WITHDRAWAL"
+  | "TRANSFER_IN";
 type TransactionStatus = "COMPLETED" | "PENDING" | "FAILED";
 
-export interface TransactionTypes{
+export interface TransactionTypes {
   id: string;
   type: TransactionType;
   status: TransactionStatus;
@@ -18,5 +22,18 @@ export interface TransactionTypes{
   note: string;
   metadata: string | null;
   createdAt: string;
-  category: "FIAT" | "CRYPTO" | "GIFTCARD"
-};
+  category: "FIAT" | "CRYPTO" | "GIFTCARD";
+}
+
+export interface WalletTransactionTypes {
+  id: string;
+  type: "FIAT" | "CRYPTO";
+  balance: number;
+  currency: string;
+  string: {
+    currency: string;
+    amount: number;
+    rate: number;
+  };
+  updatedAt: string;
+}

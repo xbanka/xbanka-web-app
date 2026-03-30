@@ -12,6 +12,7 @@ export const CryptoBalance = () => {
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const { data, error, isPending } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
+  
   const latestWallet = wallets[0];
   return (
     <div>

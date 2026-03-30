@@ -9,6 +9,7 @@ export const ValueBalance = () => {
   const { data, error, isPending } = UseGetAllWalletBalances();
   const wallets = data?.data?.data || [];
   const latestWallet = wallets[0];
+  
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
@@ -35,7 +36,7 @@ export const ValueBalance = () => {
                   : "₦0"}
             </p>
             <span className="text-text text-xs font-normal leading-4.5">
-              ≈ ₦{latestWallet?.balance ?? 0}
+              ≈ ₦{latestWallet?.fiatEquivalent?.amount ?? 0} today
             </span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">

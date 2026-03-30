@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UpdateProfileData, UserProfileTypes } from "../types/profile-types";
-import { updateProfile, UserProfile } from "../actions/profile";
+import { updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
@@ -12,8 +12,22 @@ export const UseProfileUser = () => {
     queryFn: async () => {
       try {
         const response = await UserProfile();
-        console.log("profile response", response);
         userData(response.data);
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+  return mutate;
+};
+
+export const UseVerificationStatus = () => {
+  const mutate = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      try {
+        const response = await VerificationStatus();
         return response;
       } catch (err) {
         handleApiError(err);
