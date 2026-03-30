@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface Column<T> {
   key: keyof T | string;
@@ -152,8 +153,9 @@ export function DataTableLayout<T>({
                   <TableRow className="border-none">
                     <TableCell
                       colSpan={columns.length}
-                      className="text-center text-[#111827] text-[14px] font-medium leading-4.5 py-6"
+                      className="text-center text-card-text text-[14px] font-medium leading-5 py-6"
                     >
+                      <Image className="mx-auto mb-1" alt="frame" width={96} height={122} src={"/Frame.svg"}/>
                       {emptyMessage}
                     </TableCell>
                   </TableRow>

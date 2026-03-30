@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
+import { useUserProfile } from "@/lib/services/onboarding.service";
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
  
   return (
     <div className="flex h-screen overflow-hidden bg-background">
