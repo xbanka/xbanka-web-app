@@ -10,7 +10,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { ErrorField } from "@/components/ui/field-error";
-import { useRouter } from "next/navigation";
 
 interface Step2Props {
   setStep: (n: number) => void;

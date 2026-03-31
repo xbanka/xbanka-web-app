@@ -18,3 +18,22 @@ export interface UpdateProfileData {
   country: string;
   profilePicture?: FileList; 
 };
+
+export interface OnboardingStep {
+  id: string;
+  label: string;
+  status: "completed" | "current" | "pending";
+  isCompleted: boolean;
+}
+
+/**
+ * The main user verification and onboarding state.
+ */
+export interface UserOnboardingState {
+  currentStep: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  kycStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | 'NONE'; // Added common variations
+  tierLevel: number;
+  progress: OnboardingStep[];
+}

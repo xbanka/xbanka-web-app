@@ -24,7 +24,7 @@ export const UseProfileUser = () => {
 
 export const UseVerificationStatus = () => {
   const mutate = useQuery({
-    queryKey: ["user-profile"],
+    queryKey: ["verification-status"],
     queryFn: async () => {
       try {
         const response = await VerificationStatus();

@@ -15,7 +15,11 @@ import {
 import { MENU_ITEMS } from "@/lib/nav";
 import { useUserStore } from "@/store/user.store";
 import { useUserProfile } from "@/lib/services/onboarding.service";
-import { UseProfileUser } from "@/lib/services/profile.service";
+import {
+  UseProfileUser,
+  UseVerificationStatus,
+} from "@/lib/services/profile.service";
+import { shortenUid } from "@/lib/shortenuid";
 
 interface UserDropdownProps {
   name?: string;
@@ -38,10 +42,15 @@ export default function UserDropdown({
 }: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const userData = useUserStore((state) => state.user)
+  const userData = useUserStore((state) => state.user);
 
-  const {data, isPending, error} = UseProfileUser();
-  console.log("user Profle data",data, userData)
+  const { data, isPending, error } = UseProfileUser();
+  const {
+    data: verificationData,
+    isPending: verificationPending,
+    error: verificationError,
+  } = UseVerificationStatus();
+  console.log("user Profle data", data, verificationData);
 
   // Close on outside click
   useEffect(() => {
@@ -74,11 +83,9 @@ export default function UserDropdown({
       >
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="w-8 h-8 rounded-full bg-Green flex items-center justify-center text-white text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-white text-xs font-bold">
             {avatarInitials}
           </div>
-          {/* Online dot */}
-          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-card-background" />
         </div>
 
         {/* Name + uid */}
@@ -88,7 +95,9 @@ export default function UserDropdown({
               {userData?.firstName}
             </p>
           </div>
-          <p className="text-[12px] font-normal leading-5.5 text-text max-w-28 truncate">UID: {userData?.userId}</p>
+          <p className="text-[12px] font-normal leading-5.5 text-text max-w-28 truncate">
+            UID: {shortenUid(userData?.userId)}
+          </p>
         </div>
 
         <ChevronDown
@@ -111,60 +120,57 @@ export default function UserDropdown({
       {open && (
         <div className="absolute right-0 top-full mt-2 w-64 z-50 rounded-2xl border border-border bg-card-background shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           {/* User header */}
-          <div className="px-4 py-4 border-b border-border">
-            <div className="flex items-center gap-3">
+          <div className="border-b border-border px-6 pt-6 pb-3">
+            <div className="bg-border py-2 px-2.75 rounded-xl flex items-center gap-3">
               <div className="relative shrink-0">
-                <div className="w-11 h-11 rounded-full bg-Green flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-10 h-10 rounded-full bg-Green flex items-center justify-center text-white text-sm font-bold">
                   {avatarInitials}
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-card-background" />
               </div>
               <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-card-text">
+                  {userData?.firstName} {userData?.lastName}
+                </p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-card-text">{userData?.firstName} {userData?.lastName}</p>
+                  <p className="text-xs text-text mt-0.5">
+                    UID: {shortenUid(userData?.userId)}
+                  </p>
                   <span
                     className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${TIER_COLORS[tier] ?? TIER_COLORS[1]}`}
                   >
-                    Tier {tier}
+                    Tier {verificationData?.data?.tierLevel}
                   </span>
                 </div>
-                <p className="text-xs text-text mt-0.5">UID: {userData?.userId}</p>
               </div>
-            </div>
-
-            {/* Online status row */}
-            <div className="flex items-center gap-1.5 mt-3">
-              <Wifi className="w-3 h-3 text-green-500" />
-              <span className="text-xs text-green-500 font-medium">Online</span>
             </div>
           </div>
 
           {/* Menu items */}
-          <nav className="py-1.5">
+          <nav className="mb-6">
             {MENU_ITEMS.map(({ icon: Icon, label, href }) => (
               <a
                 key={label}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-text hover:bg-border hover:text-card-text transition-colors"
+                className="flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm hover:text-text hover:bg-border text-card-text transition-colors"
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className="w-6 h-6 shrink-0" />
                 <span>{label}</span>
               </a>
             ))}
           </nav>
 
           {/* Divider + Logout */}
-          <div className="border-t border-border py-1.5">
+          <div className="border-t border-border p-6">
             <button
               onClick={() => {
                 setOpen(false);
                 onLogout?.();
               }}
-              className="flex items-center gap-3 px-4 py-2.5 w-full text-sm text-error-text hover:bg-error-text/10 transition-colors"
+              className="font-normal leading-6 py-3 px-6 border cursor-pointer rounded-xl border-disabled-background text-center gap-3 w-full text-sm text-error-text hover:bg-border transition-colors"
             >
-              <LogOut className="w-4 h-4 shrink-0" />
-              <span>Log out</span>
+              Log out
             </button>
           </div>
         </div>
