@@ -1,17 +1,69 @@
-"use client"
+"use client";
 import { RefreshCcw } from "lucide-react";
 import { AmountRow } from "./amount-input";
-import { RecentTransactions } from "./recent-transactions";
-import { HowTo } from "./steps";
 import { ConfirmModal } from "./confirm-modal";
-import { useState } from "react";
-import { DashboardCard } from "@/components/Layout/DashboardCard";
+import { useEffect, useState } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import {
+  useExecuteConversion,
+  useQuoteConversion,
+} from "@/lib/services/wallet.service";
+import { useForm } from "react-hook-form";
+import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
+import { amountSchema } from "@/lib/schema/amount-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+type FormValues = {
+  receiveAmount: string;
+  amount: string;
+  sourceCurrency: string;
+  targetCurrency: string;
+};
 
 export function BuyTab() {
-  const [payAmount, setPayAmount] = useState("45,000.00");
-  const [receiveAmount] = useState("30.60");
+  const [amount, setAmount] = useState("");
+  const [receiveAmount, setReceiveAmount] = useState("");
+  const [quoteData, setQuoteData] = useState("");
+  const [sourceCurrency, setSourceCurrency] = useState("NGN");
+  const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
- 
+  const [error, setError] = useState("");
+
+  const { data, mutate, isPending } = useQuoteConversion();
+
+  const debouncedAmount = useDebounce(amount, 500);
+
+  useEffect(() => {
+    if (!debouncedAmount) {
+      setError("Amount is required");
+      setReceiveAmount("");
+      return;
+    }
+
+    if (Number(debouncedAmount) <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
+
+    setError("");
+
+    mutate(
+      {
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(debouncedAmount),
+      },
+      {
+        onSuccess: (res) => {
+          const result = res?.data;
+
+          setReceiveAmount(result?.amount?.toString() || "");
+          setQuoteData(result);
+        },
+      },
+    );
+  }, [debouncedAmount, sourceCurrency, targetCurrency]);
+
   return (
     <>
       <div className=" gap-4">
@@ -19,17 +71,18 @@ export function BuyTab() {
           <AmountRow
             label="You Pay"
             available="₦40,000"
-            value={payAmount}
-            onChange={setPayAmount}
-            currency="NGN"
-            showMax
+            value={amount.replace(/,/g, "")}
+            onChange={(e) => setAmount(e.target.value)}
+            OPTIONS={FIAT_OPTIONS}
+            currencyId="sourceCurrency"
+            onCurrencyChange={(val) => setSourceCurrency(val)}
           />
           <AmountRow
             label="You Receive"
             value={receiveAmount}
-            onChange={() => {}}
-            currency="USDT"
-            onCurrencyToggle={() => {}}
+            OPTIONS={CRYPTO_OPTIONS}
+            currencyId="targetCurrency"
+            onCurrencyChange={(val) => setTargetCurrency(val)}
           />
           <div className="flex items-center justify-between text-xs text-text px-1">
             <div className="flex items-center gap-1.5">
@@ -47,24 +100,32 @@ export function BuyTab() {
           </button>
           <p className="text-[10px] text-text text-center">
             By Proceeding, you agree to Xbanka{" "}
-            <span className="text-Green cursor-pointer hover:underline">Terms & Conditions</span>
-            {" "}and{" "}
-            <span className="text-Green cursor-pointer hover:underline">Privacy Policy</span>
+            <span className="text-Green cursor-pointer hover:underline">
+              Terms & Conditions
+            </span>{" "}
+            and{" "}
+            <span className="text-Green cursor-pointer hover:underline">
+              Privacy Policy
+            </span>
           </p>
         </div>
       </div>
- 
+
       <ConfirmModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={() => setConfirmOpen(false)}
         mode="buy"
-        payAmount="₦45,000.00"
-        paySymbol="NGN"
-        receiveAmount="30.60 USDT"
-        receiveSymbol="USDT"
-        rate="1 USDT = 1,470.79 NGN"
-        fee="O Fee"
+        payAmount={`₦${Number(amount || 0).toLocaleString()}`}
+        paySymbol={sourceCurrency}
+        receiveAmount={`${receiveAmount} ${targetCurrency}`}
+        receiveSymbol={targetCurrency}
+        rate={
+          quoteData
+            ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+            : ""
+        }
+        fee={quoteData?.fee ? `${quoteData.fee}` : "0 Fee"}
       />
     </>
   );

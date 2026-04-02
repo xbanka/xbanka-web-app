@@ -1,13 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  executeConversion,
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
   getFiatWallet,
   getSingleWalletBalance,
   getTransactionHistory,
+  quoteConversion,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
+import { ConvertExecutePayload, QuoteExecutePayload } from "../types/crypto-types";
+import { toast } from "sonner";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -89,6 +93,30 @@ export const UseGetTransactionHistory = (page = 1, limit = 10) => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+  });
+};
+
+export const useQuoteConversion = () => {
+  return useMutation({
+    mutationFn: (data: QuoteExecutePayload) => quoteConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useExecuteConversion = () => {
+  return useMutation({
+    mutationFn: (data: ConvertExecutePayload) => executeConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };

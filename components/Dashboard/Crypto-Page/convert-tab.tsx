@@ -1,25 +1,65 @@
 "use client"
 import { ArrowUpDown } from "lucide-react";
 import { AmountRow } from "./amount-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MarketHighlight } from "./market-highlight";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
+import { useForm } from "react-hook-form";
+import { useExecuteConversion } from "@/lib/services/wallet.service";
+import { useDebounce } from "@/hooks/useDebounce";
+import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
+
+type FormValues = {
+  amount: string;
+  sourceCurrency: string;
+  targetCurrency: string;
+};
 
 export function ConvertTab() {
   const [fromAmount, setFromAmount] = useState("823.50");
+  const { register, watch, setValue } = useForm<FormValues>({
+    defaultValues: {
+      amount: "",
+      sourceCurrency: "USDT",
+      targetCurrency: "NGN",
+    },
+  });
+
+  const { mutate, isPending } = useExecuteConversion();
+
+  const amount = watch("amount");
+  const sourceCurrency = watch("sourceCurrency");
+  const targetCurrency = watch("targetCurrency");
+
+  const debouncedAmount = useDebounce(amount, 500);
+
+  const [quoteId, setQuoteId] = useState("");
+
+  // 🔥 Auto call backend when user stops typing
+  useEffect(() => {
+    if (!debouncedAmount || Number(debouncedAmount) <= 0) return;
+
+    mutate({
+      quoteId: "temp-quote-id", // replace with real quote endpoint later
+      sourceCurrency,
+      targetCurrency,
+      amount: Number(debouncedAmount),
+    });
+  }, [debouncedAmount, sourceCurrency, targetCurrency]);
  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <DashboardCard className="lg:col-span-2 space-y-3">
-        <AmountRow
+        {/* <AmountRow 
           label="From"
           available="0.00034 BTC"
-          value={fromAmount}
-          onChange={setFromAmount}
           currency="BTC"
           onCurrencyToggle={() => {}}
           showMax
-        />
+          OPTIONS={FIAT_OPTIONS}
+          id={"amount"}
+          currencyId={"sourceCurrency"}
+        /> */}
         <p className="text-[10px] text-text px-1">Min: 0.0001 BTC • Max: 1 BTC</p>
  
         {/* Swap icon */}
@@ -29,13 +69,14 @@ export function ConvertTab() {
           </div>
         </div>
  
-        <AmountRow
+        {/* <AmountRow
           label="To (Estimated)"
-          value="₦1,092,010.34"
-          onChange={() => {}}
           currency="USDT"
           onCurrencyToggle={() => {}}
-        />
+          OPTIONS={FIAT_OPTIONS}
+          id={"amount"}
+          currencyId={"sourceCurrency"}
+        /> */}
  
         <div className="flex items-center justify-between text-xs px-1">
           <span className="text-text">1 BTC = 92,300 USDT</span>

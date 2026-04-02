@@ -1,0 +1,2 @@
+export const CRYPTO_OPTIONS = [ { label: "USDT", value: "USDT" }, { label: "BTC", value: "BTC" }, { label: "ETH", value: "ETH" }, { label: "USDC", value: "USDC" } ];
+export const FIAT_OPTIONS = [ { label: "NGN", value: "NGN" } ];

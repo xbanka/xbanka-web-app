@@ -1,5 +1,6 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
 import { sumWallets } from "../sumBalances";
+import { ConvertExecutePayload, QuoteExecutePayload } from "../types/crypto-types";
 
 export const getAllWalletBalances = async() => {
   const response = await AxiosInstance.get("/wallets");
@@ -63,6 +64,26 @@ export const getTransactionHistory = async({
   const response = await AxiosInstance.get("/wallet/transactions", {
     params: { page, limit },
   });
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const quoteConversion = async (data: QuoteExecutePayload) => {
+  const response = await AxiosInstance.post("/wallets/convert/quote", data);
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const executeConversion = async (data: ConvertExecutePayload) => {
+  const response = await AxiosInstance.post("/wallets/convert/execute", data);
 
   return {
     success: true,

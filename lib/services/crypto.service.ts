@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAvailableGiftCards } from "../actions/giftcards";
 import { handleApiError } from "../errors/error";
 
-export const UseGetAllWalletBalances = () => {
+export const UseGetAvailableGiftCards = () => {
   return useQuery({
     queryKey: ["all-wallet-balances"],
     queryFn: async () => {

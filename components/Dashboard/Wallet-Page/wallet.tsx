@@ -26,9 +26,12 @@ export default function WalletPage() {
 
   const verification = verificationData?.data;
 
-  const isBvnVerified = verification?.progress?.some(
-    (step: any) => step.id === "BVN" && step.isCompleted,
-  );
+  const isStepCompleted = (stepId: string) =>
+    verification?.progress?.some(
+      (step: any) => step.id === stepId && step.isCompleted,
+    );
+
+  const isBvnVerified = isStepCompleted("BVN");
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
