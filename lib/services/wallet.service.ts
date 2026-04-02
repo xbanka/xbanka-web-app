@@ -4,6 +4,7 @@ import {
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
+  getCurrency,
   getFiatWallet,
   getSingleWalletBalance,
   getTransactionHistory,
@@ -117,6 +118,20 @@ export const useExecuteConversion = () => {
     },
     onError: (err) => {
       handleApiError(err);
+    },
+  });
+};
+
+export const useGetCurrency = () => {
+  return useQuery({
+    queryKey: ["get-currency"],
+    queryFn: async () => {
+      try {
+        const response = await getCurrency();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
     },
   });
 };

@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   useExecuteConversion,
+  useGetCurrency,
   useQuoteConversion,
 } from "@/lib/services/wallet.service";
 import { useForm } from "react-hook-form";
 import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
 import { amountSchema } from "@/lib/schema/amount-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 
 type FormValues = {
   receiveAmount: string;
@@ -30,6 +32,8 @@ export function BuyTab() {
   const [error, setError] = useState("");
 
   const { data, mutate, isPending } = useQuoteConversion();
+  const { error: currencyError, data: currencyData, isPending: currencyPending } = useGetCurrency();
+  console.log("currencyData", currencyData);
 
   const debouncedAmount = useDebounce(amount, 500);
 
@@ -66,48 +70,53 @@ export function BuyTab() {
 
   return (
     <>
-      <div className=" gap-4">
-        <div className="space-y-3">
+      <div className="gap-4">
+        <div className="space-y-6">
           <AmountRow
             label="You Pay"
             available="₦40,000"
-            value={amount.replace(/,/g, "")}
+            value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={FIAT_OPTIONS}
-            currencyId="sourceCurrency"
-            onCurrencyChange={(val) => setSourceCurrency(val)}
+            selectedCurrency={sourceCurrency}
+            onCurrencyChange={setSourceCurrency}
           />
-          <AmountRow
-            label="You Receive"
-            value={receiveAmount}
-            OPTIONS={CRYPTO_OPTIONS}
-            currencyId="targetCurrency"
-            onCurrencyChange={(val) => setTargetCurrency(val)}
-          />
-          <div className="flex items-center justify-between text-xs text-text px-1">
-            <div className="flex items-center gap-1.5">
-              <span>1 USDT ≈ 1,470.75 NGN</span>
-              <button className="text-Green hover:text-Green/80 transition-colors">
-                <RefreshCcw className="w-3 h-3" />
-              </button>
+          <div className="space-y-3">
+            <AmountRow
+              label="You Receive"
+              value={receiveAmount}
+              OPTIONS={CRYPTO_OPTIONS}
+              currencyId
+              selectedCurrency={targetCurrency}
+              onCurrencyChange={setTargetCurrency}
+            />
+            <div className="flex items-center justify-between text-xs text-text px-1">
+              <div className="flex items-center gap-1.5">
+                <span>1 USDT ≈ 1,470.75 NGN</span>
+                <button className="text-Green hover:text-Green/80 transition-colors">
+                  <RefreshCcw className="w-3 h-3" />
+                </button>
+              </div>
             </div>
           </div>
-          <button
-            onClick={() => setConfirmOpen(true)}
-            className="w-full h-11 rounded-xl bg-Green hover:bg-Green/90 text-white text-sm font-semibold transition-colors"
-          >
-            Get Quote
-          </button>
-          <p className="text-[10px] text-text text-center">
-            By Proceeding, you agree to Xbanka{" "}
-            <span className="text-Green cursor-pointer hover:underline">
-              Terms & Conditions
-            </span>{" "}
-            and{" "}
-            <span className="text-Green cursor-pointer hover:underline">
-              Privacy Policy
-            </span>
-          </p>
+          <div className="space-y-2">
+            <Button
+              onClick={() => setConfirmOpen(true)}
+              className="w-full h-11 rounded-xl bg-Green hover:bg-Green/90 text-white text-sm font-semibold transition-colors"
+            >
+              Get Quote
+            </Button>
+            <p className="text-[10px] text-text text-center">
+              By Proceeding, you agree to Xbanka{" "}
+              <span className="text-Green cursor-pointer hover:underline">
+                Terms & Conditions
+              </span>{" "}
+              and{" "}
+              <span className="text-Green cursor-pointer hover:underline">
+                Privacy Policy
+              </span>
+            </p>
+          </div>
         </div>
       </div>
 

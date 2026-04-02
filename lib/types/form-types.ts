@@ -31,12 +31,19 @@ export interface SelectFieldProps {
   value?: string | null
 }
 
+export interface CryptoOptionProps {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+  image?: string;
+}
+
 export interface CryptoSelectFieldProps {
-  id?: string;
+  currencyId?: boolean;
   icon?: LucideIcon;
   placeholder?: string;
-  options: OptionProps[];
+  options: CryptoOptionProps[];
   register?: UseFormRegister<any>;
   onChange?: any;
-  value?: string | null
+  value: string
 }
