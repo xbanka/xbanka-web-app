@@ -1,2 +1,2 @@
 export const CRYPTO_OPTIONS = [ { label: "USDT", value: "USDT", image: "/tether.svg" }, { label: "BTC", value: "BTC", image: "/tether.svg" }, { label: "ETH", value: "ETH", image: "/tether.svg" }, { label: "USDC", value: "USDC", image: "/tether.svg" } ];
-export const FIAT_OPTIONS = [ { label: "NGN", value: "NGN", image: "/naira.svg"  } ];
+export const FIAT_OPTIONS = [ { label: "NGN", value: "NGNX", image: "/naira.svg",   } ];

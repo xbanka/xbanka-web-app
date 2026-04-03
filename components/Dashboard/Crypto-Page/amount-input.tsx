@@ -1,6 +1,7 @@
 import { CurrencyBadge } from "./currency-badge";
 import { OptionProps } from "@/lib/types/form-types";
 import { CryptoSelectField } from "@/components/ui/crypto-select";
+import { CurrencyOption } from "@/lib/crypto";
 
 export interface AmountRowProps {
   label: string;
@@ -9,7 +10,7 @@ export interface AmountRowProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   selectedCurrency: string;
   showMax?: boolean;
-  OPTIONS: OptionProps[];
+  OPTIONS: CurrencyOption[];
   currencyId?: boolean;
   onCurrencyChange: (val: string) => void;
 }

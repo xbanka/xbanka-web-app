@@ -6,6 +6,7 @@ import {
   getCryptoWallet,
   getCurrency,
   getFiatWallet,
+  getGroupedPair,
   getSingleWalletBalance,
   getTransactionHistory,
   quoteConversion,
@@ -128,6 +129,20 @@ export const useGetCurrency = () => {
     queryFn: async () => {
       try {
         const response = await getCurrency();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
+export const useGetGroupedPair = () => {
+  return useQuery({
+    queryKey: ["get-grouped-pair"],
+    queryFn: async () => {
+      try {
+        const response = await getGroupedPair();
         return response;
       } catch (err) {
         handleApiError(err);

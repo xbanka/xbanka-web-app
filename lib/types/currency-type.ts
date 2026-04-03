@@ -1,4 +1,4 @@
-export type CurrencyType = "CRYPTO" | "FIAT" | "STABLE";
+export type CurrencyType = "CRYPTO" | "FIAT" | "STABLE" | "LEVERAGE";
 
 export type FeeType = "PERCENTAGE" | "FIXED" | string;
 

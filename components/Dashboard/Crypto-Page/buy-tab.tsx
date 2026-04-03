@@ -5,15 +5,12 @@ import { ConfirmModal } from "./confirm-modal";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
-  useExecuteConversion,
   useGetCurrency,
+  useGetGroupedPair,
   useQuoteConversion,
 } from "@/lib/services/wallet.service";
-import { useForm } from "react-hook-form";
-import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
-import { amountSchema } from "@/lib/schema/amount-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
 
 type FormValues = {
   receiveAmount: string;
@@ -26,14 +23,29 @@ export function BuyTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [quoteData, setQuoteData] = useState("");
-  const [sourceCurrency, setSourceCurrency] = useState("NGN");
+  const [sourceCurrency, setSourceCurrency] = useState("NGNX");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
 
   const { data, mutate, isPending } = useQuoteConversion();
-  const { error: currencyError, data: currencyData, isPending: currencyPending } = useGetCurrency();
+  const { data: groupedPairData, error: groupedPairError, isPending: groupedPairPending } = useGetGroupedPair();
+  console.log("groupedPairData", groupedPairData);
+  const {
+    error: currencyError,
+    data: currencyData,
+    isPending: currencyPending,
+  } = useGetCurrency();
   console.log("currencyData", currencyData);
+
+  const currencies = currencyData?.data || [];
+  const { fiat, crypto } = splitCurrencies(currencies);
+  console.log("fiat", fiat);
+  console.log("crypto", crypto);
+  const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+
+  // const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+  const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
   const debouncedAmount = useDebounce(amount, 500);
 
@@ -84,7 +96,7 @@ export function BuyTab() {
           <div className="space-y-3">
             <AmountRow
               label="You Receive"
-              value={receiveAmount}
+              value={Number(receiveAmount).toFixed(CRYPTO_OPTIONS.find((o) => o.value === targetCurrency)?.maximumDecimalPlaces || 0)}
               OPTIONS={CRYPTO_OPTIONS}
               currencyId
               selectedCurrency={targetCurrency}

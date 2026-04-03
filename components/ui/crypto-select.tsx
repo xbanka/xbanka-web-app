@@ -2,14 +2,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import { CurrencyOption } from "@/lib/crypto";
 
 export interface CryptoSelectFieldProps {
   currencyId?: boolean;
-  options: {
-    label: string;
-    value: string;
-    image?: string;
-  }[];
+  options: CurrencyOption[];
   onChange: (value: string) => void;
   value: string;
 }

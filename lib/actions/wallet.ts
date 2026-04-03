@@ -92,3 +92,9 @@ export const getCurrency = async () => {
 
   return response.data;
 };
+
+export const getGroupedPair = async () => {
+  const response = await AxiosInstance.get("/wallet/assets/grouped-pairs");
+
+  return response.data;
+};
