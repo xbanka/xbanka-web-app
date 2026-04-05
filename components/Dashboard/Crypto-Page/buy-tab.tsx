@@ -68,12 +68,14 @@ export function BuyTab() {
         sourceCurrency,
         targetCurrency,
         amount: Number(debouncedAmount),
+        action: "BUY",
       },
       {
         onSuccess: (res) => {
           const result = res?.data;
 
           setReceiveAmount(result?.amount?.toString() || "");
+          console.log("quote result", result);
           setQuoteData(result);
         },
       },
@@ -102,11 +104,11 @@ export function BuyTab() {
               selectedCurrency={targetCurrency}
               onCurrencyChange={setTargetCurrency}
             />
-            <div className="flex items-center justify-between text-xs text-text px-1">
+            <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
               <div className="flex items-center gap-1.5">
                 <span>1 USDT ≈ 1,470.75 NGN</span>
-                <button className="text-Green hover:text-Green/80 transition-colors">
-                  <RefreshCcw className="w-3 h-3" />
+                <button className="text-card-text hover:text-Green/80 transition-colors">
+                  <RefreshCcw className="w-4 h-4" />
                 </button>
               </div>
             </div>

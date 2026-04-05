@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/formatDate";
 import { CRYPTO_TRANSACTIONS, TRANSACTIONS } from "@/lib/MockData";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { StatusBadge } from "@/lib/statusBadge";
+import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -35,9 +36,7 @@ export function TransactionHistory({
   console.log("transactionHistory", transactionHistory);
 
   const transactions = transactionHistory?.data?.data?.items || [];
-  const fiatTransactions = transactions.filter((tx: TransactionTypes) =>
-    tableType ? tx.category === tableType : tx,
-  );
+  const fiatTransactions = transactionHistoryType("CRYPTO", transactions)
 
   const filteredData = useMemo(() => {
     return (

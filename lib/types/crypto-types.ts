@@ -2,6 +2,7 @@ export interface QuoteExecutePayload {
   sourceCurrency: string;
   targetCurrency: string;
   amount: number;
+  action: "BUY" | "SELL";
 }
 
 export interface ConvertExecutePayload {

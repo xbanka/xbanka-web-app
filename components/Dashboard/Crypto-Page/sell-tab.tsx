@@ -6,9 +6,15 @@ import { RecentTransactions } from "./recent-transactions";
 import { HowTo } from "./steps";
 import { RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useExecuteConversion } from "@/lib/services/wallet.service";
+import {
+  useExecuteConversion,
+  useGetCurrency,
+  useGetGroupedPair,
+  useQuoteConversion,
+} from "@/lib/services/wallet.service";
 import { useDebounce } from "@/hooks/useDebounce";
-import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
+import { isValidPair } from "@/lib/isValidPair";
+import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
 
 type FormValues = {
   amount: string;
@@ -17,66 +23,110 @@ type FormValues = {
 };
 
 export function SellTab() {
-  const [sellAmount, setSellAmount] = useState("823.50");
-  const [receiveAmount] = useState("₦1,092,010.34");
+  const [amount, setAmount] = useState("");
+  const [receiveAmount, setReceiveAmount] = useState("");
+  const [error, setError] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sourceCurrency, setSourceCurrency] = useState("USDT");
+  const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [quoteData, setQuoteData] = useState("");
 
-  const { register, watch, setValue } = useForm<FormValues>({
-    defaultValues: {
-      amount: "",
-      sourceCurrency: "USDT",
-      targetCurrency: "NGN",
-    },
-  });
 
-  const { mutate, isPending } = useExecuteConversion();
+  // const { mutate, isPending } = useExecuteConversion();
+    const { data, mutate, isPending } = useQuoteConversion();
+  
+  const {
+    data: groupedPairData,
+    error: groupedPairError,
+    isPending: groupedPairPending,
+  } = useGetGroupedPair();
 
-  const amount = watch("amount");
-  const sourceCurrency = watch("sourceCurrency");
-  const targetCurrency = watch("targetCurrency");
+   const {
+      error: currencyError,
+      data: currencyData,
+      isPending: currencyPending,
+    } = useGetCurrency();
 
   const debouncedAmount = useDebounce(amount, 500);
 
   const [quoteId, setQuoteId] = useState("");
+  const currencies = currencyData?.data || [];
+
+    const { fiat, crypto } = splitCurrencies(currencies);
+  
+
+  const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+
+  // const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+  const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
   // 🔥 Auto call backend when user stops typing
   useEffect(() => {
-    if (!debouncedAmount || Number(debouncedAmount) <= 0) return;
+    if (!debouncedAmount) {
+      setError("Amount is required");
+      setReceiveAmount("");
+      return;
+    }
 
-    mutate({
-      quoteId: "temp-quote-id", // replace with real quote endpoint later
-      sourceCurrency,
-      targetCurrency,
-      amount: Number(debouncedAmount),
-    });
-  }, [debouncedAmount, sourceCurrency, targetCurrency]);
+    if (Number(debouncedAmount) <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
+
+    // ✅ CHECK PAIR BEFORE CALL
+    if (
+      !isValidPair(groupedPairData?.data || [], sourceCurrency, targetCurrency)
+    ) {
+      setError("This conversion pair is not supported");
+      setReceiveAmount("");
+      return;
+    }
+
+    setError("");
+
+    mutate(
+      {
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(debouncedAmount),
+        action: "SELL",
+      },
+      {
+        onSuccess: (res) => {
+          const result = res?.data;
+          setReceiveAmount(result?.amount?.toString() || "");
+          setQuoteData(result);
+        },
+      },
+    );
+  }, [debouncedAmount, sourceCurrency, targetCurrency, groupedPairData]);
 
   return (
     <>
       <div className="gap-4">
         <div className="space-y-3">
           <AmountRow
-            label="You Sell"
-            available="823.50 USDT"
-            value={sellAmount}
-            currency="USDT"
-            onCurrencyToggle={() => {}}
-            showMax
+            label="You Pay"
+            available="₦40,000"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             OPTIONS={FIAT_OPTIONS}
-            id={"amount"}
-            currencyId={"sourceCurrency"}
+            selectedCurrency={sourceCurrency}
+            onCurrencyChange={setSourceCurrency}
           />
           <p className="text-[10px] text-text px-1">
             Min: 15 USDT • Max: 20,000 USDT
           </p>
           <AmountRow
             label="You Receive"
-            value={receiveAmount}
-            onChange={() => {}}
-            currency="NGN"
+            value={Number(receiveAmount).toFixed(
+              CRYPTO_OPTIONS.find((o) => o.value === targetCurrency)
+                ?.maximumDecimalPlaces || 0,
+            )}
             OPTIONS={CRYPTO_OPTIONS}
-            id={"amount"}
-            currencyId={"sourceCurrency"}
+            currencyId
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
           />
           <p className="text-[10px] text-text px-1">
             Receive to xbanka wallet — 1 USDT ≈ 1,470.79 NGN{" "}
