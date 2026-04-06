@@ -7,6 +7,7 @@ import {
   getCurrency,
   getFiatWallet,
   getGroupedPair,
+  getRateConversion,
   getSingleWalletBalance,
   getTransactionHistory,
   quoteConversion,
@@ -95,6 +96,18 @@ export const UseGetTransactionHistory = (page = 1, limit = 10) => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+  });
+};
+
+export const useGetRateConversion = () => {
+  return useMutation({
+    mutationFn: (data: QuoteExecutePayload) => getRateConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };

@@ -2,15 +2,17 @@
 import { RefreshCcw } from "lucide-react";
 import { AmountRow } from "./amount-input";
 import { ConfirmModal } from "./confirm-modal";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   useGetCurrency,
   useGetGroupedPair,
+  useGetRateConversion,
   useQuoteConversion,
 } from "@/lib/services/wallet.service";
 import { Button } from "@/components/ui/button";
 import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
+import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 
 type FormValues = {
   receiveAmount: string;
@@ -22,32 +24,74 @@ type FormValues = {
 export function BuyTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [quoteData, setQuoteData] = useState("");
+  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes>();
+  const [convertData, setConvertData] = useState<CryptoGetConversionTypes>();
   const [sourceCurrency, setSourceCurrency] = useState("NGNX");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
 
   const { data, mutate, isPending } = useQuoteConversion();
-  const { data: groupedPairData, error: groupedPairError, isPending: groupedPairPending } = useGetGroupedPair();
+  const {
+    data: RateConversionData,
+    mutate: RateConversionMutate,
+    isPending: RateConversionPending,
+  } = useGetRateConversion();
+  const {
+    data: groupedPairData,
+    error: groupedPairError,
+    isPending: groupedPairPending,
+  } = useGetGroupedPair();
   console.log("groupedPairData", groupedPairData);
   const {
     error: currencyError,
     data: currencyData,
     isPending: currencyPending,
   } = useGetCurrency();
-  console.log("currencyData", currencyData);
 
   const currencies = currencyData?.data || [];
   const { fiat, crypto } = splitCurrencies(currencies);
-  console.log("fiat", fiat);
-  console.log("crypto", crypto);
-  const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+  const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
 
-  // const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
+  const validTargets =
+    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+
+  const TARGET_OPTIONS = validTargets.map((pair: any) => ({
+    label: pair.code,
+    value: pair.code,
+  }));
+  const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
   const debouncedAmount = useDebounce(amount, 500);
+
+  const handleQuoteModal = () => {
+    refetchQuote();
+    setConfirmOpen(true);
+  };
+
+  const refetchQuote = () => {
+    mutate(
+      {
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(debouncedAmount),
+        action: "BUY",
+      },
+      {
+        onSuccess: (res) => {
+          setQuoteData(res?.data);
+        },
+      },
+    );
+  };
+  useEffect(() => {
+    if (validTargets.length > 0) {
+      const hasUSDT = validTargets.find((p: any) => p.code === "USDT");
+
+      setTargetCurrency(hasUSDT ? "USDT" : validTargets[0].code);
+    }
+  }, [validTargets]);
 
   useEffect(() => {
     if (!debouncedAmount) {
@@ -63,7 +107,7 @@ export function BuyTab() {
 
     setError("");
 
-    mutate(
+    RateConversionMutate(
       {
         sourceCurrency,
         targetCurrency,
@@ -76,7 +120,7 @@ export function BuyTab() {
 
           setReceiveAmount(result?.amount?.toString() || "");
           console.log("quote result", result);
-          setQuoteData(result);
+          setConvertData(result);
         },
       },
     );
@@ -98,8 +142,13 @@ export function BuyTab() {
           <div className="space-y-3">
             <AmountRow
               label="You Receive"
-              value={Number(receiveAmount).toFixed(CRYPTO_OPTIONS.find((o) => o.value === targetCurrency)?.maximumDecimalPlaces || 0)}
-              OPTIONS={CRYPTO_OPTIONS}
+              value={
+                convertData?.netPayout
+                  ? convertData.netPayout.toLocaleString()
+                  : ""
+              }
+              readOnly
+              OPTIONS={TARGET_OPTIONS}
               currencyId
               selectedCurrency={targetCurrency}
               onCurrencyChange={setTargetCurrency}
@@ -115,8 +164,8 @@ export function BuyTab() {
           </div>
           <div className="space-y-2">
             <Button
-              onClick={() => setConfirmOpen(true)}
-              className="w-full h-11 rounded-xl bg-Green hover:bg-Green/90 text-white text-sm font-semibold transition-colors"
+              onClick={handleQuoteModal}
+              className="w-full transition-colors"
             >
               Get Quote
             </Button>
@@ -141,14 +190,15 @@ export function BuyTab() {
         mode="buy"
         payAmount={`₦${Number(amount || 0).toLocaleString()}`}
         paySymbol={sourceCurrency}
-        receiveAmount={`${receiveAmount} ${targetCurrency}`}
+        receiveAmount={`${quoteData?.netPayout} ${targetCurrency}`}
         receiveSymbol={targetCurrency}
         rate={
           quoteData
             ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
             : ""
         }
-        fee={quoteData?.fee ? `${quoteData.fee}` : "0 Fee"}
+        fee={quoteData?.netPayout ? `${quoteData.rate}` : "0 Fee"}
+        onRefreshQuote={refetchQuote}
       />
     </>
   );

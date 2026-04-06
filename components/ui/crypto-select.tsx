@@ -19,7 +19,7 @@ export const CryptoSelectField = ({
 }: CryptoSelectFieldProps) => {
   const [open, setOpen] = useState(false);
 
-  const selected = options.find((o: any) => o.value === value);
+  const selected = options.find((o: any) => o.value === value) || options[0];
 
   return (
     <div className="relative w-full">

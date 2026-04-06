@@ -75,6 +75,12 @@ export const getTransactionHistory = async ({
   };
 };
 
+export const getRateConversion = async (data: QuoteExecutePayload) => {
+  const response = await AxiosInstance.post("/wallets/convert/check-rate", data);
+
+  return response.data;
+};
+
 export const quoteConversion = async (data: QuoteExecutePayload) => {
   const response = await AxiosInstance.post("/wallets/convert/quote", data);
 

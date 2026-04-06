@@ -2,6 +2,7 @@ import { CurrencyBadge } from "./currency-badge";
 import { OptionProps } from "@/lib/types/form-types";
 import { CryptoSelectField } from "@/components/ui/crypto-select";
 import { CurrencyOption } from "@/lib/crypto";
+import { readonly } from "zod";
 
 export interface AmountRowProps {
   label: string;
@@ -14,6 +15,7 @@ export interface AmountRowProps {
   currencyId?: boolean;
   onCurrencyChange: (val: string) => void;
   error?: string;
+  readOnly?: boolean
 }
 
 export function AmountRow({
@@ -25,7 +27,8 @@ export function AmountRow({
   OPTIONS,
   currencyId,
   onCurrencyChange,
-  error
+  error,
+  readOnly
 }: AmountRowProps) {
   return (
     <div>
@@ -47,6 +50,7 @@ export function AmountRow({
               type="number"
               value={value}
               onChange={onChange}
+              readOnly={readOnly}
               placeholder="0.00"
               className="flex-1 w-[10%] bg-transparent text-lg font-bold text-card-text outline-none placeholder:text-text/40"
             />
