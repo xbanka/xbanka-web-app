@@ -1,4 +1,5 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
+import { CreatePinPayload } from "../types/security-types";
 
 export const requesOtp = async (token: string) => {
     const response = await AxiosInstance.post("/security/request-otp", {
@@ -22,9 +23,10 @@ export const passwordChange = async (token: string) => {
     };
 }
 
-export const createPin = async (token: string) => {
+export const createPin = async (data: CreatePinPayload) => {
     const response = await AxiosInstance.post("/security/pin/create", {
-      token
+      userId: data.userId,
+      code: data.code
     })
     return {
       success: true,

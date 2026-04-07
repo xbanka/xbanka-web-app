@@ -1,17 +1,7 @@
 import { ChevronDown, LucideIcon } from "lucide-react";
 import { ErrorField } from "./field-error";
 import { FieldError, UseFormRegister } from "react-hook-form";
-
-interface SelectFieldProps {
-  id: string;
-  icon?: LucideIcon;
-  placeholder: string;
-  options: { label: string; value: string }[];
-  error?: FieldError;
-  register?: UseFormRegister<any>;
-  onChange?: any;
-  value?: string | null
-}
+import { SelectFieldProps } from "@/lib/types/form-types";
 
 export const SelectField = ({
   id,
@@ -35,9 +25,9 @@ export const SelectField = ({
         value={value ?? ""}
         onChange={onChange}
       >
-        <option className="text-[14px]" value="" disabled hidden>
+        { placeholder && <option className="text-[14px]" value="" disabled hidden>
           {placeholder}
-        </option>
+        </option>}
         {options.map((o) => (
           <option className="" key={o.value} value={o.value}>
             {o.label}

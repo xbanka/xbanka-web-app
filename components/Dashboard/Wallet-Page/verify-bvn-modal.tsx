@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ErrorField } from "@/components/ui/field-error";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -8,6 +9,9 @@ import {
   PinForm,
   pinSchema,
 } from "@/lib/schema/bvn-schema";
+import { useVerifyBvn } from "@/lib/services/onboarding.service";
+import { useCreatePin } from "@/lib/services/security.service";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, IdCard, Lock, X } from "lucide-react";
 import Image from "next/image";
@@ -17,12 +21,6 @@ import { useForm } from "react-hook-form";
 interface VerifyBvnModalProps {
   open: boolean;
   onClose: () => void;
-  /** Called after BVN verified (and optionally PIN set / skipped) */
-  onVerified: () => void;
-  /** Connect to your real BVN mutation. Return true = success, false = error */
-  onVerifyBvn?: (bvn: string) => Promise<boolean>;
-  /** Connect to your real set-PIN mutation */
-  onSetPin?: (pin: string) => Promise<void>;
 }
 
 const UNLOCKED_FEATURES = [
@@ -32,15 +30,19 @@ const UNLOCKED_FEATURES = [
   { label: "Bills Payment" },
 ];
 
-export function VerifyBvnModal({
-  open,
-  onClose,
-  onVerified,
-  onVerifyBvn,
-  onSetPin,
-}: VerifyBvnModalProps) {
+export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
   const [state, setState] = useState<ModalState>("verify");
-  const [isPending, setIsPending] = useState(false);
+  const {
+    mutate: verifyBvn,
+    isPending: bvnPending,
+    error: bvnError,
+  } = useVerifyBvn();
+  const {
+    mutate: mutatePin,
+    isPending: pinPending,
+    error: pinError,
+  } = useCreatePin();
+  const userId = useUserIdStore((s) => s.userId);
 
   const bvnForm = useForm<BvnForm>({
     resolver: zodResolver(bvnSchema),
@@ -51,6 +53,13 @@ export function VerifyBvnModal({
     resolver: zodResolver(pinSchema),
     mode: "onSubmit",
   });
+
+  const handleClose = () => {
+    onClose();
+    bvnForm.reset();
+    pinForm.reset();
+    setState("verify");
+  };
 
   // Reset on open
   useEffect(() => {
@@ -77,31 +86,41 @@ export function VerifyBvnModal({
 
   // ── BVN submit ────────────────────────────────────────────────────────────
   const handleBvnSubmit = async (data: BvnForm) => {
-    setIsPending(true);
-    setState("success");
+    const payload = { userId, bvn: data.bvn };
+    verifyBvn(payload, {
+      onSuccess: () => {
+        bvnForm.reset();
+        setState("success");
+      },
+    });
   };
 
   // ── PIN submit ────────────────────────────────────────────────────────────
   const handlePinSubmit = async (data: PinForm) => {
-    setIsPending(true);
-    try {
-      await onSetPin?.(data.pin);
-      onVerified();
-      onClose();
-    } finally {
-      setIsPending(false);
-    }
+    const payload = {
+      userId,
+      code: data.pin,
+    };
+
+    mutatePin(payload, {
+      onSuccess: () => {
+        bvnForm.reset();
+        pinForm.reset();
+        handleClose();
+        setState("pinSuccess");
+      },
+    });
   };
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={handleClose}>
       {/* Backdrop */}
 
       {/* Panel */}
       {/* ── VERIFY / ERROR ─────────────────────────────────────────────── */}
       {(state === "verify" || state === "error") && (
         <form onSubmit={bvnForm.handleSubmit(handleBvnSubmit)}>
-          <CloseBtn onClose={onClose} />
+          <CloseBtn onClose={handleClose} />
 
           <div className="pt-18 space-y-6 text-center">
             <div className="space-y-2">
@@ -114,7 +133,7 @@ export function VerifyBvnModal({
               </p>
             </div>
 
-            <div className="text-left">
+            <div className="text-left space-y-1">
               <FormField
                 id="bvn"
                 icon={IdCard}
@@ -122,6 +141,7 @@ export function VerifyBvnModal({
                 error={bvnForm.formState.errors.bvn}
                 register={bvnForm.register}
               />
+              {bvnError && <ErrorField message={bvnError.message} />}
             </div>
 
             <div className="flex gap-3">
@@ -131,7 +151,7 @@ export function VerifyBvnModal({
                 size="lg"
                 className="flex-1"
                 onClick={onClose}
-                disabled={isPending}
+                disabled={bvnPending}
               >
                 Back
               </Button>
@@ -139,10 +159,10 @@ export function VerifyBvnModal({
                 type="submit"
                 size="lg"
                 className="flex-1"
-                disabled={isPending}
-                variant={isPending ? "disabled" : "default"}
+                disabled={bvnPending}
+                variant={bvnPending ? "disabled" : "default"}
               >
-                {isPending ? "Verifying..." : "Continue"}
+                {bvnPending ? "Verifying..." : "Continue"}
               </Button>
             </div>
           </div>
@@ -155,7 +175,13 @@ export function VerifyBvnModal({
           <CloseBtn onClose={onClose} />
 
           {/* Icon */}
-            <Image alt="badge" src={"/badge 2.svg"} width={60} height={60} className="mx-auto" />
+          <Image
+            alt="badge"
+            src={"/badge 2.svg"}
+            width={60}
+            height={60}
+            className="mx-auto"
+          />
 
           <div className="space-y-1">
             <h2 className="text-4xl font-bold leading-11 text-card-text">
@@ -190,10 +216,7 @@ export function VerifyBvnModal({
               Set PIN Now
             </Button>
             <button
-              onClick={() => {
-                onVerified();
-                onClose();
-              }}
+              onClick={handleClose}
               className="w-full text-sm font-medium text-Green hover:opacity-75 transition-opacity py-1"
             >
               Skip for later
@@ -205,13 +228,16 @@ export function VerifyBvnModal({
       {/* ── SET PIN ──────────────────────────────────────────────────────── */}
       {state === "pin" && (
         <form onSubmit={pinForm.handleSubmit(handlePinSubmit)}>
-          <CloseBtn onClose={onClose} />
+          <CloseBtn onClose={handleClose} />
 
           <div className="pt-18 space-y-6 text-center">
             <div className="space-y-2">
-              <h2 className="text-4xl font-bold leading-11 text-card-text">Set-Up PIN</h2>
+              <h2 className="text-4xl font-bold leading-11 text-card-text">
+                Set-Up PIN
+              </h2>
               <p className="text-[16px] text-text font-normal leading-6 mx-auto">
-                Your BVN helps us confirm your name and date of birth. We’ll never share it with anyone.
+                Your BVN helps us confirm your name and date of birth. We’ll
+                never share it with anyone.
               </p>
             </div>
 
@@ -233,7 +259,7 @@ export function VerifyBvnModal({
                 size="lg"
                 className="flex-1"
                 onClick={() => setState("success")}
-                disabled={isPending}
+                disabled={pinPending}
               >
                 Back
               </Button>
@@ -241,14 +267,58 @@ export function VerifyBvnModal({
                 type="submit"
                 size="lg"
                 className="flex-1"
-                disabled={isPending}
-                variant={isPending ? "disabled" : "default"}
+                disabled={pinPending}
+                variant={pinPending ? "disabled" : "default"}
               >
-                {isPending ? "Setting PIN..." : "Continue"}
+                {pinPending ? "Setting PIN..." : "Continue"}
               </Button>
             </div>
           </div>
         </form>
+      )}
+      {state === "pinSuccess" && (
+        <div className="pt-18 space-y-5 text-center">
+          <CloseBtn onClose={handleClose} />
+
+          {/* Icon */}
+          <Image
+            alt="badge"
+            src={"/badge 2.svg"}
+            width={60}
+            height={60}
+            className="mx-auto"
+          />
+
+          <div className="space-y-1">
+            <h2 className="text-4xl font-bold leading-11 text-card-text">
+              PIN Verified Successfully
+            </h2>
+            <p className="text-sm text-text">Your wallet is now unlocked</p>
+          </div>
+
+          {/* Unlocked features — 2-column grid */}
+          <div className="grid border border-dashed border-disabled-background bg-input-background rounded-lg w-full py-3 px-4 grid-cols-2 gap-y-2.5 gap-x-4 mx-auto">
+            {UNLOCKED_FEATURES.map((f) => (
+              <div key={f.label} className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-Green shrink-0" />
+                <span className="text-sm font-medium text-card-text">
+                  {f.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-[16px] text-text font-normal leading-6  mx-auto">
+            Set your transaction PIN to secure your account &amp; start
+            transacting
+          </p>
+
+          <div className="space-y-2">
+            <Button size="lg" className="w-full" onClick={handleClose}>
+              Confirm
+            </Button>
+          </div>
+        </div>
       )}
     </Modal>
   );

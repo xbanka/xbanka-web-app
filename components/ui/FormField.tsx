@@ -1,24 +1,8 @@
 import { cn } from "@/lib/utils";
-import * as React from "react";
 import { Input } from "./input";
-import { Icon, LucideIcon } from "lucide-react";
-import { FieldError } from "react-hook-form";
 import { Label } from "./label";
 import { ErrorField } from "./field-error";
-
-interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
-  label?: string;
-  required?: boolean;
-  icon?: LucideIcon;
-  id: string;
-  type?: string;
-  placeholder?: string;
-  register?: any;
-  disabled?: boolean;
-  error?: FieldError;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import { FormFieldProps } from "@/lib/types/form-types";
 
 export function FormField({
   id,
@@ -48,7 +32,7 @@ export function FormField({
           placeholder={placeholder}
           disabled={disabled}
           className={`${Icon ? "pl-10 pr-4" : "px-4"}`}
-          {...register(id)}
+          // {...register(id)}
           value={value}
           onChange={onChange}
           {...(register ? register(id) : {})}

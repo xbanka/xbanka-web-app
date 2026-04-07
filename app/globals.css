@@ -4,7 +4,7 @@
   --background: #f9f9f9;
   --foreground: #171717;
   --Green: #0c9a8e;
-  --abstract-greeen: #5eead4;
+  --abstract-green: #5eead4;
   --border: #e9ebee;
   --border-active: #2dd4bf;
   --card-background: #ffffff;
@@ -34,6 +34,7 @@
   --color-border: var(--border);
   --color-border-active: var(--border-active);
   --color-Green: var(--Green);
+  --color-abstract-green: var(--abstract-green);
   --color-disabled-text: var(--disabled-text);
   --color-disabled-background: var(--disabled-background);
   --color-card-background: var(--card-background);
@@ -52,8 +53,8 @@
 [data-theme="dark"] {
   --background: #121315;
   --foreground: #f9f9f9;
-  --Greeen: #00b39f;
-  --abstract-greeen: #5eead4;
+  --Green: #00b39f;
+  --abstract-green: #5eead4;
   --border: #25272b;
   --border-active: #2dd4bf;
   --card-background: #1b1d20;
@@ -111,6 +112,18 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--foreground) !important;
   caret-color: var(--foreground);
   transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Remove number input arrows (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove arrows (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 html {

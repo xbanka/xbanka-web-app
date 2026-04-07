@@ -10,20 +10,32 @@ import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, X } from "lucide-react";
 import { VerifyBvnModal } from "./verify-bvn-modal";
+import { UseVerificationStatus } from "@/lib/services/profile.service";
 
 export default function WalletPage() {
   const [tab, setTab] = useState<WalletTab>("total");
-
-   const [isVerified, setIsVerified] = useState(false);
-  const [showVerifyBanner, setShowVerifyBanner] = useState(true);
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
- 
+
   // ── Add Funds modal
   const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const {
+    data: verificationData,
+    isPending: verificationPending,
+    error: verificationError,
+  } = UseVerificationStatus();
+
+  const verification = verificationData?.data;
+
+  const isStepCompleted = (stepId: string) =>
+    verification?.progress?.some(
+      (step: any) => step.id === stepId && step.isCompleted,
+    );
+
+  const isBvnVerified = isStepCompleted("BVN");
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
-      {!isVerified && showVerifyBanner && (
+      {!isBvnVerified && (
         <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-[20px] bg-[#042F2E] border-l-3 border-[#0F766E]">
           <div className="flex items-center gap-3 min-w-0">
             <div className="min-w-0">
@@ -40,7 +52,8 @@ export default function WalletPage() {
               onClick={() => setVerifyModalOpen(true)}
               className="text-xs cursor-pointer font-medium leading-5 text-[#5EEAD4] hover:text-[#5EEAD4]/60 transition-colors whitespace-nowrap flex items-center gap-2"
             >
-              Verify Now<ArrowUpRight className="w-4 h-4" />
+              Verify Now
+              <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
         </div>
@@ -74,7 +87,7 @@ export default function WalletPage() {
           ))}
         </div>
         {tab === "total" && <ValueBalance />}
-        {tab === "fiat" && <FiatBalance />}
+        {tab === "fiat" && <FiatBalance isBvnVerified={isBvnVerified} />}
         {tab === "crypto" && <CryptoBalance />}
       </DashboardCard>
 
@@ -86,12 +99,8 @@ export default function WalletPage() {
       <VerifyBvnModal
         open={verifyModalOpen}
         onClose={() => setVerifyModalOpen(false)}
-        onVerified={() => {
-          setIsVerified(true);
-          setShowVerifyBanner(false);
-        }}
       />
- 
+
       {/* <AddFundsModal
         open={addFundsOpen}
         onClose={() => setAddFundsOpen(false)}
