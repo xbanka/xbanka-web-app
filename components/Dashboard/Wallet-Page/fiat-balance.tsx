@@ -7,6 +7,7 @@ import { WalletTransactionTypes } from "@/lib/types/transaction-types";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundsModal } from "./add-funds-modal";
+import { AddFundModal } from "./add-fund-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
@@ -81,12 +82,19 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
           </div>
         </div>
         {addFundsOpen && (
-          <AddFundsModal
+          <AddFundModal
             open={addFundsOpen}
             onClose={() => setAddFundsOpen(false)}
             onSuccess={() => setAddFundsOpen(false)}
           />
         )}
+        {/* {addFundsOpen && (
+          <AddFundsModal
+            open={addFundsOpen}
+            onClose={() => setAddFundsOpen(false)}
+            onSuccess={() => setAddFundsOpen(false)}
+          />
+        )} */}
       </DashboardCard>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   executeConversion,
+  fundFiatWallet,
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
@@ -11,10 +12,15 @@ import {
   getSingleWalletBalance,
   getTransactionHistory,
   quoteConversion,
+  verifyFund,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
-import { ConvertExecutePayload, QuoteExecutePayload } from "../types/crypto-types";
+import {
+  ConvertExecutePayload,
+  QuoteExecutePayload,
+} from "../types/crypto-types";
 import { toast } from "sonner";
+import { fundWalletPayload } from "../types/transaction-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -68,6 +74,45 @@ export const UseGetFiatWallet = () => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+  });
+};
+
+export const UseVerifyFund = () => {
+  return useMutation({
+    mutationFn: (data: string) => verifyFund(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const UseFundFiatWallet = () => {
+  return useMutation({
+    mutationFn: (data: fundWalletPayload) => fundFiatWallet(data),
+    onSuccess: (result) => {
+      console.log("FULL result", result);
+
+      const payload = result?.data || result; // 🔥 safe fallback
+
+      const url = payload?.authorization_url;
+      const ref = payload?.reference;
+
+      if (!url) {
+        console.error("No authorization_url found", result);
+        toast.error("Payment initialization failed");
+        return;
+      }
+
+      localStorage.setItem("fund_ref", ref);
+
+      window.location.href = url;
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };

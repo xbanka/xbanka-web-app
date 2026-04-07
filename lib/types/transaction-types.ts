@@ -37,3 +37,7 @@ export interface WalletTransactionTypes {
   };
   updatedAt: string;
 }
+
+export interface fundWalletPayload {
+  amount: number
+}
