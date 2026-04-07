@@ -2,11 +2,13 @@
 import { useEffect } from "react";
 import { RateLocked } from "./rate-locked";
 import { X } from "lucide-react";
+import { useExecuteConversion } from "@/lib/services/wallet.service";
+import { ErrorField } from "@/components/ui/field-error";
 
 export function ConfirmModal({
   open,
   onClose,
-  onConfirm,
+  handleReset,
   mode,
   payAmount,
   paySymbol,
@@ -14,20 +16,44 @@ export function ConfirmModal({
   receiveSymbol,
   rate,
   fee,
-  onRefreshQuote
+  onRefreshQuote,
+  quoteId,
+  sourceCurrency,
+  targetCurrency,
 }: {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  mode: "buy" | "sell";
-  payAmount: string;
+  handleReset: () => void;
+  mode: "BUY" | "SELL";
+  payAmount: string | number;
   paySymbol: string;
   receiveAmount: string;
   receiveSymbol: string;
   rate: string;
   fee: string;
   onRefreshQuote?: () => void;
+  quoteId: string;
+  sourceCurrency: string;
+  targetCurrency: string;
 }) {
+  const { data, mutate, isPending, error } = useExecuteConversion();
+
+  const handleSubmit = () => {
+    mutate(
+      {
+        quoteId,
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(payAmount)
+      },
+      {
+        onSuccess: (res) => {
+          handleReset();
+        },
+      },
+    );
+  };
+
   useEffect(() => {
     if (!open) return;
     const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -50,7 +76,7 @@ export function ConfirmModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border">
           <h3 className="text-base font-semibold text-card-text">
-            Confirm {mode === "buy" ? "Purchase" : "Sale"} modal
+            Confirm {mode === "BUY" ? "Purchase" : "Sale"} modal
           </h3>
           <button
             onClick={onClose}
@@ -62,13 +88,13 @@ export function ConfirmModal({
 
         {/* Body */}
         <div className="px-5 py-5 space-y-4">
-          <RateLocked seconds={30} />
+          <RateLocked key={rate} seconds={30} onExpire={onRefreshQuote} />
 
           {/* You Pay / You Receive */}
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-background border border-border rounded-xl p-3">
               <p className="text-xs text-text mb-1">
-                {mode === "buy" ? "You Pay" : "You Sell"}
+                {mode === "BUY" ? "You Pay" : "You Sell"}
               </p>
               <p className="text-base font-bold text-card-text">{payAmount}</p>
               <p className="text-xs text-text mt-0.5">{paySymbol}</p>
@@ -79,6 +105,8 @@ export function ConfirmModal({
               <p className="text-xs text-text mt-0.5">{receiveSymbol}</p>
             </div>
           </div>
+
+          {error && <ErrorField message={error.message} />}
 
           {/* Rate + Fee */}
           <div className="space-y-2 text-xs">
@@ -105,17 +133,18 @@ export function ConfirmModal({
         {/* Footer */}
         <div className="flex gap-3 px-5 pb-5">
           <button
-            onClick={onClose}
+            onClick={handleReset}
             className="flex-1 h-10 rounded-xl border border-border text-sm font-medium text-card-text hover:bg-border transition-colors"
           >
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            onClick={handleSubmit}
+            disabled={isPending}
             className={`flex-1 h-10 rounded-xl text-sm font-semibold text-white transition-colors
-              ${mode === "buy" ? "bg-Green hover:bg-Green/90" : "bg-error-text hover:bg-error-text/90"}`}
+              ${mode === "BUY" ? "bg-Green hover:bg-Green/90" : "bg-error-text hover:bg-error-text/90"}`}
           >
-            Confirm {mode === "buy" ? "Purchase" : "Sale"}
+            {isPending ? "Confirming..." : "Confirm"} {mode === "BUY" ? "Purchase" : "Sale"}
           </button>
         </div>
       </div>

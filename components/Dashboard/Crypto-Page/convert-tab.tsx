@@ -1,13 +1,21 @@
-"use client"
+"use client";
 import { ArrowUpDown } from "lucide-react";
 import { AmountRow } from "./amount-input";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MarketHighlight } from "./market-highlight";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { useForm } from "react-hook-form";
-import { useExecuteConversion } from "@/lib/services/wallet.service";
+import {
+  useExecuteConversion,
+  useGetCurrency,
+  useGetGroupedPair,
+  useGetRateConversion,
+  useQuoteConversion,
+} from "@/lib/services/wallet.service";
 import { useDebounce } from "@/hooks/useDebounce";
 import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
+import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
+import { Button } from "@/components/ui/button";
 
 type FormValues = {
   amount: string;
@@ -16,68 +24,127 @@ type FormValues = {
 };
 
 export function ConvertTab() {
-  const [fromAmount, setFromAmount] = useState("823.50");
-  const { register, watch, setValue } = useForm<FormValues>({
-    defaultValues: {
-      amount: "",
-      sourceCurrency: "USDT",
-      targetCurrency: "NGN",
-    },
-  });
+  const [amount, setAmount] = useState("");
+  const [receiveAmount, setReceiveAmount] = useState("");
+  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
+  const [convertData, setConvertData] =
+    useState<CryptoGetConversionTypes | null>();
+  const [sourceCurrency, setSourceCurrency] = useState("BTC");
+  const [targetCurrency, setTargetCurrency] = useState("USDT");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [error, setError] = useState("");
 
-  const { mutate, isPending } = useExecuteConversion();
+  const { data, mutate, isPending } = useQuoteConversion();
+  const {
+    data: RateConversionData,
+    mutate: RateConversionMutate,
+    isPending: RateConversionPending,
+  } = useGetRateConversion();
 
-  const amount = watch("amount");
-  const sourceCurrency = watch("sourceCurrency");
-  const targetCurrency = watch("targetCurrency");
+  const {
+    data: groupedPairData,
+    error: groupedPairError,
+    isPending: groupedPairPending,
+  } = useGetGroupedPair();
+
+  const {
+    error: currencyError,
+    data: currencyData,
+    isPending: currencyPending,
+  } = useGetCurrency();
+
+  const currencies = currencyData?.data || [];
+  const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
+
+  const validTargets =
+    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+
+  const SOURCE_OPTIONS = useMemo(() => {
+    return currencies.map((item: any) => ({
+      label: item.code,
+      value: item.code,
+    }));
+  }, [currencies]);
+
+  const TARGET_OPTIONS = useMemo(() => {
+  const pairs =
+    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+
+  return pairs.map((p: any) => ({
+    label: p.code,
+    value: p.code,
+  }));
+}, [pairMap, sourceCurrency]);
 
   const debouncedAmount = useDebounce(amount, 500);
 
-  const [quoteId, setQuoteId] = useState("");
-
-  // 🔥 Auto call backend when user stops typing
   useEffect(() => {
-    if (!debouncedAmount || Number(debouncedAmount) <= 0) return;
+  if (!TARGET_OPTIONS.find((o: any) => o.value === targetCurrency)) {
+    setTargetCurrency(TARGET_OPTIONS[0]?.value || "");
+  }
+}, [TARGET_OPTIONS]);
 
-    mutate({
-      quoteId: "temp-quote-id", // replace with real quote endpoint later
-      sourceCurrency,
-      targetCurrency,
-      amount: Number(debouncedAmount),
-    });
+  useEffect(() => {
+    if (!debouncedAmount) {
+      setError("Amount is required");
+      setReceiveAmount("");
+      return;
+    }
+
+    if (Number(debouncedAmount) <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
+
+    setError("");
+
+    RateConversionMutate(
+      {
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(debouncedAmount),
+        action: "BUY",
+      },
+      {
+        onSuccess: (res) => {
+          const result = res?.data;
+
+          setReceiveAmount(result?.amount?.toString() || "");
+          console.log("quote result", result);
+          setConvertData(result);
+        },
+      },
+    );
   }, [debouncedAmount, sourceCurrency, targetCurrency]);
- 
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <DashboardCard className="lg:col-span-2 space-y-3">
-        {/* <AmountRow 
-          label="From"
-          available="0.00034 BTC"
-          currency="BTC"
-          onCurrencyToggle={() => {}}
-          showMax
-          OPTIONS={FIAT_OPTIONS}
-          id={"amount"}
-          currencyId={"sourceCurrency"}
-        /> */}
-        <p className="text-[10px] text-text px-1">Min: 0.0001 BTC • Max: 1 BTC</p>
- 
-        {/* Swap icon */}
-        <div className="flex justify-center">
-          <div className="w-8 h-8 rounded-full border border-border bg-card-background flex items-center justify-center text-text hover:border-border-active hover:text-Green transition-colors cursor-pointer">
-            <ArrowUpDown className="w-4 h-4" />
-          </div>
-        </div>
- 
-        {/* <AmountRow
-          label="To (Estimated)"
-          currency="USDT"
-          onCurrencyToggle={() => {}}
-          OPTIONS={FIAT_OPTIONS}
-          id={"amount"}
-          currencyId={"sourceCurrency"}
-        /> */}
- 
+        <AmountRow
+          label="You Receive"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          OPTIONS={SOURCE_OPTIONS}
+          currencyId
+          selectedCurrency={sourceCurrency}
+          onCurrencyChange={setSourceCurrency}
+        />
+        <p className="text-[10px] text-text px-1">
+          Min: 0.0001 BTC • Max: 1 BTC
+        </p>
+
+        <AmountRow
+          label="You Receive"
+          value={
+            convertData?.netPayout ? convertData.netPayout.toLocaleString() : ""
+          }
+          readOnly
+          OPTIONS={TARGET_OPTIONS}
+          currencyId
+          selectedCurrency={targetCurrency}
+          onCurrencyChange={setTargetCurrency}
+        />
+
         <div className="flex items-center justify-between text-xs px-1">
           <span className="text-text">1 BTC = 92,300 USDT</span>
         </div>
@@ -89,15 +156,19 @@ export function ConvertTab() {
           <span className="text-text">You get</span>
           <span className="text-card-text">0.00 USDT</span>
         </div>
- 
-        <button className="w-full h-11 rounded-xl bg-Green hover:bg-Green/90 text-white text-sm font-semibold transition-colors">
+
+        <Button className="w-full transition-colors">
           Get Quote
-        </button>
+        </Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}
-          <span className="text-Green cursor-pointer hover:underline">Terms & Conditions</span>
-          {" "}and{" "}
-          <span className="text-Green cursor-pointer hover:underline">Privacy Policy</span>
+          <span className="text-Green cursor-pointer hover:underline">
+            Terms & Conditions
+          </span>{" "}
+          and{" "}
+          <span className="text-Green cursor-pointer hover:underline">
+            Privacy Policy
+          </span>
         </p>
       </DashboardCard>
       <MarketHighlight />

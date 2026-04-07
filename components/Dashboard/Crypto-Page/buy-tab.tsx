@@ -24,8 +24,8 @@ type FormValues = {
 export function BuyTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes>();
-  const [convertData, setConvertData] = useState<CryptoGetConversionTypes>();
+  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
+  const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
   const [sourceCurrency, setSourceCurrency] = useState("NGNX");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -69,6 +69,13 @@ export function BuyTab() {
     refetchQuote();
     setConfirmOpen(true);
   };
+
+  const handleReset = () => {
+    setConvertData(null)
+    setQuoteData(null)
+    setAmount("")
+    setConfirmOpen(false);
+  }
 
   const refetchQuote = () => {
     mutate(
@@ -186,9 +193,9 @@ export function BuyTab() {
       <ConfirmModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => setConfirmOpen(false)}
-        mode="buy"
-        payAmount={`₦${Number(amount || 0).toLocaleString()}`}
+        handleReset={handleReset}
+        mode="BUY"
+        payAmount={Number(amount || 0)}
         paySymbol={sourceCurrency}
         receiveAmount={`${quoteData?.netPayout} ${targetCurrency}`}
         receiveSymbol={targetCurrency}
@@ -199,6 +206,9 @@ export function BuyTab() {
         }
         fee={quoteData?.netPayout ? `${quoteData.rate}` : "0 Fee"}
         onRefreshQuote={refetchQuote}
+        quoteId={quoteData?.quoteId || ""}
+        sourceCurrency={sourceCurrency}
+        targetCurrency={targetCurrency}
       />
     </>
   );

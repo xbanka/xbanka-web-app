@@ -32,8 +32,8 @@ export function SellTab() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sourceCurrency, setSourceCurrency] = useState("NGNX");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
-  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes>();
-  const [convertData, setConvertData] = useState<CryptoGetConversionTypes>();
+  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
+  const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
 
   // const { mutate, isPending } = useExecuteConversion();
   const { data, mutate, isPending } = useQuoteConversion();
@@ -86,6 +86,13 @@ export function SellTab() {
     refetchQuote();
     setConfirmOpen(true);
   };
+
+  const handleReset = () => {
+    setConvertData(null)
+    setQuoteData(null)
+    setAmount("")
+    setConfirmOpen(false);
+  }
 
   const refetchQuote = () => {
     mutate(
@@ -188,7 +195,7 @@ export function SellTab() {
             </button>
           </p>
           <Button
-            onClick={() => setConfirmOpen(true)}
+            onClick={handleQuoteModal}
             className="w-full transition-colors"
           >
             Get Quote
@@ -209,9 +216,9 @@ export function SellTab() {
       <ConfirmModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => setConfirmOpen(false)}
-        mode="sell"
-        payAmount={`₦${Number(amount || 0).toLocaleString()}`}
+        handleReset={handleReset}
+        mode="SELL"
+        payAmount={Number(amount || 0)}
         paySymbol={sourceCurrency}
         receiveAmount={`${quoteData?.netPayout} ${targetCurrency}`}
         receiveSymbol={targetCurrency}
@@ -222,6 +229,9 @@ export function SellTab() {
         }
         fee={quoteData?.netPayout ? `${quoteData.rate}` : "0 Fee"}
         onRefreshQuote={refetchQuote}
+        quoteId={quoteData?.quoteId || ""}
+        sourceCurrency={sourceCurrency}
+        targetCurrency={targetCurrency}
       />
     </>
   );
