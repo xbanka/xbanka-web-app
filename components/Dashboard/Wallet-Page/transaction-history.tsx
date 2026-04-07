@@ -59,6 +59,7 @@ export function TransactionHistory({
       }) || []
     );
   }, [fiatTransactions, filter, selectedType, searchQuery, tableType]);
+  console.log("filter",filteredData, transactions)
 
   const columns = [
     {
@@ -199,7 +200,7 @@ export function TransactionHistory({
       <div className="overflow-x-auto">
         {isCrypto ? (
           <DataTableLayout
-            data={filteredData}
+            data={transactions}
             columns={cryptoColumns}
             isError={isError}
             isLoading={isPending}
@@ -213,7 +214,7 @@ export function TransactionHistory({
           />
         ) : (
           <DataTableLayout
-            data={filteredData}
+            data={transactions}
             columns={columns}
             isError={isError}
             isLoading={isPending}
