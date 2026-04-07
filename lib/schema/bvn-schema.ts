@@ -18,4 +18,4 @@ export const pinSchema = z.object({
  
 export type BvnForm = z.infer<typeof bvnSchema>;
 export type PinForm = z.infer<typeof pinSchema>;
-export type ModalState = "verify" | "error" | "success" | "pin";
+export type ModalState = "verify" | "error" | "success" | "pin" | "pinSuccess";

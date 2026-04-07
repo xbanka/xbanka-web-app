@@ -1,13 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  executeConversion,
+  fundFiatWallet,
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
+  getCurrency,
+  getDepositCrypto,
   getFiatWallet,
+  getGroupedPair,
+  getRateConversion,
   getSingleWalletBalance,
   getTransactionHistory,
+  quoteConversion,
+  verifyFund,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
+import {
+  ConvertExecutePayload,
+  QuoteExecutePayload,
+} from "../types/crypto-types";
+import { toast } from "sonner";
+import { fundWalletPayload } from "../types/transaction-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -65,6 +79,57 @@ export const UseGetFiatWallet = () => {
   });
 };
 
+// export const UseDepositCrypto = () => {
+//   return useMutation({
+//     mutationFn: (data: string) => getDepositCrypto(data),
+//     onSuccess: (result) => {
+//       toast.success("Conversion successful");
+//     },
+//     onError: (err) => {
+//       handleApiError(err);
+//     },
+//   });
+// };
+
+export const UseVerifyFund = () => {
+  return useMutation({
+    mutationFn: (data: string) => verifyFund(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const UseFundFiatWallet = () => {
+  return useMutation({
+    mutationFn: (data: fundWalletPayload) => fundFiatWallet(data),
+    onSuccess: (result) => {
+      console.log("FULL result", result);
+
+      const payload = result?.data || result; // 🔥 safe fallback
+
+      const url = payload?.authorization_url;
+      const ref = payload?.reference;
+
+      if (!url) {
+        console.error("No authorization_url found", result);
+        toast.error("Payment initialization failed");
+        return;
+      }
+
+      localStorage.setItem("fund_ref", ref);
+
+      window.location.href = url;
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
 export const UseGetBankAcounts = () => {
   return useQuery({
     queryKey: ["bank-accounts"],
@@ -85,6 +150,70 @@ export const UseGetTransactionHistory = (page = 1, limit = 10) => {
     queryFn: async () => {
       try {
         const response = await getTransactionHistory({ page, limit });
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
+export const useGetRateConversion = () => {
+  return useMutation({
+    mutationFn: (data: QuoteExecutePayload) => getRateConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useQuoteConversion = () => {
+  return useMutation({
+    mutationFn: (data: QuoteExecutePayload) => quoteConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useExecuteConversion = () => {
+  return useMutation({
+    mutationFn: (data: ConvertExecutePayload) => executeConversion(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useGetCurrency = () => {
+  return useQuery({
+    queryKey: ["get-currency"],
+    queryFn: async () => {
+      try {
+        const response = await getCurrency();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
+export const useGetGroupedPair = () => {
+  return useQuery({
+    queryKey: ["get-grouped-pair"],
+    queryFn: async () => {
+      try {
+        const response = await getGroupedPair();
         return response;
       } catch (err) {
         handleApiError(err);

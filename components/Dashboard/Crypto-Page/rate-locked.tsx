@@ -1,12 +1,19 @@
 "use client"
 import { useEffect, useState } from "react";
 
-export function RateLocked({ seconds = 30 }: { seconds?: number }) {
+export function RateLocked({ seconds = 30, onExpire }: { seconds?: number, onExpire?: () => void; }) {
   const [remaining, setRemaining] = useState(seconds);
   useEffect(() => {
-    if (remaining <= 0) return;
-    const t = setInterval(() => setRemaining((s) => s - 1), 1000);
-    return () => clearInterval(t);
+    if (remaining <= 0) {
+      onExpire?.(); // 🔥 trigger refetch
+      return;
+    }
+
+    const t = setTimeout(() => {
+      setRemaining((s) => s - 1);
+    }, 1000);
+
+    return () => clearTimeout(t);
   }, [remaining]);
   const pct = (remaining / seconds) * 100;
   return (

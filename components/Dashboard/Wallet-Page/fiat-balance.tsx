@@ -6,12 +6,16 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { WalletTransactionTypes } from "@/lib/types/transaction-types";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
+import { AddFundsModal } from "./add-funds-modal";
+import { AddFundModal } from "./add-fund-modal";
 
-export const FiatBalance = () => {
+export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
   const { data, error, isPending } = UseGetFiatWallet();
+  const [addFundsOpen, setAddFundsOpen] = useState(false);
   const wallets = data?.data?.data || [];
   const latestWallet = wallets[0];
+  const isAddFundDisabled = !isBvnVerified;
   console.log("fiat wallet balance", data);
   return (
     <div>
@@ -42,11 +46,24 @@ export const FiatBalance = () => {
               ≈ ₦{latestWallet?.balance ?? 0} today
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <Button size={"sm"} className="flex items-center transition-colors">
-              <Plus className="w-5 h-5" />
-              Add Fund
-            </Button>
+          <div className="flex items-start gap-4">
+            <div className="">
+              <Button
+              onClick={() => setAddFundsOpen(true)}
+                variant={isAddFundDisabled ? "disabled" : "default"}
+                disabled={isAddFundDisabled}
+                size={"sm"}
+                className="flex items-center transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+                Add Fund
+              </Button>
+              {isAddFundDisabled && (
+                <span className="text-[10px] text-error-text">
+                  Verify your bvn
+                </span>
+              )}
+            </div>
             <Button
               variant={"outline"}
               size={"sm"}
@@ -64,6 +81,20 @@ export const FiatBalance = () => {
             </Button>
           </div>
         </div>
+        {addFundsOpen && (
+          <AddFundModal
+            open={addFundsOpen}
+            onClose={() => setAddFundsOpen(false)}
+            onSuccess={() => setAddFundsOpen(false)}
+          />
+        )}
+        {/* {addFundsOpen && (
+          <AddFundsModal
+            open={addFundsOpen}
+            onClose={() => setAddFundsOpen(false)}
+            onSuccess={() => setAddFundsOpen(false)}
+          />
+        )} */}
       </DashboardCard>
     </div>
   );
