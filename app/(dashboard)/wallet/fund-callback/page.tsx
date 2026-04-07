@@ -1,9 +1,11 @@
 import FundCallbackPage from '@/components/Dashboard/Wallet-Page/add-fund-fiat-callback'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 const page = () => {
   return (
-    <div><FundCallbackPage /></div>
+     <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+      <FundCallbackPage />
+    </Suspense>
   )
 }
 
