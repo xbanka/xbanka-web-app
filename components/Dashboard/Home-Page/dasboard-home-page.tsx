@@ -5,17 +5,18 @@ import { MarketOverview } from "./market-overview";
 import { OnboardingJourney } from "./onboarding-journey";
 import { QuickActions } from "./quick-actions";
 import { TopGiftCards } from "./top-gift-card";
+import { useUserStore } from "@/store/user.store";
 
 export default function DashboardPage() {
   const {data } = UseGetDashboardData()
   const {data: payOut } = UseGetDashboardPayoutTrend()
-  console.log("data and payout", data, payOut)
+  const user = useUserStore((item) => item.user)
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}
       <div>
         <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">
-          Welcome to Xbanka, Josh 👋
+          Welcome to Xbanka, {user?.firstName} 👋
         </h1>
       </div>
  
