@@ -38,6 +38,12 @@ export const getCryptoWallet = async () => {
   };
 };
 
+export const getDepositCrypto = async () => {
+  const response = await AxiosInstance.post("/wallets/deposit/crypto");
+
+  return response.data;
+};
+
 export const getFiatWallet = async () => {
   const response = await AxiosInstance.get("/wallets/fiat");
 
@@ -54,13 +60,11 @@ export const fundFiatWallet = async (data: fundWalletPayload) => {
     callback_url: `${window.location.origin}/wallet/fund-callback`,
   });
 
-  return response.data
+  return response.data;
 };
 
 export const verifyFund = async (reference: string) => {
-  const res = await AxiosInstance.get(
-    `/wallets/fiat/fund/verify/${reference}`
-  );
+  const res = await AxiosInstance.get(`/wallets/fiat/fund/verify/${reference}`);
 
   return res.data;
 };
@@ -94,7 +98,10 @@ export const getTransactionHistory = async ({
 };
 
 export const getRateConversion = async (data: QuoteExecutePayload) => {
-  const response = await AxiosInstance.post("/wallets/convert/check-rate", data);
+  const response = await AxiosInstance.post(
+    "/wallets/convert/check-rate",
+    data,
+  );
 
   return response.data;
 };

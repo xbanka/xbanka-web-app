@@ -6,6 +6,7 @@ import {
   getBankAcounts,
   getCryptoWallet,
   getCurrency,
+  getDepositCrypto,
   getFiatWallet,
   getGroupedPair,
   getRateConversion,
@@ -77,6 +78,18 @@ export const UseGetFiatWallet = () => {
     },
   });
 };
+
+// export const UseDepositCrypto = () => {
+//   return useMutation({
+//     mutationFn: (data: string) => getDepositCrypto(data),
+//     onSuccess: (result) => {
+//       toast.success("Conversion successful");
+//     },
+//     onError: (err) => {
+//       handleApiError(err);
+//     },
+//   });
+// };
 
 export const UseVerifyFund = () => {
   return useMutation({
