@@ -75,7 +75,7 @@ export function RecentTransactions() {
           See all
         </button>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 relative">
         {transactionHistoryPending && (
           <div>
             {Array.from({ length: 4 }).map((_, i) => (
@@ -110,7 +110,7 @@ export function RecentTransactions() {
         {!transactionHistoryPending &&
           !transactionHistoryIsError &&
           fiatTransactions?.length === 0 && (
-            <div className="border-none text-center flex flex-col justify-center items-center">
+            <div className="absolute -top-1/2 translate-1/2 left-0 mx-auto border-none text-center">
               <Image
                 className="mx-auto mb-1"
                 alt="frame"

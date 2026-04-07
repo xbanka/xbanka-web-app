@@ -188,12 +188,16 @@ export function SellTab() {
             onCurrencyChange={setSourceCurrency}
           />
 
-          <p className="text-[10px] text-text px-1">
-            Receive to xbanka wallet — 1 USDT ≈ 1,470.79 NGN{" "}
-            <button className="text-Green inline-flex items-center gap-0.5 hover:underline">
-              <RefreshCcw className="w-2.5 h-2.5" />
-            </button>
-          </p>
+          {RateConversionData?.data?.estimatedPrice && (
+              <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+                <div className="flex items-center gap-1.5">
+                  <span>{RateConversionData?.data?.estimatedPrice}</span>
+                  <button className="text-card-text hover:text-Green/80 transition-colors">
+                    <RefreshCcw className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           <Button
             onClick={handleQuoteModal}
             className="w-full transition-colors"

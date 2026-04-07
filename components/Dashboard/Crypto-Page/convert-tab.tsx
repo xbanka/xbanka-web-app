@@ -1,5 +1,5 @@
 "use client";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, RefreshCcw } from "lucide-react";
 import { AmountRow } from "./amount-input";
 import { useEffect, useMemo, useState } from "react";
 import { MarketHighlight } from "./market-highlight";
@@ -67,22 +67,22 @@ export function ConvertTab() {
   }, [currencies]);
 
   const TARGET_OPTIONS = useMemo(() => {
-  const pairs =
-    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+    const pairs =
+      pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
 
-  return pairs.map((p: any) => ({
-    label: p.code,
-    value: p.code,
-  }));
-}, [pairMap, sourceCurrency]);
+    return pairs.map((p: any) => ({
+      label: p.code,
+      value: p.code,
+    }));
+  }, [pairMap, sourceCurrency]);
 
   const debouncedAmount = useDebounce(amount, 500);
 
   useEffect(() => {
-  if (!TARGET_OPTIONS.find((o: any) => o.value === targetCurrency)) {
-    setTargetCurrency(TARGET_OPTIONS[0]?.value || "");
-  }
-}, [TARGET_OPTIONS]);
+    if (!TARGET_OPTIONS.find((o: any) => o.value === targetCurrency)) {
+      setTargetCurrency(TARGET_OPTIONS[0]?.value || "");
+    }
+  }, [TARGET_OPTIONS]);
 
   useEffect(() => {
     if (!debouncedAmount) {
@@ -144,22 +144,31 @@ export function ConvertTab() {
           selectedCurrency={targetCurrency}
           onCurrencyChange={setTargetCurrency}
         />
-
-        <div className="flex items-center justify-between text-xs px-1">
-          <span className="text-text">1 BTC = 92,300 USDT</span>
-        </div>
+        {RateConversionData?.data?.estimatedPrice && (
+          <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+            <div className="flex items-center gap-1.5">
+              <span>{RateConversionData?.data?.estimatedPrice}</span>
+              <button className="text-card-text hover:text-Green/80 transition-colors">
+                <RefreshCcw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
         <div className="flex items-center justify-between text-xs px-1">
           <span className="text-text">Transaction Fee</span>
           <span className="text-green-500 font-medium">0 Fee</span>
         </div>
-        <div className="flex items-center justify-between text-xs px-1 font-medium">
-          <span className="text-text">You get</span>
-          <span className="text-card-text">0.00 USDT</span>
-        </div>
+        {RateConversionData?.data && (
+          <div className="flex items-center justify-between text-xs px-1 font-medium">
+            <span className="text-text">You get</span>
+            <span className="text-card-text">
+              {RateConversionData?.data?.netPayout}{" "}
+              {RateConversionData?.data?.targetCurrency}
+            </span>
+          </div>
+        )}
 
-        <Button className="w-full transition-colors">
-          Get Quote
-        </Button>
+        <Button className="w-full transition-colors">Get Quote</Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}
           <span className="text-Green cursor-pointer hover:underline">

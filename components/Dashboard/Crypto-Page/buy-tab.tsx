@@ -25,7 +25,8 @@ export function BuyTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
-  const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
+  const [convertData, setConvertData] =
+    useState<CryptoGetConversionTypes | null>();
   const [sourceCurrency, setSourceCurrency] = useState("NGNX");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -37,6 +38,7 @@ export function BuyTab() {
     mutate: RateConversionMutate,
     isPending: RateConversionPending,
   } = useGetRateConversion();
+  console.log("RateConversionData", RateConversionData)
   const {
     data: groupedPairData,
     error: groupedPairError,
@@ -71,11 +73,11 @@ export function BuyTab() {
   };
 
   const handleReset = () => {
-    setConvertData(null)
-    setQuoteData(null)
-    setAmount("")
+    setConvertData(null);
+    setQuoteData(null);
+    setAmount("");
     setConfirmOpen(false);
-  }
+  };
 
   const refetchQuote = () => {
     mutate(
@@ -160,14 +162,16 @@ export function BuyTab() {
               selectedCurrency={targetCurrency}
               onCurrencyChange={setTargetCurrency}
             />
-            <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
-              <div className="flex items-center gap-1.5">
-                <span>1 USDT ≈ 1,470.75 NGN</span>
-                <button className="text-card-text hover:text-Green/80 transition-colors">
-                  <RefreshCcw className="w-4 h-4" />
-                </button>
+            {RateConversionData?.data?.estimatedPrice && (
+              <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+                <div className="flex items-center gap-1.5">
+                  <span>{RateConversionData?.data?.estimatedPrice}</span>
+                  <button className="text-card-text hover:text-Green/80 transition-colors">
+                    <RefreshCcw className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="space-y-2">
             <Button
