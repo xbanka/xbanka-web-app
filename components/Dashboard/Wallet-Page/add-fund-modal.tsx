@@ -1,8 +1,5 @@
 "use client";
 import { useState } from "react";
-import { BankAccountForm } from "./bank-account-form";
-import { DebitCardForm } from "./debit-card-modal";
-import { SelectMethod } from "./select-method";
 import { FormField } from "@/components/ui/FormField";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -14,6 +11,8 @@ import {
   UseFundFiatWallet,
   UseGetFiatWalletSavedCards,
 } from "@/lib/services/wallet.service";
+import { SavedCardsList } from "./saved-card-lists";
+import { DebitCard } from "./debit-card-form";
 
 export interface AddFundModalProps {
   open: boolean;
@@ -29,7 +28,11 @@ export const addFundsSchema = z.object({
 export type AddFundsData = z.infer<typeof addFundsSchema>;
 
 export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
-  const [step, setStep] = useState("amount");
+  const [step, setStep] = useState<"amount" | "saved-cards" | "new-card">(
+    "amount",
+  );
+
+  const [amount, setAmount] = useState<number>();
 
   if (!open) return null;
 
@@ -66,24 +69,33 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
   };
 
   const onSubmit = (data: AddFundsData) => {
+    const parsedAmount = Number(data.amount);
+    setAmount(parsedAmount);
+
+    if (savedCardsData.length > 0) {
+      setStep("saved-cards");
+    } else {
+      setStep("new-card");
+      const payload = {
+        amount: Number(data.amount),
+        saveCard: data.saveCard,
+      };
+      console.log("payload", payload);
+
+      mutate(payload, {
+        onSuccess: (res) => {
+          reset();
+        },
+      });
+    }
     console.log("clicked", data);
-    const payload = {
-      amount: Number(data.amount),
-      saveCard: data.saveCard,
-    };
-    console.log("payload", payload);
-    mutate(payload, {
-      onSuccess: (res) => {
-        reset();
-      },
-    });
   };
 
   return (
     <Modal onClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        <div className="pt-6">
-          <div>
+      <div className="space-y-3">
+        <div className="py-6">
+          <div className="">
             <h1 className="font-semibold leading-8 text-2xl text-card-text">
               Add Funds
             </h1>
@@ -93,37 +105,50 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
           </div>
           <CloseBtn onClose={onClose} />
         </div>
-        <div>
-          <FormField
-            label="Amount"
-            id="amount"
-            register={register}
-            error={errors.amount}
+        {step === "amount" && (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <div className="space-y-2">
+              <FormField
+                label="Amount"
+                id="amount"
+                register={register}
+                error={errors.amount}
+              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="saveCard"
+                  {...register("saveCard")}
+                  className="cursor-pointer"
+                />
+                <label
+                  htmlFor="saveCard"
+                  className="text-sm text-text cursor-pointer"
+                >
+                  Save card for future payments
+                </label>
+              </div>
+            </div>
+            <div className="flex w-full gap-4">
+              <Button variant={"outline"} type="button" className="flex-2">
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-4">
+                {isPending ? "Continuing..." : "Continue to payment"}
+              </Button>
+            </div>
+          </form>
+        )}
+        {/* STEP 2: SAVED CARDS */}
+        {step === "saved-cards" && (
+          <SavedCardsList
+            cards={savedCardsData}
+            amount={amount ?? 0}
+            onBack={() => setStep("amount")}
+            onAddNew={() => setStep("new-card")}
           />
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="saveCard"
-              {...register("saveCard")}
-              className="cursor-pointer"
-            />
-            <label
-              htmlFor="saveCard"
-              className="text-sm text-text cursor-pointer"
-            >
-              Save card for future payments
-            </label>
-          </div>
-        </div>
-        <div className="flex w-full gap-4">
-          <Button variant={"outline"} type="button" className="flex-2">
-            Cancel
-          </Button>
-          <Button type="submit" className="flex-4">
-            {isPending ? "Continuing..." : "Continue to payment"}
-          </Button>
-        </div>
-      </form>
+        )}
+      </div>
     </Modal>
   );
 }
