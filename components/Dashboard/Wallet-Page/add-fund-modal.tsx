@@ -10,7 +10,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { CloseBtn } from "./verify-bvn-modal";
-import { UseFundFiatWallet } from "@/lib/services/wallet.service";
+import {
+  UseFundFiatWallet,
+  UseGetFiatWalletSavedCards,
+} from "@/lib/services/wallet.service";
 
 export interface AddFundModalProps {
   open: boolean;
@@ -20,6 +23,7 @@ export interface AddFundModalProps {
 
 export const addFundsSchema = z.object({
   amount: z.string("Please enter a valid amount"),
+  saveCard: z.boolean(),
 });
 
 export type AddFundsData = z.infer<typeof addFundsSchema>;
@@ -29,7 +33,12 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
 
   if (!open) return null;
 
-  const { mutate, error, isPending } = UseFundFiatWallet()
+  const { mutate, error, isPending } = UseFundFiatWallet();
+  const {
+    data: savedCardsData,
+    error: savedCardsError,
+    isPending: savedCardsPending,
+  } = UseGetFiatWalletSavedCards();
 
   const {
     register,
@@ -42,6 +51,7 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
     reValidateMode: "onChange",
     defaultValues: {
       amount: "",
+      saveCard: false,
     },
   });
 
@@ -56,20 +66,18 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
   };
 
   const onSubmit = (data: AddFundsData) => {
-    console.log("clicked", data)
+    console.log("clicked", data);
     const payload = {
-        amount: Number(data.amount)
-    }
-    console.log("payload", payload)
-    mutate(
-      payload,
-      {
-        onSuccess: (res) => {
-          reset()
-        },
+      amount: Number(data.amount),
+      saveCard: data.saveCard,
+    };
+    console.log("payload", payload);
+    mutate(payload, {
+      onSuccess: (res) => {
+        reset();
       },
-    );
-  }
+    });
+  };
 
   return (
     <Modal onClose={onClose}>
@@ -85,15 +93,35 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
           </div>
           <CloseBtn onClose={onClose} />
         </div>
-        <FormField
-          label="Amount"
-          id="amount"
-          register={register}
-          error={errors.amount}
-        />
+        <div>
+          <FormField
+            label="Amount"
+            id="amount"
+            register={register}
+            error={errors.amount}
+          />
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="saveCard"
+              {...register("saveCard")}
+              className="cursor-pointer"
+            />
+            <label
+              htmlFor="saveCard"
+              className="text-sm text-text cursor-pointer"
+            >
+              Save card for future payments
+            </label>
+          </div>
+        </div>
         <div className="flex w-full gap-4">
-        <Button variant={"outline"} type="button" className="flex-2">Cancel</Button>
-        <Button type="submit" className="flex-4">{isPending ? "Continuing..." : "Continue to payment"}</Button>
+          <Button variant={"outline"} type="button" className="flex-2">
+            Cancel
+          </Button>
+          <Button type="submit" className="flex-4">
+            {isPending ? "Continuing..." : "Continue to payment"}
+          </Button>
         </div>
       </form>
     </Modal>
