@@ -13,9 +13,16 @@ import {
 import { useState } from "react";
 import { BankAccountCard } from "./bank-account-card";
 import { Label } from "@/components/ui/label";
+import { useUserStore } from "@/store/user.store";
+import { formatDate } from "@/lib/formatDate";
+import { PersonalInfoTab } from "./personal-info-tab";
+import Image from "next/image";
+import { UseVerificationStatus } from "@/lib/services/profile.service";
+import { shortenUid } from "@/lib/shortenuid";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
+  const userData = useUserStore((state) => state.user);
 
   const banks = [
     {
@@ -48,6 +55,12 @@ export function AccountInfoTab() {
     },
   ];
 
+  const {
+    data: verificationData,
+    isPending: verificationPending,
+    error: verificationError,
+  } = UseVerificationStatus();
+
   return (
     <div className="space-y-4">
       {/* Profile header */}
@@ -60,20 +73,29 @@ export function AccountInfoTab() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-semibold leading-8 text-card-text">
-                  CoolJoe
+                  {userData?.firstName}
                 </h2>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                  Tier 2
-                </span>
+                {verificationData?.data?.tierLevel === 0 && (
+                  <Image width={60} height={19} alt="tier" src={"/Tier0.svg"} />
+                )}
+                {verificationData?.data?.tierLevel === 1 && (
+                  <Image width={60} height={19} alt="tier" src={"/Tier1.svg"} />
+                )}
+                {verificationData?.data?.tierLevel === 2 && (
+                  <Image width={60} height={19} alt="tier" src={"/Tier2.svg"} />
+                )}
+                {verificationData?.data?.tierLevel === 3 && (
+                  <Image width={60} height={19} alt="tier" src={"/Tier3.svg"} />
+                )}
               </div>
               <div className="flex items-center mt-1 gap-2">
                 <p className="text-xs font-normal leading-5.5 text-text">
-                  UID: 22345678
+                  UID: {shortenUid(userData?.userId)}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-text" />
                   <p className="text-xs font-medium leading-5.5 text-text">
-                    Member since Mar 7, 2023
+                    Member since {formatDate(userData?.createdAt || "")}
                   </p>
                 </div>
               </div>
@@ -81,9 +103,9 @@ export function AccountInfoTab() {
           </div>
           <Button
             variant={"outline"}
-            className="flex items-center gap-2 text-Green border border-input transition-colors"
+            size={"sm"}
+            className="gap-2 text-Green border border-input transition-colors"
           >
-            <Edit2 className="w-3.5 h-3.5" />
             Edit Profile
           </Button>
         </div>
@@ -129,7 +151,7 @@ export function AccountInfoTab() {
               Personal Information
             </h3>
             <p className="text-[14px] leading-5.5 font-medium text-text mt-1">
-              Last updated: Mar 7, 2026
+              Last updated: {formatDate(userData?.createdAt || "")}
             </p>
           </div>
           <button className="flex items-center gap-1.5 text-xs text-Green hover:underline">
@@ -139,73 +161,26 @@ export function AccountInfoTab() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-border p-5 rounded-lg">
-          {[
-            { label: "Full Name", value: "Joseph Eyebiokin", locked: false },
-            { label: "Display Name", value: "CoolJoe", locked: false },
-            {
-              label: "Email Address",
-              value: "Eye****@gmail.com",
-              action: "Change",
-              locked: false,
-            },
-            {
-              label: "Phone Number",
-              value: showNumber ? "+234 708 *** 81" : "+234 708 *** **",
-              locked: false,
-              toggle: true,
-            },
-            {
-              label: "Date of Birth",
-              value: "23rd February, 2002",
-              locked: true,
-            },
-            { label: "Gender", value: "Male", locked: true },
-            {
-              label: "Address",
-              value: "Not yet provided",
-              note: "Complete tier 3 verification by adding your address",
-              badge: "Tier 3 Required",
-              locked: false,
-            },
-            { label: "Nationality", value: "Nigerian", locked: true },
-          ].map((field, i) => (
-            <div key={i} className="space-y-1">
-              <Label label={field.label} />
-              <div className="flex items-center gap-2">
-                <p
-                  className={`text-sm font-medium ${field.value === "Not yet provided" ? "text-text" : "text-card-text"}`}
-                >
-                  {field.value}
-                </p>
-                {field.locked && <Lock className="w-3 h-3 text-text" />}
-                {(field as any).action && (
-                  <button className="text-xs text-Green hover:underline">
-                    {(field as any).action}
-                  </button>
-                )}
-                {field.toggle && (
-                  <button
-                    onClick={() => setShowNumber((v) => !v)}
-                    className="text-text hover:text-Green transition-colors"
-                  >
-                    {showNumber ? (
-                      <EyeOff className="w-3.5 h-3.5" />
-                    ) : (
-                      <Eye className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                )}
-                {(field as any).badge && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
-                    {(field as any).badge}
-                  </span>
-                )}
-              </div>
-              {(field as any).note && (
-                <p className="text-[10px] text-text">{(field as any).note}</p>
-              )}
-            </div>
-          ))}
+          <PersonalInfoTab
+            label="Full Name"
+            title={userData?.firstName + " " + userData?.lastName}
+          />
+          <PersonalInfoTab label="Display Name" title={userData?.email ?? ""} />
+          <PersonalInfoTab
+            label="Email Address"
+            title={userData?.email ?? ""}
+          />
+          <PersonalInfoTab
+            label="Phone Number"
+            title={userData?.phoneNumber ?? ""}
+          />
+          <PersonalInfoTab
+            label="Date of Birth"
+            title={userData?.userId ?? ""}
+          />
+          <PersonalInfoTab label="Gender" title={userData?.email ?? ""} />
+          <PersonalInfoTab label="Address" title={userData?.email ?? ""} />
+          <PersonalInfoTab label="Nationality" title={userData?.email ?? ""} />
         </div>
       </DashboardCard>
     </div>
