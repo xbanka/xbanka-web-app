@@ -22,6 +22,7 @@
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
+  --badge-border-green: #012E03;
 }
 
 @theme inline {
@@ -48,6 +49,7 @@
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple)
+  --color-badge-border-green: var(--badge-border-green)
 }
 
 [data-theme="dark"] {
@@ -72,6 +74,7 @@
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
+  --badge-border-green: #012E03;
 }
 
 @theme {

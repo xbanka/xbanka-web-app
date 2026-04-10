@@ -1,6 +1,6 @@
 export const sumFiatBalances = (wallets: any[]) => {
   return wallets.reduce((total, wallet) => {
-    return total + (wallet.balance || 0.00);
+    return total + (wallet.balance);
   }, 0);
 };
 

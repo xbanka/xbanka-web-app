@@ -4,9 +4,9 @@ import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { Input } from "@/components/ui/input";
 import { SelectField } from "@/components/ui/select";
 import { formatDate } from "@/lib/formatDate";
-import { CRYPTO_TRANSACTIONS, TRANSACTIONS } from "@/lib/MockData";
+import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
-import { StatusBadge } from "@/lib/statusBadge";
+import { TransactionHistoryStatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import { Search } from "lucide-react";
@@ -23,27 +23,25 @@ export function TransactionHistory({
 }: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
   const [selectedType, setSelectedType] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 4
   const tabs = ["All", "Pending", "Completed", "In Progress", "Failed"];
-  const data = isCrypto ? CRYPTO_TRANSACTIONS : TRANSACTIONS;
   const {
     data: transactionHistory,
     isPending,
     isError,
     error,
-  } = UseGetTransactionHistory();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
-  console.log("transactionHistory", transactionHistory);
+  } = UseGetTransactionHistory(page, limit);
+  
 
   const transactions = transactionHistory?.data?.data?.items || [];
-  const fiatTransactions = transactionHistoryType("CRYPTO", transactions)
 
   const filteredData = useMemo(() => {
     return (
-      fiatTransactions?.filter((item: TransactionTypes) => {
+      transactions?.filter((item: TransactionTypes) => {
         const searchStr = searchQuery.toLowerCase();
         const matchesSearch =
-          item?.type?.toLowerCase().includes(searchStr) ||
           item?.type?.toLowerCase().includes(searchStr) ||
           item?.reference?.toLowerCase().includes(searchStr);
 
@@ -52,21 +50,30 @@ export function TransactionHistory({
           item.status?.toLowerCase() === filter.toLowerCase();
 
         const matchesTransactionType =
+          !selectedType || // 👈 handles empty ""
           selectedType.toLowerCase() === "all" ||
-          item.type?.toLowerCase() === filter.toLowerCase();
+          item.type?.toLowerCase() === selectedType.toLowerCase();
 
         return matchesSearch && matchesStatus && matchesTransactionType;
       }) || []
     );
-  }, [fiatTransactions, filter, selectedType, searchQuery, tableType]);
-  console.log("filter",filteredData, transactions)
+  }, [transactions, filter, selectedType, searchQuery, tableType]);
+
+  const fiatTransactions = transactionHistoryType("FIAT", filteredData);
+  const cryptoTransactions = transactionHistoryType("CRYPTO", filteredData);
+
 
   const columns = [
     {
       key: "createdAt",
       header: "Date & Time",
       render: (item: TransactionTypes) => (
-        <span>{formatDate(item.createdAt)}</span>
+        <div>
+          <span>{formatDate(item.createdAt)}</span>
+          <p className="font-medium text-xs leading-5 text-text">
+            {formatTo12Hour(item.createdAt)}
+          </p>
+        </div>
       ),
     },
     {
@@ -78,14 +85,14 @@ export function TransactionHistory({
       key: "amount",
       header: "Amount",
       render: (item: TransactionTypes) => (
-        <span className="font-medium">{item.amount}</span>
+        <span className="">{item.amount}</span>
       ),
     },
     {
       key: "reference",
       header: "Reference ID",
       render: (item: TransactionTypes) => (
-        <span className="font-medium text-gray-700">{item.reference}</span>
+        <span className="">{item.reference}</span>
         // <span className="font-medium text-gray-700">
         //   ₦{Number(item.amount).toLocaleString()}
         // </span>
@@ -94,14 +101,14 @@ export function TransactionHistory({
     {
       key: "note",
       header: "Note",
-      render: (item: TransactionTypes) => (
-        <span className="font-medium text-gray-700">{item.note}</span>
-      ),
+      render: (item: TransactionTypes) => <span className="">{item.note}</span>,
     },
     {
       key: "status",
       header: "Status",
-      render: (item: TransactionTypes) => <StatusBadge status={item.status} />,
+      render: (item: TransactionTypes) => (
+        <TransactionHistoryStatusBadge status={item.status} />
+      ),
     },
   ];
 
@@ -110,7 +117,12 @@ export function TransactionHistory({
       key: "createdAt",
       header: "Date & Time",
       render: (item: TransactionTypes) => (
-        <span>{formatDate(item.createdAt)}</span>
+        <div>
+          <span>{formatDate(item.createdAt)}</span>
+          <p className="font-medium text-xs leading-5 text-text">
+            {formatTo12Hour(item.createdAt)}
+          </p>
+        </div>
       ),
     },
     {
@@ -143,7 +155,9 @@ export function TransactionHistory({
     {
       key: "status",
       header: "Status",
-      render: (item: TransactionTypes) => <StatusBadge status={item.status} />,
+      render: (item: TransactionTypes) => (
+        <TransactionHistoryStatusBadge status={item.status} />
+      ),
     },
   ];
 
@@ -186,6 +200,7 @@ export function TransactionHistory({
             id="gender"
             placeholder="Transaction Type"
             options={[
+              { value: "ALL", label: "All" },
               { value: "DEPOSIT", label: "DEPOSIT" },
               { value: "WITHDRAWAL", label: "WITHDRAWAL" },
               { value: "TRANSFER_IN", label: "TRANSFER IN" },
@@ -200,7 +215,7 @@ export function TransactionHistory({
       <div className="overflow-x-auto">
         {isCrypto ? (
           <DataTableLayout
-            data={transactions}
+            data={cryptoTransactions}
             columns={cryptoColumns}
             isError={isError}
             isLoading={isPending}
@@ -214,7 +229,7 @@ export function TransactionHistory({
           />
         ) : (
           <DataTableLayout
-            data={transactions}
+            data={fiatTransactions}
             columns={columns}
             isError={isError}
             isLoading={isPending}
