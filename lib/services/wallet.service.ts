@@ -1,7 +1,10 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  deleteFiatWalletSavedCard,
   executeConversion,
   fundFiatWallet,
+  fundFiatWalletSavedCard,
+  fundFiatWalletSavedCards,
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
@@ -21,7 +24,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { fundWalletPayload } from "../types/transaction-types";
+import { fundWalletPayload, fundWalletSavedCardPayload } from "../types/transaction-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -75,6 +78,48 @@ export const UseGetFiatWallet = () => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+  });
+};
+
+export const UseGetFiatWalletSavedCards = () => {
+  return useQuery({
+    queryKey: ["fiat-wallet-saved-cards"],
+    queryFn: async () => {
+      try {
+        const response = await fundFiatWalletSavedCards();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 5, // ✅ 5 mins cache
+    gcTime: 1000 * 60 * 10,
+  });
+};
+
+export const UseFundFiatWalletSavedCard = () => {
+  return useMutation({
+    mutationFn: (data: fundWalletSavedCardPayload) => fundFiatWalletSavedCard(data),
+    onSuccess: (result) => {
+      toast.success("Funded Successfully");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const UseDeleteFiatWalletSavedCard = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: string) => deleteFiatWalletSavedCard(data),
+    onSuccess: (result) => {
+      toast.success("Deleted Successfully");
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet-saved-cards"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };

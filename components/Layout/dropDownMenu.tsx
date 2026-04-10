@@ -20,6 +20,7 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
+import Image from "next/image";
 
 interface UserDropdownProps {
   name?: string;
@@ -104,21 +105,10 @@ export default function UserDropdown({
           className={`w-3.5 h-3.5 text-placeholder transition-transform duration-200 hidden sm:block ${open ? "rotate-180" : ""}`}
         />
       </button>
-      {/* <div className="flex items-center gap-2 cursor-pointer">
-          <div className="w-8 h-8 rounded-[43.75px] bg-Green flex items-center justify-center text-white text-sm font-semibold">
-            CJ
-          </div>
-          <div className="hidden sm:block text-right">
-            <p className="text-[14px] font-medium leading-5.5 text-card-text">
-              CoolJoe
-            </p>
-            <p className="text-[12px] font-normal text-text leading-5.5">UID: 22345678</p>
-          </div>
-        </div> */}
 
       {/* ── Dropdown ─────────────────────────────────────────────── */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-64 z-50 rounded-2xl border border-border bg-card-background shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 w-64 md:w-80 z-50 rounded-2xl border border-border bg-card-background shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           {/* User header */}
           <div className="border-b border-border px-6 pt-6 pb-3">
             <div className="bg-border py-2 px-2.75 rounded-xl flex items-center gap-3">
@@ -136,11 +126,10 @@ export default function UserDropdown({
                   <p className="text-xs text-text mt-0.5">
                     UID: {shortenUid(userData?.userId)}
                   </p>
-                  <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${TIER_COLORS[tier] ?? TIER_COLORS[1]}`}
-                  >
-                    Tier {verificationData?.data?.tierLevel}
-                  </span>
+                  {verificationData?.data?.tierLevel === 0 && <Image width={60} height={19} alt="tier" src={"/Tier0.svg"} />}
+                  {verificationData?.data?.tierLevel === 1 && <Image width={60} height={19} alt="tier" src={"/Tier1.svg"} />}
+                  {verificationData?.data?.tierLevel === 2 && <Image width={60} height={19} alt="tier" src={"/Tier2.svg"} />}
+                  {verificationData?.data?.tierLevel === 3 && <Image width={60} height={19} alt="tier" src={"/Tier3.svg"} />}
                 </div>
               </div>
             </div>

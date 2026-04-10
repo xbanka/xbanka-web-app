@@ -166,12 +166,12 @@ export function DataTableLayout<T>({
                   paginatedData?.map((item) => (
                     <TableRow
                       key={rowKey(item)}
-                      className="hover:bg-gray-50 text-left text-[#111827] text-[14px] font-medium leading-4.5"
+                      className="text-left text-card-text font-normal text-sm cursor-pointer hover:bg-border/90 transition-colors"
                     >
                       {columns.map((col) => (
                         <TableCell
                           className={cn(
-                            "py-0.5 border-b border-[#374151] px-4 text-left whitespace-nowrap overflow-hidden text-ellipsis",
+                            "py-0.5 border-b border-input leading-6 px-4 text-left whitespace-nowrap overflow-hidden text-ellipsis",
                             col.className
                           )}
                           key={col.key as string}

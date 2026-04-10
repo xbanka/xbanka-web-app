@@ -40,4 +40,9 @@ export interface WalletTransactionTypes {
 
 export interface fundWalletPayload {
   amount: number
+  saveCard: boolean
+}
+export interface fundWalletSavedCardPayload {
+  amount: number,
+  savedCardId: string,
 }
