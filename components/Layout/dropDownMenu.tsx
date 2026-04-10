@@ -51,7 +51,6 @@ export default function UserDropdown({
     isPending: verificationPending,
     error: verificationError,
   } = UseVerificationStatus();
-  console.log("user Profle data", data, verificationData);
 
   // Close on outside click
   useEffect(() => {
