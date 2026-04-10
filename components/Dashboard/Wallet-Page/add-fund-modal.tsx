@@ -12,7 +12,6 @@ import {
   UseGetFiatWalletSavedCards,
 } from "@/lib/services/wallet.service";
 import { SavedCardsList } from "./saved-card-lists";
-import { DebitCard } from "./debit-card-form";
 
 export interface AddFundModalProps {
   open: boolean;
@@ -28,7 +27,7 @@ export const addFundsSchema = z.object({
 export type AddFundsData = z.infer<typeof addFundsSchema>;
 
 export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
-  const [step, setStep] = useState<"amount" | "saved-cards" | "new-card">(
+  const [step, setStep] = useState<"amount" | "saved-cards">(
     "amount",
   );
 
@@ -75,12 +74,10 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
     if (savedCardsData.length > 0) {
       setStep("saved-cards");
     } else {
-      setStep("new-card");
       const payload = {
         amount: Number(data.amount),
         saveCard: data.saveCard,
       };
-      console.log("payload", payload);
 
       mutate(payload, {
         onSuccess: (res) => {
@@ -145,7 +142,7 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
             cards={savedCardsData}
             amount={amount ?? 0}
             onBack={() => setStep("amount")}
-            onAddNew={() => setStep("new-card")}
+            onAddNew={() => setStep("amount")}
           />
         )}
       </div>
