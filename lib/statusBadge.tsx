@@ -11,3 +11,17 @@ export function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
+
+export function TransactionHistoryStatusBadge({ status }: { status: string }) {
+  const normalizedStatus = status?.toLowerCase();
+  const map: Record<string, string> = {
+    completed: "bg-[#037508] border-badge-border-green text-[#A6F4C5]",
+    pending: "bg-[#3E2E00] border-[#A27D00] text-[#FEC84B]",
+    failed: "bg-red-500/10 text-red-500",
+  };
+  return (
+    <span className={`inline-flex px-2 py-0.5 border rounded-full text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
+      {status}
+    </span>
+  );
+}

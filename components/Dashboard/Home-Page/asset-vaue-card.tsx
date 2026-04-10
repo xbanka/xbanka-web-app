@@ -2,8 +2,16 @@
 
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
-import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
+import {
+  UseGetAllWalletBalances,
+  UseGetCryptoWallet,
+  UseGetFiatWallet,
+} from "@/lib/services/wallet.service";
+import {
+  sumCryptoBalance,
+  sumCryptoFiatEquivalent,
+  sumFiatBalances,
+} from "@/lib/sumBalances";
 import { Eye, EyeOff, HelpCircle, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -11,8 +19,22 @@ export function AssetValueCard() {
   const [hidden, setHidden] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const { data, error, isPending } = UseGetAllWalletBalances();
-  const wallets = data?.data?.data || [];
+  const {
+    data: fiatData,
+    error: fiatError,
+    isPending: fiatIsPending,
+  } = UseGetFiatWallet();
+  const wallets = fiatData?.data?.data || [];
+  const fiatBalance = sumFiatBalances(wallets);
   const latestWallet = wallets[0];
+  const {
+    data: cryptoData,
+    error: cryptoError,
+    isPending: cryptoIsPending,
+  } = UseGetCryptoWallet();
+  const cryptoWallets = cryptoData?.data?.data || [];
+  const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
+  const totalBalance = fiatBalance + cryptoBalance;
   return (
     <DashboardCard className="border border-[#0F766E] bg-[#042F2E]">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -35,8 +57,8 @@ export function AssetValueCard() {
               {hidden
                 ? "•••••••"
                 : view === "NGN"
-                  ? `₦${sumCryptoFiatEquivalent(wallets).toLocaleString()}`
-                  : `$${sumCryptoBalance(wallets).toLocaleString()}`}
+                  ? `₦${totalBalance.toLocaleString()}`
+                  : `$${"0".toLocaleString()}`}
             </span>
             <select
               value={view}

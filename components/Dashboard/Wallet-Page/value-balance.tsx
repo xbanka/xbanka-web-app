@@ -1,15 +1,30 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
-import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
+import {
+  UseGetAllWalletBalances,
+  UseGetCryptoWallet,
+  UseGetFiatWallet,
+} from "@/lib/services/wallet.service";
+import { sumCryptoFiatEquivalent, sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
 
 export const ValueBalance = () => {
   const [hidden, setHidden] = useState(false);
   const { data, error, isPending } = UseGetAllWalletBalances();
-  const wallets = data?.data?.data || [];
+  const {
+    data: fiatData,
+    error: fiatError,
+    isPending: fiatIsPending,
+  } = UseGetFiatWallet();
+  const wallets = fiatData?.data?.data || [];
+  const fiatBalance = sumFiatBalances(wallets)
   const latestWallet = wallets[0];
-  
+  const { data: cryptoData, error: cryptoError, isPending: cryptoIsPending } = UseGetCryptoWallet();
+  const cryptoWallets = cryptoData?.data?.data || [];
+  const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
+  const totalBalance = fiatBalance + cryptoBalance;
+
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
@@ -31,12 +46,12 @@ export const ValueBalance = () => {
             <p className="text-3xl sm:text-4xl font-bold text-card-text">
               {hidden
                 ? "₦•••••••"
-                : data?.data?.totalBalance
-                  ? `₦${data.data.totalBalance.toLocaleString()}`
+                : totalBalance
+                  ? `₦${totalBalance.toLocaleString()}`
                   : "₦0"}
             </p>
             <span className="text-text text-xs font-normal leading-4.5">
-              ≈ ₦{latestWallet?.fiatEquivalent?.amount ?? 0} today
+              ≈ ₦{totalBalance.toLocaleString()} today
             </span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -46,10 +61,10 @@ export const ValueBalance = () => {
               </p>
               <p className="font-medium leading-5 text-sm text-card-text">
                 {hidden
-                  ? "₦•••"
-                  : data?.data?.data[0]?.balance
-                    ? data?.data?.data[0]?.balance
-                    : "₦0"}
+                  ? "₦•••••••"
+                  : fiatBalance
+                    ? `₦${fiatBalance.toLocaleString()}`
+                    : "₦0.00"}
               </p>
             </div>
             <div className="border-l-3 border-[#2DD4BF] bg-border px-4 py-3">
@@ -59,8 +74,8 @@ export const ValueBalance = () => {
               <p className="font-medium leading-5 text-sm text-card-text">
                 {hidden
                   ? "₦•••"
-                  : data?.data?.data[1]?.balance
-                    ? data?.data?.data[1]?.balance
+                  : cryptoBalance
+                    ? `₦${cryptoBalance.toLocaleString()}`
                     : "₦0"}
               </p>
             </div>

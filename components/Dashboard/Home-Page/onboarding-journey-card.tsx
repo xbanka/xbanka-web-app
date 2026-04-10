@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/FormCard";
 import { cardProps } from "@/lib/types/card-types";
 import { cn } from "@/lib/utils";
 
