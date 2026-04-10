@@ -12,7 +12,6 @@ import {
   UseGetFiatWalletSavedCards,
 } from "@/lib/services/wallet.service";
 import { SavedCardsList } from "./saved-card-lists";
-import { DebitCard } from "./debit-card-form";
 
 export interface AddFundModalProps {
   open: boolean;
@@ -143,7 +142,7 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
             cards={savedCardsData}
             amount={amount ?? 0}
             onBack={() => setStep("amount")}
-            onAddNew={() => setStep("new-card")}
+            onAddNew={() => setStep("amount")}
           />
         )}
       </div>
