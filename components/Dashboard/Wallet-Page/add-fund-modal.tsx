@@ -28,7 +28,7 @@ export const addFundsSchema = z.object({
 export type AddFundsData = z.infer<typeof addFundsSchema>;
 
 export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
-  const [step, setStep] = useState<"amount" | "saved-cards" | "new-card">(
+  const [step, setStep] = useState<"amount" | "saved-cards">(
     "amount",
   );
 
@@ -75,12 +75,10 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
     if (savedCardsData.length > 0) {
       setStep("saved-cards");
     } else {
-      setStep("new-card");
       const payload = {
         amount: Number(data.amount),
         saveCard: data.saveCard,
       };
-      console.log("payload", payload);
 
       mutate(payload, {
         onSuccess: (res) => {
