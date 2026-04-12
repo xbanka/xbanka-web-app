@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { SecurityOverviewCard } from "./security-overview-card";
 import LittleCards from "./little-cards";
+import { UseGetActiveSessions } from "@/lib/services/sessions.service";
+import { GetRegisteredDevices } from "@/lib/actions/sessions";
 
 export function SecurityTab() {
   const securityItems = [
@@ -122,6 +124,13 @@ export function SecurityTab() {
       action: "Revoke",
     },
   ];
+
+  const { data, isPending, error } = UseGetActiveSessions();
+  const {
+    data: RegisteredDevicesData,
+    isPending: RegisteredDevicesPending,
+    error: RegisteredDevicesError,
+  } = GetRegisteredDevices();
 
   return (
     <div className="space-y-5">
@@ -238,7 +247,7 @@ export function SecurityTab() {
             },
           ].map((item, i) => {
             const Icon = item.icon;
-            return(
+            return (
               <LittleCards
                 Icon={Icon}
                 action={item.action}
@@ -246,7 +255,7 @@ export function SecurityTab() {
                 key={i}
                 label={item.title}
               />
-            )
+            );
           })}
         </div>
       </DashboardCard>
