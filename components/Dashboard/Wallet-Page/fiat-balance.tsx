@@ -3,7 +3,6 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
-import { WalletTransactionTypes } from "@/lib/types/transaction-types";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundsModal } from "./add-funds-modal";

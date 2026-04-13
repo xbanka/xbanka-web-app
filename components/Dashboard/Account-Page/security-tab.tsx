@@ -126,11 +126,11 @@ export function SecurityTab() {
   ];
 
   const { data, isPending, error } = UseGetActiveSessions();
-  const {
-    data: RegisteredDevicesData,
-    isPending: RegisteredDevicesPending,
-    error: RegisteredDevicesError,
-  } = GetRegisteredDevices();
+  // const {
+  //   data: RegisteredDevicesData,
+  //   isPending: RegisteredDevicesPending,
+  //   error: RegisteredDevicesError,
+  // } = GetRegisteredDevices();
 
   return (
     <div className="space-y-5">
