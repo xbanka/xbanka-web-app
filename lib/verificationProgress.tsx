@@ -19,28 +19,6 @@ const getStepDescription = (id: string) => {
   }
 };
 
-// export const ONBOARDING_STEPS = (verificationStatus: any) => {
-//   const mappedSteps = verificationStatus?.progress?.map(
-//     (item: any, index: number) => {
-//       let status: "done" | "active" | "pending" = "pending";
-
-//       if (item.status === "completed") {
-//         status = "done";
-//       } else if (item.status === "in_progress") {
-//         status = "active";
-//       }
-
-//       return {
-//         step: `STEP ${index + 1}`,
-//         title: item.label,
-//         desc: getStepDescription(item.id), // helper function
-//         status,
-//       };
-//     },
-//   );
-
-//   return mappedSteps || [];
-// };
 export const ONBOARDING_STEPS = (data: any) => {
   if (!data?.progress) return [];
 
@@ -56,24 +34,28 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "Email Verification",
       ids: ["EMAIL_VERIFIED"],
       desc: "Unlocks basic account features",
+      label: "Account created & verified",
     },
     {
       key: "BVN",
       title: "Verify BVN",
       ids: ["BVN"],
-      desc: "Unlocks basic account features",
+      desc: "Unlocks git card & bill payments",
+      label: "Unlocked: Gift Cards • Bill Payments • ₦50k limit"
     },
     {
       key: "IDENTITY",
       title: "ID & Selfie",
       ids: ["IDENTITY", "SELFIE"],
       desc: "Unlocks crypto & withdrawals",
+      label: "Unlocked: Crypto • Withdrawals • ₦500k limit"
     },
     {
       key: "ADDRESS",
       title: "Proof of Address",
       ids: ["ADDRESS"],
       desc: "Unlocks full platform access",
+      label: "Unlocked: Full access • ₦2M limit"
     },
   ];
 
@@ -98,6 +80,7 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: group.title,
       desc: group.desc,
       status,
+      label: group.label,
       isCurrent, // 👈 important for button control
     };
   });

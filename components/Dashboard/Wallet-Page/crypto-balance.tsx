@@ -4,6 +4,7 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
+import { DepositModal } from "./deposit-modal";
 
 export const CryptoBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -61,6 +62,7 @@ export const CryptoBalance = () => {
           <div className="flex items-center gap-2">
             <Button
               size={"sm"}
+              onClick={() => setAddFundsOpen(true)}
               className="flex items-center transition-colors"
             >
               <Download className="w-5 h-5" />
@@ -85,6 +87,9 @@ export const CryptoBalance = () => {
           </div>
         </div>
       </DashboardCard>
+      {
+        addFundsOpen && <DepositModal onClose={() => setAddFundsOpen(false)} />
+      }
     </div>
   );
 };

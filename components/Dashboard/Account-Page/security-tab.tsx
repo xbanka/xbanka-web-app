@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { SecurityOverviewCard } from "./security-overview-card";
 import LittleCards from "./little-cards";
+import { UseGetActiveSessions, UseGetRegisteredDevices } from "@/lib/services/sessions.service";
+import { DeviceDetails, UserSession } from "./types";
+import { formatRelativeTime } from "@/lib/formatTime";
 
 export function SecurityTab() {
   const securityItems = [
@@ -123,6 +126,16 @@ export function SecurityTab() {
     },
   ];
 
+  const { data: ActiveSessionsData, isPending: ActiveSessionsPending, error: ActiveSessionsError } = UseGetActiveSessions();
+  console.log("Active sessions data:", ActiveSessionsData);
+  const activeSessions = ActiveSessionsData ? ActiveSessionsData.data : [];
+  console.log("Active sessions data:", activeSessions);
+  const {
+    data: RegisteredDevicesData,
+    isPending: RegisteredDevicesPending,
+    error: RegisteredDevicesError,
+  } = UseGetRegisteredDevices();
+
   return (
     <div className="space-y-5">
       {/* Security health */}
@@ -163,7 +176,7 @@ export function SecurityTab() {
               <LittleCards
                 Icon={Icon}
                 action={item.action}
-                desc={item.desc}
+                // desc={item.desc}
                 status={item.status}
                 key={i}
                 label={item.label}
@@ -179,13 +192,13 @@ export function SecurityTab() {
           Trusted Devices
         </h3>
         <div className="space-y-3">
-          {devices.map((d, i) => {
-            const Icon = d.icon;
+          {RegisteredDevicesData?.data?.map((d:DeviceDetails, i: number) => {
+            // const Icon = d.icon;
             return (
               <LittleCards
-                Icon={Icon}
-                action={d.action}
-                desc={d.added}
+                // Icon={Icon}
+                action={d.isTrusted ? "Remove" : "Removed"}
+                date={d.createdAt}
                 key={i}
                 label={d.name}
               />
@@ -200,15 +213,17 @@ export function SecurityTab() {
           Active Sessions
         </h3>
         <div className="space-y-3">
-          {sessions.map((s, i) => {
-            const Icon = s.icon;
+          {activeSessions.map((s: UserSession, i: number) => {
+            // const Icon = s.icon;
             return (
               <LittleCards
-                Icon={Icon}
-                action={s.action}
-                desc={s.location}
+                // Icon={Icon}
+                action={s.isRevoked ? "Revoked" : "Revoke"}
+                location={s.location ? s.location : "Unknown location"}
+                ip={s.ipAddress}
+                lastTime={formatRelativeTime(s.lastActiveAt)}
                 key={i}
-                label={s.os}
+                label={s.device.type[0].toUpperCase() + s.device.type.slice(1)}
               />
             );
           })}
@@ -238,15 +253,15 @@ export function SecurityTab() {
             },
           ].map((item, i) => {
             const Icon = item.icon;
-            return(
+            return (
               <LittleCards
                 Icon={Icon}
                 action={item.action}
-                desc={item.desc}
+                // desc={item.desc}
                 key={i}
                 label={item.title}
               />
-            )
+            );
           })}
         </div>
       </DashboardCard>
