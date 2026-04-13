@@ -100,12 +100,6 @@ export default function WalletPage() {
         open={verifyModalOpen}
         onClose={() => setVerifyModalOpen(false)}
       />
-
-      {/* <AddFundsModal
-        open={addFundsOpen}
-        onClose={() => setAddFundsOpen(false)}
-        onSuccess={() => setAddFundsOpen(false)}
-      /> */}
     </div>
   );
 }

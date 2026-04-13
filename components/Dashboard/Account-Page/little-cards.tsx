@@ -1,8 +1,10 @@
 import React from "react";
 import { littleCardProps } from "./types";
 import { Button } from "@/components/ui/button";
+import { date } from "zod";
+import { formatDate } from "@/lib/formatDate";
 
-const LittleCards = ({key, Icon, action, label, desc, status}: littleCardProps) => {
+const LittleCards = ({key, Icon, action, label, ip, status, location, lastTime, date}: littleCardProps) => {
   return (
     <div
       key={key}
@@ -10,11 +12,21 @@ const LittleCards = ({key, Icon, action, label, desc, status}: littleCardProps) 
     >
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 p-2 rounded-[36px] bg-[#042F2E] flex items-center justify-center">
-          <Icon className="w-4 h-4 text-Green" />
+          { Icon && <Icon className="w-4 h-4 text-Green" />}
         </div>
         <div>
           <p className="text-sm leading-5 font-medium text-card-text">{label}</p>
-          {desc && <p className="text-xs font-normal leading-4.5 text-text">{desc}</p>}
+          {
+            date && <p className="text-xs font-normal leading-5.5 text-text">Added: {formatDate(date)}</p>
+          }
+          {lastTime || ip || location ?
+          <div className="flex items-center">
+            { lastTime && <p className="text-xs font-normal leading-5.5 text-text">{lastTime}</p>}
+            { lastTime && <span className="text-xs text-text h-1.5 w-1.5 bg-text rounded-full mx-2"></span>}
+            {ip && <p className="text-xs font-normal leading-5.5 text-text">{ip}</p>}
+            { ip && <span className="text-xs text-text h-1.5 w-1.5 bg-text rounded-full mx-2"></span>}
+            {location && <p className="text-sm font-medium leading-4.5 text-text">{location}</p>}
+          </div> : null}
         </div>
       </div>
       <div className="flex items-center gap-3 shrink-0">
