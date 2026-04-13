@@ -12,17 +12,25 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { BankAccountCard } from "./bank-account-card";
-import { Label } from "@/components/ui/label";
 import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
+import { DatePicker } from "@/components/ui/reusable-date-picker";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const [image, setImage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [form, setForm] = useState({
+    firstName: userData?.firstName || "",
+    lastName: userData?.lastName || "",
+    dob: "",
+  });
 
   const banks = [
     {
@@ -61,15 +69,58 @@ export function AccountInfoTab() {
     error: verificationError,
   } = UseVerificationStatus();
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+    console.log(preview);
+    setImage(preview);
+
+    // TODO: upload to backend here
+  };
+
+  const handleUpdate = async (field: string, value: string) => {
+    // try {
+    //   await AxiosInstance.patch("/users/profile", {
+    //     [field]: value,
+    //   });
+
+    //   updateUser({ [field]: value });
+    // } catch (err) {
+    //   console.error(err);
+    // }
+  };
+
   return (
     <div className="space-y-4">
       {/* Profile header */}
       <DashboardCard>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0">
-              CJ
-            </div>
+            <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
+              {image ? (
+                <Image
+                  src={image}
+                  alt="profile"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                "CJ"
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+
+              <div className="absolute bottom-0 right-0 bg-black/60 p-1 rounded-full">
+                <Edit2 className="w-3 h-3 text-white" />
+              </div>
+            </label>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-semibold leading-8 text-card-text">
@@ -162,25 +213,34 @@ export function AccountInfoTab() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-border p-5 rounded-lg">
           <PersonalInfoTab
-            label="Full Name"
-            title={userData?.firstName + " " + userData?.lastName}
+            label="First Name"
+            value={userData?.firstName || ""}
+            onSave={(val) => handleUpdate("firstName", val)}
           />
-          <PersonalInfoTab label="Display Name" title={userData?.email ?? ""} />
+
+          {/* ✅ Last Name */}
+          <PersonalInfoTab
+            label="Last Name"
+            value={userData?.lastName || ""}
+            onSave={(val) => handleUpdate("lastName", val)}
+          />
+
+          {/* ✅ Email */}
           <PersonalInfoTab
             label="Email Address"
-            title={userData?.email ?? ""}
+            value={userData?.email || ""}
+            onSave={(val) => handleUpdate("email", val)}
           />
-          <PersonalInfoTab
-            label="Phone Number"
-            title={userData?.phoneNumber ?? ""}
-          />
+
+          {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
-            title={userData?.userId ?? ""}
+            value={userData?.firstName || ""}
+            onSave={(val) => handleUpdate("dateOfBirth", val)}
+            renderInput={(value, onChange) => (
+              <DatePicker value={value} onChange={onChange} />
+            )}
           />
-          <PersonalInfoTab label="Gender" title={userData?.email ?? ""} />
-          <PersonalInfoTab label="Address" title={userData?.email ?? ""} />
-          <PersonalInfoTab label="Nationality" title={userData?.email ?? ""} />
         </div>
       </DashboardCard>
     </div>

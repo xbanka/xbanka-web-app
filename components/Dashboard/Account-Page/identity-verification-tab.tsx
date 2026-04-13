@@ -8,6 +8,9 @@ import {
   ExternalLink,
   Lock,
 } from "lucide-react";
+import { OnboardingJourneyCard } from "../Home-Page/onboarding-journey-card";
+import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
+import { UseVerificationStatus } from "@/lib/services/profile.service";
 
 export function IdentityVerificationTab() {
   const tiers = [
@@ -40,6 +43,19 @@ export function IdentityVerificationTab() {
       status: "locked",
     },
   ];
+
+  const {
+    data: verificationStatus,
+    isPending,
+    error,
+  } = UseVerificationStatus();
+  console.log("verificationStatus:", verificationStatus);
+  const progress = ONBOARDING_STEPS(verificationStatus?.data);
+  const completedCount = progress.filter(
+    (step) => step.status === "done",
+  ).length;
+
+  const totalSteps = progress.length;
 
   return (
     <div className="space-y-6">
@@ -85,63 +101,22 @@ export function IdentityVerificationTab() {
               </p>
             </div>
             <span className="text-xs font-normal leading-5.5 text-text">
-              Tier 2 of 4 completed
+              {completedCount} of {totalSteps} completed
             </span>
           </div>
 
           {/* Verification Status */}
           <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {tiers.map((t, i) => (
-                <div
+              {progress.map((s, i) => (
+                <OnboardingJourneyCard
+                className="min-h-47"
                   key={i}
-                  className={`rounded-xl p-4 border space-y-2 ${
-                    t.status === "completed"
-                      ? "border-green-500/30 bg-green-500/5"
-                      : t.status === "review"
-                        ? "border-yellow-500/30 bg-yellow-500/5"
-                        : "border-border bg-background"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-text uppercase tracking-wide">
-                      {t.tier}
-                    </span>
-                    {t.status === "completed" && (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    )}
-                    {t.status === "review" && (
-                      <Clock className="w-4 h-4 text-yellow-500" />
-                    )}
-                    {t.status === "locked" && (
-                      <Lock className="w-4 h-4 text-text" />
-                    )}
-                  </div>
-                  <p className="text-sm font-semibold text-card-text">
-                    {t.title}
-                  </p>
-                  <p className="text-[10px] text-text leading-relaxed">
-                    {t.unlocks}
-                  </p>
-                  {t.date && (
-                    <p
-                      className={`text-[10px] font-medium ${
-                        t.status === "completed"
-                          ? "text-green-500"
-                          : t.status === "review"
-                            ? "text-yellow-500"
-                            : "text-text"
-                      }`}
-                    >
-                      {t.date}
-                    </p>
-                  )}
-                  {t.action && (
-                    <button className="flex items-center gap-1 text-[10px] text-Green font-medium hover:underline">
-                      {t.action} <ExternalLink className="w-2.5 h-2.5" />
-                    </button>
-                  )}
-                </div>
+                  status={s.status}
+                  step={s.step}
+                  title={s.title}
+                  label={s.label}
+                />
               ))}
             </div>
           </div>

@@ -24,25 +24,3 @@ export interface TransactionTypes {
   createdAt: string;
   category: "FIAT" | "CRYPTO" | "GIFTCARD";
 }
-
-export interface WalletTransactionTypes {
-  id: string;
-  type: "FIAT" | "CRYPTO";
-  balance: number;
-  currency: string;
-  string: {
-    currency: string;
-    amount: number;
-    rate: number;
-  };
-  updatedAt: string;
-}
-
-export interface fundWalletPayload {
-  amount: number
-  saveCard: boolean
-}
-export interface fundWalletSavedCardPayload {
-  amount: number,
-  savedCardId: string,
-}

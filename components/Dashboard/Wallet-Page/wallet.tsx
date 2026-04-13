@@ -13,7 +13,7 @@ import { VerifyBvnModal } from "./verify-bvn-modal";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
 
 export default function WalletPage() {
-  const [tab, setTab] = useState<WalletTab>("total");
+  const [tab, setTab] = useState("total");
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
   // ── Add Funds modal
@@ -71,7 +71,7 @@ export default function WalletPage() {
       {/* Tabs */}
       <DashboardCard className="space-y-3">
         <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5">
-          {(["total", "fiat", "crypto"] as WalletTab[]).map((t) => (
+          {(["total", "fiat", "crypto"]).map((t) => (
             <Button
               size="sm"
               variant={tab === t ? "disabled" : "outline"}
@@ -100,12 +100,6 @@ export default function WalletPage() {
         open={verifyModalOpen}
         onClose={() => setVerifyModalOpen(false)}
       />
-
-      {/* <AddFundsModal
-        open={addFundsOpen}
-        onClose={() => setAddFundsOpen(false)}
-        onSuccess={() => setAddFundsOpen(false)}
-      /> */}
     </div>
   );
 }

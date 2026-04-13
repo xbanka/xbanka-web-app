@@ -4,7 +4,7 @@ import {
   ConvertExecutePayload,
   QuoteExecutePayload,
 } from "../types/crypto-types";
-import { fundWalletPayload, fundWalletSavedCardPayload } from "../types/transaction-types";
+import { fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
@@ -36,6 +36,15 @@ export const getCryptoWallet = async () => {
     data: response.data,
     status: response.status,
   };
+};
+
+export const generateDepositAddress = async (payload: GenerateDepositAddressPayload) => {
+  const response = await AxiosInstance.post(
+    "/wallets/deposit/crypto",
+    payload
+  );
+
+  return response.data;
 };
 
 export const getDepositCrypto = async () => {

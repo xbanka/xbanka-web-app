@@ -5,6 +5,7 @@ import {
   fundFiatWallet,
   fundFiatWalletSavedCard,
   fundFiatWalletSavedCards,
+  generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
   getCryptoWallet,
@@ -24,7 +25,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { fundWalletPayload, fundWalletSavedCardPayload } from "../types/transaction-types";
+import { fundWalletPayload, fundWalletSavedCardPayload } from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -64,6 +65,18 @@ export const UseGetCryptoWallet = () => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+  });
+};
+
+export const useGenerateAddress = () => {
+  return useMutation({
+    mutationFn: generateDepositAddress,
+    onSuccess: (result) => {
+      toast.success("Funded Successfully");
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };
