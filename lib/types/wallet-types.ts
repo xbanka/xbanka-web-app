@@ -11,3 +11,19 @@ export interface GenerateDepositAddressPayload {
   network: string;
 }
 
+export interface WalletAccount {
+  id: string;
+  walletId: string;
+  provider: string;
+  providerRef: string;
+  network: string;
+  createdAt: string; // Or Date if you plan to parse it
+  updatedAt: string;
+  
+  // These fields are null in your sample, likely optional strings
+  accountName: string | null;
+  address: string | null;
+  bankCode: string | null;
+  bankName: string | null;
+  memo: string | null;
+}

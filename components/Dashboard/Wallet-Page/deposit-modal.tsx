@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { CloseBtn } from "./verify-bvn-modal";
 import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
+import { WalletAccount } from "@/lib/types/wallet-types";
 
 const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -22,7 +23,7 @@ const CURRENCY_OPTIONS = [
 export const DepositModal = ({ onClose }: { onClose: () => void }) => {
   const [currency, setCurrency] = useState("");
   const [network, setNetwork] = useState("");
-  const [addressData, setAddressData] = useState<any>(null);
+  const [addressData, setAddressData] = useState<WalletAccount | null>(null);
 
   const { mutate, isPending, error } = useGenerateAddress();
 
@@ -37,7 +38,7 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
   const handleGenerate = () => {
     if (!currency || !network) return;
 
-    console.log(currency, network)
+    console.log(currency, network);
     mutate(
       { currency, network },
       {
@@ -49,7 +50,9 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(addressData?.address);
+    navigator.clipboard.writeText(
+      addressData?.address ? addressData?.address : "No address available",
+    );
   };
 
   return (
@@ -73,7 +76,7 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
           placeholder="Select Currency"
           options={CURRENCY_OPTIONS}
           value={currency}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setCurrency(e.target.value);
             setNetwork(""); // reset network
             setAddressData(null);
@@ -87,12 +90,13 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
             placeholder="Select Network"
             options={networkOptions}
             value={network}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setNetwork(e.target.value);
               setAddressData(null);
             }}
           />
         )}
+        {error && <ErrorField message={error.message} />}
 
         {/* Generate Button */}
         {currency && network && !addressData && (
@@ -106,26 +110,36 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
           </div>
         )}
 
-        { error && <ErrorField message={error.message} />}
-
         {/* Address Display */}
         {addressData && (
-          <div className="p-4 bg-muted rounded-lg space-y-3">
+          <div className="bg-muted rounded-lg space-y-1">
             <p className="text-sm text-gray-400">Deposit Address</p>
 
-            <div className="flex items-center justify-between bg-black/30 p-3 rounded-lg">
-              <span className="text-sm break-all">{addressData.address}</span>
+            <div className="flex items-center text-white justify-between bg-black/30 p-3 rounded-lg">
+              <span className="text-sm break-all">
+                {addressData?.address
+                  ? addressData?.address
+                  : "No address available"}
+              </span>
 
               <button onClick={handleCopy}>
                 <Copy size={16} />
               </button>
             </div>
 
-            {addressData.memo && (
+            {/* {addressData.memo && (
               <p className="text-xs text-yellow-400">
                 Memo: {addressData.memo}
               </p>
-            )}
+            )} */}
+            <div className="flex w-full gap-4">
+              <Button variant={"outline"} type="button" className="flex-2">
+                Cancel
+              </Button>
+              <Button onClick={onClose} className="flex-4">
+                Done
+              </Button>
+            </div>
           </div>
         )}
       </div>
