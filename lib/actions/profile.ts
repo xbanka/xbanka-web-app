@@ -8,26 +8,8 @@ export const UserProfile = async () => {
 }
 
 export const updateProfile = async (data: UpdateProfileData) => {
-  const formData = new FormData();
-
-  formData.append("userId", data.userId);
-  formData.append("firstName", data.firstName);
-  formData.append("lastName", data.lastName);
-  formData.append("dateOfBirth", data.dateOfBirth);
-  formData.append("phoneNumber", data.phoneNumber);
-  formData.append("gender", data.gender);
-  formData.append("country", data.country);
-
-  // 👇 file handling
-  if (data.profilePicture && data.profilePicture[0]) {
-    formData.append("profilePicture", data.profilePicture[0]);
-  }
-
-  const response = await AxiosInstance.post("/users/profile", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  
+  const response = await AxiosInstance.post("/users/profile", data);
 
   return response.data;
 };

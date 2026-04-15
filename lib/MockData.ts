@@ -123,6 +123,13 @@ export const HOW_TO_STEPS = [
   },
 ];
 
+export const UNLOCKED_FEATURES = [
+  { label: "Add Funds" },
+  { label: "Send Money" },
+  { label: "Gift Cards" },
+  { label: "Bills Payment" },
+];
+
 export type GiftTab = "overview" | "sell" | "history";
  
 // ─── Mock data ───────────────────────────────────────────────────────────────

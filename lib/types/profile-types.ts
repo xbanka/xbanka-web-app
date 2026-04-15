@@ -4,6 +4,9 @@ export interface UserProfileTypes {
   firstName: string;
   lastName: string;
   phoneNumber: string; // E.164 format
+  date_of_birth?: string; // ISO 8601 date
+  gender?: string; // e.g., "Male", "Female", "Other"
+  country?: string; // ISO 3166-1 alpha-2 code
   avatarUrl?: string; // URL string
   createdAt?: string; // ISO 8601 date
 };
@@ -16,7 +19,6 @@ export interface UpdateProfileData {
   phoneNumber: string;
   gender: string;
   country: string;
-  profilePicture?: FileList; 
 };
 
 export interface OnboardingStep {

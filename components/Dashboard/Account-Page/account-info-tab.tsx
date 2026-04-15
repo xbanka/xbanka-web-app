@@ -16,7 +16,7 @@ import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
-import { UseVerificationStatus } from "@/lib/services/profile.service";
+import { useUpdateProfile, UseVerificationStatus } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import { DatePicker } from "@/components/ui/reusable-date-picker";
 
@@ -24,8 +24,11 @@ export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const updateUser = useUserStore((state) => state.updateUser);
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null); // preview
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const { mutate: updateProfile } = useUpdateProfile();
+  
   const [form, setForm] = useState({
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
@@ -74,10 +77,11 @@ export function AccountInfoTab() {
     if (!file) return;
 
     const preview = URL.createObjectURL(file);
-    console.log(preview);
     setImage(preview);
 
-    // TODO: upload to backend here
+  // actual file (for backend)
+  setImageFile(file);
+
   };
 
   const handleUpdate = async (field: string, value: string) => {
@@ -85,7 +89,6 @@ export function AccountInfoTab() {
     //   await AxiosInstance.patch("/users/profile", {
     //     [field]: value,
     //   });
-
     //   updateUser({ [field]: value });
     // } catch (err) {
     //   console.error(err);
@@ -231,15 +234,30 @@ export function AccountInfoTab() {
             value={userData?.email || ""}
             onSave={(val) => handleUpdate("email", val)}
           />
+          <PersonalInfoTab
+            label="Phone Number"
+            value={userData?.phoneNumber || ""}
+            onSave={(val) => handleUpdate("email", val)}
+          />
 
           {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
-            value={userData?.firstName || ""}
-            onSave={(val) => handleUpdate("dateOfBirth", val)}
+            value={formatDate(userData?.date_of_birth ?? "")}
+            onSave={(val) => handleUpdate("date_of_birth", val)}
             renderInput={(value, onChange) => (
               <DatePicker value={value} onChange={onChange} />
             )}
+          />
+          <PersonalInfoTab
+            label="Gender"
+            value={userData?.gender || ""}
+            onSave={(val) => handleUpdate("email", val)}
+          />
+          <PersonalInfoTab
+            label="Nationality"
+            value={userData?.country || ""}
+            onSave={(val) => handleUpdate("email", val)}
           />
         </div>
       </DashboardCard>

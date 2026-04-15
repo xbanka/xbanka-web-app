@@ -1,3 +1,4 @@
+"use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import {
   Chrome,
@@ -11,11 +12,25 @@ import {
 } from "lucide-react";
 import { SecurityOverviewCard } from "./security-overview-card";
 import LittleCards from "./little-cards";
-import { UseGetActiveSessions, UseGetRegisteredDevices } from "@/lib/services/sessions.service";
+import {
+  UseGetActiveSessions,
+  UseGetRegisteredDevices,
+} from "@/lib/services/sessions.service";
 import { DeviceDetails, UserSession } from "./types";
 import { formatRelativeTime } from "@/lib/formatTime";
+import { useState } from "react";
+import { CreatePinModal } from "./create-pin-modal";
+import { UpdatePinModal } from "./update-pin-modal";
+import { updatePin } from "@/lib/actions/security";
+import { useRequestOtp } from "@/lib/services/security.service";
+import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 
 export function SecurityTab() {
+  const hasPin = false; // Replace with actual logic to check if the user has set a PIN
+  const hasPassword = true;
+  const [openCreatePin, setOpenCreatePin] = useState(false);
+  const [openUpdatePin, setOpenUpdatePin] = useState(false);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
   const securityItems = [
     {
       icon: Lock,
@@ -54,44 +69,6 @@ export function SecurityTab() {
     },
   ];
 
-  const authItems = [
-    {
-      icon: Lock,
-      label: "Login Password",
-      desc: "Used to log in to your account",
-      status: "Password Set",
-      action: "Change",
-    },
-    {
-      icon: Lock,
-      label: "Transaction PIN",
-      desc: "Required for withdrawals and transfers",
-      status: "PIN Set",
-      action: "Change",
-    },
-    {
-      icon: Mail,
-      label: "Email Authentication",
-      desc: "",
-      status: "eyebiokin****",
-      action: "Change",
-    },
-    {
-      icon: Phone,
-      label: "SMS Authentication",
-      desc: "",
-      status: "+234 708 946 205*",
-      action: "Change",
-    },
-    {
-      icon: ShieldCheck,
-      label: "Google Authenticator",
-      desc: "Highly recommended for account security",
-      status: "Not configured",
-      action: "Enable",
-    },
-  ];
-
   const devices = [
     {
       name: "Samsung S21",
@@ -126,7 +103,11 @@ export function SecurityTab() {
     },
   ];
 
-  const { data: ActiveSessionsData, isPending: ActiveSessionsPending, error: ActiveSessionsError } = UseGetActiveSessions();
+  const {
+    data: ActiveSessionsData,
+    isPending: ActiveSessionsPending,
+    error: ActiveSessionsError,
+  } = UseGetActiveSessions();
   console.log("Active sessions data:", ActiveSessionsData);
   const activeSessions = ActiveSessionsData ? ActiveSessionsData.data : [];
   console.log("Active sessions data:", activeSessions);
@@ -135,6 +116,71 @@ export function SecurityTab() {
     isPending: RegisteredDevicesPending,
     error: RegisteredDevicesError,
   } = UseGetRegisteredDevices();
+
+  const { mutate: requestOtp, isPending: otpLoading } = useRequestOtp();
+
+  const handleChangePassword = () => {
+  requestOtp(undefined, {
+    onSuccess: () => {
+      setOpenChangePassword(true);
+    },
+  });
+};
+
+  const handleAuthAction = (item: any) => {
+    requestOtp(undefined, {
+      onSuccess: () => {
+        if (item.isSet) {
+          setOpenUpdatePin(true);
+        } else {
+          setOpenCreatePin(true);
+        }
+      },
+    });
+  };
+
+  const authItems = [
+    {
+      icon: Lock,
+      label: "Login Password",
+      desc: "Used to log in to your account",
+      isSet: hasPassword, // always true
+      action: hasPassword ? "Change" : "Set Password",
+      status: hasPassword ? "Password set" : "",
+      onClick: handleChangePassword,
+    },
+    {
+      icon: Lock,
+      label: "Transaction PIN",
+      desc: "Required for withdrawals and transfers",
+      isSet: hasPin,
+      action: hasPin ? "Change" : "Set PIN",
+      status: hasPin ? "PIN set" : "",
+      key: "pin",
+      onClick: (item: any) => handleAuthAction(item),
+    },
+    {
+      icon: Mail,
+      label: "Email Authentication",
+      isSet: true,
+      status: "eyebiokin****",
+      action: "Change",
+    },
+    {
+      icon: Phone,
+      label: "SMS Authentication",
+      isSet: true,
+      status: "+234 708 946 205*",
+      action: "Change",
+    },
+    {
+      icon: ShieldCheck,
+      label: "Google Authenticator",
+      desc: "Highly recommended for account security",
+      isSet: false,
+      action: "Enable",
+    },
+  ];
 
   return (
     <div className="space-y-5">
@@ -176,10 +222,12 @@ export function SecurityTab() {
               <LittleCards
                 Icon={Icon}
                 action={item.action}
-                // desc={item.desc}
+                description={item?.desc}
+                isSet={item.isSet}
                 status={item.status}
                 key={i}
                 label={item.label}
+                onClick={() => item.onClick?.(item)} 
               />
             );
           })}
@@ -192,7 +240,7 @@ export function SecurityTab() {
           Trusted Devices
         </h3>
         <div className="space-y-3">
-          {RegisteredDevicesData?.data?.map((d:DeviceDetails, i: number) => {
+          {RegisteredDevicesData?.data?.map((d: DeviceDetails, i: number) => {
             // const Icon = d.icon;
             return (
               <LittleCards
@@ -265,6 +313,26 @@ export function SecurityTab() {
           })}
         </div>
       </DashboardCard>
+      {openCreatePin && (
+        <CreatePinModal
+          open={openCreatePin}
+          handleClose={() => setOpenCreatePin(false)}
+        />
+      )}
+
+      {openUpdatePin && (
+        <UpdatePinModal
+          open={openUpdatePin}
+          handleClose={() => setOpenUpdatePin(false)}
+        />
+      )}
+
+      {openChangePassword && (
+  <ChangePasswordModal
+    open={openChangePassword}
+    handleClose={() => setOpenChangePassword(false)}
+  />
+)}
     </div>
   );
 }
