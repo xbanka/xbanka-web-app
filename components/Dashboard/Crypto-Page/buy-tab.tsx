@@ -153,7 +153,7 @@ export function BuyTab() {
               label="You Receive"
               value={
                 convertData?.netPayout
-                  ? convertData.netPayout.toLocaleString()
+                  ? convertData.netPayout.toString()
                   : ""
               }
               readOnly
@@ -196,7 +196,6 @@ export function BuyTab() {
 
       <ConfirmModal
         open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
         handleReset={handleReset}
         mode="BUY"
         payAmount={Number(amount || 0)}
@@ -208,7 +207,7 @@ export function BuyTab() {
             ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
             : ""
         }
-        fee={quoteData?.netPayout ? `${quoteData.rate}` : "0 Fee"}
+        fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
         onRefreshQuote={refetchQuote}
         quoteId={quoteData?.quoteId || ""}
         sourceCurrency={sourceCurrency}

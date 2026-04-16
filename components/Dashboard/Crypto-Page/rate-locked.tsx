@@ -6,6 +6,7 @@ export function RateLocked({ seconds = 30, onExpire }: { seconds?: number, onExp
   useEffect(() => {
     if (remaining <= 0) {
       onExpire?.(); // 🔥 trigger refetch
+      setRemaining(seconds);
       return;
     }
 
@@ -14,11 +15,11 @@ export function RateLocked({ seconds = 30, onExpire }: { seconds?: number, onExp
     }, 1000);
 
     return () => clearTimeout(t);
-  }, [remaining]);
+  }, [remaining, seconds, onExpire]);
   const pct = (remaining / seconds) * 100;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs font-medium text-card-text">Rate Locked</span>
+      <span className="text-sm font-medium leading-6 text-card-text">Rate Locked</span>
       <div className="flex items-center gap-1.5 bg-yellow-500/15 border border-yellow-500/30 rounded-full px-2 py-0.5">
         <div className="relative w-3.5 h-3.5">
           <svg className="w-3.5 h-3.5 -rotate-90" viewBox="0 0 14 14">
