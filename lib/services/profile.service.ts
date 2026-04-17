@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UpdateProfileData, UserProfileTypes } from "../types/profile-types";
-import { updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
+import { updateAvatar, updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
@@ -22,6 +22,19 @@ export const UseProfileUser = () => {
   return mutate;
 };
 
+export const useUpdateAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => updateAvatar(file),
+
+    onSuccess: (data) => {
+      // refresh user profile
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+  });
+};
+
 export const UseVerificationStatus = () => {
   const mutate = useQuery({
     queryKey: ["verification-status"],
@@ -38,11 +51,18 @@ export const UseVerificationStatus = () => {
 };
 
 export const useUpdateProfile = () => {
-  const userData = useUserStore((state) => state.updateUser);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationFn: (data: UpdateProfileData) => updateProfile(data),
-    onSuccess: (result) => {
+    onSuccess: (result, variables) => {
       toast.success(result?.message);
+      console.log(result, variables);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      updateUser({
+        ...variables,
+        avatarUrl: result?.data?.profilePicture, // if backend returns it
+      });
     },
     onError: (err) => {
       handleApiError(err);

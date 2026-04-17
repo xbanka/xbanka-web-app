@@ -1,12 +1,38 @@
 export interface UserProfileTypes {
   userId: string; // UUID
-  email?: string;
+
+  email: string;
+  isEmailVerified: boolean;
+
+  currentStep: string; // e.g. "BVN"
+  referralCode: string;
+
+  isTwoFactorEnabled: boolean;
+  hasTransactionPin: boolean;
+
   firstName: string;
   lastName: string;
-  phoneNumber: string; // E.164 format
-  avatarUrl?: string; // URL string
-  createdAt?: string; // ISO 8601 date
-};
+  phoneNumber: string;
+
+  dateOfBirth: string; // ISO 8601
+  gender: string;
+
+  country: string;
+  state: string;
+
+  avatarUrl: string | null;
+
+  kycStatus: {
+    bvnVerified: boolean;
+    // idStatus: "PENDING" | "VERIFIED" | "REJECTED";
+    idStatus: string;
+    // addressStatus: "PENDING" | "VERIFIED" | "REJECTED";
+    addressStatus: string;
+  };
+
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface UpdateProfileData {
   userId: string;
@@ -16,7 +42,6 @@ export interface UpdateProfileData {
   phoneNumber: string;
   gender: string;
   country: string;
-  profilePicture?: FileList; 
 };
 
 export interface OnboardingStep {

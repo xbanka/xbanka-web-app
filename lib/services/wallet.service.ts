@@ -69,15 +69,34 @@ export const UseGetCryptoWallet = () => {
   });
 };
 
-export const useGenerateAddress = () => {
-  return useMutation({
-    mutationFn: generateDepositAddress,
-    onSuccess: (result) => {
-      toast.success("Funded Successfully");
+// export const useGenerateAddress = () => {
+//   return useMutation({
+//     mutationFn: generateDepositAddress,
+//     onSuccess: (result) => {
+//       toast.success("Funded Successfully");
+//     },
+//     onError: (err) => {
+//       handleApiError(err);
+//     },
+//   });
+// };
+
+export const useGenerateAddress = (
+  currency: string,
+  network: string
+) => {
+  return useQuery({
+    queryKey: ["wallet-address", currency, network],
+
+    queryFn: async () => {
+      const res = await generateDepositAddress({ currency, network });
+      return res;
     },
-    onError: (err) => {
-      handleApiError(err);
-    },
+
+    enabled: !!currency && !!network, // only run when both exist
+
+    staleTime: 1000 * 60 * 10, // 10 mins (no refetch within this time)
+    gcTime: 1000 * 60 * 30, // keep in cache 30 mins
   });
 };
 

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
+import { UNLOCKED_FEATURES } from "@/lib/MockData";
 import {
   BvnForm,
   bvnSchema,
@@ -22,13 +23,6 @@ interface VerifyBvnModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-const UNLOCKED_FEATURES = [
-  { label: "Add Funds" },
-  { label: "Send Money" },
-  { label: "Gift Cards" },
-  { label: "Bills Payment" },
-];
 
 export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
   const [state, setState] = useState<ModalState>("verify");
@@ -102,14 +96,14 @@ export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
       code: data.pin,
     };
 
-    mutatePin(payload, {
-      onSuccess: () => {
-        bvnForm.reset();
-        pinForm.reset();
-        handleClose();
-        setState("pinSuccess");
-      },
-    });
+    // mutatePin(payload, {
+    //   onSuccess: () => {
+    //     bvnForm.reset();
+    //     pinForm.reset();
+    //     handleClose();
+    //     setState("pinSuccess");
+    //   },
+    // });
   };
 
   return (
