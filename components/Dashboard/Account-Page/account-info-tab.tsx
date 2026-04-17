@@ -77,14 +77,14 @@ export function AccountInfoTab() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-  if (!file) return;
+    if (!file) return;
 
-  // preview
-  const preview = URL.createObjectURL(file);
-  setImage(preview);
+    // preview
+    const preview = URL.createObjectURL(file);
+    setImage(preview);
 
-  // send to backend immediately
-  updateAvatarMutate(file);
+    // send to backend immediately
+    updateAvatarMutate(file);
   };
 
   const handleUpdate = async (field: string, value: string) => {};
@@ -98,7 +98,7 @@ export function AccountInfoTab() {
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
               {image ? (
                 <Image
-                  src={userData?.avatarUrl || image}
+                  src={image ?? ""}
                   alt="profile"
                   fill
                   className="object-cover"
@@ -173,7 +173,7 @@ export function AccountInfoTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {banks.map((b, i) => (
             <BankAccountCard
-            key={i}
+              key={i}
               index={i}
               label={b.label}
               status={b.status}
