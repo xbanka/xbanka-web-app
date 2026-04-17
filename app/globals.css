@@ -16,6 +16,8 @@
   --placeholder: #4b5563;
   --text: #4b5563;
   --error-text: #FF8882;
+  --error-bg-button: #9B0300;
+  --error-border-button: #780200;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;
@@ -43,12 +45,14 @@
   --color-placeholder: var(--placeholder);
   --color-text: var(--text);
   --color-error-text: var(--error-text);
+  --color-error-bg-button: var(--error-bg-button);
+  --color-error-border-button: var(--error-border-button);
   --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
   --color-giftcard-green: var(--giftcard-green);
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
-  --color-giftcard-purple: var(--giftcard-purple)
+  --color-giftcard-purple: var(--giftcard-purple);
   --color-badge-border-green: var(--badge-border-green)
 }
 
@@ -68,6 +72,8 @@
   --placeholder: #9ca3af;
   --text: #a4aab4;
   --error-text: #FF8882;
+  --error-bg-button: #9B0300;
+  --error-border-button: #780200;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;

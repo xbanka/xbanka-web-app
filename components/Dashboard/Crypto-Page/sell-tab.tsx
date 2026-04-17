@@ -179,7 +179,7 @@ export function SellTab() {
             readOnly
             value={
               convertData?.netPayout
-                ? Number(convertData?.netPayout).toLocaleString()
+                ? convertData?.netPayout.toString()
                 : ""
             }
             onChange={(e) => setAmount(e.target.value)}
@@ -219,7 +219,6 @@ export function SellTab() {
 
       <ConfirmModal
         open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
         handleReset={handleReset}
         mode="SELL"
         payAmount={Number(amount || 0)}
@@ -231,7 +230,7 @@ export function SellTab() {
             ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
             : ""
         }
-        fee={quoteData?.netPayout ? `${quoteData.rate}` : "0 Fee"}
+        fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
         onRefreshQuote={refetchQuote}
         quoteId={quoteData?.quoteId || ""}
         sourceCurrency={sourceCurrency}

@@ -29,6 +29,7 @@ export interface SelectFieldProps {
   register?: UseFormRegister<any>;
   onChange?: any;
   value?: string | null
+  label?: string;
 }
 
 export interface CryptoOptionProps {

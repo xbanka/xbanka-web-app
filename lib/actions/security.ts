@@ -1,10 +1,8 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
-import { CreatePinPayload } from "../types/security-types";
+import { CreatePinPayload, passwordChangePayload, UpdatePinPayload } from "../types/security-types";
 
-export const requesOtp = async (token: string) => {
-    const response = await AxiosInstance.post("/security/request-otp", {
-      token
-    })
+export const requesOtp = async () => {
+    const response = await AxiosInstance.post("/security/request-otp")
     return {
       success: true,
       data: response.data,
@@ -12,10 +10,8 @@ export const requesOtp = async (token: string) => {
     };
 }
 
-export const passwordChange = async (token: string) => {
-    const response = await AxiosInstance.post("/security/password/change", {
-      token
-    })
+export const passwordChange = async (data: passwordChangePayload) => {
+    const response = await AxiosInstance.post("/security/password/change", data)
     return {
       success: true,
       data: response.data,
@@ -24,10 +20,16 @@ export const passwordChange = async (token: string) => {
 }
 
 export const createPin = async (data: CreatePinPayload) => {
-    const response = await AxiosInstance.post("/security/pin/create", {
-      userId: data.userId,
-      code: data.code
-    })
+    const response = await AxiosInstance.post("/security/pin/create", data)
+    return {
+      success: true,
+      data: response.data,
+      status: response.status,
+    };
+}
+
+export const updatePin = async (data: UpdatePinPayload) => {
+    const response = await AxiosInstance.post("/security/pin/update", data)
     return {
       success: true,
       data: response.data,

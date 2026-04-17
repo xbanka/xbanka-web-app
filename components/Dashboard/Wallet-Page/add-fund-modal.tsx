@@ -127,10 +127,10 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
               </div>
             </div>
             <div className="flex w-full gap-4">
-              <Button variant={"outline"} type="button" className="flex-2">
+              <Button variant={"outline"} type="button" className="flex-1">
                 Cancel
               </Button>
-              <Button type="submit" className="flex-4">
+              <Button type="submit" className="flex-3" disabled={isPending}>
                 {isPending ? "Continuing..." : "Continue to payment"}
               </Button>
             </div>

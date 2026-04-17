@@ -48,19 +48,18 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
             <div className="">
               <Button
               onClick={() => setAddFundsOpen(true)}
-                variant={isAddFundDisabled ? "disabled" : "default"}
-                disabled={isAddFundDisabled}
+                variant={"default"}
                 size={"sm"}
                 className="flex items-center transition-colors"
               >
                 <Plus className="w-5 h-5" />
                 Add Fund
               </Button>
-              {isAddFundDisabled && (
+              {/* {isAddFundDisabled && (
                 <span className="text-[10px] text-error-text">
                   Verify your bvn
                 </span>
-              )}
+              )} */}
             </div>
             <Button
               variant={"outline"}
@@ -72,6 +71,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
             </Button>
             <Button
               variant={"outline"}
+              size={"sm"}
               className="flex items-center transition-colors"
             >
               <Send className="w-5 h-5" />

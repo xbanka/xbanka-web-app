@@ -18,6 +18,9 @@ export interface littleCardProps {
   location?: string;
   lastTime?: string;
   date?: string;
+  description?: string
+  isSet?: boolean;
+  onClick?: () => void;
 }
 
 export interface DeviceDetails {

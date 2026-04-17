@@ -2,6 +2,7 @@ import { ChevronDown, LucideIcon } from "lucide-react";
 import { ErrorField } from "./field-error";
 import { FieldError, UseFormRegister } from "react-hook-form";
 import { SelectFieldProps } from "@/lib/types/form-types";
+import { Label } from "./label";
 
 export const SelectField = ({
   id,
@@ -11,9 +12,13 @@ export const SelectField = ({
   error,
   register,
   onChange,
-  value
+  value,
+  label
 }: SelectFieldProps) => (
   <div>
+    {label && (
+        <Label label={label} />
+      )}
     <div className="relative flex items-center">
       {Icon && (
           <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />

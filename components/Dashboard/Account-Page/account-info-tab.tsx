@@ -16,16 +16,22 @@ import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
-import { UseVerificationStatus } from "@/lib/services/profile.service";
+import {
+  useUpdateAvatar,
+  useUpdateProfile,
+  UseVerificationStatus,
+} from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import { DatePicker } from "@/components/ui/reusable-date-picker";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
-  const updateUser = useUserStore((state) => state.updateUser);
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null); // preview
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
+
   const [form, setForm] = useState({
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
@@ -73,24 +79,15 @@ export function AccountInfoTab() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // preview
     const preview = URL.createObjectURL(file);
-    console.log(preview);
     setImage(preview);
 
-    // TODO: upload to backend here
+    // send to backend immediately
+    updateAvatarMutate(file);
   };
 
-  const handleUpdate = async (field: string, value: string) => {
-    // try {
-    //   await AxiosInstance.patch("/users/profile", {
-    //     [field]: value,
-    //   });
-
-    //   updateUser({ [field]: value });
-    // } catch (err) {
-    //   console.error(err);
-    // }
-  };
+  const handleUpdate = async (field: string, value: string) => {};
 
   return (
     <div className="space-y-4">
@@ -101,7 +98,7 @@ export function AccountInfoTab() {
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
               {image ? (
                 <Image
-                  src={image}
+                  src={image ?? ""}
                   alt="profile"
                   fill
                   className="object-cover"
@@ -176,6 +173,7 @@ export function AccountInfoTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {banks.map((b, i) => (
             <BankAccountCard
+              key={i}
               index={i}
               label={b.label}
               status={b.status}
@@ -202,7 +200,7 @@ export function AccountInfoTab() {
               Personal Information
             </h3>
             <p className="text-[14px] leading-5.5 font-medium text-text mt-1">
-              Last updated: {formatDate(userData?.createdAt || "")}
+              Last updated: {formatDate(userData?.createdAt ?? "")}
             </p>
           </div>
           <button className="flex items-center gap-1.5 text-xs text-Green hover:underline">
@@ -231,15 +229,30 @@ export function AccountInfoTab() {
             value={userData?.email || ""}
             onSave={(val) => handleUpdate("email", val)}
           />
+          <PersonalInfoTab
+            label="Phone Number"
+            value={userData?.phoneNumber || ""}
+            onSave={(val) => handleUpdate("email", val)}
+          />
 
           {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
-            value={userData?.firstName || ""}
+            value={formatDate(userData?.dateOfBirth ?? "")}
             onSave={(val) => handleUpdate("dateOfBirth", val)}
             renderInput={(value, onChange) => (
               <DatePicker value={value} onChange={onChange} />
             )}
+          />
+          <PersonalInfoTab
+            label="Gender"
+            value={userData?.gender || ""}
+            onSave={(val) => handleUpdate("gender", val)}
+          />
+          <PersonalInfoTab
+            label="Nationality"
+            value={userData?.country || ""}
+            onSave={(val) => handleUpdate("country", val)}
           />
         </div>
       </DashboardCard>
