@@ -22,12 +22,14 @@ import { useState } from "react";
 import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
 import { updatePin } from "@/lib/actions/security";
-import { useRequestOtp } from "@/lib/services/security.service";
+import { useRemoveDevice, useRequestOtp, useRevokeSessions } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
+import { useUserStore } from "@/store/user.store";
 
 export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
   const hasPassword = true;
+  const userData = useUserStore((state) => state.user);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
@@ -69,40 +71,6 @@ export function SecurityTab() {
     },
   ];
 
-  const devices = [
-    {
-      name: "Samsung S21",
-      icon: Smartphone,
-      action: "Remove",
-      added: "Added Nov 21, 2025",
-    },
-    {
-      name: "Lenovo R123",
-      icon: Laptop,
-      action: "Remove",
-      added: "Added Nov 21, 2025",
-    },
-  ];
-
-  const sessions = [
-    {
-      os: "Mac OS",
-      icon: Chrome,
-      ip: "IP: 193.89.11",
-      location: "Lagos, Nigeria",
-      time: "",
-      action: "Revoke",
-    },
-    {
-      os: "Mobile App",
-      icon: Laptop,
-      ip: "",
-      location: "Lagos, Nigeria",
-      time: "2 hrs ago",
-      action: "Revoke",
-    },
-  ];
-
   const {
     data: ActiveSessionsData,
     isPending: ActiveSessionsPending,
@@ -118,6 +86,8 @@ export function SecurityTab() {
   } = UseGetRegisteredDevices();
 
   const { mutate: requestOtp, isPending: otpLoading } = useRequestOtp();
+  const { mutate: revokeSessionsMutate, isPending: revokeLoading, error: revokeError } = useRevokeSessions();
+  const { mutate: removeDeviceMutate, isPending: removeLoading, error: removeError } = useRemoveDevice();
 
   const handleChangePassword = () => {
   requestOtp(undefined, {
@@ -153,9 +123,9 @@ export function SecurityTab() {
       icon: Lock,
       label: "Transaction PIN",
       desc: "Required for withdrawals and transfers",
-      isSet: hasPin,
-      action: hasPin ? "Change" : "Set PIN",
-      status: hasPin ? "PIN set" : "",
+      isSet: userData?.hasTransactionPin,
+      action: userData?.hasTransactionPin ? "Change" : "Set PIN",
+      status: userData?.hasTransactionPin ? "PIN set" : "",
       key: "pin",
       onClick: (item: any) => handleAuthAction(item),
     },

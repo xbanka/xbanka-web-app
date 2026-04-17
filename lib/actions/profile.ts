@@ -14,6 +14,23 @@ export const updateProfile = async (data: UpdateProfileData) => {
   return response.data;
 };
 
+export const updateAvatar = async (file: File) => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await AxiosInstance.post(
+    "/users/profile/info",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
+
 export const VerificationStatus = async () => {
   const response = await AxiosInstance.get("/users/verification-status")
 

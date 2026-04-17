@@ -110,7 +110,7 @@ export const CreatePinModal = ({ handleClose, open }: CreatePinModalProps) => {
             PIN Verified Successfully
           </h2>
 
-          <Button onClick={handleClose}>Confirm</Button>
+          <Button className="w-full" onClick={handleClose}>Confirm</Button>
         </div>
       )}
     </Modal>

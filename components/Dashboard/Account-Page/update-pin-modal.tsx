@@ -10,13 +10,15 @@ import { Lock, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { CloseBtn } from "./create-pin-modal";
+import { ErrorField } from "@/components/ui/field-error";
 
 export const UpdatePinModal = ({ open, handleClose }: any) => {
   const [success, setSuccess] = useState(false);
 
   const { mutate, isPending, error } = useUpdatePin();
 
-  const { handleSubmit, register, reset } = useForm<UpdatePinForm>({
+  const { handleSubmit, register, reset, formState: { errors } } = useForm<UpdatePinForm>({
     resolver: zodResolver(updatePinSchema),
     mode: "onSubmit",
   });
@@ -31,6 +33,7 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
       onSuccess: () => {
         reset();
         handleClose();
+        setSuccess(true)
       },
     });
   };
@@ -55,6 +58,7 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
               type="text"
               placeholder="Enter OTP"
               register={register}
+              error={errors.otp}
             />
 
             {/* Old PIN */}
@@ -64,6 +68,7 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
               type="password"
               placeholder="Current PIN"
               register={register}
+              error={errors.oldPin}
             />
 
             {/* New PIN */}
@@ -73,14 +78,17 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
               type="password"
               placeholder="New PIN"
               register={register}
+              error={errors.newPin}
             />
 
-            <div className="flex gap-3">
-              <Button type="button" onClick={handleClose}>
+            {error && <ErrorField message={error.message} />}
+
+            <div className="flex gap-3 w-full">
+              <Button type="button" variant={"outline"} className="flex-1" onClick={handleClose}>
                 Cancel
               </Button>
 
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" className="flex-3" disabled={isPending}>
                 {isPending ? "Updating..." : "Update PIN"}
               </Button>
             </div>
@@ -115,11 +123,3 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
     </Modal>
   );
 };
-
-function CloseBtn({ onClose }: any) {
-  return (
-    <div onClick={onClose} className="absolute top-4 right-4 cursor-pointer">
-      <X />
-    </div>
-  );
-}

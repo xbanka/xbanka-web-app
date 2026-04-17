@@ -3,6 +3,7 @@ import { createPin, passwordChange, requesOtp, updatePin } from "../actions/secu
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { CreatePinPayload, passwordChangePayload, UpdatePinPayload } from "../types/security-types";
+import { RemoveDevice, RevokeSessions } from "../actions/sessions";
 
 export const useCreatePin = () => {
     const mutate = useMutation({
@@ -20,6 +21,34 @@ export const useCreatePin = () => {
 export const useRequestOtp = () => {
   return useMutation({
     mutationFn: () => requesOtp(),
+
+    onSuccess: () => {
+      toast.success("OTP sent to your email");
+    },
+
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useRevokeSessions = () => {
+  return useMutation({
+    mutationFn: () => RevokeSessions(),
+
+    onSuccess: () => {
+      toast.success("OTP sent to your email");
+    },
+
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useRemoveDevice = () => {
+  return useMutation({
+    mutationFn: () => RemoveDevice(),
 
     onSuccess: () => {
       toast.success("OTP sent to your email");

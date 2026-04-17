@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UpdateProfileData, UserProfileTypes } from "../types/profile-types";
-import { updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
+import { updateAvatar, updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
@@ -20,6 +20,19 @@ export const UseProfileUser = () => {
     },
   });
   return mutate;
+};
+
+export const useUpdateAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => updateAvatar(file),
+
+    onSuccess: (data) => {
+      // refresh user profile
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+  });
 };
 
 export const UseVerificationStatus = () => {

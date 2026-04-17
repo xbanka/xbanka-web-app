@@ -14,10 +14,11 @@ import {
   changePasswordSchema,
 } from "@/lib/schema/security-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { error } from "console";
 
 export const ChangePasswordModal = ({ open, handleClose }: any) => {
   const { mutate, isPending } = useChangePassword();
-  const { handleSubmit, register, reset } = useForm<ChangePasswordForm>({
+  const { handleSubmit, register, reset, formState: {errors} } = useForm<ChangePasswordForm>({
     resolver: zodResolver(changePasswordSchema),
     mode: "onSubmit",
   });
@@ -60,6 +61,7 @@ export const ChangePasswordModal = ({ open, handleClose }: any) => {
               type="text"
               placeholder="Enter OTP"
               register={register}
+              error={errors.otp}
             />
 
             {/* Old Password */}
@@ -69,6 +71,7 @@ export const ChangePasswordModal = ({ open, handleClose }: any) => {
               type="password"
               placeholder="Current Password"
               register={register}
+              error={errors.oldPassword}
             />
 
             {/* New Password */}
@@ -78,6 +81,7 @@ export const ChangePasswordModal = ({ open, handleClose }: any) => {
               type="password"
               placeholder="New Password"
               register={register}
+              error={errors.newPassword}
             />
 
             <div className="flex gap-4">
