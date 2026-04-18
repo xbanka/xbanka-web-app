@@ -23,6 +23,8 @@ import {
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import { DatePicker } from "@/components/ui/reusable-date-picker";
+import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+import { BankAccount } from "./types";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
@@ -31,6 +33,8 @@ export function AccountInfoTab() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
+  const { data: getBankAccounts, isPending: bankAccountsPending } = UseGetBankAcounts();
+  console.log(getBankAccounts, "bank accounts")
 
   const [form, setForm] = useState({
     firstName: userData?.firstName || "",
@@ -171,15 +175,15 @@ export function AccountInfoTab() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {banks.map((b, i) => (
+          {getBankAccounts?.data?.map((b: BankAccount, i: number) => (
             <BankAccountCard
               key={i}
               index={i}
-              label={b.label}
-              status={b.status}
-              bank={b.bank}
-              number={b.number}
-              name={b.name}
+              label="Primary Account"
+              status={b.isVerified ? "Verified" : "Under Review"}
+              bank={b.bankName}
+              number={b.accountNumber}
+              name={b.accountName}
             />
           ))}
         </div>

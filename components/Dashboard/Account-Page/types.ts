@@ -50,3 +50,11 @@ export interface UserSession {
   createdAt: string;
   device: DeviceDetails; // Nested device object
 }
+
+export interface BankAccount {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  id: string;
+  isVerified: boolean;
+}
