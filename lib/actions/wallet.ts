@@ -4,7 +4,7 @@ import {
   ConvertExecutePayload,
   QuoteExecutePayload,
 } from "../types/crypto-types";
-import { fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
@@ -99,6 +99,16 @@ export const verifyFund = async (reference: string) => {
 
 export const getBankAcounts = async () => {
   const response = await AxiosInstance.get("/wallets/banks");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const addBankAcounts = async (data: AddBankAccountPayload) => {
+  const response = await AxiosInstance.post("/wallets/banks", data);
 
   return {
     success: true,

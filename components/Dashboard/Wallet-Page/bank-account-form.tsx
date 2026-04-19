@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
-import { BankForm, BANKS, bankSchema } from "@/lib/schema/bank-schema";
+import { BankForm, bankSchema } from "@/lib/schema/bank-schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";

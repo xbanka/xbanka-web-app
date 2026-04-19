@@ -27,3 +27,9 @@ export interface WalletAccount {
   bankName: string | null;
   memo: string | null;
 }
+
+export interface AddBankAccountPayload {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}
