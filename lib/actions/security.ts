@@ -48,8 +48,17 @@ export const validatePin = async (token: string) => {
     };
 }
 
-export const twoFactorAuthenticationGenerate = async (token: string) => {
-    const response = await AxiosInstance.post("/security/2fa/generate", {
+export const twoFactorAuthenticationGenerate = async () => {
+    const response = await AxiosInstance.post("/security/2fa/generate")
+    return {
+      success: true,
+      data: response.data,
+      status: response.status,
+    };
+}
+
+export const twoFactorAuthenticationEnable = async (token: string, code: string) => {
+    const response = await AxiosInstance.post("/security/2fa/enable", {
       token
     })
     return {
@@ -59,10 +68,9 @@ export const twoFactorAuthenticationGenerate = async (token: string) => {
     };
 }
 
-export const twoFactorAuthenticationValidate = async (token: string, code: string) => {
-    const response = await AxiosInstance.post("/security/2fa/validate", {
-      token,
-      code
+export const twoFactorAuthenticationDisable = async (token: string, code: string) => {
+    const response = await AxiosInstance.post("/security/2fa/disable", {
+      token
     })
     return {
       success: true,

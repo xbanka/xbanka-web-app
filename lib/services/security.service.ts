@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { createPin, passwordChange, requesOtp, updatePin } from "../actions/security";
+import { createPin, passwordChange, requesOtp, twoFactorAuthenticationGenerate, updatePin } from "../actions/security";
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
 import { CreatePinPayload, passwordChangePayload, UpdatePinPayload } from "../types/security-types";
@@ -76,6 +76,19 @@ export const useUpdatePin = () => {
 export const useChangePassword = () => {
     const mutate = useMutation({
     mutationFn: (data: passwordChangePayload) => passwordChange(data),
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+}
+
+export const useTwoFactorAuthenticationGenerate = () => {
+    const mutate = useMutation({
+    mutationFn: () => twoFactorAuthenticationGenerate(),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },

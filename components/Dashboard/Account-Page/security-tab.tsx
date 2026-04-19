@@ -22,7 +22,12 @@ import { useState } from "react";
 import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
 import { updatePin } from "@/lib/actions/security";
-import { useRemoveDevice, useRequestOtp, useRevokeSessions } from "@/lib/services/security.service";
+import {
+  useRemoveDevice,
+  useRequestOtp,
+  useRevokeSessions,
+  useTwoFactorAuthenticationGenerate,
+} from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";
 
@@ -70,15 +75,19 @@ export function SecurityTab() {
       note: "",
     },
   ];
+  const {
+    mutate: GenerateTwoFactorMutate,
+    isPending: GenerateTwoFactorPending,
+    error: GenerateTwoFactorError,
+  } = useTwoFactorAuthenticationGenerate();
 
   const {
     data: ActiveSessionsData,
     isPending: ActiveSessionsPending,
     error: ActiveSessionsError,
   } = UseGetActiveSessions();
-  console.log("Active sessions data:", ActiveSessionsData);
+  
   const activeSessions = ActiveSessionsData ? ActiveSessionsData.data : [];
-  console.log("Active sessions data:", activeSessions);
   const {
     data: RegisteredDevicesData,
     isPending: RegisteredDevicesPending,
@@ -86,16 +95,24 @@ export function SecurityTab() {
   } = UseGetRegisteredDevices();
 
   const { mutate: requestOtp, isPending: otpLoading } = useRequestOtp();
-  const { mutate: revokeSessionsMutate, isPending: revokeLoading, error: revokeError } = useRevokeSessions();
-  const { mutate: removeDeviceMutate, isPending: removeLoading, error: removeError } = useRemoveDevice();
+  const {
+    mutate: revokeSessionsMutate,
+    isPending: revokeLoading,
+    error: revokeError,
+  } = useRevokeSessions();
+  const {
+    mutate: removeDeviceMutate,
+    isPending: removeLoading,
+    error: removeError,
+  } = useRemoveDevice();
 
   const handleChangePassword = () => {
-  requestOtp(undefined, {
-    onSuccess: () => {
-      setOpenChangePassword(true);
-    },
-  });
-};
+    requestOtp(undefined, {
+      onSuccess: () => {
+        setOpenChangePassword(true);
+      },
+    });
+  };
 
   const handleAuthAction = (item: any) => {
     requestOtp(undefined, {
@@ -197,7 +214,7 @@ export function SecurityTab() {
                 status={item.status}
                 key={i}
                 label={item.label}
-                onClick={() => item.onClick?.(item)} 
+                onClick={() => item.onClick?.(item)}
               />
             );
           })}
@@ -298,11 +315,11 @@ export function SecurityTab() {
       )}
 
       {openChangePassword && (
-  <ChangePasswordModal
-    open={openChangePassword}
-    handleClose={() => setOpenChangePassword(false)}
-  />
-)}
+        <ChangePasswordModal
+          open={openChangePassword}
+          handleClose={() => setOpenChangePassword(false)}
+        />
+      )}
     </div>
   );
 }
