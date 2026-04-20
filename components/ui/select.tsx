@@ -1,6 +1,5 @@
-import { ChevronDown, LucideIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ErrorField } from "./field-error";
-import { FieldError, UseFormRegister } from "react-hook-form";
 import { SelectFieldProps } from "@/lib/types/form-types";
 import { Label } from "./label";
 
@@ -11,8 +10,6 @@ export const SelectField = ({
   options,
   error,
   register,
-  onChange,
-  value,
   label
 }: SelectFieldProps) => (
   <div>
@@ -27,8 +24,6 @@ export const SelectField = ({
         className={`border-input flex h-10 items-center w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer ${Icon ? "pl-10 pr-4" : "px-4"}`}
         defaultValue=""
         {...(register && register(id))}
-        value={value ?? ""}
-        onChange={onChange}
       >
         { placeholder && <option className="text-[14px]" value="" disabled hidden>
           {placeholder}

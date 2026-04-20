@@ -4,7 +4,7 @@ import {
   ConvertExecutePayload,
   QuoteExecutePayload,
 } from "../types/crypto-types";
-import { fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, DeleteFiatWalletBankSavedCardPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
@@ -97,8 +97,46 @@ export const verifyFund = async (reference: string) => {
   return res.data;
 };
 
+export const FundFiatWalletBank = async (data: fundWalletBankPayload) => {
+  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/initiate", {
+    accountNumber: data.accountNumber,
+    callback_url: `${window.location.origin}/wallet/fund-callback`,
+    bankCode: data.bankCode,
+  });
+
+  return response.data;
+};
+
+export const VerifyFundFiatWalletBank = async (reference: string) => {
+  const response = await AxiosInstance.post(`/wallets/fiat/direct-debit/verify/${reference}`);
+
+  return response.data;
+};
+
+export const fundFiatWalletBankSavedCard = async (data: fundWalletBankSavedCardPayload) => {
+  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/charge", data);
+
+  return response.data;
+};
+
+export const deleteFiatWalletBankSavedCard = async (data: DeleteFiatWalletBankSavedCardPayload) => {
+  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/deactivate", data );
+
+  return response.data;
+};
+
 export const getBankAcounts = async () => {
-  const response = await AxiosInstance.get("/wallets/banks");
+  const response = await AxiosInstance.get("/wallet/banks");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const addBankAcounts = async (data: AddBankAccountPayload) => {
+  const response = await AxiosInstance.post("/wallet/banks", data);
 
   return {
     success: true,
@@ -154,6 +192,12 @@ export const getCurrency = async () => {
 
 export const getGroupedPair = async () => {
   const response = await AxiosInstance.get("/wallet/assets/grouped-pairs");
+
+  return response.data;
+};
+
+export const getMarketPrices = async () => {
+  const response = await AxiosInstance.get("/wallets/market-prices");
 
   return response.data;
 };
