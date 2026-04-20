@@ -135,6 +135,16 @@ export const getBankAcounts = async () => {
   };
 };
 
+export const getBankAcountsList = async () => {
+  const response = await AxiosInstance.get("/wallets/direct-debit-banks");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
 export const addBankAcounts = async (data: AddBankAccountPayload) => {
   const response = await AxiosInstance.post("/wallet/banks", data);
 

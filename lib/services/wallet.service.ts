@@ -9,11 +9,12 @@ import {
   generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
+  getBankAcountsList,
   getCryptoWallet,
   getCurrency,
-  getDepositCrypto,
   getFiatWallet,
   getGroupedPair,
+  getMarketPrices,
   getRateConversion,
   getSingleWalletBalance,
   getTransactionHistory,
@@ -208,6 +209,20 @@ export const UseFundFiatWallet = () => {
   });
 };
 
+export const UseBankAccountList = () => {
+  return useQuery({
+    queryKey: ["bank-list"],
+    queryFn: async () => {
+      try {
+        const response = await getBankAcountsList();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
 export const UseGetBankAcounts = () => {
   return useQuery({
     queryKey: ["bank-accounts"],
@@ -312,5 +327,20 @@ export const useGetGroupedPair = () => {
         handleApiError(err);
       }
     },
+  });
+};
+
+export const useGetMarketPrices = () => {
+  return useQuery({
+    queryKey: ["market-prices"],
+    queryFn: async () => {
+      try {
+        const response = await getMarketPrices();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: Infinity
   });
 };

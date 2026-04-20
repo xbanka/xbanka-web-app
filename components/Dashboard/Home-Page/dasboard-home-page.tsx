@@ -11,6 +11,7 @@ export default function DashboardPage() {
   const {data } = UseGetDashboardData()
   const {data: payOut } = UseGetDashboardPayoutTrend()
   const user = useUserStore((item) => item.user)
+
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}

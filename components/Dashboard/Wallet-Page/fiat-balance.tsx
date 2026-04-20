@@ -1,7 +1,7 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { UseGetFiatWallet } from "@/lib/services/wallet.service";
+import { UseBankAccountList, UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
@@ -16,6 +16,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const latestWallet = wallets[0];
   const isAddFundDisabled = !isBvnVerified;
   console.log("fiat wallet balance", data);
+  const { data: bankAccountList } = UseBankAccountList()
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">

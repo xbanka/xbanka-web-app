@@ -1,4 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import z from "zod";
+import { getMarketPrices } from "../actions/wallet";
 
 export const bankSchema = z.object({
   bankName: z.string().min(1, "Please select a bank"),
