@@ -39,6 +39,7 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   };
 
   const handleDetailsSubmit = (data: BankForm) => {
+    console.log("Bank details submitted", data);
     setFormData(data);
     setStep("confirm");
   };
@@ -48,6 +49,7 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
     setStep("linking");
     // Replace with your real API call
     await new Promise((r) => setTimeout(r, 2000));
+    console.log(formData)
     const payload = {
       bankName: formData?.bankName || "",
       accountNumber: formData?.accountNumber || "",

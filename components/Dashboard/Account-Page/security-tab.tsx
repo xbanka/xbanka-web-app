@@ -75,6 +75,7 @@ export function SecurityTab() {
       note: "",
     },
   ];
+  
   const {
     mutate: GenerateTwoFactorMutate,
     isPending: GenerateTwoFactorPending,
@@ -86,7 +87,7 @@ export function SecurityTab() {
     isPending: ActiveSessionsPending,
     error: ActiveSessionsError,
   } = UseGetActiveSessions();
-  
+
   const activeSessions = ActiveSessionsData ? ActiveSessionsData.data : [];
   const {
     data: RegisteredDevicesData,

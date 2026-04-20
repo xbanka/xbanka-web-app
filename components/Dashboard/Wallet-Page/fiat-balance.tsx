@@ -6,6 +6,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundModal } from "./add-fund-modal";
+import { AddFundsModal } from "./add-funds-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
@@ -66,21 +67,18 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
               size={"sm"}
               className="flex items-center transition-colors"
             >
-              <Download className="w-5 h-5" />
-              Deposit
-            </Button>
-            <Button
-              variant={"outline"}
-              size={"sm"}
-              className="flex items-center transition-colors"
-            >
               <Send className="w-5 h-5" />
               Send
             </Button>
           </div>
         </div>
         {addFundsOpen && (
-          <AddFundModal
+          // <AddFundModal
+          //   open={addFundsOpen}
+          //   onClose={() => setAddFundsOpen(false)}
+          //   onSuccess={() => setAddFundsOpen(false)}
+          // />
+          <AddFundsModal
             open={addFundsOpen}
             onClose={() => setAddFundsOpen(false)}
             onSuccess={() => setAddFundsOpen(false)}

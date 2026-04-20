@@ -2,12 +2,8 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import {
-  Copy,
   Edit2,
-  EllipsisVertical,
-  Eye,
-  EyeOff,
-  Lock,
+
   Plus,
 } from "lucide-react";
 import { useState } from "react";
@@ -18,7 +14,6 @@ import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
 import {
   useUpdateAvatar,
-  useUpdateProfile,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
@@ -26,14 +21,11 @@ import { DatePicker } from "@/components/ui/reusable-date-picker";
 import { UseGetBankAcounts } from "@/lib/services/wallet.service";
 import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
-import { set } from "zod";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [openAccountModal, setOpenAccountModal] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
   const {
@@ -217,7 +209,7 @@ export function AccountInfoTab() {
             )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {getBankAccounts?.data?.map((b: BankAccount, i: number) => (
+          {getBankAccounts?.data?.data?.map((b: BankAccount, i: number) => (
             <BankAccountCard
               key={i}
               index={i}
