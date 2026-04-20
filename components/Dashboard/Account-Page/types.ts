@@ -50,3 +50,20 @@ export interface UserSession {
   createdAt: string;
   device: DeviceDetails; // Nested device object
 }
+
+export interface BankAccount {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  id: string;
+  isVerified: boolean;
+}
+
+export type BankStep = "select" | "details" | "confirm" | "linking" | "success";
+export type FundMethod = "bank" | "card" | null;
+ 
+export interface AddBankModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}

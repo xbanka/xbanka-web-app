@@ -1,8 +1,8 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
+import { CryptoSelectField } from "@/components/ui/crypto-select";
 import { Input } from "@/components/ui/input";
-import { SelectField } from "@/components/ui/select";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
@@ -196,9 +196,7 @@ export function TransactionHistory({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <SelectField
-            id="gender"
-            placeholder="Transaction Type"
+          <CryptoSelectField
             options={[
               { value: "ALL", label: "All" },
               { value: "DEPOSIT", label: "DEPOSIT" },

@@ -6,7 +6,7 @@ import { CurrencyOption } from "@/lib/crypto";
 
 export interface CryptoSelectFieldProps {
   currencyId?: boolean;
-  options: CurrencyOption[];
+  options: CurrencyOption[] | any[];
   onChange: (value: string) => void;
   value: string;
 }

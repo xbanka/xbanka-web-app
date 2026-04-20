@@ -1,0 +1,121 @@
+import { SAVED_BANKS, SAVED_CARDS } from "@/lib/wallet-page";
+import { AddNewBankStep } from "./add-new-bank";
+import { AddNewCardStep } from "./add-new-card";
+import { ConfirmStep } from "./confirm-step";
+import { EnterAmountStep } from "./enter-amount";
+import { EnterPinStep } from "./enter-pin-step";
+import { ProcessingStep } from "./processing-step";
+import { SelectBankStep } from "./select-bank-step";
+import { SelectCardStep } from "./select-card-step";
+import { SelectMethodStep } from "./select-method-step";
+import { SuccessStep } from "./success-step";
+import { useState } from "react";
+import { FundMethod } from "../Account-Page/types";
+import { AddFundsModalProps, FundStep } from "./types";
+
+export function AddFundsModal({ open, onClose, onSuccess }: AddFundsModalProps) {
+  const [step, setStep] = useState<FundStep>("select_method");
+  const [method, setMethod] = useState<FundMethod>(null);
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(SAVED_BANKS[0].id);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(SAVED_CARDS[0].id);
+  const [amount, setAmount] = useState("");
+ 
+  if (!open) return null;
+ 
+  const selectedBank = SAVED_BANKS.find((b) => b.id === selectedBankId) ?? SAVED_BANKS[0];
+  const selectedCard = SAVED_CARDS.find((c) => c.id === selectedCardId) ?? SAVED_CARDS[0];
+  const source = method === "card" ? selectedCard : selectedBank;
+ 
+  const reset = () => {
+    setStep("select_method");
+    setMethod(null);
+    setSelectedBankId(SAVED_BANKS[0].id);
+    setSelectedCardId(SAVED_CARDS[0].id);
+    setAmount("");
+  };
+ 
+  const handleClose = () => { reset(); onClose(); };
+ 
+  const handleMethodContinue = () => {
+    if (method === "bank") setStep("select_bank");
+    if (method === "card") setStep("select_card");
+  };
+ 
+  const startProcessing = async () => {
+    setStep("processing");
+    await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
+    setStep("success");
+  };
+ 
+  // ── Bank flow ──
+  if (step === "select_method") return (
+    <SelectMethodStep selected={method} onSelect={setMethod}
+      onClose={handleClose} onContinue={handleMethodContinue} />
+  );
+  if (step === "select_bank") return (
+    <SelectBankStep selectedId={selectedBankId} onSelect={setSelectedBankId}
+      onBack={() => setStep("select_method")} onClose={handleClose}
+      onContinue={() => setStep("enter_amount_bank")}
+      onAddNew={() => setStep("add_new_bank")} />
+  );
+  if (step === "add_new_bank") return (
+    <AddNewBankStep onBack={() => setStep("select_bank")} onClose={handleClose}
+      onSaved={() => setStep("select_bank")} />
+  );
+  if (step === "enter_amount_bank") return (
+    <EnterAmountStep amount={amount} setAmount={setAmount}
+      sourceLabel={selectedBank.masked} sourceColor={selectedBank.color}
+      sourceName={selectedBank.name}
+      onBack={() => setStep("select_bank")} onClose={handleClose}
+      onContinue={() => setStep("confirm_bank")} />
+  );
+  if (step === "confirm_bank") return (
+    <ConfirmStep amount={amount} sourceLabel={selectedBank.masked}
+      accountName={selectedBank.name} fee="0.00"
+      onBack={() => setStep("enter_amount_bank")} onClose={handleClose}
+      onConfirm={() => setStep("enter_pin")} />
+  );
+ 
+  // ── Card flow ──
+  if (step === "select_card") return (
+    <SelectCardStep selectedId={selectedCardId} onSelect={setSelectedCardId}
+      onBack={() => setStep("select_method")} onClose={handleClose}
+      onContinue={() => setStep("enter_amount_card")}
+      onAddNew={() => setStep("add_new_card")} />
+  );
+  if (step === "add_new_card") return (
+    <AddNewCardStep onBack={() => setStep("select_card")} onClose={handleClose}
+      onSaved={() => setStep("select_card")} />
+  );
+  if (step === "enter_amount_card") return (
+    <EnterAmountStep amount={amount} setAmount={setAmount}
+      sourceLabel={selectedCard.masked} sourceColor={selectedCard.color}
+      sourceName={selectedCard.name}
+      onBack={() => setStep("select_card")} onClose={handleClose}
+      onContinue={() => setStep("confirm_card")} />
+  );
+  if (step === "confirm_card") return (
+    <ConfirmStep amount={amount} sourceLabel={selectedCard.masked}
+      accountName={selectedCard.name} fee="0.00"
+      onBack={() => setStep("enter_amount_card")} onClose={handleClose}
+      onConfirm={() => setStep("enter_pin")} />
+  );
+ 
+  // ── Shared final steps ──
+  if (step === "enter_pin") return (
+    <EnterPinStep
+      onBack={() => method === "card" ? setStep("confirm_card") : setStep("confirm_bank")}
+      onClose={handleClose}
+      onConfirm={startProcessing}
+    />
+  );
+  if (step === "processing") return (
+    <ProcessingStep amount={amount} sourceLabel={source.masked} accountName={source.name} />
+  );
+  if (step === "success") return (
+    <SuccessStep amount={amount} onDone={() => { onSuccess?.(); handleClose(); }}
+      onAddMore={reset} />
+  );
+ 
+  return null;
+}

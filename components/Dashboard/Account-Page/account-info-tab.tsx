@@ -2,12 +2,8 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import {
-  Copy,
   Edit2,
-  EllipsisVertical,
-  Eye,
-  EyeOff,
-  Lock,
+
   Plus,
 } from "lucide-react";
 import { useState } from "react";
@@ -18,19 +14,26 @@ import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
 import {
   useUpdateAvatar,
-  useUpdateProfile,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import { DatePicker } from "@/components/ui/reusable-date-picker";
+import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+import { BankAccount } from "./types";
+import { AddBankModal } from "./add-bank-modal";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [openAccountModal, setOpenAccountModal] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
+  const {
+    data: getBankAccounts,
+    isPending: getBankAccountsPending,
+    error: getBankAccountsError,
+  } = UseGetBankAcounts();
+  console.log("bank accounts", getBankAccounts);
 
   const [form, setForm] = useState({
     firstName: userData?.firstName || "",
@@ -88,6 +91,11 @@ export function AccountInfoTab() {
   };
 
   const handleUpdate = async (field: string, value: string) => {};
+
+  const handleAddAccountModal = () => {
+    // open add account modal
+    setOpenAccountModal(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -170,21 +178,54 @@ export function AccountInfoTab() {
           </span>
         </div>
 
+        {!getBankAccountsPending &&
+            !getBankAccounts &&
+            getBankAccountsError && (
+              <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
+                <Image
+                  className="mx-auto mb-1"
+                  alt="frame"
+                  width={96}
+                  height={122}
+                  src={"/Frame.svg"}
+                />
+                {getBankAccountsError?.message || "Failed to load bank accounts"}
+              </div>
+            )}
+
+          {!getBankAccountsPending &&
+            !getBankAccountsError &&
+            getBankAccounts?.data?.length === 0 && (
+              <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
+                <Image
+                  className="mx-auto mb-1"
+                  alt="frame"
+                  width={96}
+                  height={122}
+                  src={"/Frame.svg"}
+                />
+                No linked bank accounts found
+              </div>
+            )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {banks.map((b, i) => (
+          {getBankAccounts?.data?.data?.map((b: BankAccount, i: number) => (
             <BankAccountCard
               key={i}
               index={i}
-              label={b.label}
-              status={b.status}
-              bank={b.bank}
-              number={b.number}
-              name={b.name}
+              label="Primary Account"
+              status={b.isVerified ? "Verified" : "Under Review"}
+              bank={b.bankName}
+              number={b.accountNumber}
+              name={b.accountName}
             />
           ))}
         </div>
 
-        <div className="space-y-1 mx-auto w-fit">
+        <div
+          onClick={handleAddAccountModal}
+          className="space-y-1 mx-auto w-fit"
+        >
           <button className="w-8 h-8 p-2 cursor-pointer flex items-center justify-center mx-auto gap-2 bg-[#042F2E] hover:bg-[#042F2E]/90 border border-[#0F766E] hover:border-[#0F766E]/5 py-3 rounded-[36px] text-sm text-text transition-colors">
             <Plus className="w-4 h-4 text-[#5EEAD4] hover:text-Green transition-colors" />
           </button>
@@ -255,6 +296,13 @@ export function AccountInfoTab() {
             onSave={(val) => handleUpdate("country", val)}
           />
         </div>
+
+        {openAccountModal && (
+          <AddBankModal
+            onClose={() => setOpenAccountModal(false)}
+            open={openAccountModal}
+          />
+        )}
       </DashboardCard>
     </div>
   );

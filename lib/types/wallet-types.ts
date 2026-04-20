@@ -6,6 +6,20 @@ export interface fundWalletSavedCardPayload {
   amount: number,
   savedCardId: string,
 }
+
+export interface fundWalletBankSavedCardPayload {
+  amount: number,
+  mandateId: string,
+}
+
+export interface fundWalletBankPayload {
+  accountNumber: string
+  bankCode: string
+}
+
+export interface DeleteFiatWalletBankSavedCardPayload {
+  mandateId: string;
+}
 export interface GenerateDepositAddressPayload {
   currency: string;
   network: string;
@@ -26,4 +40,10 @@ export interface WalletAccount {
   bankCode: string | null;
   bankName: string | null;
   memo: string | null;
+}
+
+export interface AddBankAccountPayload {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
 }

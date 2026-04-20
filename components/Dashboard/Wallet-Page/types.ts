@@ -1,9 +1,27 @@
 type WalletTab = "total" | "fiat" | "crypto";
 
-type FundStep = "select" | "bank" | "card";
-type FundMethod = "bank" | "card" | null;
-
 type CryptoSymbol = 'ETH' | 'BTC' | 'USDT';
+
+type FundMethod = "bank" | "card" | null;
+export type FundStep =
+  | "select_method"
+  | "select_bank"
+  | "enter_amount_bank"
+  | "confirm_bank"
+  | "enter_pin"
+  | "processing"
+  | "success"
+  | "select_card"
+  | "enter_amount_card"
+  | "confirm_card"
+  | "add_new_bank"
+  | "add_new_card";
+ 
+export interface AddFundsModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
 
 export interface FiatValue {
   currency: string; // e.g., "NGN"

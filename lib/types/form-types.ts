@@ -27,8 +27,6 @@ export interface SelectFieldProps {
   options: OptionProps[];
   error?: FieldError;
   register?: UseFormRegister<any>;
-  onChange?: any;
-  value?: string | null
   label?: string;
 }
 

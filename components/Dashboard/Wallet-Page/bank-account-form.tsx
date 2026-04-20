@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
-import { BankForm, BANKS, bankSchema } from "@/lib/schema/bank-schema";
+import { BankForm, bankSchema } from "@/lib/schema/bank-schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -42,7 +42,7 @@ export function BankAccountForm({
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-card-text">Bank Name</label>
           <div className="relative">
-            <select
+            {/* <select
               className={cn(
                 "w-full h-10 pl-3 pr-8 text-sm border rounded-lg bg-card-background text-card-text appearance-none outline-none transition-colors",
                 errors.bankName
@@ -56,7 +56,7 @@ export function BankAccountForm({
               {BANKS.map((b) => (
                 <option key={b} value={b}>{b}</option>
               ))}
-            </select>
+            </select> */}
             <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <polyline points="6 9 12 15 18 9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

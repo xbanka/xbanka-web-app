@@ -1,0 +1,53 @@
+import { ChevronDown } from "lucide-react";
+import { ErrorField } from "./field-error";
+import { SelectFieldProps } from "@/lib/types/form-types";
+import { Label } from "./label";
+
+export interface SelectWithValueFieldProps {
+  currencyId?: boolean;
+  options: any[];
+  onChange: (value: string) => void;
+  value: string;
+  placeholder: string;
+  label?: string;
+}
+
+export const SelectFieldWithValue = ({
+  value,
+  onChange,
+  //   icon: Icon,
+  placeholder,
+  options,
+  //   error,
+  label,
+}: SelectWithValueFieldProps) => (
+  <div>
+    {label && <Label label={label} />}
+    <div className="relative flex items-center">
+      {/* {Icon && (
+          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
+      )} */}
+      <select
+        className={`border-input flex h-10 items-center w-full min-w-0 rounded-lg border bg-input-background px-4 py-2.5 text-[14px] shadow-xs appearance-none cursor-pointer`}
+        defaultValue=""
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {placeholder && (
+          <option className="text-[14px]" value="" disabled hidden>
+            {placeholder}
+          </option>
+        )}
+        {options.map((o) => (
+          <option className="" key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <span className="absolute right-3 text-placeholder pointer-events-none flex items-center">
+        <ChevronDown />
+      </span>
+    </div>
+    {/* <ErrorField message={error?.message} /> */}
+  </div>
+);

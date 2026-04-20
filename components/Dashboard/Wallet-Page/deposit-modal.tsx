@@ -9,6 +9,7 @@ import { ErrorField } from "@/components/ui/field-error";
 import { WalletAccount } from "@/lib/types/wallet-types";
 import Image from "next/image";
 import QRCode from "react-qr-code";
+import { SelectFieldWithValue } from "@/components/ui/select-with-value";
 
 const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -79,14 +80,13 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
         <div className="px-10 space-y-6">
           {/* Currency */}
           <div>
-            <SelectField
+            <SelectFieldWithValue
               label="Select a coin"
-              id="currency"
               placeholder="Select Currency"
               options={CURRENCY_OPTIONS}
               value={currency}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setCurrency(e.target.value);
+              onChange={(value) => {
+                setCurrency(value);
                 setNetwork(""); // reset network
               }}
             />
@@ -111,14 +111,13 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
           </div>
           {/* Network */}
           <div>
-            <SelectField
+            <SelectFieldWithValue
               label="Select Network"
-              id="network"
               placeholder="Select Network"
               options={networkOptions}
               value={network}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setNetwork(e.target.value);
+              onChange={(value) => {
+                setNetwork(value);
               }}
             />
             <div className="bg-background text-text py-3 px-4 rounded-lg flex items-center gap-4 mt-2">

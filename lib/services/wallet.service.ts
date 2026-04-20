@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addBankAcounts,
   deleteFiatWalletSavedCard,
   executeConversion,
   fundFiatWallet,
@@ -25,7 +26,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { fundWalletPayload, fundWalletSavedCardPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, fundWalletPayload, fundWalletSavedCardPayload } from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -213,6 +214,21 @@ export const UseGetBankAcounts = () => {
     queryFn: async () => {
       try {
         const response = await getBankAcounts();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 10, // ✅ 10 mins
+    gcTime: 1000 * 60 * 30,    // keep in cache for 30 mins
+  });
+};
+
+export const UseAddBankAcounts = () => {
+  return useMutation({
+    mutationFn: async (data: AddBankAccountPayload) => {
+      try {
+        const response = await addBankAcounts(data);
         return response;
       } catch (err) {
         handleApiError(err);
