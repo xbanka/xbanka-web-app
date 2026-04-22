@@ -1,21 +1,21 @@
 import { SAVED_BANKS, SAVED_CARDS } from "@/lib/wallet-page";
-import { AddNewBankStep } from "./add-new-bank";
-import { AddNewCardStep } from "./add-new-card";
-import { ConfirmStep } from "./confirm-step";
-import { EnterAmountStep } from "./enter-amount";
-import { EnterPinStep } from "./enter-pin-step";
-import { ProcessingStep } from "./processing-step";
-import { SelectBankStep } from "./select-bank-step";
-import { SelectCardStep } from "./select-card-step";
+import { AddNewBankStep } from "../Wallet-Page/add-new-bank";
+import { AddNewCardStep } from "../Wallet-Page/add-new-card";
+import { ConfirmStep } from "../Wallet-Page/confirm-step";
+import { EnterAmountStep } from "../Wallet-Page/enter-amount";
+import { EnterPinStep } from "../Wallet-Page/enter-pin-step";
+import { ProcessingStep } from "../Wallet-Page/processing-step";
+import { SelectBankStep } from "../Wallet-Page/select-bank-step";
+import { SelectCardStep } from "../Wallet-Page/select-card-step";
 import { SelectMethodStep } from "./select-method-step";
-import { SuccessStep } from "./success-step";
+import { SuccessStep } from "../Wallet-Page/success-step";
 import { useState } from "react";
 import { FundMethod } from "../Account-Page/types";
-import { AddFundsModalProps, FundStep } from "./types";
+import { AddFundsModalProps, FundStep } from "../Wallet-Page/types";
 
 export function AddFundsModal({ open, onClose, onSuccess }: AddFundsModalProps) {
   const [step, setStep] = useState<FundStep>("select_method");
-  const [method, setMethod] = useState<FundMethod>(null);
+  const [method, setMethod] = useState("");
   const [selectedBankId, setSelectedBankId] = useState<string | null>(SAVED_BANKS[0].id);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(SAVED_CARDS[0].id);
   const [amount, setAmount] = useState("");
@@ -28,7 +28,7 @@ export function AddFundsModal({ open, onClose, onSuccess }: AddFundsModalProps) 
  
   const reset = () => {
     setStep("select_method");
-    setMethod(null);
+    setMethod("");
     setSelectedBankId(SAVED_BANKS[0].id);
     setSelectedCardId(SAVED_CARDS[0].id);
     setAmount("");

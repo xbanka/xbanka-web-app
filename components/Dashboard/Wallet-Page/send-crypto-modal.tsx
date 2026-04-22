@@ -5,14 +5,20 @@ import { EnterPinStep } from "./enter-pin-stepp";
 import { ProcessingStep } from "./processing-stepp";
 import { SelectNetworkStep } from "./select-network-step";
 import { SuccessStep } from "./success-stepp";
-import { SendCryptoModalProps, SendStep } from "./types";
+import { SendCryptoModalProps, SendStep, UserWallet } from "./types";
 import { ASSETS, NETWORKS } from "./wallet-mock-data";
 import { RecipientStep } from "./receipient-step";
 import { SelectAssetStep } from "./select-asset-step";
 
+export const CRYPTO_NETWORKS = {
+  USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
+  BTC: ["BTC"],
+  ETH: ["ETH", "BSC"],
+};
+
 export function SendCryptoModal({ open, onClose, onSuccess }: SendCryptoModalProps) {
   const [step, setStep] = useState<SendStep>("select_asset");
-  const [selectedAssetId, setSelectedAssetId] = useState("btc");
+  const [selectedAssetId, setSelectedAssetId] = useState<UserWallet | null>(null);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>("trc20");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [recipientName, setRecipientName] = useState<string | undefined>();
@@ -20,14 +26,14 @@ export function SendCryptoModal({ open, onClose, onSuccess }: SendCryptoModalPro
  
   if (!open) return null;
  
-  const asset = ASSETS.find((a) => a.id === selectedAssetId) ?? ASSETS[0];
-  const allNetworks = NETWORKS[selectedAssetId] ?? [];
-  const network = allNetworks.find((n) => n.id === selectedNetworkId) ?? allNetworks[0];
+  // const asset = ASSETS.find((a) => a.id === selectedAssetId) ?? ASSETS[0];
+  // const allNetworks = NETWORKS[selectedAssetId] ?? [];
+  // const network = allNetworks.find((n) => n.id === selectedNetworkId) ?? allNetworks[0];
   const mockTxHash = "TRX89c2d4e8f1294b2KL9";
  
   const reset = () => {
     setStep("select_asset");
-    setSelectedAssetId("btc");
+    setSelectedAssetId(null);
     setSelectedNetworkId(null);
     setRecipientAddress("");
     setRecipientName(undefined);

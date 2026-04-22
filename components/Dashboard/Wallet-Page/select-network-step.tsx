@@ -1,7 +1,7 @@
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ASSETS, NETWORKS } from "./wallet-mock-data";
+import { ASSETS, CRYPTO_NETWORKS, NETWORKS } from "./wallet-mock-data";
 import { CoinAvatar } from "./coin-avatar";
 import { ProgressBar } from "./progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
@@ -24,7 +24,12 @@ export function SelectNetworkStep({
   onNext: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const networks = NETWORKS[asset.id] ?? [];
+  // const networks = CRYPTO_NETWORKS[asset?.currency] || [];
+  const networks = (CRYPTO_NETWORKS[asset.currency] || []).map((n: any) => ({
+  id: n,
+  name: n,
+  fee: n, // optional helper
+}));
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader

@@ -30,7 +30,7 @@ export function ModalHeader({
           <h3 className="text-2xl font-semibold leading-8 text-card-text flex-1">
             {title}
           </h3>
-          <p className="text-sm font-normal leading-6 text-text mt-0.5">
+          <p className="text-sm font-normal leading-6 text-text mt-1">
             {subtitle}
           </p>
         </div>

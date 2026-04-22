@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { CoinAvatar } from "./coin-avatar";
 import { ProgressBar } from "./progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
+import { getCurrencyHeader, UserWallet } from "./types";
 
 export function SelectAssetStep({
   selectedId,
@@ -14,16 +16,18 @@ export function SelectAssetStep({
   onClose,
   onNext,
 }: {
-  selectedId: string;
-  onSelect: (id: string) => void;
+  selectedId?: UserWallet;
+  onSelect: (asset: UserWallet) => void;
   onClose: () => void;
   onNext: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const filtered = ASSETS.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      a.symbol.toLowerCase().includes(search.toLowerCase()),
+  const { data, error, isPending, isError } = UseGetCryptoWallet();
+  const wallets = data?.data?.data || [];
+  const filtered = wallets.filter(
+    (a: UserWallet) =>
+      a.currency.toLowerCase().includes(search.toLowerCase())
+      // a.symbol.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -53,12 +57,12 @@ export function SelectAssetStep({
 
           {/* Asset list */}
           <div className="space-y-4">
-            {filtered.map((asset) => {
-              const active = selectedId === asset.id;
+            {filtered.map((asset: UserWallet) => {
+              const active = selectedId?.id === asset.id;
               return (
                 <button
                   key={asset.id}
-                  onClick={() => onSelect(asset.id)}
+                  onClick={() => onSelect(asset)}
                   className={cn(
                     "w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-colors",
                     active
@@ -68,30 +72,29 @@ export function SelectAssetStep({
                 >
                   <div className="flex items-center gap-3">
                     <CoinAvatar
-                      color={asset.color}
-                      symbol={asset.symbol}
+                      symbol={asset.currency}
                       size={40}
                     />
                     <div className="flex">
                       <div className="flex-1 min-w-0 border-r border-input pr-6">
                         <div className="flex items-center gap-3">
                           <p className="text-sm font-medium leading-5 text-card-text">
-                            {asset.name}
+                            {getCurrencyHeader(asset.currency)}
                           </p>
                           <span className="text-[10px] font-semibold px-2 rounded border border-input bg-background text-text">
-                            {asset.symbol}
+                            {asset.currency}
                           </span>
                         </div>
-                        <p className="text-xs text-text mt-0.5">
+                        {/* <p className="text-xs text-text mt-0.5">
                           {asset.wallet}
-                        </p>
+                        </p> */}
                       </div>
                       <div className="text-left shrink-0 px-6">
                         <p className="text-sm font-semibold text-card-text">
-                          {asset.balance} {asset.symbol}
+                          {asset.balance} {asset.currency}
                         </p>
                         <p className="text-xs text-text mt-0.5">
-                          ₦{asset.naira}
+                          ₦{asset.fiatEquivalent?.amount}
                         </p>
                       </div>
                     </div>

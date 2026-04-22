@@ -1,5 +1,11 @@
 import { SendStep } from "./types";
 
+export const CRYPTO_NETWORKS = {
+  USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
+  BTC: ["BTC"],
+  ETH: ["ETH", "BSC"],
+};
+
 export const ASSETS = [
   { id: "btc",  symbol: "BTC",  name: "Bitcoin",   wallet: "Primary wallet",  balance: "0.00234", naira: "93,250.00", color: "#F7931A" },
   { id: "eth",  symbol: "ETH",  name: "Ethereum",  wallet: "Trading wallet",  balance: "0.00234", naira: "93,250.00", color: "#627EEA" },

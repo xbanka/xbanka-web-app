@@ -55,6 +55,14 @@ export function RecipientStep({
         className="px-8 pt-4 pb-8 space-y-8"
       >
         <div className="space-y-4">
+          {/* Manual input */}
+          <FormField
+            label="Provide wallet address"
+            id="address"
+            placeholder="Or paste wallet address / XBanka UID"
+            register={register}
+            error={errors.address}
+          />
           {/* Tabs */}
           <div className="flex gap-1 border-b border-border">
             {(["recent", "favorites"] as const).map((t) => (
@@ -75,7 +83,7 @@ export function RecipientStep({
           </div>
 
           {/* Search */}
-          <div className="relative">
+          {/* <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
             <input
               value={search}
@@ -83,7 +91,7 @@ export function RecipientStep({
               placeholder="Search by name, wallet address or UID"
               className="w-full h-10 pl-9 pr-4 text-sm border border-input rounded-xl bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
             />
-          </div>
+          </div> */}
 
           {/* Contact list */}
           <div className="">
@@ -111,14 +119,6 @@ export function RecipientStep({
             ))}
           </div>
         </div>
-
-        {/* Manual input */}
-        {/* <FormField
-          id="address"
-          placeholder="Or paste wallet address / XBanka UID"
-          register={register}
-          error={errors.address}
-        /> */}
 
         <div className="flex gap-4">
           <Button

@@ -6,7 +6,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundModal } from "./add-fund-modal";
-import { AddFundsModal } from "./add-funds-modal";
+import { AddFundsModal } from "../AddFundFiatModal/add-funds-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
