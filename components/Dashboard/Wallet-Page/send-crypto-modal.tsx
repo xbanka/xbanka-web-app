@@ -11,7 +11,7 @@ import { RecipientStep } from "./receipient-step";
 import { SelectAssetStep } from "./select-asset-step";
 
 export function SendCryptoModal({ open, onClose, onSuccess }: SendCryptoModalProps) {
-  const [step, setStep] = useState<SendStep>("select_asset");
+  const [step, setStep] = useState<SendStep>("processing");
   const [selectedAssetId, setSelectedAssetId] = useState("btc");
   const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>("trc20");
   const [recipientAddress, setRecipientAddress] = useState("");

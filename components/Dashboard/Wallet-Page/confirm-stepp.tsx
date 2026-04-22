@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ASSETS } from "./wallet-mock-data";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "./progress-bar";
+import { SendCryptoConfirmList } from "./send-crypto-confirm-list";
 
 export function ConfirmStep({
   amount,
@@ -84,50 +85,22 @@ export function ConfirmStep({
 
           {/* Breakdown */}
           <div className="border border-input bg-border rounded-[20px] p-5 divide-y divide-input">
-            {rows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-start justify-between p-3 gap-3"
-              >
-                <span className="text-xs font-normal leading-5.5 text-text shrink-0">{row.label}</span>
-                <div className="text-right">
-                  {row.icon ? (
-                    <div className="flex items-center gap-1.5 justify-end">
-                      <div
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
-                        style={{ background: row.icon }}
-                      >
-                        {asset.symbol[0]}
-                      </div>
-                      <span className="text-xs font-medium text-card-text">
-                        {row.value}
-                      </span>
-                    </div>
-                  ) : (
-                    <p
-                      className={cn(
-                        "text-xs whitespace-pre-line",
-                        row.green
-                          ? "text-Green font-semibold"
-                          : "font-medium text-card-text",
-                        row.bold && "font-bold",
-                      )}
-                    >
-                      {row.value}
-                    </p>
-                  )}
-                  {row.sub && (
-                    <p className="text-[10px] text-text mt-0.5">{row.sub}</p>
-                  )}
-                </div>
+            <SendCryptoConfirmList title="Asset" value="Tether (USDT)" />
+            <SendCryptoConfirmList title="Receipt" value="John Doe" subValue="TL8x...9pQ2" />
+            <SendCryptoConfirmList title="Network" value="Tron (TRC-20)" />
+            <div className="px-2 py-2.5 bg-background flex justify-between rounded-lg">
+              <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>
+              <div className="space-y-1">
+                <p className="font-medium text-[14px] leading-5 text-Green"></p>
+                <h2 className="font-normal text-xs leading-4.5 text-text">₦32,400.00</h2>
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Warning */}
-          <div className="flex items-start gap-2.5 bg-yellow-500/10 border border-yellow-500/25 rounded-xl px-3 py-3">
-            <AlertTriangle className="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-text leading-relaxed">
+          <div className="flex items-center gap-2.5 bg-[#012E03] border border-[#037508] rounded-lg px-4 py-3">
+            <AlertTriangle className="w-4 h-4 text-[#A6F4C5] shrink-0 mt-0.5" />
+            <p className="text-xs font-normal leading-4.5 text-[#A6F4C5]">
               Please verify the recipient address and network carefully.
               Transactions cannot be reversed once confirmed on the blockchain.
             </p>

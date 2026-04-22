@@ -17,38 +17,45 @@ export function EnterPinStep({
   const [pin, setPin] = useState("");
 
   return (
-    <Modal onClose={onClose}>
-      <ModalHeader title="Enter PIN" subtitle="Enter your 6-digit transaction PIN to confirm this send." onBack={onBack} onClose={onClose} />
-      <ProgressBar step="confirm" />
+    <Modal className="p-0" onClose={onClose}>
+      <ModalHeader
+        className="px-10"
+        title="Enter PIN"
+        subtitle="Enter your 6-digit transaction PIN to confirm this send."
+        onBack={onBack}
+        onClose={onClose}
+      />
 
-      <div className="py-6 space-y-5">
-        <OtpInput length={6} onChange={setPin} onComplete={onConfirm} />
-        <div className="text-center">
-          <button className="text-xs text-Green hover:underline transition-colors">
-            Forgot PIN?
-          </button>
+      <div className="px-10 pb-10 pt-6 space-y-8">
+        <div className="space-y-2">
+          <OtpInput length={6} onChange={setPin} onComplete={onConfirm} />
+          <div className="text-left">
+            <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
+              Forgot PIN?
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="flex gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className="flex-1"
-          onClick={onBack}
-        >
-          Back
-        </Button>
-        <Button
-          size="lg"
-          className="flex-1"
-          disabled={pin.length < 6}
-          variant={pin.length >= 6 ? "default" : "disabled"}
-          onClick={onConfirm}
-        >
-          Confirm Transaction
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="flex-1"
+            onClick={onBack}
+          >
+            Back
+          </Button>
+          <Button
+            size="lg"
+            className="flex-3"
+            disabled={pin.length < 6}
+            variant={pin.length >= 6 ? "default" : "disabled"}
+            onClick={onConfirm}
+          >
+            Confirm Transaction
+          </Button>
+        </div>
       </div>
     </Modal>
   );

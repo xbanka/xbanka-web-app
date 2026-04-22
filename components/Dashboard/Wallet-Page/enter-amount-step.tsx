@@ -120,7 +120,7 @@ export function EnterAmountStep({
           <Button
             size="lg"
             className="flex-3"
-            disabled={!isValid}
+            // disabled={!isValid}
             variant={isValid ? "default" : "disabled"}
             onClick={onNext}
           >

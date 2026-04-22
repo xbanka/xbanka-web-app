@@ -140,7 +140,7 @@ export function OtpInput({
             aria-label={`Digit ${i + 1} of ${length}`}
             className={cn(
               // Base
-              "w-11 h-13 sm:w-13 sm:h-15 rounded-xl border-2 bg-transparent text-center text-xl font-bold text-card-text",
+              "w-11 h-13 sm:w-18.5 sm:h-16 rounded-lg border bg-transparent text-center text-xl font-bold text-card-text",
               "outline-none transition-[border-color,box-shadow,background-color] duration-150",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "caret-transparent select-none",
@@ -148,9 +148,9 @@ export function OtpInput({
               error
                 ? "border-error-text focus:border-error-text focus:ring-[3px] focus:ring-error-text/20"
                 : isFilled(i)
-                  ? "border-border-active bg-border-active/5"
+                  ? "border-[#2DD4BF] bg-[#2DD4BF]/5"
                   : focused === i
-                    ? "border-border-active ring-[3px] ring-border-active/20"
+                    ? "border-[#2DD4BF] ring-[3px] ring-[#2DD4BF]/20"
                     : "border-input hover:border-border-active/60",
             )}
           />
