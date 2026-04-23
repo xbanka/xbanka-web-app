@@ -1,5 +1,5 @@
 import { SAVED_BANKS, SAVED_CARDS } from "@/lib/wallet-page";
-import { AddNewBankStep } from "../Wallet-Page/add-new-bank";
+import { AddNewBankStep } from "./add-new-bank";
 import { AddNewCardStep } from "../Wallet-Page/add-new-card";
 import { ConfirmStep } from "../Wallet-Page/confirm-step";
 import { EnterAmountStep } from "../Wallet-Page/enter-amount";

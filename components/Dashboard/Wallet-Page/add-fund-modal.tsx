@@ -57,16 +57,6 @@ export function AddFundModal({ open, onClose, onSuccess }: AddFundModalProps) {
     },
   });
 
-  const handleClose = () => {
-    setStep("amount");
-    onClose();
-  };
-
-  const handleSuccess = () => {
-    onSuccess?.();
-    handleClose();
-  };
-
   const onSubmit = (data: AddFundsData) => {
     const parsedAmount = Number(data.amount);
     setAmount(parsedAmount);

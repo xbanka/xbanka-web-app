@@ -1,5 +1,6 @@
 import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/spinner";
+import { LucideArrowLeftRight } from "lucide-react";
 
 export function ProcessingStep({
   amount, sourceLabel, accountName,
@@ -9,12 +10,12 @@ export function ProcessingStep({
   accountName: string;
 }) {
   return (
-    <Modal onClose={() => {}}>
-      <div className="py-10 flex flex-col items-center gap-5 text-center">
-        <Spinner size={52} />
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold text-card-text">Processing your request...</h3>
-          <p className="text-sm text-text">This usually takes a few seconds. Please don't close this window</p>
+    <Modal className="pt-6 space-y-6" onClose={() => {}}>
+      <div className="flex flex-col items-center gap-6 text-center">
+        <Spinner icon={LucideArrowLeftRight} size={52} />
+        <div className="space-y-2">
+          <h3 className="text-2xl font-semibold leading-8 text-card-text">Processing your request...</h3>
+          <p className="text-base font-normal leading-6 text-text">This usually takes a few seconds. Please don't close this window</p>
         </div>
  
         {/* Transaction summary */}
