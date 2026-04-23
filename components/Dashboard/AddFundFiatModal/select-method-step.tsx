@@ -46,7 +46,7 @@ export function SelectMethodStep({
           {methods.map(({ id, label, desc, Icon }) => {
             const active = selected === id;
             return (
-              <SelectWithRadioButton active={active} label={label} icon={Icon} onSelect={onSelect} id={id || ""} desc={desc} />
+              <SelectWithRadioButton key={id} active={active} label={label} icon={Icon} onSelect={onSelect} id={id || ""} desc={desc} />
             );
           })}
           <div className="flex items-center justify-center font-normal gap-2 text-xs leading-4.5 text-text">

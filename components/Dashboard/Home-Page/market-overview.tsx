@@ -10,12 +10,13 @@ import { CryptoMarketOverview } from "./types";
 export function MarketOverview() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState();
+  const limit = 6
   const {
     data: marketPrices,
     error: marketPricesError,
     isError: marketPricesIsError,
     isPending: marketPricesPending,
-  } = useGetMarketPrices();
+  } = useGetMarketPrices(page, limit);;
   console.log("marketPrices", marketPrices);
 
   useEffect(() => {
@@ -121,14 +122,14 @@ export function MarketOverview() {
       </div>
       <div className="overflow-x-auto">
         <DataTableLayout
-          data={marketPrices?.data || []}
+          data={marketPrices?.data.items || []}
           columns={columns}
           isError={marketPricesIsError}
           isLoading={marketPricesPending}
           errorMessage={marketPricesError?.message}
           rowKey={(item) => item.id}
-          itemsPerPage={6}
-          // pageTotal={transactionHistory?.data?.data?.meta.totalPages}
+          itemsPerPage={5}
+          pageTotal={marketPrices?.data?.meta.totalPages}
           currentPage={page}
           onPageChange={() => setPage(page)}
           emptyMessage="No transaction history available."

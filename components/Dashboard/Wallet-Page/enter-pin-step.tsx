@@ -2,7 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { OtpInput } from "@/components/ui/otp-input";
+import { useValidatePin } from "@/lib/services/security.service";
 import { useState } from "react";
+import { FundStep } from "./types";
+import { ErrorField } from "@/components/ui/field-error";
 
 export function EnterPinStep({
   onBack,
@@ -11,9 +14,22 @@ export function EnterPinStep({
 }: {
   onBack: () => void;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (value: FundStep) => void;
 }) {
   const [pin, setPin] = useState("");
+  const {mutate, isPending, error} = useValidatePin()
+
+  const handleConfirm = () => {
+    // call API here with pin
+    const payload = {
+      pin
+    }
+    mutate(payload, {
+      onSuccess: () => {
+        onConfirm("processing");
+      }
+    })
+  };
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -27,7 +43,10 @@ export function EnterPinStep({
 
       <div className="pt-6 px-10 pb-10">
         <div className="py-4 space-y-5">
-          <OtpInput length={6} onChange={setPin} onComplete={onConfirm} />
+          <OtpInput length={4} onChange={setPin} />
+          <div className="text-center flex justify-center">
+          <ErrorField message={error?.message} />
+          </div>
           <div className="">
             <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
               Forgot PIN?
@@ -48,9 +67,9 @@ export function EnterPinStep({
           <Button
             size="lg"
             className="flex-3"
-            disabled={pin.length < 6}
-            variant={pin.length >= 6 ? "default" : "disabled"}
-            onClick={onConfirm}
+            disabled={pin.length < 4 || isPending}
+            variant={pin.length >= 4 ? "default" : isPending ? "disabled" : "disabled"}
+            onClick={handleConfirm}
           >
             Confirm
           </Button>

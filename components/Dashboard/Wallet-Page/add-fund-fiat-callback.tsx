@@ -16,7 +16,7 @@ export default function FundCallbackPage() {
   const reference = params?.get("reference");
   console.log("reference", reference);
 
-  const { mutate, error, isPending, isSuccess } = UseVerifyFund();
+  const { mutate, error, isSuccess } = UseVerifyFund();
 
   const [status, setStatus] = useState<"loading" | "success" | "failed">(
     "loading",

@@ -9,7 +9,6 @@ export function EnterAmountStep({
   amount,
   setAmount,
   sourceLabel,
-  sourceColor,
   sourceName,
   onBack,
   onClose,
@@ -18,7 +17,6 @@ export function EnterAmountStep({
   amount: string;
   setAmount: (v: string) => void;
   sourceLabel: string;
-  sourceColor: string;
   sourceName: string;
   onBack: () => void;
   onClose: () => void;
@@ -45,8 +43,7 @@ export function EnterAmountStep({
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-[36px] p-2 flex items-center justify-center text-white text-[9px] font-bold",
-                    sourceColor,
+                    "w-10 h-10 rounded-[36px] p-2 flex items-center justify-center text-white text-[9px] font-bold"
                   )}
                 >
                   {sourceLabel[0]}

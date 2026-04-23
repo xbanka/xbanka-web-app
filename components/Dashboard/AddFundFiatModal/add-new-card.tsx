@@ -32,11 +32,6 @@ export function AddNewCardStep({
   const isValid = (amount ?? 0) >= 1000;
 
   const { mutate, error, isPending } = UseFundFiatWallet();
-  // const {
-  //   data: savedCardsData,
-  //   error: savedCardsError,
-  //   isPending: savedCardsPending,
-  // } = UseGetFiatWalletSavedCards();
 
   const onSubmit = () => {
     const parsedAmount = Number(amount);

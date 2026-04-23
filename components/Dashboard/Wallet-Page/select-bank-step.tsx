@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectWithRadioButton } from "@/components/ui/select-with-radio-button";
+import { UseFundFiatWalletBank, UseGetBankAcounts } from "@/lib/services/wallet.service";
 import { cn } from "@/lib/utils";
 import { SAVED_BANKS } from "@/lib/wallet-page";
 import { Plus } from "lucide-react";
+import { BankAccount } from "../Account-Page/types";
 
 export function SelectBankStep({
   selectedId,
@@ -13,14 +15,23 @@ export function SelectBankStep({
   onClose,
   onContinue,
   onAddNew,
+  linkedBanks,
+  loading,
+  error
 }: {
   selectedId: string | null;
+  linkedBanks: BankAccount[]
   onSelect: (id: string) => void;
   onBack: () => void;
   onClose: () => void;
   onContinue: () => void;
   onAddNew: () => void;
+  loading: boolean;
+  error: any
 }) {
+  // const {mutate, isPending, error} = UseFundFiatWalletBank()
+  // const {data, isPending, error} = UseGetBankAcounts()
+  // const linkedBanks = data?.data?.data
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
@@ -32,15 +43,15 @@ export function SelectBankStep({
 
       <div className="space-y-8 px-10 pb-10">
         <div className="space-y-4">
-          {SAVED_BANKS.map((b) => {
+          {linkedBanks?.map((b: BankAccount) => {
             const active = selectedId === b.id;
             return (
               <SelectWithRadioButton
                 active={active}
-                desc={b.name}
-                altIcon={b.bank[0]}
+                desc={b.accountName}
+                altIcon={b.bankName[0]}
                 id={b.id}
-                label={b.masked}
+                label={b.bankName + " " + b.accountNumber}
                 onSelect={onSelect}
               />
             );

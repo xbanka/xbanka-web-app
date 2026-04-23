@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { UseGetFiatWalletSavedCards } from "@/lib/services/wallet.service";
 import { cn } from "@/lib/utils";
 import { SAVED_CARDS } from "@/lib/wallet-page";
 import { Plus } from "lucide-react";
@@ -15,6 +16,12 @@ export function SelectCardStep({
   onContinue: () => void;
   onAddNew: () => void;
 }) {
+
+  const {
+    data: savedCardsData,
+    error: savedCardsError,
+    isPending: savedCardsPending,
+  } = UseGetFiatWalletSavedCards();
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader className="px-10 py-6" title="Select Debit Card" onBack={onBack} onClose={onClose} />

@@ -1,5 +1,11 @@
 "use client";
-import { useRef, useState, KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
+import {
+  useRef,
+  useState,
+  KeyboardEvent,
+  ClipboardEvent,
+  ChangeEvent,
+} from "react";
 import { cn } from "@/lib/utils";
 
 interface OtpInputProps {
@@ -36,9 +42,9 @@ export function OtpInput({
     setValues(next);
     const joined = next.join("");
     onChange?.(joined);
-    if (joined.length === length && next.every((v) => v !== "")) {
-      onComplete?.(joined);
-    }
+    // if (joined.length === length && next.every((v) => v !== "")) {
+    //   onComplete?.(joined);
+    // }
   };
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +99,10 @@ export function OtpInput({
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, length);
     if (!pasted) return;
     const next = Array(length).fill("");
     for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
@@ -125,8 +134,10 @@ export function OtpInput({
         {Array.from({ length }).map((_, i) => (
           <input
             key={i}
-            ref={(el) => { inputRefs.current[i] = el; }}
-            type="text"
+            ref={(el) => {
+              inputRefs.current[i] = el;
+            }}
+            type="password"
             inputMode="numeric"
             pattern="\d*"
             maxLength={1}
@@ -160,9 +171,23 @@ export function OtpInput({
       {/* Hint / error */}
       {error ? (
         <p className="flex items-center gap-1.5 text-xs text-error-text self-start">
-          <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3.5 h-3.5 shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <circle cx="10" cy="10" r="10" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fill="white" fontSize="11" fontWeight="bold">!</text>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dy=".35em"
+              fill="white"
+              fontSize="11"
+              fontWeight="bold"
+            >
+              !
+            </text>
           </svg>
           {error}
         </p>

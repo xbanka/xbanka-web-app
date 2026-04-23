@@ -3,9 +3,8 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { UseBankAccountList, UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
-import { Download, Eye, EyeOff, Plus, Send } from "lucide-react";
+import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
-import { AddFundModal } from "./add-fund-modal";
 import { AddFundsModal } from "../AddFundFiatModal/add-funds-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
@@ -74,11 +73,6 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
           </div>
         </div>
         {addFundsOpen && (
-          // <AddFundModal
-          //   open={addFundsOpen}
-          //   onClose={() => setAddFundsOpen(false)}
-          //   onSuccess={() => setAddFundsOpen(false)}
-          // />
           <AddFundsModal
             open={addFundsOpen}
             onClose={() => setAddFundsOpen(false)}
