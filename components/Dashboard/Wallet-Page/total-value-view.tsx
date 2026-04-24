@@ -6,7 +6,7 @@ export function TotalValueView() {
   return (
     <div className="space-y-4">
       {/* This month's spending */}
-      <div className="bg-card-background border border-border rounded-2xl p-5">
+      {/* <div className="bg-card-background border border-border rounded-2xl p-5">
         <h3 className="font-semibold text-card-text text-sm mb-3">This Month's Spending</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
@@ -26,7 +26,7 @@ export function TotalValueView() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
  
       <TransactionHistory />
     </div>
