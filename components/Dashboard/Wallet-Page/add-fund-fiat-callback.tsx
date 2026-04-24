@@ -66,14 +66,14 @@ export default function FundCallbackPage() {
     </div>
   );
 
-  if(error) {
+  if(error || status === "failed") {
     return (
       <div className="flex items-center justify-center h-screen">
         <Modal className="pt-6 space-y-6" onClose={() => {}}>
             <div className="text-center space-y-6">
               <p className="text-2xl">❌</p>
               <h2 className="text-error-text text-xl font-bold">
-                {error.message || "Payment Failed"}
+                {error?.message || "Payment Failed"}
               </h2>
               <Button onClick={() => router.push("/wallet")} className="w-full">
                 View Wallet

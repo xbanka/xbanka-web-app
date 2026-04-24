@@ -58,10 +58,10 @@ export function AddNewBankStep({
         onSubmit={handleSubmit(onSubmit)}
         className="px-10 pb-10 pt-6 space-y-8"
       >
-        <div>
+        <div className="space-y-4">
           <SelectField
             id="bankName"
-            label="Bank Name"
+            // label="Bank Name"
             placeholder="Select bank"
             options={bankOptions}
             register={register}

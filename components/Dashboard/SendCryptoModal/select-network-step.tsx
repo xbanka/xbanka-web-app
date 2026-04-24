@@ -1,12 +1,13 @@
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ASSETS, CRYPTO_NETWORKS, NETWORKS } from "./wallet-mock-data";
-import { CoinAvatar } from "./coin-avatar";
-import { ProgressBar } from "./progress-bar";
+import { CRYPTO_NETWORKS } from "../Wallet-Page/wallet-mock-data";
+import { CoinAvatar } from "../Wallet-Page/coin-avatar";
+import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { AlertTriangle, Search } from "lucide-react";
 import { useState } from "react";
+import { UserWallet } from "../Wallet-Page/types";
 
 export function SelectNetworkStep({
   asset,
@@ -16,7 +17,7 @@ export function SelectNetworkStep({
   onClose,
   onNext,
 }: {
-  asset: (typeof ASSETS)[0];
+  asset?: UserWallet | null;
   selectedNetworkId: string | null;
   onNetworkChange: (id: string) => void;
   onBack: () => void;
@@ -24,12 +25,14 @@ export function SelectNetworkStep({
   onNext: () => void;
 }) {
   const [search, setSearch] = useState("");
-  // const networks = CRYPTO_NETWORKS[asset?.currency] || [];
-  const networks = (CRYPTO_NETWORKS[asset.currency] || []).map((n: any) => ({
-  id: n,
-  name: n,
-  fee: n, // optional helper
-}));
+  const networks = asset?.currency
+  ? CRYPTO_NETWORKS[asset.currency] || []
+  : [];
+//   const networks = (CRYPTO_NETWORKS[asset.currency] || []).map((n) => ({
+//   id: n,
+//   name: n,
+//   fee: getNetworkFee(n), // optional helper
+// }));
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
@@ -68,12 +71,12 @@ export function SelectNetworkStep({
             />
           </div>
           <div className="space-y-4">
-            {networks.map((n) => {
-              const active = selectedNetworkId === n.id;
+            {networks.map((n: string) => {
+              const active = selectedNetworkId === n;
               return (
                 <button
-                  key={n.id}
-                  onClick={() => onNetworkChange(n.id)}
+                  key={n}
+                  onClick={() => onNetworkChange(n)}
                   className={cn(
                     "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
                     active
@@ -83,11 +86,11 @@ export function SelectNetworkStep({
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-card-text">
-                      {n.name}
+                      {n}
                     </p>
-                    <p className="text-xs text-text mt-0.5">
+                    {/* <p className="text-xs text-text mt-0.5">
                       Fee ≈ {n.fee} {asset.symbol}
-                    </p>
+                    </p> */}
                   </div>
                   <div
                     className={cn(

@@ -2,9 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { AlertTriangle, CheckCircle, Copy, Info } from "lucide-react";
 import { useState } from "react";
-import { ASSETS } from "./wallet-mock-data";
+import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { CloseBtn } from "@/components/ui/close-btn";
 import Image from "next/image";
+import { WalletSuccessState } from "./crypto-modal-types";
+import { UserWallet } from "../Wallet-Page/types";
+import { formatDate } from "@/lib/formatDate";
+import { formatTo12Hour } from "@/lib/formatTime";
 
 export function SuccessStep({
   amount,
@@ -13,30 +17,20 @@ export function SuccessStep({
   txHash,
   onDone,
   onViewHistory,
+  successDetails
 }: {
   amount: string;
-  asset: (typeof ASSETS)[0];
-  network: { id: string; name: string; shortName: string; fee: string };
+  asset?: UserWallet | null;
+  network: string | null;
   txHash: string;
   onDone: () => void;
   onViewHistory: () => void;
+  successDetails: WalletSuccessState | null
 }) {
   const [copied, setCopied] = useState(false);
-  const fee = parseFloat(network.fee);
-  const total = (parseFloat(amount) + fee).toFixed(2);
+  // const fee = parseFloat(network.fee);
+  const total = (parseFloat(amount)).toFixed(2);
   const nairaTotal = (parseFloat(total) * 1600).toLocaleString();
-  const shortTx = `${txHash.slice(0, 5)}...${txHash.slice(-4)}`;
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  const timeStr = now.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
 
   const copy = () => {
     navigator.clipboard.writeText(txHash).catch(() => {});
@@ -58,7 +52,7 @@ export function SuccessStep({
 
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text">
-            {amount} {asset.symbol} Sent Successfully
+            {amount} {asset?.currency} Sent Successfully
           </h3>
           <p className="text-base font-normal leading-6 text-text">
             Your wallet has been credited
@@ -71,18 +65,18 @@ export function SuccessStep({
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Amount</span>
             <span className="font-semibold text-card-text">
-              {amount}.00 {asset.symbol}
+              {amount}.00 {successDetails?.provider}
             </span>
           </div>
           {/* Network fee */}
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Network</span>
             <span className="font-medium text-card-text">
-              {network.fee} {asset.symbol}
+              {successDetails?.network}
             </span>
           </div>
           {/* Network label with info */}
-          <div className="flex items-center justify-between px-4 py-3 text-xs">
+          {/* <div className="flex items-center justify-between px-4 py-3 text-xs">
             <div className="flex items-center gap-1.5 text-text">
               <span>Network</span>
               <Info className="w-3.5 h-3.5" />
@@ -90,12 +84,12 @@ export function SuccessStep({
             <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-border text-card-text">
               {network.name}
             </span>
-          </div>
+          </div> */}
           {/* Date & Time */}
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Date & Time</span>
             <span className="font-medium text-card-text">
-              {dateStr} • {timeStr}
+              {formatDate(successDetails?.createdAt ?? "")} • {formatTo12Hour(successDetails?.createdAt || "")}
             </span>
           </div>
           {/* Transaction ID */}
@@ -105,7 +99,7 @@ export function SuccessStep({
               onClick={copy}
               className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
             >
-              <span>{shortTx}</span>
+              <span>{successDetails?.providerRef}</span>
               {copied ? (
                 <CheckCircle className="w-3.5 h-3.5 text-Green" />
               ) : (

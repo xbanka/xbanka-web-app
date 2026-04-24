@@ -1,6 +1,7 @@
+import { Currency } from "@/lib/types/currency-type";
 import { SendStep } from "./types";
 
-export const CRYPTO_NETWORKS = {
+export const CRYPTO_NETWORKS: Record<string, string[]> = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
   BTC: ["BTC"],
   ETH: ["ETH", "BSC"],

@@ -22,6 +22,7 @@ import {
   getTransactionHistory,
   quoteConversion,
   verifyFund,
+  withdrawCrypto,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
 import {
@@ -29,7 +30,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, WithdrawCryptoPayload } from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -71,6 +72,18 @@ export const UseGetCryptoWallet = () => {
       }
     },
     staleTime: 10 * 1000, // 10 seconds (tune this)
+  });
+};
+
+export const UseWithdrawCrypto = () => {
+  return useMutation({
+    mutationFn: (data: WithdrawCryptoPayload) => withdrawCrypto(data),
+    onSuccess: (result) => {
+      toast.success("Funded Successfully");
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
   });
 };
 
@@ -220,7 +233,7 @@ export const UseFundFiatWalletBank = () => {
 
       const payload = result?.data || result; // 🔥 safe fallback
 
-      const url = payload?.authorization_url;
+      const url = payload?.redirect_url;
       const ref = payload?.reference;
 
       if (!url) {

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
 import { DepositModal } from "./deposit-modal";
-import { SendCryptoModal } from "./send-crypto-modal";
+import { SendCryptoModal } from "../SendCryptoModal/send-crypto-modal";
 
 export const CryptoBalance = () => {
   const [hidden, setHidden] = useState(false);

@@ -4,7 +4,7 @@ import {
   ConvertExecutePayload,
   QuoteExecutePayload,
 } from "../types/crypto-types";
-import { AddBankAccountPayload, DeleteFiatWalletBankSavedCardPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, DeleteFiatWalletBankSavedCardPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload, WithdrawCryptoPayload } from "../types/wallet-types";
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
@@ -49,6 +49,12 @@ export const generateDepositAddress = async (payload: GenerateDepositAddressPayl
 
 export const getDepositCrypto = async () => {
   const response = await AxiosInstance.post("/wallets/deposit/crypto");
+
+  return response.data;
+};
+
+export const withdrawCrypto = async (data: WithdrawCryptoPayload) => {
+  const response = await AxiosInstance.post("/wallets/deposit/crypto", data);
 
   return response.data;
 };
@@ -102,6 +108,7 @@ export const FundFiatWalletBank = async (data: fundWalletBankPayload) => {
     accountNumber: data.accountNumber,
     callback_url: `${window.location.origin}/wallet/fund-callback`,
     bankCode: data.bankCode,
+    amount: 50
   });
 
   return response.data;

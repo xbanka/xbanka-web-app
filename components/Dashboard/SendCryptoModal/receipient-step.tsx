@@ -7,8 +7,8 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { RECENT_CONTACTS } from "./wallet-mock-data";
-import { ProgressBar } from "./progress-bar";
+import { RECENT_CONTACTS } from "../Wallet-Page/wallet-mock-data";
+import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
 
 const recipientSchema = z.object({

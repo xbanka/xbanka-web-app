@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { ASSETS } from "./wallet-mock-data";
+import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CoinAvatar } from "./coin-avatar";
-import { ProgressBar } from "./progress-bar";
+import { CoinAvatar } from "../Wallet-Page/coin-avatar";
+import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
-import { getCurrencyHeader, UserWallet } from "./types";
+import { getCurrencyHeader, UserWallet } from "../Wallet-Page/types";
 
 export function SelectAssetStep({
   selectedId,
@@ -16,7 +16,7 @@ export function SelectAssetStep({
   onClose,
   onNext,
 }: {
-  selectedId?: UserWallet;
+  selectedId?: UserWallet | null;
   onSelect: (asset: UserWallet) => void;
   onClose: () => void;
   onNext: () => void;

@@ -12,7 +12,7 @@ export const SelectField = ({
   register,
   label
 }: SelectFieldProps) => (
-  <div>
+  <div className="space-y-2">
     {label && (
         <Label label={label} />
       )}
