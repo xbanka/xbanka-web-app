@@ -3,20 +3,21 @@ import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { MARKET } from "@/lib/MockData";
 import { useGetMarketPrices } from "@/lib/services/wallet.service";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowDownRight, ArrowUp, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
+import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 
 export function MarketOverview() {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState();
-  const limit = 6
+  const [page, setPage] = useState(1);
+  const limit = 6;
   const {
     data: marketPrices,
     error: marketPricesError,
     isError: marketPricesIsError,
     isPending: marketPricesPending,
-  } = useGetMarketPrices(page, limit);;
+  } = useGetMarketPrices(page, limit);
   console.log("marketPrices", marketPrices);
 
   useEffect(() => {
@@ -63,9 +64,10 @@ export function MarketOverview() {
     {
       key: "symbol",
       header: "Assets",
+      className: "w-[200px]",
       render: (item: CryptoMarketOverview) => (
-        <div className="flex items-center">
-          <div></div>
+        <div className="flex items-center gap-2">
+          <div className="bg-card-background h-8 w-8 rounded-full"></div>
           <div>
             <p className="font-normal text-[14px] leading-6 text-card-text">
               {item.name}
@@ -80,23 +82,34 @@ export function MarketOverview() {
     {
       key: "priceUsd",
       header: "Price",
-      render: (item: CryptoMarketOverview) => <span>{item.priceUsd}</span>,
+      render: (item: CryptoMarketOverview) => (
+        <span className="font-400 text-sm leading-6 text-card-text">
+          ${formatPrice(item.priceUsd)}
+        </span>
+      ),
     },
     {
       key: "changePercent24h",
       header: "24h Change",
-      render: (item: CryptoMarketOverview) => (
-        <span className="">{item.changePercent24h}</span>
-      ),
+      render: (item: CryptoMarketOverview) => {
+        const changeValue = item.changePercent24h;
+        const isNegative = changeValue < 0;
+        return (
+          <div
+            className={`flex items-center gap-1 font-medium ${isNegative ? "text-red-500" : "text-Green"}`}
+          >
+            {/* Down arrow for negative, Up arrow for positive */}
+            <span>{isNegative ? <ArrowDownRight size={20}/> : <ArrowUpRight size={20} />}</span>
+            <span>{formatToTwoDecimals(item.changePercent24h)}%</span>
+          </div>
+        );
+      },
     },
     {
       key: "id",
       header: "Action",
       render: (item: CryptoMarketOverview) => (
-        <span className="">Trade</span>
-        // <span className="font-medium text-gray-700">
-        //   ₦{Number(item.amount).toLocaleString()}
-        // </span>
+        <span className="text-sm leading-6 text-Green font-normal">Trade</span>
       ),
     },
   ];

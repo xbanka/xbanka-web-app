@@ -187,10 +187,15 @@ export const UseDeleteFiatWalletSavedCard = () => {
 // };
 
 export const UseVerifyFund = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: string) => verifyFund(data),
     onSuccess: (result) => {
       toast.success("Conversion successful");
+
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -283,14 +288,15 @@ export const UseGetBankAcounts = () => {
 };
 
 export const UseAddBankAcounts = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: AddBankAccountPayload) => {
-      try {
-        const response = await addBankAcounts(data);
-        return response;
-      } catch (err) {
-        handleApiError(err);
-      }
+    mutationFn: async (data: AddBankAccountPayload) => addBankAcounts(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+      queryClient.refetchQueries({ queryKey: ["bank-accounts"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };
