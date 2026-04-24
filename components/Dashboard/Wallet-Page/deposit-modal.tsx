@@ -94,7 +94,7 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
               {["USDT", "BTC", "ETH"].map((item) => (
                 <div
                   key={item}
-                  className="flex items-center gap-2 rounded-lg py-2.5 px-4 bg-[#202225]"
+                  className="flex items-center gap-2 rounded-lg py-2.5 px-4 bg-input-background"
                 >
                   <Image
                     src={"/tether.svg"}
@@ -153,7 +153,7 @@ export const DepositModal = ({ onClose }: { onClose: () => void }) => {
                 Wallet address
               </p>
               <div className="flex items-center gap-2">
-                <div className="w-full flex items-center h-10 break-all py-2.5 px-4 bg-[#202225] border border-input rounded-lg text-[14px] font-normal leading-6 text-text">
+                <div className="w-full flex items-center h-10 break-all py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text">
                   {isLoading
                     ? "Generating address..."
                     : addressData?.address || "No address available"}

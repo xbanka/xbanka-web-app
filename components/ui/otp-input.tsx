@@ -1,5 +1,11 @@
 "use client";
-import { useRef, useState, KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
+import {
+  useRef,
+  useState,
+  KeyboardEvent,
+  ClipboardEvent,
+  ChangeEvent,
+} from "react";
 import { cn } from "@/lib/utils";
 
 interface OtpInputProps {
@@ -36,9 +42,9 @@ export function OtpInput({
     setValues(next);
     const joined = next.join("");
     onChange?.(joined);
-    if (joined.length === length && next.every((v) => v !== "")) {
-      onComplete?.(joined);
-    }
+    // if (joined.length === length && next.every((v) => v !== "")) {
+    //   onComplete?.(joined);
+    // }
   };
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +99,10 @@ export function OtpInput({
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, length);
     if (!pasted) return;
     const next = Array(length).fill("");
     for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
@@ -125,8 +134,10 @@ export function OtpInput({
         {Array.from({ length }).map((_, i) => (
           <input
             key={i}
-            ref={(el) => { inputRefs.current[i] = el; }}
-            type="text"
+            ref={(el) => {
+              inputRefs.current[i] = el;
+            }}
+            type="password"
             inputMode="numeric"
             pattern="\d*"
             maxLength={1}
@@ -140,7 +151,7 @@ export function OtpInput({
             aria-label={`Digit ${i + 1} of ${length}`}
             className={cn(
               // Base
-              "w-11 h-13 sm:w-13 sm:h-15 rounded-xl border-2 bg-transparent text-center text-xl font-bold text-card-text",
+              "w-11 h-13 sm:w-18.5 sm:h-16 rounded-lg border bg-transparent text-center text-xl font-bold text-card-text",
               "outline-none transition-[border-color,box-shadow,background-color] duration-150",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "caret-transparent select-none",
@@ -148,9 +159,9 @@ export function OtpInput({
               error
                 ? "border-error-text focus:border-error-text focus:ring-[3px] focus:ring-error-text/20"
                 : isFilled(i)
-                  ? "border-border-active bg-border-active/5"
+                  ? "border-[#2DD4BF] bg-[#2DD4BF]/5"
                   : focused === i
-                    ? "border-border-active ring-[3px] ring-border-active/20"
+                    ? "border-[#2DD4BF] ring-[3px] ring-[#2DD4BF]/20"
                     : "border-input hover:border-border-active/60",
             )}
           />
@@ -160,9 +171,23 @@ export function OtpInput({
       {/* Hint / error */}
       {error ? (
         <p className="flex items-center gap-1.5 text-xs text-error-text self-start">
-          <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3.5 h-3.5 shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <circle cx="10" cy="10" r="10" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fill="white" fontSize="11" fontWeight="bold">!</text>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dy=".35em"
+              fill="white"
+              fontSize="11"
+              fontWeight="bold"
+            >
+              !
+            </text>
           </svg>
           {error}
         </p>

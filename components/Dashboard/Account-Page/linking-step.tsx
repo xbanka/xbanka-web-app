@@ -1,19 +1,17 @@
+import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/spinner";
-import { X } from "lucide-react";
+import { Link, X } from "lucide-react";
 
 export function LinkingStep({ onClose }: { onClose: () => void }) {
   return (
-    <Modal onClose={onClose} className="text-center">
-      <button
-        onClick={onClose}
-        className="absolute top-5 right-6 w-7 h-7 rounded-lg flex items-center justify-center text-text hover:bg-border hover:text-card-text transition-colors"
-      >
-        <X className="w-4 h-4" />
-      </button>
- 
-      <div className="flex flex-col items-center gap-5 py-10">
-        <Spinner size={64} />
+    <Modal onClose={onClose} className="text-center pb-0">
+      <div className="flex justify-end pt-6">
+        <CloseBtn onClose={onClose} />
+      </div>
+
+      <div className="flex flex-col items-center gap-5 pb-10">
+        <Spinner icon={Link} size={64} />
         <div className="space-y-1">
           <h3 className="text-lg font-semibold text-card-text">
             Linking your account

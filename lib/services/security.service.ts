@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { createPin, passwordChange, requesOtp, twoFactorAuthenticationGenerate, updatePin } from "../actions/security";
+import { createPin, passwordChange, requesOtp, twoFactorAuthenticationGenerate, updatePin, validatePin } from "../actions/security";
 import { toast } from "sonner";
 import { handleApiError } from "../errors/error";
-import { CreatePinPayload, passwordChangePayload, UpdatePinPayload } from "../types/security-types";
+import { CreatePinPayload, passwordChangePayload, UpdatePinPayload, ValidatePinPayload } from "../types/security-types";
 import { RemoveDevice, RevokeSessions } from "../actions/sessions";
 
 export const useCreatePin = () => {
@@ -63,6 +63,19 @@ export const useRemoveDevice = () => {
 export const useUpdatePin = () => {
     const mutate = useMutation({
     mutationFn: (data: UpdatePinPayload) => updatePin(data),
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+}
+
+export const useValidatePin = () => {
+    const mutate = useMutation({
+    mutationFn: (data: ValidatePinPayload) => validatePin(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },

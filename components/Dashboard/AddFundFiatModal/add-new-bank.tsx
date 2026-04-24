@@ -3,52 +3,70 @@ import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectField } from "@/components/ui/select";
-import { BANK_OPTIONS, BankForm, bankSchema } from "@/lib/schema/bank-schema";
+import { BANK_OPTIONS, bankOptions } from "@/lib/schema/bank-schema";
+import { UseFundFiatWalletBank } from "@/lib/services/wallet.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import z from "zod";
 
-export function BankDetailsStep({
+const addBankSchema = z.object({
+  bankName: z.string().min(1, "Please select a bank"),
+  accountNumber: z.string().regex(/^\d{10}$/, "Must be 10 digits"),
+});
+type AddBankForm = z.infer<typeof addBankSchema>;
+
+export function AddNewBankStep({
   onBack,
   onClose,
-  onContinue,
+  onSaved,
 }: {
   onBack: () => void;
   onClose: () => void;
-  onContinue: (data: BankForm) => void;
+  onSaved: () => void;
 }) {
+  const { mutate, error, isPending } = UseFundFiatWalletBank();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<BankForm>({
-    resolver: zodResolver(bankSchema),
+  } = useForm<AddBankForm>({
+    resolver: zodResolver(addBankSchema),
     mode: "onTouched",
   });
+
+  const onSubmit = (data: AddBankForm) => {
+    const payload = {
+      accountNumber: data.accountNumber,
+      bankCode: data.bankName,
+    };
+    console.log("payload", payload);
+
+    mutate(payload);
+  };
 
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
         className="px-10 py-6"
-        title="Add funds"
-        onClose={onClose}
+        title="Add Funds"
         onBack={onBack}
+        onClose={onClose}
       />
-
       <form
-        onSubmit={handleSubmit(onContinue)}
-        className="space-y-8 px-10 pb-10 pt-6"
+        onSubmit={handleSubmit(onSubmit)}
+        className="px-10 pb-10 pt-6 space-y-8"
       >
         <div className="space-y-4">
           <SelectField
             id="bankName"
-            label="Bank Name"
+            // label="Bank Name"
             placeholder="Select bank"
-            options={BANK_OPTIONS}
+            options={bankOptions}
             register={register}
             error={errors.bankName}
           />
-
           <FormField
             id="accountNumber"
             label="Account Number"
@@ -56,23 +74,12 @@ export function BankDetailsStep({
             register={register}
             error={errors.accountNumber}
           />
-
-          <FormField
-            id="accountName"
-            label="Account Name"
-            placeholder="John Doe"
-            register={register}
-            error={errors.accountName}
-          />
-
-          {/* Deduction note */}
           <p className="text-xs text-text">
             <span className="text-Green font-semibold">₦50.00</span> will be
             deducted from your account for verification
           </p>
         </div>
-
-        <div className="flex gap-4 pt-1">
+        <div className="flex gap-4">
           <Button
             type="button"
             variant="outline"
@@ -85,11 +92,11 @@ export function BankDetailsStep({
           <Button
             type="submit"
             size="lg"
-            className="flex-3"
-            disabled={!isValid}
-            variant={isValid ? "default" : "disabled"}
+            className="flex-1"
+            disabled={!isValid || isPending}
+            variant={!isValid || isPending ? "disabled" : "default"}
           >
-            Continue
+            {isPending ? "Verifying..." : "Continue"}
           </Button>
         </div>
       </form>
