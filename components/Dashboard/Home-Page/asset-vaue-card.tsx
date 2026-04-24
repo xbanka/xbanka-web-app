@@ -53,13 +53,14 @@ export function AssetValueCard() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
+            {fiatIsPending && <div className="text-sm text-card-text font-bold leading-11">Your balance might have changed</div>}
+            { !fiatIsPending && <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
               {hidden
                 ? "•••••••"
                 : view === "NGN"
                   ? `₦${totalBalance.toLocaleString()}`
                   : `$${"0".toLocaleString()}`}
-            </span>
+            </span>}
             <select
               value={view}
               onChange={(e) => setView(e.target.value as "NGN" | "CRYPTO")}

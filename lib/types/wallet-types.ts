@@ -17,6 +17,15 @@ export interface fundWalletBankPayload {
   bankCode: string
 }
 
+export interface WithdrawCryptoPayload{
+  currency: string,
+  network: string,
+  address: string,
+  amount: number,
+  memo: string,
+  narration: string
+}
+
 export interface DeleteFiatWalletBankSavedCardPayload {
   mandateId: string;
 }

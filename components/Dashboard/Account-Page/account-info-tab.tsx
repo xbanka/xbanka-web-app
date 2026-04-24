@@ -33,44 +33,6 @@ export function AccountInfoTab() {
     isPending: getBankAccountsPending,
     error: getBankAccountsError,
   } = UseGetBankAcounts();
-  console.log("bank accounts", getBankAccounts);
-
-  const [form, setForm] = useState({
-    firstName: userData?.firstName || "",
-    lastName: userData?.lastName || "",
-    dob: "",
-  });
-
-  const banks = [
-    {
-      label: "Primary Account",
-      bank: "GTCO",
-      number: "0112345678",
-      name: "Joseph Eyebiokin",
-      status: "Verified",
-    },
-    {
-      label: "Secondary Account",
-      bank: "FCMB",
-      number: "0112345678",
-      name: "Joseph Eyebiokin",
-      status: "Verified",
-    },
-    {
-      label: "Business Account",
-      bank: "Moniepoint",
-      number: "0112345678",
-      name: "Joseph Eyebiokin",
-      status: "Verified",
-    },
-    {
-      label: "New Account",
-      bank: "Access",
-      number: "0112345678",
-      name: "Joseph Eyebiokin",
-      status: "Under Review",
-    },
-  ];
 
   const {
     data: verificationData,

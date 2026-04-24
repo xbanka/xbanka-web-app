@@ -12,7 +12,6 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   const [step, setStep] = useState<BankStep>("select");
   const [method, setMethod] = useState<FundMethod>(null);
   const [formData, setFormData] = useState<BankForm | null>(null);
-  const [isPending, setIsPending] = useState(false);
   const {
     mutateAsync: addBankAccountsMutate,
     error: addBankError,
@@ -25,7 +24,6 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
     setStep("select");
     setMethod(null);
     setFormData(null);
-    setIsPending(false);
   };
 
   const handleClose = () => {
@@ -45,28 +43,20 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   };
 
   const handleConfirm = async () => {
-    setIsPending(true);
     setStep("linking");
-    // Replace with your real API call
-    await new Promise((r) => setTimeout(r, 2000));
-    console.log(formData)
     const payload = {
       bankName: formData?.bankName || "",
       accountNumber: formData?.accountNumber || "",
       accountName: formData?.accountName || "",
     };
     await addBankAccountsMutate(payload, {
-      onSuccess: (res) => {
-        console.log("Bank account added successfully", res);
+      onSuccess: () => {
+        setStep("success");
       },
       onError: (err) => {
-        console.error("Failed to add bank account", err);
-        setIsPending(false);
         setStep("confirm");
       },
     });
-    setIsPending(false);
-    setStep("success");
   };
 
   const handleAddAnother = () => {
@@ -106,7 +96,7 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
         onBack={() => setStep("details")}
         onClose={handleClose}
         onConfirm={handleConfirm}
-        isPending={isPending}
+        isPending={isAddingBank}
       />
     );
   }

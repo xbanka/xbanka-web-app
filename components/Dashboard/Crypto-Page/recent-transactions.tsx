@@ -1,4 +1,5 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
+import { ErrorField } from "@/components/ui/field-error";
 import { TimeAgoComponent } from "@/components/ui/timeAgo";
 import { timeAgo } from "@/lib/formatDate";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
@@ -6,37 +7,6 @@ import { StatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import Image from "next/image";
-
-const RECENT_TXS = [
-  {
-    type: "Bought USDT",
-    amount: "450.20 USDT",
-    time: "1 hour ago",
-    status: "Completed",
-    dir: "up",
-  },
-  {
-    type: "Sold BTC",
-    amount: "-0.0245 BTC",
-    time: "2 hour ago",
-    status: "Completed",
-    dir: "down",
-  },
-  {
-    type: "Sold ETH",
-    amount: "-0.124 ETH",
-    time: "2 hour ago",
-    status: "Pending",
-    dir: "down",
-  },
-  {
-    type: "Sold ETH",
-    amount: "-2.15 ETH",
-    time: "30 minutes ago",
-    status: "Pending",
-    dir: "down",
-  },
-];
 
 export function RecentTransactions() {
   const {
@@ -106,6 +76,9 @@ export function RecentTransactions() {
               </div>
             ))}
           </div>
+        )}
+        {transactionHistoryIsError && (
+          <ErrorField message={transactionHistoryError?.message} />
         )}
         {!transactionHistoryPending &&
           !transactionHistoryIsError &&

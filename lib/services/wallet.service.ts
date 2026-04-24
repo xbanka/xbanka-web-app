@@ -4,21 +4,25 @@ import {
   deleteFiatWalletSavedCard,
   executeConversion,
   fundFiatWallet,
+  FundFiatWalletBank,
+  fundFiatWalletBankSavedCard,
   fundFiatWalletSavedCard,
   fundFiatWalletSavedCards,
   generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
+  getBankAcountsList,
   getCryptoWallet,
   getCurrency,
-  getDepositCrypto,
   getFiatWallet,
   getGroupedPair,
+  getMarketPrices,
   getRateConversion,
   getSingleWalletBalance,
   getTransactionHistory,
   quoteConversion,
   verifyFund,
+  withdrawCrypto,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
 import {
@@ -26,7 +30,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { AddBankAccountPayload, fundWalletPayload, fundWalletSavedCardPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, WithdrawCryptoPayload } from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -66,6 +70,19 @@ export const UseGetCryptoWallet = () => {
       } catch (err) {
         handleApiError(err);
       }
+    },
+    staleTime: 10 * 1000, // 10 seconds (tune this)
+  });
+};
+
+export const UseWithdrawCrypto = () => {
+  return useMutation({
+    mutationFn: (data: WithdrawCryptoPayload) => withdrawCrypto(data),
+    onSuccess: (result) => {
+      toast.success("Funded Successfully");
+    },
+    onError: (err) => {
+      handleApiError(err);
     },
   });
 };
@@ -170,10 +187,15 @@ export const UseDeleteFiatWalletSavedCard = () => {
 // };
 
 export const UseVerifyFund = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: string) => verifyFund(data),
     onSuccess: (result) => {
       toast.success("Conversion successful");
+
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -208,6 +230,47 @@ export const UseFundFiatWallet = () => {
   });
 };
 
+export const UseFundFiatWalletBank = () => {
+  return useMutation({
+    mutationFn: (data: fundWalletBankPayload) => FundFiatWalletBank(data),
+    onSuccess: (result) => {
+      console.log("FULL result", result);
+
+      const payload = result?.data || result; // 🔥 safe fallback
+
+      const url = payload?.redirect_url;
+      const ref = payload?.reference;
+
+      if (!url) {
+        console.error("No authorization_url found", result);
+        toast.error("Payment initialization failed");
+        return;
+      }
+
+      localStorage.setItem("fund_ref", ref);
+
+      window.location.href = url;
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const UseBankAccountList = () => {
+  return useQuery({
+    queryKey: ["bank-list"],
+    queryFn: async () => {
+      try {
+        const response = await getBankAcountsList();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
 export const UseGetBankAcounts = () => {
   return useQuery({
     queryKey: ["bank-accounts"],
@@ -225,10 +288,24 @@ export const UseGetBankAcounts = () => {
 };
 
 export const UseAddBankAcounts = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: AddBankAccountPayload) => {
+    mutationFn: async (data: AddBankAccountPayload) => addBankAcounts(data),
+    onSuccess: (result) => {
+      toast.success("Conversion successful");
+      queryClient.refetchQueries({ queryKey: ["bank-accounts"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const UseFundBankAcounts = () => {
+  return useMutation({
+    mutationFn: async (data: fundWalletBankSavedCardPayload) => {
       try {
-        const response = await addBankAcounts(data);
+        const response = await fundFiatWalletBankSavedCard(data);
         return response;
       } catch (err) {
         handleApiError(err);
@@ -312,5 +389,20 @@ export const useGetGroupedPair = () => {
         handleApiError(err);
       }
     },
+  });
+};
+
+export const useGetMarketPrices = (page = 1, limit = 10) => {
+  return useQuery({
+    queryKey: ["market-prices", page, limit],
+    queryFn: async () => {
+      try {
+        const response = await getMarketPrices();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: Infinity
   });
 };

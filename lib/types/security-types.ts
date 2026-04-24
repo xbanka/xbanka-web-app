@@ -8,6 +8,9 @@ export interface UpdatePinPayload {
   newPin: string;
   otp: string;
 }
+export interface ValidatePinPayload {
+  pin: string
+}
 
 export interface passwordChangePayload {
   oldPassword: string;

@@ -56,6 +56,22 @@ export interface UserWallet {
   addresses: WalletAddress[]; // Array of the interface above
 }
 
+export type SendStep =
+  | "select_asset"      // NEW – step 1
+  | "recipient"         // step 2
+  | "select_network"    // step 3
+  | "enter_amount"      // step 4
+  | "confirm"           // step 5
+  | "enter_pin"
+  | "processing"
+  | "success";
+
+export interface SendCryptoModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
 /**
  * Maps a cryptocurrency symbol to its full descriptive header name.
  * @param symbol - The currency code (e.g., 'BTC')
