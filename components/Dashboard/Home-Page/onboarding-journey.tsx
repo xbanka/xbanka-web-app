@@ -19,7 +19,43 @@ export function OnboardingJourney() {
 
   const totalSteps = progress.length;
   if (isPending) {
-    return <DashboardCard>Loading onboarding...</DashboardCard>;
+    return (
+      <DashboardCard className="space-y-4 animate-pulse">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-4 w-48 bg-border rounded" />
+            <div className="h-3 w-32 bg-border rounded" />
+          </div>
+          <div className="h-3 w-20 bg-border rounded" />
+        </div>
+
+        {/* Grid skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-lg border border-border space-y-3"
+            >
+              {/* Icon / badge */}
+              <div className="h-8 w-8 rounded-full bg-border" />
+
+              {/* Title */}
+              <div className="h-4 w-3/4 bg-border rounded" />
+
+              {/* Description */}
+              <div className="space-y-2">
+                <div className="h-3 w-full bg-border rounded" />
+                <div className="h-3 w-5/6 bg-border rounded" />
+              </div>
+
+              {/* Status badge */}
+              <div className="h-5 w-16 bg-border rounded-full" />
+            </div>
+          ))}
+        </div>
+      </DashboardCard>
+    );
   }
 
   if (error) {

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { verifyDevice } from "@/lib/actions/auth";
 import { OtpInput } from "../ui/otp-input";
 import { Button } from "../ui/button";
 import { useVerifyDevice } from "@/lib/services/auth.service";
+import { Card } from "../ui/FormCard";
+import { FormHeader } from "../ui/FormHeader";
 
 export default function VerifyDevice() {
   const [code, setCode] = useState("");
@@ -39,17 +40,28 @@ export default function VerifyDevice() {
   };
 
   return (
-    <div>
-      <h2 className="text-center text-card-text">Enter OTP</h2>
+    <Card>
+      <FormHeader
+        title="Verify It’s You"
+        subtitle={
+          <>
+            <span>We sent a 6-digit code to your phone number ending in •••• seph1@gmail.com</span>
+          </>
+        }
+      />
       {/* <input
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="6-digit code"
       /> */}
       <OtpInput onChange={handleChange}  error={error?.message}/>
+      <div className="flex items-center justify-between">
+        <p className="text-text ont-normal text-sm leading-6">Code expires in 00:59</p>
+        <p className="font-normal text-sm leading-6 text-Green">Resend code</p>
+      </div>
       <Button onClick={handleVerify} className="w-full">
-        { isPending ? "Verifying..." : "Verify"}
+        { isPending ? "Verifying..." : "Verify OTP"}
       </Button>
-    </div>
+    </Card>
   );
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getDeviceId, getDeviceInfo } from "../device";
-import { authToken } from "../authToken";
+import { tokenStore } from "@/store/token.store";
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -19,7 +19,7 @@ AxiosInstance.interceptors.request.use(
         message: "You are offline. Please check your internet connection.",
       });
     }
-    const token = authToken.get();
+    const token = tokenStore.get();
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -59,6 +59,7 @@ AxiosInstance.interceptors.response.use(
 
         const newAccessToken = refreshResponse.data?.access_token;
         if (newAccessToken) {
+          tokenStore.set(newAccessToken);
           // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           originalRequest.headers = {
             ...(originalRequest.headers || {}),
@@ -67,6 +68,7 @@ AxiosInstance.interceptors.response.use(
         }
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
+        tokenStore.clear();
         if (typeof window !== "undefined") {
           window.location.href = "/sign-in";
         }

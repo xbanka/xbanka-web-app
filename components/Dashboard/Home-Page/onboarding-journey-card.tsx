@@ -13,7 +13,7 @@ export const OnboardingJourneyCard = ({
   return (
     <div
       className={cn(
-        ` py-3 px-4 bg-border p-4 min-h-34 transition-colors ${status === "done" ? "border-l-3 border-border-active flex flex-col justify-between" : ""}`,
+        ` py-3 px-4 bg-border p-4 min-h-34 flex flex-col justify-between transition-colors ${status === "done" ? "border-l-3 border-border-active flex flex-col justify-between" : ""}`,
         className,
       )}
     >
@@ -41,13 +41,12 @@ export const OnboardingJourneyCard = ({
         <p className="text-xs text-green-500 font-medium">Account created</p>
       ) : status === "active" ? (
         <div className="space-y-5">
-          <p className="text-xs text-text leading-relaxed">{desc}</p>
           <button className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity">
             Continue →
           </button>
         </div>
       ) : (
-        <p className="text-xs text-green-500 font-medium">{desc}</p>
+        <p className="text-xs leading-5 text-text font-medium">{desc}</p>
       )}
     </div>
   );
