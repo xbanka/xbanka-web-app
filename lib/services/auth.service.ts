@@ -11,7 +11,7 @@ import { handleApiError } from "../errors/error";
 import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
 import { logInFormData } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
-import { authToken } from "../authToken";
+import { tokenStore } from "@/store/token.store";
 
 export const useSignup = () => {
   //   const router = useRouter();
@@ -34,16 +34,17 @@ export const useLogin = () => {
     mutationFn: (data: logInFormData) => login(data.email, data.password),
     onSuccess: (res) => {
       const result = res.data;
-      const token = result.data.access_token;
-      authToken.set(token);
+      console.log(res)
+      const token = result.access_token;
+      tokenStore.set(token);
 
       console.log("token", token);
       console.log("successful", result);
 
-      if (result.data.status === "DEVICE_VERIFICATION_REQUIRED") {
+      if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         // store temporarily
-        localStorage.setItem("verifyUserId", result.data.userId);
-        localStorage.setItem("verifyDeviceId", result.data.deviceId);
+        localStorage.setItem("verifyUserId", result.userId);
+        localStorage.setItem("verifyDeviceId", result.deviceId);
 
         router.push("/verify-device");
       } else {

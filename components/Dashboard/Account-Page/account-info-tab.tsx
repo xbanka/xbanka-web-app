@@ -1,11 +1,7 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import {
-  Edit2,
-
-  Plus,
-} from "lucide-react";
+import { Edit2, Plus } from "lucide-react";
 import { useState } from "react";
 import { BankAccountCard } from "./bank-account-card";
 import { useUserStore } from "@/store/user.store";
@@ -140,35 +136,60 @@ export function AccountInfoTab() {
           </span>
         </div>
 
-        {!getBankAccountsPending &&
-            !getBankAccounts &&
-            getBankAccountsError && (
-              <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
-                <Image
-                  className="mx-auto mb-1"
-                  alt="frame"
-                  width={96}
-                  height={122}
-                  src={"/Frame.svg"}
-                />
-                {getBankAccountsError?.message || "Failed to load bank accounts"}
-              </div>
-            )}
+        {getBankAccountsPending && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-pulse">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-background)] space-y-3"
+              >
+                {/* Top row */}
+                <div className="flex items-center justify-between">
+                  <div className="h-4 w-24 bg-[var(--color-border)] rounded" />
+                  <div className="h-5 w-20 bg-[var(--color-border)] rounded-full" />
+                </div>
 
-          {!getBankAccountsPending &&
-            !getBankAccountsError &&
-            getBankAccounts?.data?.length === 0 && (
-              <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
-                <Image
-                  className="mx-auto mb-1"
-                  alt="frame"
-                  width={96}
-                  height={122}
-                  src={"/Frame.svg"}
-                />
-                No linked bank accounts found
+                {/* Bank name */}
+                <div className="h-4 w-32 bg-[var(--color-border)] rounded" />
+
+                {/* Account number */}
+                <div className="h-3 w-40 bg-[var(--color-border)] rounded" />
+
+                {/* Account name */}
+                <div className="h-3 w-28 bg-[var(--color-border)] rounded" />
               </div>
-            )}
+            ))}
+          </div>
+        )}
+        {!getBankAccountsPending &&
+          !getBankAccounts &&
+          getBankAccountsError && (
+            <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
+              <Image
+                className="mx-auto mb-1"
+                alt="frame"
+                width={96}
+                height={122}
+                src={"/Frame.svg"}
+              />
+              {getBankAccountsError?.message || "Failed to load bank accounts"}
+            </div>
+          )}
+
+        {!getBankAccountsPending &&
+          !getBankAccountsError &&
+          getBankAccounts?.data?.length === 0 && (
+            <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
+              <Image
+                className="mx-auto mb-1"
+                alt="frame"
+                width={96}
+                height={122}
+                src={"/Frame.svg"}
+              />
+              No linked bank accounts found
+            </div>
+          )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {getBankAccounts?.data?.data?.map((b: BankAccount, i: number) => (
