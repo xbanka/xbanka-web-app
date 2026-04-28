@@ -3,9 +3,7 @@ import { useState } from "react";
 import { OtpInput } from "@/components/ui/otp-input";
 import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
-import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { useValidatePin } from "@/lib/services/security.service";
-import { SendStep } from "../Wallet-Page/types";
 import { ErrorField } from "@/components/ui/field-error";
 
 export function EnterPinStep({
