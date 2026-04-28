@@ -36,6 +36,7 @@ export const useLogin = () => {
       const result = res.data;
       console.log(res)
       const token = result.access_token;
+      localStorage.setItem("accessToken", token)
       tokenStore.set(token);
 
       console.log("token", token);

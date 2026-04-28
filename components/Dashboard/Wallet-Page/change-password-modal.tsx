@@ -14,7 +14,6 @@ import {
   changePasswordSchema,
 } from "@/lib/schema/security-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { error } from "console";
 
 export const ChangePasswordModal = ({ open, handleClose }: any) => {
   const { mutate, isPending } = useChangePassword();
