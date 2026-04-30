@@ -8,17 +8,24 @@ import { useUpdatePin } from "@/lib/services/security.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CloseBtn } from "./create-pin-modal";
 import { ErrorField } from "@/components/ui/field-error";
+import { ModalHeader } from "@/components/ui/modal-header";
+import { useOtpFlow } from "@/hooks/use-otp-flow";
 
 export const UpdatePinModal = ({ open, handleClose }: any) => {
   const [success, setSuccess] = useState(false);
-
+  const { sendOtp, cooldown, canResend } = useOtpFlow();
   const { mutate, isPending, error } = useUpdatePin();
 
-  const { handleSubmit, register, reset, formState: { errors } } = useForm<UpdatePinForm>({
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<UpdatePinForm>({
     resolver: zodResolver(updatePinSchema),
     mode: "onSubmit",
   });
@@ -33,58 +40,84 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
       onSuccess: () => {
         reset();
         handleClose();
-        setSuccess(true)
+        setSuccess(true);
       },
     });
   };
 
+  useEffect(() => {
+      if (open) {
+        sendOtp();
+      }
+    }, [open]);
+
   if (!open) return null;
 
   return (
-    <Modal onClose={handleClose}>
+    <Modal className="p-0" onClose={handleClose}>
       {!success ? (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CloseBtn onClose={handleClose} />
+          <ModalHeader
+            className="px-8"
+            title="Update Pin"
+            subtitle="OTP sent to your mail to update account pin"
+            onClose={handleClose}
+          />
 
-          <div className="pt-18 space-y-6 text-center">
-            <h2 className="text-3xl font-bold leading-11 text-card-text">
-              Change PIN
-            </h2>
+          <div className="px-8 pt-4 pb-8 text-center space-y-8">
+            <div className="space-y-4">
+              {/* OTP */}
+              <FormField
+                id="otp"
+                icon={Lock}
+                type="text"
+                placeholder="Enter OTP"
+                register={register}
+                error={errors.otp}
+              />
 
-            {/* OTP */}
-            <FormField
-              id="otp"
-              icon={Lock}
-              type="text"
-              placeholder="Enter OTP"
-              register={register}
-              error={errors.otp}
-            />
+              {/* Old PIN */}
+              <FormField
+                id="oldPin"
+                icon={Lock}
+                type="password"
+                placeholder="Current PIN"
+                register={register}
+                error={errors.oldPin}
+              />
 
-            {/* Old PIN */}
-            <FormField
-              id="oldPin"
-              icon={Lock}
-              type="password"
-              placeholder="Current PIN"
-              register={register}
-              error={errors.oldPin}
-            />
+              {/* New PIN */}
+              <FormField
+                id="newPin"
+                icon={Lock}
+                type="password"
+                placeholder="New PIN"
+                register={register}
+                error={errors.newPin}
+              />
+            </div>
 
-            {/* New PIN */}
-            <FormField
-              id="newPin"
-              icon={Lock}
-              type="password"
-              placeholder="New PIN"
-              register={register}
-              error={errors.newPin}
-            />
+            <div className="flex items-center justify-between">
+              <p className="text-text ont-normal text-sm leading-6">
+                Code expires in 00:{cooldown}
+              </p>
+              <p
+                onClick={sendOtp}
+                className={` font-normal text-sm leading-6 ${canResend ? "text-Green cursor-pointer" : "text-text cursor-not-allowed"} `}
+              >
+                Resend code
+              </p>
+            </div>
 
             {error && <ErrorField message={error.message} />}
 
             <div className="flex gap-3 w-full">
-              <Button type="button" variant={"outline"} className="flex-1" onClick={handleClose}>
+              <Button
+                type="button"
+                variant={"outline"}
+                className="flex-1"
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
 
@@ -96,8 +129,8 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
         </form>
       ) : (
         // ✅ SUCCESS STATE
-        <div className="pt-18 space-y-5 text-center">
-          <CloseBtn onClose={handleClose} />
+        <div className="px-8 pt-4 pb-8 space-y-5 text-center">
+          <ModalHeader className="px-8" onClose={handleClose} />
 
           <Image
             alt="success"

@@ -118,27 +118,19 @@ export function SecurityTab() {
   } = useRemoveDevice();
 
   const handleChangePassword = () => {
-    requestOtp(undefined, {
-      onSuccess: () => {
-        setOpenChangePassword(true);
-      },
-    });
+    setOpenChangePassword(true);
   };
 
   const handleAuthAction = (item: any) => {
-    requestOtp(undefined, {
-      onSuccess: () => {
-        if (item.isSet) {
-          setOpenUpdatePin(true);
-        } else {
-          setOpenCreatePin(true);
-        }
-      },
-    });
+    if (item.isSet) {
+      setOpenUpdatePin(true);
+    } else {
+      setOpenCreatePin(true);
+    }
   };
 
   const handle2faModal = () => {
-    setEnable2faModal(true)
+    setEnable2faModal(true);
   };
 
   const authItems = [
