@@ -1,7 +1,5 @@
-import React from "react";
 import { littleCardProps } from "./types";
 import { Button } from "@/components/ui/button";
-import { date } from "zod";
 import { formatDate } from "@/lib/formatDate";
 import Image from "next/image";
 

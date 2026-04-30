@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { Download, Eye, EyeOff, RefreshCcw, Send } from "lucide-react";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
@@ -7,6 +7,7 @@ import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
 import { DepositModal } from "./deposit-modal";
 import { SendCryptoModal } from "../SendCryptoModal/send-crypto-modal";
+import { DepositSidebar } from "./deposit-crypto-sidebar";
 
 export const CryptoBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -15,7 +16,7 @@ export const CryptoBalance = () => {
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const { data, error, isPending } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
-  
+
   const latestWallet = wallets[0];
   return (
     <div>
@@ -91,12 +92,19 @@ export const CryptoBalance = () => {
           </div>
         </div>
       </DashboardCard>
-      {
+      {/* {
         addFundsOpen && <DepositModal onClose={() => setAddFundsOpen(false)} />
-      }
-      {
-        sendCrptoModalOpen && <SendCryptoModal open={sendCrptoModalOpen} onClose={() => setSendCrptoModalOpen(false)} />
-      }
+      } */}
+      <DepositSidebar
+        open={addFundsOpen}
+        onClose={() => setAddFundsOpen(false)}
+      />
+      {sendCrptoModalOpen && (
+        <SendCryptoModal
+          open={sendCrptoModalOpen}
+          onClose={() => setSendCrptoModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

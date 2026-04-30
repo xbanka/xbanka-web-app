@@ -18,7 +18,7 @@ export function FormField({
 }: FormFieldProps) {
   
   return (
-    <div className={cn("space-y-2")}>
+    <div className={cn("space-y-1")}>
       {label && (
         <Label label={label} />
       )}

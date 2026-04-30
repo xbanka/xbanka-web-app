@@ -19,7 +19,8 @@ AxiosInstance.interceptors.request.use(
         message: "You are offline. Please check your internet connection.",
       });
     }
-    const token = tokenStore.get();
+    // const token = tokenStore.get();
+    const token = localStorage.getItem("accessToken")
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

@@ -1,21 +1,27 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { UseBankAccountList, UseGetFiatWallet } from "@/lib/services/wallet.service";
+import {
+  UseBankAccountList,
+  UseGetFiatWallet,
+} from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundsModal } from "../AddFundFiatModal/add-funds-modal";
+import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
   const { data, error, isPending } = UseGetFiatWallet();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const [sendFundsOpen, setSendFundsOpen] = useState(false);
   const wallets = data?.data?.data || [];
   const latestWallet = wallets[0];
   const isAddFundDisabled = !isBvnVerified;
   console.log("fiat wallet balance", data);
-  const { data: bankAccountList } = UseBankAccountList()
+  console.log("sendFundsOpen", sendFundsOpen);
+  const { data: bankAccountList } = UseBankAccountList();
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
@@ -48,7 +54,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
           <div className="flex items-start gap-4">
             <div className="">
               <Button
-              onClick={() => setAddFundsOpen(true)}
+                onClick={() => setAddFundsOpen(true)}
                 variant={"default"}
                 size={"sm"}
                 className="flex items-center transition-colors"
@@ -63,6 +69,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
               )} */}
             </div>
             <Button
+              onClick={() => setSendFundsOpen(true)}
               variant={"outline"}
               size={"sm"}
               className="flex items-center transition-colors"
@@ -77,6 +84,12 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
             open={addFundsOpen}
             onClose={() => setAddFundsOpen(false)}
             onSuccess={() => setAddFundsOpen(false)}
+          />
+        )}
+        {sendFundsOpen && (
+          <SendMoneyModal
+            onClose={() => setSendFundsOpen(false)}
+            onBack={() => setSendFundsOpen(false)}
           />
         )}
       </DashboardCard>

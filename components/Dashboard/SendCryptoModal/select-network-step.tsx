@@ -2,7 +2,6 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CRYPTO_NETWORKS } from "../Wallet-Page/wallet-mock-data";
-import { CoinAvatar } from "../Wallet-Page/coin-avatar";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { AlertTriangle, Search } from "lucide-react";

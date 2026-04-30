@@ -23,6 +23,8 @@ import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
 import { updatePin } from "@/lib/actions/security";
 import {
+  useDisable2FA,
+  useEnable2FA,
   useRemoveDevice,
   useRequestOtp,
   useRevokeSessions,
@@ -30,6 +32,7 @@ import {
 } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";
+import { Enable2faModal } from "./enable2fa-modal";
 
 export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
@@ -37,6 +40,7 @@ export function SecurityTab() {
   const userData = useUserStore((state) => state.user);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
+  const [enable2faModal, setEnable2faModal] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const securityItems = [
     {
@@ -75,12 +79,18 @@ export function SecurityTab() {
       note: "",
     },
   ];
-  
+
   const {
-    mutate: GenerateTwoFactorMutate,
-    isPending: GenerateTwoFactorPending,
-    error: GenerateTwoFactorError,
-  } = useTwoFactorAuthenticationGenerate();
+    mutate: EnableTwoFactorMutate,
+    isPending: EnableTwoFactorPending,
+    error: EnableTwoFactorError,
+  } = useEnable2FA();
+
+  const {
+    mutate: DisableTwoFactorMutate,
+    isPending: DisableTwoFactorPending,
+    error: DisableTwoFactorError,
+  } = useDisable2FA();
 
   const {
     data: ActiveSessionsData,
@@ -127,6 +137,10 @@ export function SecurityTab() {
     });
   };
 
+  const handle2faModal = () => {
+    setEnable2faModal(true)
+  };
+
   const authItems = [
     {
       icon: Lock,
@@ -165,8 +179,10 @@ export function SecurityTab() {
       icon: ShieldCheck,
       label: "Google Authenticator",
       desc: "Highly recommended for account security",
-      isSet: false,
-      action: "Enable",
+      isSet: userData?.isTwoFactorEnabled,
+      action: userData?.isTwoFactorEnabled ? "Disable" : "Enable",
+      status: userData?.isTwoFactorEnabled ? "" : "Not configured",
+      onClick: () => handle2faModal(),
     },
   ];
 
@@ -319,6 +335,13 @@ export function SecurityTab() {
         <ChangePasswordModal
           open={openChangePassword}
           handleClose={() => setOpenChangePassword(false)}
+        />
+      )}
+
+      {enable2faModal && (
+        <Enable2faModal
+          open={enable2faModal}
+          onClose={() => setEnable2faModal(false)}
         />
       )}
     </div>

@@ -7,7 +7,7 @@ export interface LabelProps {
 
 function Label({ label }: LabelProps) {
   return (
-    <label className="text-xs font-medium leading-5 text-text flex items-center gap-1">
+    <label className="text-xs font-medium leading-5 text-card-text flex items-center gap-1">
       {label}
     </label>
   );

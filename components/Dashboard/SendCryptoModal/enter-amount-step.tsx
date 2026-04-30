@@ -1,7 +1,6 @@
 import { Modal } from "@/components/ui/Modal";
 import { AlertTriangle, Info, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { UserWallet } from "../Wallet-Page/types";

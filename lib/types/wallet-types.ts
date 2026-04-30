@@ -1,29 +1,37 @@
 export interface fundWalletPayload {
-  amount: number
-  saveCard: boolean
+  amount: number;
+  saveCard: boolean;
+}
+export interface sendWalletPayload {
+  accountNumber: string;
+  bankCode: string;
+  bankName: string;
+  accountName: string;
+  amount: number;
+  narration: string;
 }
 export interface fundWalletSavedCardPayload {
-  amount: number,
-  savedCardId: string,
+  amount: number;
+  savedCardId: string;
 }
 
 export interface fundWalletBankSavedCardPayload {
-  amount: number,
-  mandateId: string,
+  amount: number;
+  mandateId: string;
 }
 
 export interface fundWalletBankPayload {
-  accountNumber: string
-  bankCode: string
+  accountNumber: string;
+  bankCode: string;
 }
 
-export interface WithdrawCryptoPayload{
-  currency: string,
-  network: string,
-  address: string,
-  amount: number,
-  memo: string,
-  narration: string
+export interface WithdrawCryptoPayload {
+  currency: string;
+  network: string;
+  address: string;
+  amount: number;
+  memo: string;
+  narration: string;
 }
 
 export interface DeleteFiatWalletBankSavedCardPayload {
@@ -42,7 +50,7 @@ export interface WalletAccount {
   network: string;
   createdAt: string; // Or Date if you plan to parse it
   updatedAt: string;
-  
+
   // These fields are null in your sample, likely optional strings
   accountName: string | null;
   address: string | null;

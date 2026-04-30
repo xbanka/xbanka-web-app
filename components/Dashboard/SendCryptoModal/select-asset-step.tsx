@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Search } from "lucide-react";

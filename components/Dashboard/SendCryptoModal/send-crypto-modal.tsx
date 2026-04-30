@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { ConfirmStep } from "./confirm-stepp";
+import { ConfirmStep } from "./confirm-step";
 import { EnterAmountStep } from "./enter-amount-step";
-import { EnterPinStep } from "./enter-pin-stepp";
-import { ProcessingStep } from "./processing-stepp";
+import { EnterPinStep } from "./enter-pin-step";
+import { ProcessingStep } from "./processing-step";
 import { SelectNetworkStep } from "./select-network-step";
 import { SuccessStep } from "./success-stepp";
 import {

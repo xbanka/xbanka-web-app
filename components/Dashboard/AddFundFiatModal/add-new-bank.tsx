@@ -3,10 +3,9 @@ import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectField } from "@/components/ui/select";
-import { BANK_OPTIONS, bankOptions } from "@/lib/schema/bank-schema";
+import { bankOptions } from "@/lib/schema/bank-schema";
 import { UseFundFiatWalletBank } from "@/lib/services/wallet.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -92,7 +91,7 @@ export function AddNewBankStep({
           <Button
             type="submit"
             size="lg"
-            className="flex-1"
+            className="flex-3"
             disabled={!isValid || isPending}
             variant={!isValid || isPending ? "disabled" : "default"}
           >

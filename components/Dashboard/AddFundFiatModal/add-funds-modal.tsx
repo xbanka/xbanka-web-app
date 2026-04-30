@@ -1,14 +1,14 @@
 import { SAVED_BANKS, SAVED_CARDS } from "@/lib/wallet-page";
 import { AddNewBankStep } from "./add-new-bank";
 import { AddNewCardStep } from "./add-new-card";
-import { ConfirmStep } from "../Wallet-Page/confirm-step";
-import { EnterAmountStep } from "../Wallet-Page/enter-amount";
-import { EnterPinStep } from "../Wallet-Page/enter-pin-step";
-import { ProcessingStep } from "../Wallet-Page/processing-step";
-import { SelectBankStep } from "../Wallet-Page/select-bank-step";
+import { ConfirmStep } from "./confirm-step";
+import { EnterAmountStep } from "./enter-amount";
+import { EnterPinStep } from "./enter-pin-step";
+import { ProcessingStep } from "./processing-step";
+import { SelectBankStep } from "./select-bank-step";
 import { SelectCardStep } from "./select-card-step";
 import { SelectMethodStep } from "./select-method-step";
-import { SuccessStep } from "../Wallet-Page/success-step";
+import { SuccessStep } from "./success-step";
 import { useState } from "react";
 import { BankAccount, FundMethod } from "../Account-Page/types";
 import { AddFundsModalProps, FundStep } from "../Wallet-Page/types";
@@ -182,7 +182,7 @@ export function AddFundsModal({
     return (
       <ProcessingStep
         amount={amount}
-        mandateId={selectedBank.accountNumber}
+        mandateId={selectedBank.id}
         accountName={selectedBank.accountName}
         selectedCard={selectedCard}
         handleStep={setStep}

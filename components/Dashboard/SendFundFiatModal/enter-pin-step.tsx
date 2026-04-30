@@ -4,7 +4,7 @@ import { ModalHeader } from "@/components/ui/modal-header";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useValidatePin } from "@/lib/services/security.service";
 import { useState } from "react";
-import { FundStep } from "./types";
+import { FundStep } from "../Wallet-Page/types";
 import { ErrorField } from "@/components/ui/field-error";
 
 export function EnterPinStep({

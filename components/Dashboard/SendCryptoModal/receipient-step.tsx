@@ -3,7 +3,6 @@ import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Search } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";

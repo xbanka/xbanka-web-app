@@ -3,7 +3,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { UseFundBankAcounts } from "@/lib/services/wallet.service";
 import { LucideArrowLeftRight } from "lucide-react";
 import { useEffect } from "react";
-import { FundStep } from "./types";
+import { FundStep } from "../Wallet-Page/types";
 
 export function ProcessingStep({
   amount,
