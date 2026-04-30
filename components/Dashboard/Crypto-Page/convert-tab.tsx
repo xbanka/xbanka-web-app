@@ -26,12 +26,10 @@ type FormValues = {
 export function ConvertTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
   const [sourceCurrency, setSourceCurrency] = useState("BTC");
   const [targetCurrency, setTargetCurrency] = useState("USDT");
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
 
   const { data, mutate, isPending } = useQuoteConversion();
@@ -108,14 +106,15 @@ export function ConvertTab() {
       {
         onSuccess: (res) => {
           const result = res?.data;
+          console.log("convert result", result);
 
-          setReceiveAmount(result?.amount?.toString() || "");
+          setReceiveAmount(result?.netPayout?.toString());
           console.log("quote result", result);
           setConvertData(result);
         },
       },
     );
-  }, [debouncedAmount, sourceCurrency, targetCurrency]);
+  }, [debouncedAmount, sourceCurrency, targetCurrency, groupedPairData]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -136,7 +135,7 @@ export function ConvertTab() {
         <AmountRow
           label="You Receive"
           value={
-            convertData?.netPayout ? convertData.netPayout.toLocaleString() : ""
+            convertData?.netPayout ? convertData.netPayout.toString() : ""
           }
           readOnly
           OPTIONS={TARGET_OPTIONS}

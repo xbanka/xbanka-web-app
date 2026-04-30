@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
-import { cn } from "@/lib/utils";
-import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { SendCryptoConfirmList } from "../Wallet-Page/send-crypto-confirm-list";
