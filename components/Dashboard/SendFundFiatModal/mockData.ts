@@ -1,6 +1,6 @@
-import { Recipient } from "./types";
+import { Recipient, RecipientXbankaUsersTypes } from "./types";
 
-export const RECENT_RECIPIENTS: Recipient[] = [
+export const RECENT_RECIPIENTS: RecipientXbankaUsersTypes[] = [
   { id: "1", name: "David Ojo", uid: "UID/012563738", color: "bg-purple-500" },
   { id: "2", name: "David Ojo", uid: "UID/012563738", color: "bg-purple-500" },
   { id: "3", name: "David Ojo", uid: "UID/012563738", color: "bg-purple-500" },

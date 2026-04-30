@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
-import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
@@ -34,7 +33,9 @@ export function ConfirmStep({
             <ArrowLeftRight className="w-8 h-8 text-Green" />
           </div>
         </div>
-        <div className="font-semibold text-2xl leading-8 text-card-text"></div>
+        <div className="font-semibold text-center text-2xl leading-8 text-card-text">
+          Review & Confirm Transaction
+        </div>
       </div>
 
       <div className="space-y-4">

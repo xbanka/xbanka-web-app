@@ -3,14 +3,14 @@ import { Building2, Search } from "lucide-react";
 import { RECENT_RECIPIENTS } from "./mockData";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Recipient, Tab } from "./types";
+import { RecipientXbankaUsersTypes, Tab } from "./types";
 import { AvatarCircle } from "./avatarCircle";
 
 export function SelectRecipientStep({
   onSelectXbanka,
   onSelectBank,
 }: {
-  onSelectXbanka: (r: Recipient) => void;
+  onSelectXbanka: (r: RecipientXbankaUsersTypes) => void;
   onSelectBank: () => void;
 }) {
   const [search, setSearch] = useState("");
@@ -62,11 +62,11 @@ export function SelectRecipientStep({
           </div>
         </div>
       </div>
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-4 pt-2">
         <Button variant="outline" className="flex-1" disabled>
           Back
         </Button>
-        <Button className="flex-1" onClick={onSelectBank}>
+        <Button className="flex-3" onClick={onSelectBank}>
           Continue
         </Button>
       </div>

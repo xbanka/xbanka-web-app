@@ -4,108 +4,103 @@ import { Input } from "@/components/ui/input";
 import { StepIndicator } from "./stepIndicator";
 import { NIGERIAN_BANKS } from "./mockData";
 import { useState } from "react";
-import { Recipient } from "./types";
+import { Recipient, Step } from "./types";
 import { SelectField } from "@/components/ui/select";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { bankOptions } from "@/lib/schema/bank-schema";
+import { FormField } from "@/components/ui/FormField";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorField } from "@/components/ui/field-error";
+
+const addBankSchema = z.object({
+  bankName: z.string().min(1, "Please select a bank"),
+  accountNumber: z.string().regex(/^\d{10}$/, "Must be 10 digits"),
+});
+type AddBankForm = z.infer<typeof addBankSchema>;
 
 export function BankAccountStep({
   onBack,
   onFound,
   onNotFound,
+  setStep,
+  setRecipient,
+  recipient
 }: {
   onBack: () => void;
   onFound: (r: Recipient) => void;
   onNotFound: () => void;
+  setStep: (value: Step) => void;
+  setRecipient: (Recipient: Recipient) => void;
+  recipient: Recipient | null
 }) {
-  const [accountNumber, setAccountNumber] = useState("");
-  const [bank, setBank] = useState("");
-  const [resolvedName, setResolvedName] = useState<string | null>(null);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
- 
-  // Simulate account resolution when both fields are filled
-  const handleAccountChange = (val: string) => {
-    setAccountNumber(val);
-    setResolvedName(null);
-    setError(false);
- 
-    if (val.length === 10 && bank) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        // Simulate: accounts starting with 0 resolve, others fail
-        if (val.startsWith("0")) {
-          setResolvedName("John Doe");
-        } else {
-          setError(true);
-        }
-      }, 800);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<AddBankForm>({
+    resolver: zodResolver(addBankSchema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = (data: AddBankForm) => {
+    // Find the selected bank object using the value from the form
+    const selectedBank = bankOptions.find((b) => b.value === data.bankName);
+    if (!selectedBank) return;
+    if (selectedBank) {
+      const newRecipient: Recipient = {
+        accountNumber: data.accountNumber,
+        bankCode: data.bankName,
+        bankName: selectedBank.label,
+        accountName: "John Doe", // Usually this comes from your "Resolve" API
+        amount: 0,
+        narration: "",
+      };
+
+      setRecipient(newRecipient);
+      setStep("enter-amount");
     }
   };
- 
-  const handleBankChange = (val: string) => {
-    setBank(val);
-    setResolvedName(null);
-    setError(false);
- 
-    if (accountNumber.length === 10 && val) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        if (accountNumber.startsWith("0")) {
-          setResolvedName("John Doe");
-        } else {
-          setError(true);
-        }
-      }, 800);
-    }
-  };
- 
-  const selectedBankLabel = NIGERIAN_BANKS.find((b) => b.value === bank)?.label ?? "";
- 
+
+  // const selectedBankLabel =
+  //   NIGERIAN_BANKS.find((b) => b.value === bank)?.label ?? "";
+
   return (
-    <div className="px-8 pb-8 pt-4 space-y-5">
- 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-card-text">Account Number</label>
-        <Input
-          placeholder="Enter Account Number"
-          maxLength={10}
-          value={accountNumber}
-          onChange={(e) => handleAccountChange(e.target.value.replace(/\D/g, ""))}
-          className={cn(
-            error && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20"
-          )}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="px-8 pb-8 pt-4 space-y-8"
+    >
+      <div className="space-y-4">
+        <FormField
+          id="accountNumber"
+          label="Account Number"
+          placeholder="0123456789"
+          register={register}
+          error={errors.accountNumber}
         />
-      </div>
- 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-card-text">Bank Name</label>
+
         <SelectField
-          id="bank"
-          placeholder="Select Bank"
-          options={NIGERIAN_BANKS}
-          register={() => ({
-            onChange: (e: React.ChangeEvent<HTMLSelectElement>) => handleBankChange(e.target.value),
-            value: bank,
-            name: "bank",
-            ref: () => {},
-            onBlur: () => {},
-          })}
+          id="bankName"
+          label="Bank Name"
+          placeholder="Select bank"
+          options={bankOptions}
+          register={register}
+          error={errors.bankName}
         />
       </div>
- 
+
       {/* Loading state */}
-      {loading && (
+      {/* {loading && (
         <div className="flex items-center gap-2 text-sm text-text animate-pulse">
           <div className="w-4 h-4 rounded-full border-2 border-Green border-t-transparent animate-spin" />
           Resolving account...
         </div>
-      )}
- 
+      )} */}
+
       {/* Resolved name */}
-      {resolvedName && !loading && (
+      {/* {resolvedName && !loading && (
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-Green/30 bg-Green/5">
           <AvatarCircle name={resolvedName} color="bg-orange-500" size="sm" />
           <div>
@@ -113,37 +108,34 @@ export function BankAccountStep({
             <p className="text-xs text-text">{selectedBankLabel}</p>
           </div>
         </div>
-      )}
- 
+      )} */}
+
       {/* Error state */}
-      {error && !loading && (
+      {/* {error && !loading && (
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-destructive/40 bg-destructive/10">
           <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
           <p className="text-xs text-destructive">
-            Account not found. Please check the account number and selected bank.
+            Account not found. Please check the account number and selected
+            bank.
           </p>
         </div>
-      )}
- 
-      <div className="flex gap-3 pt-2">
+      )} */}
+      {/* <ErrorField message={errors} /> */}
+
+      <div className="flex gap-4 pt-2">
         <Button variant="outline" className="flex-1" onClick={onBack}>
           Back
         </Button>
         <Button
-          className="flex-1"
-          disabled={!resolvedName || loading}
-          onClick={() =>
-            onFound({
-              id: accountNumber,
-              name: resolvedName!,
-              uid: accountNumber,
-              bank: selectedBankLabel,
-            })
-          }
+          type="submit"
+          size="lg"
+          className="flex-3"
+          disabled={!isValid}
+          variant={!isValid ? "disabled" : "default"}
         >
           Continue
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

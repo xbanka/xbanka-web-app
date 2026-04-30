@@ -2,20 +2,46 @@ import { Modal } from "@/components/ui/Modal";
 import { BankAccountStep } from "./bank-account-step";
 import { EnterAmountStep } from "./enter-amount-step";
 import { ModalHeader } from "@/components/ui/modal-header";
-import { Recipient, SendMoneyModalProps, Step, Tab } from "./types";
+import {
+  Recipient,
+  RecipientXbankaUsersTypes,
+  SendMoneyModalProps,
+  Step,
+  Tab,
+} from "./types";
 import { useState } from "react";
 import { SelectRecipientStep } from "./selectRecepient";
 import { TabToggle } from "./tab-toggle";
-import { SEND_STEP_LABELS, SEND_STEPS, TOTAL_SEND_STEPS } from "./mockData";
-import { ProgressBar } from "./progress-bar";
+import { ConfirmStep } from "./confirm-step";
+import { EnterPinStep } from "./enter-pin-step";
+import { ProcessingStep } from "./processing-step";
+import { SuccessStep } from "./success-step";
 
 export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
-  const [tab, setTab] = useState<Tab>("select-recipient");
+  const [tab, setTab] = useState<Tab>("select-recipient"); // rename this
   const [recipient, setRecipient] = useState<Recipient | null>(null);
-  console.log(step, tab);
+  // accountNumber: "0123456789",
+  //      bankCode: "058",
+  //      bankName:"United Bank For Africa",
+  //      accountName: "JOHN DOE",
+  //      amount: 5000,
+  //      narration: "One-off payment to John"
+  const [XbankaRecipient, setXbankaRecipient] =
+    useState<RecipientXbankaUsersTypes | null>(null);
 
-  const handleSelectXbanka = (r: Recipient) => {
+  const handleTabChange = (t: Tab) => {
+    setTab(t);
+    setStep("select-recipient");
+    setRecipient(null);
+  };
+
+  const handleSelectXbanka = (r: RecipientXbankaUsersTypes) => {
+    setXbankaRecipient(r);
+    setStep("enter-amount");
+  };
+
+  const handleBankFound = (r: Recipient) => {
     setRecipient(r);
     setStep("enter-amount");
   };
@@ -25,15 +51,27 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
     setStep("bank-form");
   };
 
-  const handleBankFound = (r: Recipient) => {
-    setRecipient(r);
-    setStep("enter-amount");
+  const handleContinue = (updatedRecipient: Recipient) => {
+    setRecipient(updatedRecipient);
+    setStep("confirm_bank");
+
+    console.log("Final Data for Backend:", updatedRecipient);
   };
 
-  const handleContinue = (amount: number, narration: string) => {
-    // Hook into your payment submission logic here
-    console.log("Send money", { recipient, amount, narration });
+  const reset = () => {
+    setStep("select-recipient");
+    setTab("select-recipient");
+  };
+
+  const handleClose = () => {
+    reset();
     onClose();
+  };
+
+  const startProcessing = async () => {
+    setStep("processing");
+    // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
+    // setStep("success");
   };
 
   return (
@@ -62,43 +100,81 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           step={step}
         />
       </div> */}
-      { step === "select-recipient" || step === "bank-form" && <div className="px-8 pb-3">
-        <TabToggle
-          active={tab}
-          onChange={(t) => {
-            setTab(t);
-            setStep(t === "bank-form" ? "bank-form" : "select-recipient");
-          }}
-        />
-      </div>}
+      {step === "select-recipient" && (
+        <div className="px-8 pb-3">
+          <TabToggle active={tab} onChange={handleTabChange} />
+        </div>
+      )}
       <div className="px-0">
         {/* STEP 1 */}
         {step === "select-recipient" && tab === "select-recipient" && (
           <SelectRecipientStep
             onSelectXbanka={handleSelectXbanka}
-            onSelectBank={handleGoToBank}
+            onSelectBank={() => handleTabChange("bank-form")}
           />
         )}
-
-        {step === "bank-form" && (
+        {step === "select-recipient" && tab === "bank-form" && (
           <BankAccountStep
-            onBack={() => {
-              setStep("select-recipient");
-              setTab("select-recipient");
-            }}
+            setStep={setStep}
+            setRecipient={setRecipient}
+            recipient={recipient}
+            onBack={() => handleTabChange("xbanka")}
             onFound={handleBankFound}
             onNotFound={() => {}}
           />
         )}
-
         {/* STEP 2 */}
         {step === "enter-amount" && recipient && (
           <EnterAmountStep
             recipient={recipient}
             onBack={() =>
-              setStep(tab === "bank-form" ? "bank-form" : "select-recipient")
+              setStep(
+                tab === "select-recipient" ? "select-recipient" : "bank-form",
+              )
             }
-            onContinue={handleContinue}
+            onContinue={handleContinue} // This now receives the full object
+          />
+        )}
+        {step === "confirm_bank" && recipient && (
+          <ConfirmStep
+            amount={
+              recipient?.amount.toString() ? recipient?.amount.toString() : "0"
+            }
+            sourceLabel={recipient.bankName + " " + recipient.accountNumber}
+            accountName={recipient.accountName}
+            fee="0.00"
+            onBack={() => setStep("enter-amount")}
+            onClose={handleClose}
+            onConfirm={() => setStep("enter_pin")}
+          />
+        )}
+        {step === "enter_pin" && recipient && (
+          <EnterPinStep
+            onBack={() => setStep("confirm_bank")}
+            onClose={handleClose}
+            onConfirm={startProcessing}
+          />
+        )}
+        {step === "processing" && recipient && (
+          <ProcessingStep
+            recipient={recipient}
+            amount={
+              recipient?.amount.toString() ? recipient?.amount.toString() : "0"
+            }
+            mandateId={recipient.accountNumber}
+            accountName={recipient.accountName}
+            handleStep={setStep}
+          />
+        )}
+        {step === "success" && recipient && (
+          <SuccessStep
+            amount={recipient.amount.toString() ?? "0"}
+            // recipient={recipient}
+            onDone={() => {
+              // onSuccess?.();
+              handleClose();
+            }}
+            onAddMore={reset}
           />
         )}
       </div>

@@ -21,6 +21,7 @@ import {
   getSingleWalletBalance,
   getTransactionHistory,
   quoteConversion,
+  sendFiatWallet,
   verifyFund,
   withdrawCrypto,
 } from "../actions/wallet";
@@ -30,7 +31,7 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, WithdrawCryptoPayload } from "../types/wallet-types";
+import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, sendWalletPayload, WithdrawCryptoPayload } from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -235,21 +236,18 @@ export const UseFundFiatWalletBank = () => {
     mutationFn: (data: fundWalletBankPayload) => FundFiatWalletBank(data),
     onSuccess: (result) => {
       console.log("FULL result", result);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
 
-      const payload = result?.data || result; // 🔥 safe fallback
-
-      const url = payload?.redirect_url;
-      const ref = payload?.reference;
-
-      if (!url) {
-        console.error("No authorization_url found", result);
-        toast.error("Payment initialization failed");
-        return;
-      }
-
-      localStorage.setItem("fund_ref", ref);
-
-      window.location.href = url;
+export const UseSendFiatWallet = () => {
+  return useMutation({
+    mutationFn: (data: sendWalletPayload) => sendFiatWallet(data),
+    onSuccess: (result) => {
+      console.log("FULL result", result);
     },
     onError: (err) => {
       handleApiError(err);
