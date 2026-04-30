@@ -19,6 +19,7 @@ import { useOtpFlow } from "@/hooks/use-otp-flow";
 
 export const ChangePasswordModal = ({ open, handleClose }: any) => {
   const { mutate, isPending } = useChangePassword();
+  const [success, setSuccess] = useState(false);
   const {
     handleSubmit,
     register,
@@ -29,7 +30,6 @@ export const ChangePasswordModal = ({ open, handleClose }: any) => {
     mode: "onSubmit",
   });
 
-  const [success, setSuccess] = useState(false);
 
   const { sendOtp, cooldown, canResend } = useOtpFlow();
 
