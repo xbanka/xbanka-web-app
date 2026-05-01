@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
 import Script from "next/script";
+import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             {children}
+            <GlobalLogout />
           </body>
         </html>
       </Providers>

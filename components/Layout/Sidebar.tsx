@@ -1,6 +1,8 @@
 import { NAV } from "@/lib/nav";
+import { useLogoutStore } from "@/store/logout.store";
 import { ChevronLeft, ChevronRight, LogOut, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Sidebar({
   activePage,
@@ -17,12 +19,18 @@ export function Sidebar({
   mobileOpen: boolean;
   setMobileOpen: (v: boolean) => void;
 }) {
+  const pathname = usePathname();
   const navigate = (id: PageId) => {
     setActivePage(id);
     setMobileOpen(false);
   };
 
-const sidebarContent = (
+  // const route = item.id === "dashboard" ? "/" : `/${item.id}`;
+
+  // const active = pathname === route;
+  const { openModal } = useLogoutStore();
+
+  const sidebarContent = (
     <div className="flex flex-col h-full bg-card-background text-text select-none border-r border-border">
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
@@ -36,7 +44,7 @@ const sidebarContent = (
           className="hidden md:flex items-center justify-center border border-input rounded-lg p-3 bg-border transition-colors text-card-text hover:bg-border/40"
         >
           {collapsed ? (
-            <ChevronRight className="w-3 h-3"/>
+            <ChevronRight className="w-3 h-3" />
           ) : (
             <ChevronLeft className="w-3 h-3" />
           )}
@@ -77,7 +85,9 @@ const sidebarContent = (
                         }
                         ${collapsed ? "justify-center" : ""}`}
                     >
-                      <Icon className={ `${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`} />
+                      <Icon
+                        className={`${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`}
+                      />
                       {!collapsed && (
                         <>
                           <span className="flex-1 text-left">{item.label}</span>
@@ -102,6 +112,7 @@ const sidebarContent = (
       {/* Logout */}
       <div className="px-2 py-4 border-t border-white/10">
         <button
+          onClick={() => openModal()}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors ${collapsed ? "justify-center" : ""}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
