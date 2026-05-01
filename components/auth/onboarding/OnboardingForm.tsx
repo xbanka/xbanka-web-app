@@ -45,9 +45,7 @@ export default function OnboardingForm() {
       </div>
 
       {/* Card */}
-      <Card>
-          {StepComp && <StepComp step={step} setStep={setStep} />}
-      </Card>
+      <Card>{StepComp && <StepComp step={step} setStep={setStep} />}</Card>
     </div>
   );
 }
