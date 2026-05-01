@@ -4,7 +4,7 @@ import { EnterAmountStep } from "./enter-amount-step";
 import { EnterPinStep } from "./enter-pin-step";
 import { ProcessingStep } from "./processing-step";
 import { SelectNetworkStep } from "./select-network-step";
-import { SuccessStep } from "./success-stepp";
+import { SuccessStep } from "./success-step";
 import {
   SendCryptoModalProps,
   SendStep,

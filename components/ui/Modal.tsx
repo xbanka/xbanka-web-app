@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 export function Modal({
   onClose,
@@ -9,6 +10,15 @@ export function Modal({
   children: React.ReactNode;
   className?: string;
 }) {
+  // useEffect(() => {
+  //   const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+  //   document.addEventListener("keydown", h);
+  //   document.body.style.overflow = "hidden";
+  //   return () => {
+  //     document.removeEventListener("keydown", h);
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [onClose]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div

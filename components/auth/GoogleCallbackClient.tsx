@@ -18,6 +18,7 @@ export default function GoogleCallbackClient() {
       return;
     }
     tokenStore.set(token);
+    localStorage.setItem("accessToken", token)
     // store token securely
     // Cookies.set("access_token", token, {
     //   expires: 7, // days
