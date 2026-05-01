@@ -114,7 +114,7 @@ export const FundFiatWalletBank = async (data: fundWalletBankPayload) => {
     accountNumber: data.accountNumber,
     callback_url: `${window.location.origin}/wallet/fund-callback`,
     bankCode: data.bankCode,
-    amount: 50
+    // amount: 50
   });
 
   return response.data;
