@@ -24,11 +24,7 @@ export function Topbar({
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-Green rounded-full" />
         </button>
         <UserDropdown
-          name="CoolJoe"
-          uid="22345678"
-          tier={2}
           avatarInitials="CJ"
-          onLogout={() => console.log("logout")}
         />
       </div>
     </header>

@@ -21,13 +21,10 @@ import {
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
+import { useLogoutStore } from "@/store/logout.store";
 
 interface UserDropdownProps {
-  name?: string;
-  uid?: string;
-  tier?: number;
   avatarInitials?: string;
-  onLogout?: () => void;
 }
 
 const TIER_COLORS: Record<number, string> = {
@@ -37,13 +34,12 @@ const TIER_COLORS: Record<number, string> = {
 };
 
 export default function UserDropdown({
-  tier = 2,
   avatarInitials = "CJ",
-  onLogout,
 }: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const userData = useUserStore((state) => state.user);
+  const { openModal } = useLogoutStore();
 
   const { data, isPending, error } = UseProfileUser();
   const {
@@ -154,7 +150,7 @@ export default function UserDropdown({
             <button
               onClick={() => {
                 setOpen(false);
-                onLogout?.();
+                openModal();
               }}
               className="font-normal leading-6 py-3 px-6 border cursor-pointer rounded-xl border-disabled-background text-center gap-3 w-full text-sm text-error-text hover:bg-border transition-colors"
             >
