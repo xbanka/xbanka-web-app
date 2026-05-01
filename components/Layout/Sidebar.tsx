@@ -70,12 +70,12 @@ export function Sidebar({
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const active = activePage === item.id;
-                const route = item.id === "dashboard" ? "" : item.id;
+                const active = pathname === `/${item.id}`;
+                const route = item.id === "dashboard" ? "/" : `/${item.id}`;
+                console.log("Active:", active, "Pathname:", pathname, "Route:", route);
                 return (
-                  <Link href={`/${route}`} key={item.id}>
+                  <Link href={route} key={item.id}>
                     <div
-                      onClick={() => navigate(item.id)}
                       title={collapsed ? item.label : undefined}
                       className={`w-full flex font-medium leading-5.5 items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors
                         ${
