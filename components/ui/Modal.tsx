@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { MouseEvent } from "react";
 
 export function Modal({
   onClose,
@@ -10,6 +10,12 @@ export function Modal({
   children: React.ReactNode;
   className?: string;
 }) {
+  const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   // useEffect(() => {
   //   const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
   //   document.addEventListener("keydown", h);
@@ -20,12 +26,17 @@ export function Modal({
   //   };
   // }, [onClose]);
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px] animate-in fade-in duration-150"
+      onClick={handleBackdropClick}
+    >
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-[2px] animate-in fade-in duration-150"
-        onClick={onClose}
-      />
-      <div className={cn("relative z-10 w-full max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150", className)}>
+        className={cn(
+          "relative z-10 w-full max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150",
+          className,
+        )}
+        onClick={(event) => event.stopPropagation()}
+      >
         {children}
       </div>
     </div>

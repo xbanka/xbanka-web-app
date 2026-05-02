@@ -1,4 +1,4 @@
-import { Bell, Menu } from "lucide-react";
+import { Bell } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import UserDropdown from "./dropDownMenu";
 import { useUserProfile } from "@/lib/services/onboarding.service";
@@ -10,12 +10,7 @@ export function Topbar({
 }) {
   return (
     <header className="flex items-center justify-between px-4 sm:px-8 py-2 border-b border-border bg-card-background shrink-0">
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="md:hidden text-card-text p-1 rounded-md hover:bg-border transition-colors"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
+      <div className="md:hidden w-7" />
       <div className="flex-1" />
       <div className="flex items-center gap-4">
         <ThemeToggle />

@@ -1,4 +1,3 @@
-import { CheckCircle } from "lucide-react";
 import { OnboardingJourneyCard } from "./onboarding-journey-card";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
@@ -66,24 +65,25 @@ export function OnboardingJourney() {
     );
   }
   return (
-    <DashboardCard className="space-y-4">
-      <div className="flex items-center justify-between">
+    <DashboardCard className="space-y-4 overflow-hidden">
+      <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <h3 className="font-medium text-card-text text-[16px] leading-6">
+          <h3 className="font-medium text-card-text text-[16px] max-sm:text-[14px] max-sm:leading-[20px] leading-6">
             Complete your Onboarding Journey
           </h3>
-          <p className="text-xs text-text">
+          <p className="text-xs text-text max-sm:hidden">
             Unlock full access to Xbanka features
           </p>
         </div>
-        <span className="text-xs text-text font-normal leading-5.5">
+        <span className="shrink-0 text-xs text-text font-normal leading-5.5 max-sm:text-[12px] max-sm:leading-6">
           {completedCount} of {totalSteps} completed
         </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
         {progress.map((s, i) => (
           <OnboardingJourneyCard
             key={i}
+            className="w-[72vw] max-w-[360px] shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
             status={s.status}
             step={s.step}
             title={s.title}

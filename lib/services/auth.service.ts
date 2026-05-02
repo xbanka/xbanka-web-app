@@ -13,6 +13,21 @@ import { logInFormData } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
 import { tokenStore } from "@/store/token.store";
 
+type TokenResponse = {
+  access_token?: string;
+  accessToken?: string;
+  token?: string;
+  data?: TokenResponse;
+};
+
+const getAccessToken = (result: TokenResponse) =>
+  result.access_token ||
+  result.accessToken ||
+  result.token ||
+  result.data?.access_token ||
+  result.data?.accessToken ||
+  result.data?.token;
+
 export const useSignup = () => {
   //   const router = useRouter();
   const mutate = useMutation({
@@ -32,23 +47,28 @@ export const useLogin = () => {
   const router = useRouter();
   const mutate = useMutation({
     mutationFn: (data: logInFormData) => login(data.email, data.password),
-    onSuccess: (res) => {
+    onSuccess: (res, variables) => {
       const result = res.data;
-      console.log(res)
-      const token = result.access_token;
-      localStorage.setItem("accessToken", token)
-      tokenStore.set(token);
-
-      console.log("token", token);
-      console.log("successful", result);
+      console.log(res);
+      const token = getAccessToken(result);
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
+        localStorage.removeItem("accessToken");
+        tokenStore.clear();
         // store temporarily
         localStorage.setItem("verifyUserId", result.userId);
         localStorage.setItem("verifyDeviceId", result.deviceId);
+        localStorage.setItem("verifyEmail", variables.email);
 
         router.push("/verify-device");
       } else {
+        if (token) {
+          localStorage.setItem("accessToken", token);
+          tokenStore.set(token);
+        }
+
+        console.log("token", token);
+        console.log("successful", result);
         router.push("/");
       }
     },
@@ -64,6 +84,12 @@ export const useVerifyDevice = () => {
   const mutate = useMutation({
     mutationFn: (data: VerifyDeviceData) => verifyDevice(data),
     onSuccess: (result) => {
+      const token = getAccessToken(result.data);
+      if (token) {
+        localStorage.setItem("accessToken", token);
+        tokenStore.set(token);
+      }
+      localStorage.removeItem("verifyEmail");
       toast.success(result.data.message);
       router.push("/");
     },

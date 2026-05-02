@@ -15,10 +15,11 @@ export function FormField({
   disabled,
   value,
   onChange,
+  className,
 }: FormFieldProps) {
   
   return (
-    <div className={cn("space-y-1")}>
+    <div className={cn("space-y-1", className)}>
       {label && (
         <Label label={label} />
       )}
