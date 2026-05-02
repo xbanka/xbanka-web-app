@@ -1,9 +1,6 @@
 "use client";
 
-import { useVerifySelfie } from "@/lib/services/onboarding.service";
-import { useUserIdStore } from "@/store/verify-id.store";
 import LivenessDetector from "../../ui/LivenessDetector";
-import { base64ToFile } from "@/lib/base64ToFile";
 
 interface Step4Props {
   setStep: (n: number) => void;
@@ -11,7 +8,6 @@ interface Step4Props {
 }
 
 function Step4({ setStep }: Step4Props) {
-
   return (
     <>
       <div className="text-center space-y-2">
@@ -26,7 +22,8 @@ function Step4({ setStep }: Step4Props) {
       </div>
       <div className="flex flex-col gap-4">
         <LivenessDetector
-          setStep={setStep}
+          onBack={() => setStep(2)}
+          onSuccess={() => setStep(4)}
           brandColor="#36b6ab"
         />
         <p className="text-xs text-text text-center">

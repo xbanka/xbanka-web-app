@@ -4,6 +4,10 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
 import { ErrorField } from "@/components/ui/field-error";
+import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
+import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
+import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
+import { useState } from "react";
 
 export function OnboardingJourney() {
   const {
@@ -11,11 +15,17 @@ export function OnboardingJourney() {
     isPending,
     error,
   } = UseVerificationStatus();
-  console.log(verificationStatus);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([1]); // step 1 (email) pre-completed
+  const [openModal, setOpenModal] = useState<"bvn" | "id-selfie" | "address" | null>(null);
   const progress = ONBOARDING_STEPS(verificationStatus?.data);
   const completedCount = progress.filter(
     (step) => step.status === "done",
   ).length;
+
+  const markDone = (stepId: number) =>
+    setCompletedSteps((prev) =>
+      prev.includes(stepId) ? prev : [...prev, stepId]
+    );
 
   const totalSteps = progress.length;
   if (isPending) {
@@ -91,6 +101,33 @@ export function OnboardingJourney() {
           />
         ))}
       </div>
+      {openModal === "bvn" && (
+        <BvnModal
+          onClose={() => setOpenModal(null)}
+          onCompleted={() => {
+            markDone(2);
+            setOpenModal(null);
+          }}
+        />
+      )}
+      {openModal === "id-selfie" && (
+        <IdSelfieModal
+          onClose={() => setOpenModal(null)}
+          onCompleted={() => {
+            markDone(3);
+            setOpenModal(null);
+          }}
+        />
+      )}
+      {openModal === "address" && (
+        <AddressModal
+          onClose={() => setOpenModal(null)}
+          onCompleted={() => {
+            markDone(4);
+            setOpenModal(null);
+          }}
+        />
+      )}
     </DashboardCard>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {
+import {
   useRef,
   useState,
   useEffect,
@@ -22,6 +22,7 @@ import {
 import { useUserIdStore } from "@/store/verify-id.store";
 import { base64ToFile } from "@/lib/base64ToFile";
 import { useRouter } from "next/navigation";
+import { IdSelfieStep } from "../Dashboard/Onboarding-Journey-Modal/id-selfie-modal";
 
 let _faceLandmarker: FaceLandmarker | null = null;
 
@@ -72,13 +73,14 @@ const TURN_RIGHT_MAX = 0;
 
 type LivenessDetectorProps = {
   brandColor?: string;
-  setStep: (n: number) => void;
+  onBack: () => void;
+  onSuccess: () => void;
 };
 
 const LivenessDetector = forwardRef<
   { startCamera: () => Promise<void> },
   LivenessDetectorProps
->(function LivenessDetector({ brandColor = "#36b6ab", setStep }, ref) {
+>(function LivenessDetector({ brandColor = "#36b6ab", onBack, onSuccess }, ref) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -113,7 +115,7 @@ const LivenessDetector = forwardRef<
     skipMutate(userId, {
       onSuccess: () => {
         setError(null);
-        setStep(4);
+        onSuccess();
       },
     });
   };
@@ -367,7 +369,7 @@ const LivenessDetector = forwardRef<
       <div className="space-y-3.25">
         <div className="flex flex-col md:flex-row gap-4 mt-1">
           <Button
-            onClick={() => setStep(2)}
+            onClick={() => onBack()}
             variant="outline"
             size="lg"
             className="flex-1"
@@ -387,7 +389,7 @@ const LivenessDetector = forwardRef<
           )}
 
           {captured && (
-            <Button size="lg" className="flex-3" onClick={() => setStep(4)}>
+            <Button size="lg" className="flex-3" onClick={() => onSuccess()}>
               {isPending ? "Verifying..." : "Next"}
             </Button>
           )}

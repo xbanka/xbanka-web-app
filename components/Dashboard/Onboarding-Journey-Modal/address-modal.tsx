@@ -1,138 +1,184 @@
-// import { Button } from "@/components/ui/button";
-// import { FormField } from "@/components/ui/FormField";
-// import { Modal } from "@/components/ui/Modal";
-// import { ModalHeader } from "@/components/ui/modal-header";
-// import { SelectField } from "@/components/ui/select";
-// import { AttachmentUpload } from "@/components/ui/UploadAttachment";
-// import { MapPin } from "lucide-react";
-// import { useState } from "react";
-// import { SuccessState } from "./success-state";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/FormField";
+import { Modal } from "@/components/ui/Modal";
+import { ModalHeader } from "@/components/ui/modal-header";
+import { SelectField } from "@/components/ui/select";
+import { AttachmentFile, AttachmentUpload } from "@/components/ui/UploadAttachment";
+import { IdCard, MapPin } from "lucide-react";
+import { useState } from "react";
+import { SuccessState } from "./success-state";
+import { useUserIdStore } from "@/store/verify-id.store";
+import { useAddressProof } from "@/lib/services/onboarding.service";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorField } from "@/components/ui/field-error";
 
-// export function AddressModal({
-//   onClose,
-//   onCompleted,
-// }: {
-//   onClose: () => void;
-//   onCompleted: () => void;
-// }) {
-//   const [step, setStep] = useState<"form" | "success">("form");
-//   const [address, setAddress] = useState("");
-//   const [landmark, setLandmark] = useState("");
-//   const [country, setCountry] = useState("");
-//   const [state, setState] = useState("");
-//   const [docType, setDocType] = useState("");
-//   const [file, setFile] = useState<File | null>(null);
-//   const [loading, setLoading] = useState(false);
- 
-//   const canSubmit =
-//     address && country && state && docType && file;
- 
-//   const handleSubmit = async () => {
-//     if (!canSubmit) return;
-//     setLoading(true);
-//     // TODO: replace with useAddressProof() hook
-//     await new Promise((r) => setTimeout(r, 1500));
-//     setLoading(false);
-//     setStep("success");
-//   };
- 
-//   return (
-//     <Modal onClose={onClose}>
-//       {step === "form" && (
-//         <>
-//           <ModalHeader
-//             title="Proof of Address"
-//             subtitle="Please provide the address exactly as it appears on your document"
-//             onClose={onClose}
-//           />
-//           <div className="px-8 py-6 space-y-4 max-h-[70vh] overflow-y-auto">
-//             <FormField
-//               label="Street Address"
-//               placeholder="Enter Address"
-//               icon={MapPin}
-//               value={address}
-//               onChange={setAddress}
-//             />
-//             <FormField
-//               label="Popular Landmark (optional)"
-//               placeholder="e.g. Behind First Bank, Lekki"
-//               icon={MapPin}
-//               value={landmark}
-//               onChange={setLandmark}
-//             />
-//             <div className="grid grid-cols-2 gap-3">
-//               <SelectField
-//                 label="Country"
-//                 placeholder="Country"
-//                 options={[
-//                   { value: "ng", label: "Nigeria" },
-//                   { value: "gh", label: "Ghana" },
-//                 ]}
-//                 value={country}
-//                 onChange={setCountry}
-//               />
-//               <SelectField
-//                 label="State"
-//                 placeholder="State"
-//                 options={[
-//                   { value: "lag", label: "Lagos" },
-//                   { value: "abj", label: "Abuja" },
-//                   { value: "ph", label: "Port Harcourt" },
-//                   { value: "kno", label: "Kano" },
-//                 ]}
-//                 value={state}
-//                 onChange={setState}
-//               />
-//             </div>
-//             <SelectField
-//               label="Document Type"
-//               placeholder="Select document of choice"
-//               options={[
-//                 { value: "utility_bill", label: "Utility Bill" },
-//                 { value: "bank_statement", label: "Bank Statement" },
-//                 { value: "tenancy_agreement", label: "Tenancy Agreement" },
-//               ]}
-//               value={docType}
-//               onChange={setDocType}
-//             />
-//             <AttachmentUpload
-//               label="Upload Document"
-//               file={file}
-//               onChange={setFile}
-//             />
- 
-//             <div className="flex gap-3 pt-1">
-//               <Button variant="outline" onClick={onClose} className="flex-1">
-//                 Cancel
-//               </Button>
-//               <Button
-//                 onClick={handleSubmit}
-//                 disabled={!canSubmit}
-//                 className="flex-[3]"
-//               >
-//                 {loading ? "" : "Submit"}
-//               </Button>
-//             </div>
-//             <button className="w-full text-center text-xs text-[#36b6ab] font-medium hover:underline">
-//               Skip for later
-//             </button>
-//           </div>
-//         </>
-//       )}
- 
-//       {step === "success" && (
-//         <SuccessState
-//           title="You're all set! 🎉"
-//           subtitle="Your address has been submitted. Your account is now fully set up and ready to use."
-//           badge="verified"
-//           ctaLabel="Go to Dashboard"
-//           onCta={() => {
-//             onClose();
-//             onCompleted();
-//           }}
-//           onClose={onClose}
-//         />
-//       )}
-//     </Modal>
-//   );
-// }
+export function AddressModal({
+  onClose,
+  onCompleted,
+}: {
+  onClose: () => void;
+  onCompleted: () => void;
+}) {
+  const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  const [step, setStep] = useState<"form" | "success">("form");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const userId = useUserIdStore((s) => s.userId);
+  const clearUserId = useUserIdStore((s) => s.clearUserId);
+  const { mutate, isPending, data, isSuccess, error } = useAddressProof();
+  const router = useRouter();
+
+  const {
+    register,
+    reset,
+    formState: { errors, isValid },
+    handleSubmit,
+  } = useForm<step5FormValues>({
+    resolver: zodResolver(step5Schema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = (data: step5FormValues) => {
+    const formData = new FormData();
+
+    formData.append("userId", userId);
+    formData.append("address", data.address);
+    formData.append("landmark", data.landmark);
+    formData.append("country", data.country);
+    formData.append("state", data.state);
+    formData.append("documentType", data.residenceDocumentType);
+
+    if (!attachments.length) return;
+
+    formData.append("proofOfAddressImage", attachments[0].file);
+
+    mutate(formData, {
+      onSuccess: () => {
+        reset();
+        setShowSuccess(true);
+        setAttachments([]);
+        clearUserId();
+      },
+    });
+  };
+
+  return (
+    <Modal onClose={onClose}>
+      {step === "form" && (
+        <>
+          <div className="text-center space-y-2">
+            <h1 className="text-[26px] font-bold text-card-text">
+              Proof of Address
+            </h1>
+            <p className="text-sm text-text leading-relaxed">
+              Please provide the address exactly as it appears on your document
+            </p>
+          </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-3"
+          >
+            <FormField
+              id="address"
+              icon={MapPin}
+              placeholder="Enter Address"
+              error={errors.address}
+              register={register}
+            />
+            <FormField
+              id="landmark"
+              icon={MapPin}
+              placeholder="Popular Landmark (optional)"
+              register={register}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <SelectField
+                id="country"
+                placeholder="Country of Residence"
+                error={errors.country}
+                options={[
+                  { value: "ng", label: "Nigeria" },
+                  { value: "gh", label: "Ghana" },
+                ]}
+                register={register}
+              />
+              <SelectField
+                id="state"
+                placeholder="State"
+                error={errors.state}
+                options={[
+                  { value: "lag", label: "Lagos" },
+                  { value: "abj", label: "Abuja" },
+                  { value: "ph", label: "Port Harcourt" },
+                  { value: "kno", label: "Kano" },
+                ]}
+                register={register}
+              />
+            </div>
+            <SelectField
+              id="residenceDocumentType"
+              icon={IdCard}
+              placeholder="Select document of choice"
+              error={errors.residenceDocumentType}
+              options={[
+                { value: "utility_bill", label: "Utility Bill" },
+                { value: "bank_statement", label: "Bank Statement" },
+                { value: "tenancy_agreement", label: "Tenancy Agreement" },
+              ]}
+              register={register}
+            />
+            <AttachmentUpload value={attachments} onChange={setAttachments} />
+            <ErrorField message={error?.message} />
+            <div className="space-y-3.25">
+              <div className="flex flex-col md:flex-row gap-4 mt-1">
+                <Button
+                  onClick={() => {}}
+                  variant="outline"
+                  size="lg"
+                  className="flex-1"
+                >
+                  Back
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-3"
+                  disabled={!isValid || isPending || attachments.length === 0}
+                  variant={
+                    isPending || !isValid || attachments.length === 0
+                      ? "disabled"
+                      : "default"
+                  }
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </div>
+              {/* <h1
+                onClick={handleSkip}
+                className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
+              >
+                {skipPending ? "Skipping..." : "Skip for later"}
+              </h1> */}
+            </div>
+          </form>
+        </>
+      )}
+
+      {step === "success" && (
+        <SuccessState
+          title="You're all set! 🎉"
+          subtitle="Your address has been submitted. Your account is now fully set up and ready to use."
+          badge="verified"
+          ctaLabel="Go to Dashboard"
+          onCta={() => {
+            onClose();
+            onCompleted();
+          }}
+          onClose={onClose}
+        />
+      )}
+    </Modal>
+  );
+}
