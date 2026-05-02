@@ -21,7 +21,11 @@ function Step4({ setStep }: Step4Props) {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <LivenessDetector setStep={setStep} brandColor="#36b6ab" />
+        <LivenessDetector
+          onBack={() => setStep(2)}
+          onSuccess={() => setStep(4)}
+          brandColor="#36b6ab"
+        />
         <p className="text-xs text-text text-center">
           Good lighting. Neutral background. No hats or glasses.
         </p>

@@ -18,7 +18,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField } from "@/components/ui/field-error";
 import LivenessDetector from "@/components/ui/LivenessDetector";
 
-export type IdSelfieStep = "id-form" | "id-success" | "selfie" | "selfie-success";
+export type IdSelfieStep =
+  | "id-form"
+  | "id-success"
+  | "selfie"
+  | "selfie-success";
 
 export function IdSelfieModal({
   onClose,
@@ -178,7 +182,11 @@ export function IdSelfieModal({
             </p>
           </div>
           <div className="flex flex-col gap-4">
-            <LivenessDetector setStep={setStep} brandColor="#36b6ab" />
+            <LivenessDetector
+              onBack={() => setStep("id-success")}
+              onSuccess={() => setStep("selfie-success")}
+              brandColor="#36b6ab"
+            />
             <p className="text-xs text-text text-center">
               Good lighting. Neutral background. No hats or glasses.
             </p>
