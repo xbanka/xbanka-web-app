@@ -16,7 +16,12 @@ export function ModalHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center justify-between gap-2 px-10 py-6", className)}>
+    <div
+      className={cn(
+        "flex items-center justify-between gap-2 px-10 py-6",
+        className,
+      )}
+    >
       <div className="flex items-center gap-4">
         {onBack && (
           <button

@@ -1,8 +1,31 @@
 import { NAV } from "@/lib/nav";
 import { useLogoutStore } from "@/store/logout.store";
-import { ChevronLeft, ChevronRight, LogOut, X } from "lucide-react";
+import {
+  Bitcoin,
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  MoreHorizontal,
+  User,
+  Wallet,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+const BOTTOM_NAV_ITEMS = [
+  { id: "dashboard", label: "Home", icon: LayoutDashboard, route: "/" },
+  { id: "wallet", label: "Wallet", icon: Wallet, route: "/wallet" },
+  { id: "crypto", label: "Crypto", icon: Bitcoin, route: "/crypto" },
+  { id: "account", label: "Account", icon: User, route: "/account" },
+];
+
+const BOTTOM_NAV_IDS = new Set(["dashboard", "wallet", "crypto", "account"]);
+const MORE_NAV_ITEMS = NAV.flatMap((s) => s.items).filter(
+  (item) => !BOTTOM_NAV_IDS.has(item.id),
+);
 
 export function Sidebar({
   activePage,
@@ -20,6 +43,8 @@ export function Sidebar({
   setMobileOpen: (v: boolean) => void;
 }) {
   const pathname = usePathname();
+  const [showMore, setShowMore] = useState(false);
+
   const navigate = (id: PageId) => {
     setActivePage(id);
     setMobileOpen(false);
@@ -72,7 +97,14 @@ export function Sidebar({
                 const Icon = item.icon;
                 const active = pathname === `/${item.id}`;
                 const route = item.id === "dashboard" ? "/" : `/${item.id}`;
-                console.log("Active:", active, "Pathname:", pathname, "Route:", route);
+                console.log(
+                  "Active:",
+                  active,
+                  "Pathname:",
+                  pathname,
+                  "Route:",
+                  route,
+                );
                 return (
                   <Link href={route} key={item.id}>
                     <div
@@ -131,7 +163,7 @@ export function Sidebar({
         {sidebarContent}
       </aside>
 
-      {/* Mobile overlay */}
+      {/* Mobile overlay (opened via "More") */}
       {mobileOpen && (
         <>
           <div
@@ -143,6 +175,80 @@ export function Sidebar({
           </aside>
         </>
       )}
+
+      {/* More panel — card grid that slides up above bottom nav */}
+      <div
+        className={`fixed inset-x-0 z-20 md:hidden bg-card-background border-t border-border transition-all duration-300 ease-in-out ${
+          showMore
+            ? "bottom-16 opacity-100 translate-y-0"
+            : "bottom-16 opacity-0 pointer-events-none translate-y-4"
+        }`}
+      >
+        {/* Panel header */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <span className="text-xs font-semibold tracking-widest text-text uppercase">
+            More
+          </span>
+          <button
+            onClick={() => setShowMore(false)}
+            className="flex items-center gap-1 text-[11px] font-medium text-card-text hover:text-text transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+            View Less
+          </button>
+        </div>
+
+        {/* Grid of page cards */}
+        <div className="grid grid-cols-4 gap-2 px-4 pb-4">
+          {MORE_NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const route = `/${item.id}`;
+            const active = pathname === route;
+            return (
+              <Link
+                key={item.id}
+                href={route}
+                onClick={() => setShowMore(false)}
+                className={`flex flex-col items-center gap-2 py-3 px-1 rounded-xl transition-colors ${
+                  active
+                    ? "bg-border text-Green"
+                    : "bg-border/30 text-card-text hover:bg-border/60"
+                }`}
+              >
+                <Icon className="w-5 h-5 shrink-0" />
+                <span className="text-[9px] font-medium text-center leading-tight">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="fixed bottom-0 inset-x-0 z-30 md:hidden flex items-center justify-around bg-card-background border-t border-border h-16 px-2">
+        {BOTTOM_NAV_ITEMS.map(({ id, label, icon: Icon, route }) => {
+          const active = pathname === route;
+          return (
+            <Link
+              key={id}
+              href={route}
+              onClick={() => setShowMore(false)}
+              className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${active ? "text-Green" : "text-card-text"}`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{label}</span>
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => setShowMore((v) => !v)}
+          className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${showMore ? "text-Green" : "text-card-text"}`}
+        >
+          <MoreHorizontal className="w-5 h-5" />
+          <span className="text-[10px] font-medium">More</span>
+        </button>
+      </nav>
     </>
   );
 }

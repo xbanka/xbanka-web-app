@@ -1,11 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Download, Eye, EyeOff, RefreshCcw, Send } from "lucide-react";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
-import { DepositModal } from "./deposit-modal";
 import { SendCryptoModal } from "../SendCryptoModal/send-crypto-modal";
 import { DepositSidebar } from "./deposit-crypto-sidebar";
 
@@ -14,16 +13,16 @@ export const CryptoBalance = () => {
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
-  const { data, error, isPending } = UseGetCryptoWallet();
+  const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 
   const latestWallet = wallets[0];
   return (
     <div>
-      <DashboardCard className="border-[#0F766E] bg-[#042F2E]">
+      <DashboardCard className="border-[#0F766E] bg-[#042F2E] max-sm:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-white/60 text-xs mb-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-white/60 text-xs mb-2 max-sm:text-sm">
               <span>Total Crypto Value</span>
               <button
                 onClick={() => setHidden((h) => !h)}
@@ -36,8 +35,8 @@ export const CryptoBalance = () => {
                 )}
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <p className="text-3xl sm:text-4xl font-bold">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <p className="break-all text-3xl sm:text-4xl font-bold max-sm:text-[32px] max-sm:leading-10">
                 {hidden
                   ? "•••••••"
                   : view === "NGN"
@@ -47,13 +46,13 @@ export const CryptoBalance = () => {
               <select
                 value={view}
                 onChange={(e) => setView(e.target.value as "NGN" | "CRYPTO")}
-                className="bg-transparent text-white/60 text-xs outline-none"
+                className="bg-transparent text-white/60 text-xs outline-none max-sm:text-sm"
               >
                 <option value="NGN">NGN</option>
                 <option value="CRYPTO">USDT</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <span className="text-text text-xs font-normal leading-4.5">
                 ≈ ${latestWallet?.balance ?? 0}
               </span>
@@ -63,31 +62,31 @@ export const CryptoBalance = () => {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center">
             <Button
               size={"sm"}
               onClick={() => setAddFundsOpen(true)}
-              className="flex items-center transition-colors"
+              className="flex h-12 min-w-0 flex     items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
-              <Download className="w-5 h-5" />
-              Deposit
+              <Download className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="truncate font-medium">Deposit</span>
             </Button>
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center transition-colors"
+              className="flex h-12 min-w-0 flex    items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
               onClick={() => setSendCrptoModalOpen(true)}
             >
-              <Send className="w-5 h-5" />
-              Send
+              <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="truncate font-medium">Send</span>
             </Button>
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center transition-colors"
+              className="flex h-12 min-w-0 flex   items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
-              <RefreshCcw className="w-5 h-5" />
-              Convert
+              <RefreshCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="truncate font-medium">Convert</span>
             </Button>
           </div>
         </div>
