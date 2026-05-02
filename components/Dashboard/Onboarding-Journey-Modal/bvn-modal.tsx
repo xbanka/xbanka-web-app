@@ -1,110 +1,144 @@
-// import { Modal } from "@/components/ui/Modal";
-// import { SuccessState } from "./success-state";
-// import { ModalHeader } from "@/components/ui/modal-header";
-// import { IdCard, Shield } from "lucide-react";
-// import { FormField } from "@/components/ui/FormField";
-// import { Button } from "@/components/ui/button";
-// import { useState } from "react";
+import { Modal } from "@/components/ui/Modal";
+import { SuccessState } from "./success-state";
+import { ModalHeader } from "@/components/ui/modal-header";
+import { IdCard, Shield } from "lucide-react";
+import { FormField } from "@/components/ui/FormField";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useVerifyBvn } from "@/lib/services/onboarding.service";
+import { step2FormValues, step2Schema } from "@/lib/schema/onboarding-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserIdStore } from "@/store/verify-id.store";
+import { useForm } from "react-hook-form";
+import { ErrorField } from "@/components/ui/field-error";
 
-// export function BvnModal({
-//   onClose,
-//   onCompleted,
-// }: {
-//   onClose: () => void;
-//   onCompleted: () => void;
-// }) {
-//   const [bvn, setBvn] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [step, setStep] = useState<"form" | "success">("form");
-//   const [successType, setSuccessType] = useState<"verified" | "review">(
-//     "verified"
-//   );
- 
-//   const handleSubmit = async () => {
-//     if (bvn.length < 11) return;
-//     setLoading(true);
-//     // TODO: replace simulation with your real hook
-//     // const { mutate: verifyBvn } = useVerifyBvn()
-//     // verifyBvn({ userId, bvn }, { onSuccess: () => setStep("success") })
-//     await new Promise((r) => setTimeout(r, 1500));
-//     setLoading(false);
-//     // simulate: sometimes "under review"
-//     setSuccessType(Math.random() > 0.5 ? "verified" : "review");
-//     setStep("success");
-//   };
- 
-//   return (
-//     <Modal onClose={onClose}>
-//       {step === "form" && (
-//         <>
-//           <ModalHeader
-//             title="Verify Your BVN"
-//             subtitle="Your BVN helps us confirm your name and date of birth."
-//             onClose={onClose}
-//           />
-//           <div className="px-8 py-6 space-y-5">
-//             <div className="bg-[#141820] border border-[#2a3040] rounded-xl p-4 flex gap-3">
-//               <Shield className="w-4 h-4 text-[#36b6ab] mt-0.5 flex-shrink-0" />
-//               <p className="text-xs text-[#8b95a8] leading-relaxed">
-//                 We&apos;ll never share your BVN with anyone. It&apos;s only
-//                 used to confirm your identity.
-//               </p>
-//             </div>
- 
-//             <FormField
-//               label="Bank Verification Number (BVN)"
-//               placeholder="Enter your 11-digit BVN"
-//               icon={IdCard}
-//               value={bvn}
-//               onChange={setBvn}
-//               error={
-//                 bvn.length > 0 && bvn.length < 11
-//                   ? "BVN must be 11 digits"
-//                   : undefined
-//               }
-//             />
- 
-//             <div className="flex gap-3 pt-1">
-//               <Button variant="outline" onClick={onClose} className="flex-1">
-//                 Cancel
-//               </Button>
-//               <Button
-//                 onClick={handleSubmit}
-//                 disabled={bvn.length < 11}
-//                 className="flex-[3]"
-//               >
-//                 {loading ? "" : "Continue"}
-//               </Button>
-//             </div>
- 
-//             <button className="w-full text-center text-xs text-[#36b6ab] font-medium hover:underline">
-//               Skip for later
-//             </button>
-//           </div>
-//         </>
-//       )}
- 
-//       {step === "success" && (
-//         <SuccessState
-//           title={
-//             successType === "verified"
-//               ? "BVN Verified! ✅"
-//               : "BVN Under Review"
-//           }
-//           subtitle={
-//             successType === "verified"
-//               ? "Your BVN has been successfully verified. You can now proceed to the next step."
-//               : "We're reviewing your BVN. This usually takes a few minutes. You'll be notified once done."
-//           }
-//           badge={successType}
-//           ctaLabel="Move to ID & Selfie"
-//           onCta={() => {
-//             onClose();
-//             onCompleted();
-//           }}
-//           onClose={onClose}
-//         />
-//       )}
-//     </Modal>
-//   );
-// }
+export function BvnModal({
+  onClose,
+  onCompleted,
+}: {
+  onClose: () => void;
+  onCompleted: () => void;
+}) {
+  const [bvn, setBvn] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"form" | "success">("form");
+  const [successType, setSuccessType] = useState<"verified" | "review">(
+    "verified",
+  );
+
+  const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
+    // const {
+    //   isPending: skipPending,
+    //   error: skipError,
+    //   mutate: skipMutate,
+    // } = useSkipStep();
+  
+    const userId = useUserIdStore((s) => s.userId);
+  
+    const {
+      register,
+      reset,
+      formState: { errors, isValid },
+      handleSubmit,
+    } = useForm<step2FormValues>({
+      resolver: zodResolver(step2Schema),
+      mode: "onTouched",
+    });
+  
+    const onSubmit = (data: step2FormValues) => {
+      const payload = { userId, bvn: data.bvn };
+      verifyBvn(payload, {
+        onSuccess: () => {
+          reset();
+          setStep("success");
+        },
+      });
+    };
+  
+    // const handleSkip = () => {
+    //   skipMutate(userId, {
+    //     onSuccess: () => {
+    //       reset();
+    //       setStep(2);
+    //     },
+    //   });
+    // };
+
+  return (
+    <Modal onClose={onClose}>
+      {step === "form" && (
+        <>
+          <div className="text-center space-y-2">
+            <h1 className="text-[26px] font-bold text-card-text">
+              Verify Your BVN
+            </h1>
+            <p className="text-sm text-text leading-relaxed">
+              Your BVN helps us confirm your name and date of birth. We'll never
+              share it with anyone.
+            </p>
+          </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-3"
+          >
+            <FormField
+              id="bvn"
+              icon={IdCard}
+              placeholder="Enter BVN"
+              error={errors.bvn}
+              register={register}
+            />
+            <ErrorField message={error?.message} />
+            <div className="space-y-3.25">
+              <div className="flex flex-col md:flex-row gap-4 mt-1">
+                <Button
+                  onClick={() => {}}
+                  variant="outline"
+                  size="lg"
+                  className="flex-1"
+                >
+                  Back
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-3"
+                  disabled={!isValid || isPending}
+                  variant={isPending || !isValid ? "disabled" : "default"}
+                  type="submit"
+                >
+                  {isPending ? "Verifying..." : "Continue"}
+                </Button>
+              </div>
+              {/* <h1
+                onClick={handleSkip}
+                className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
+              >
+                {skipPending ? "Skipping..." : "Skip for later"}
+              </h1> */}
+            </div>
+          </form>
+        </>
+      )}
+
+      {step === "success" && (
+        <SuccessState
+          title={
+            successType === "verified" ? "BVN Verified! ✅" : "BVN Under Review"
+          }
+          subtitle={
+            successType === "verified"
+              ? "Your BVN has been successfully verified. You can now proceed to the next step."
+              : "We're reviewing your BVN. This usually takes a few minutes. You'll be notified once done."
+          }
+          badge={successType}
+          ctaLabel="Move to ID & Selfie"
+          onCta={() => {
+            onClose();
+            onCompleted();
+          }}
+          onClose={onClose}
+        />
+      )}
+    </Modal>
+  );
+}

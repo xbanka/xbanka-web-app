@@ -22,7 +22,6 @@ function Step3({ setStep }: Step3Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending, error } = useIdentity();
   const userId = useUserIdStore((s) => s.userId);
-  const router = useRouter();
   const {
     isPending: skipPending,
     error: skipError,
