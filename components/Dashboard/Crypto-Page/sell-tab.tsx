@@ -162,7 +162,7 @@ export function SellTab() {
       <div className="gap-4">
         <div className="space-y-3">
           <AmountRow
-            label="You Receive"
+            label="You Sell"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={SELL_SOURCE_OPTIONS}
@@ -174,7 +174,7 @@ export function SellTab() {
             Min: 15 USDT • Max: 20,000 USDT
           </p>
           <AmountRow
-            label="You Pay"
+            label="You Receive"
             available="₦40,000"
             readOnly
             value={
