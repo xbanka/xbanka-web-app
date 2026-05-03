@@ -140,7 +140,7 @@ export function BuyTab() {
       <div className="gap-4">
         <div className="space-y-6">
           <AmountRow
-            label="You Pay"
+            label="You Buy"
             available="₦40,000"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -150,7 +150,7 @@ export function BuyTab() {
           />
           <div className="space-y-3">
             <AmountRow
-              label="You Receive"
+              label="You Pay"
               value={
                 convertData?.netPayout
                   ? convertData.netPayout.toString()
