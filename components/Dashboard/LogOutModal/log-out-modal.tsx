@@ -21,15 +21,25 @@ export const Logout = ({ onClose }: LogoutProps) => {
   return (
     <Modal className="" onClose={onClose}>
       <FormHeader
-        className="space-y-2"
+        className="space-y-2 py-12"
         title="Are you sure you want to logout?"
         subtitle="You will be logged out of your account"
       />
       <div className="flex flex-col md:flex-row gap-4 mt-1">
-        <Button variant="outline" onClick={onClose} size="lg" className="flex-1">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          size="lg"
+          className="flex-1"
+        >
           Cancel
         </Button>
-        <Button onClick={handleLogout} size="lg" className="flex-3" type="submit">
+        <Button
+          onClick={handleLogout}
+          size="lg"
+          className="flex-3"
+          type="submit"
+        >
           Logout
         </Button>
       </div>
