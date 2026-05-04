@@ -38,7 +38,7 @@ export function BuyTab() {
     mutate: RateConversionMutate,
     isPending: RateConversionPending,
   } = useGetRateConversion();
-  console.log("RateConversionData", RateConversionData)
+  console.log("RateConversionData", RateConversionData);
   const {
     data: groupedPairData,
     error: groupedPairError,
@@ -152,9 +152,7 @@ export function BuyTab() {
             <AmountRow
               label="You Pay"
               value={
-                convertData?.netPayout
-                  ? convertData.netPayout.toString()
-                  : ""
+                convertData?.netPayout ? convertData.netPayout.toString() : ""
               }
               readOnly
               OPTIONS={TARGET_OPTIONS}
@@ -177,6 +175,7 @@ export function BuyTab() {
             <Button
               onClick={handleQuoteModal}
               className="w-full transition-colors"
+              disabled={!amount || Number(amount) <= 0}
             >
               Get Quote
             </Button>
@@ -194,25 +193,27 @@ export function BuyTab() {
         </div>
       </div>
 
-      <ConfirmModal
-        open={confirmOpen}
-        handleReset={handleReset}
-        mode="BUY"
-        payAmount={Number(amount || 0)}
-        paySymbol={sourceCurrency}
-        receiveAmount={`${quoteData?.netPayout} ${targetCurrency}`}
-        receiveSymbol={targetCurrency}
-        rate={
-          quoteData
-            ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
-            : ""
-        }
-        fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
-        onRefreshQuote={refetchQuote}
-        quoteId={quoteData?.quoteId || ""}
-        sourceCurrency={sourceCurrency}
-        targetCurrency={targetCurrency}
-      />
+      {quoteData?.netPayout && (
+        <ConfirmModal
+          open={confirmOpen}
+          handleReset={handleReset}
+          mode="BUY"
+          payAmount={Number(amount || 0)}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          receiveSymbol={targetCurrency}
+          rate={
+            quoteData
+              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              : ""
+          }
+          fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
+          onRefreshQuote={refetchQuote}
+          quoteId={quoteData?.quoteId || ""}
+          sourceCurrency={sourceCurrency}
+          targetCurrency={targetCurrency}
+        />
+      )}
     </>
   );
 }

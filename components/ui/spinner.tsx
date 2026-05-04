@@ -25,7 +25,7 @@ export function Spinner({
           r={r}
           fill="none"
           stroke="currentColor"
-          strokeWidth={size * 0.05}
+          strokeWidth={size * 0.03}
           className="text-text"
         />
         {/* Arc */}
@@ -35,7 +35,7 @@ export function Spinner({
           r={r}
           fill="none"
           stroke="currentColor"
-          strokeWidth={size * 0.05}
+          strokeWidth={size * 0.03}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * 0.75}

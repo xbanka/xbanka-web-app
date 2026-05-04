@@ -37,6 +37,7 @@ export function ConfirmModal({
 }) {
   const [step, setStep] = useState<CryptoStep>("confirm");
   const [result, setResult] = useState<ConversionResult | null>(null);
+  const [ processingError, setProcessingError] = useState<string | null>(null);
  
   // Reset internal step every time the modal is opened/closed
   useEffect(() => {
@@ -102,7 +103,10 @@ export function ConfirmModal({
           setResult(data);
           setStep("success");
         }}
-        onError={() => setStep("failed")}
+        onError={(error) => {
+          setProcessingError(error.message);
+          setStep("failed");
+        }}
       />
     );
   }
@@ -111,13 +115,14 @@ export function ConfirmModal({
     return (
       <SuccessStep
         mode={mode}
-        payAmount={String(payAmount)}
+        payAmount={String(result?.youPaid ?? payAmount)}
         paySymbol={paySymbol}
-        receiveAmount={receiveAmount}
+        receiveAmount={result?.youReceived ?? receiveAmount}
         receiveSymbol={receiveSymbol}
-        rate={rate}
+        rate={result?.rate || "N0.00"}
         fee={fee}
-        result={result}
+        dateTime={result?.dateTime}
+        reference={result?.transactionId || "—"}
         onDone={handleReset}
         onRepeat={() => {
           handleReset();
@@ -132,6 +137,7 @@ export function ConfirmModal({
         mode={mode}
         onClose={handleReset}
         onRetry={() => setStep("processing")}
+        errorMessage={processingError ? `${processingError}` : ""}
       />
     );
   }
