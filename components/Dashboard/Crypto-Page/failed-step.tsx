@@ -1,36 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
-import { RefreshCcw, XCircle } from "lucide-react";
+import { RefreshCcw, X } from "lucide-react";
 
 export function FailedStep({
   mode,
   onClose,
   onRetry,
+  errorMessage
 }: {
   mode: "BUY" | "SELL";
   onClose: () => void;
   onRetry: () => void;
+  errorMessage?: string;
 }) {
   return (
-    <Modal className="pb-10 px-10 pt-6" onClose={onClose}>
+    <Modal className="p-10 space-y-0" onClose={onClose}>
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onClose} />
       </div>
  
-      <div className="flex flex-col items-center gap-5 text-center">
+      <div className="flex flex-col items-center gap-5 text-center space-y-6">
         {/* Error icon */}
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-          <XCircle className="w-8 h-8 text-red-500" />
+        <div className="w-15 h-15 rounded-full bg-[#390201] border-4 border-error-border-button flex items-center justify-center">
+          <X className="w-8 h-8 text-error-text" />
         </div>
  
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text">
             {mode === "BUY" ? "Purchase" : "Sale"} failed
           </h3>
           <p className="text-sm font-normal leading-6 text-text">
-            We couldn't complete your {mode === "BUY" ? "purchase" : "sale"}.
-            Your balance has not been affected.
+            We couldn't complete your {mode === "BUY" ? "purchase" : "sale"}.<br />
+            {errorMessage}
           </p>
         </div>
  
