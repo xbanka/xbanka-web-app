@@ -2,10 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AmountRow } from "./amount-input";
 import { ConfirmModal } from "./confirm-modal";
-import { RecentTransactions } from "./recent-transactions";
-import { HowTo } from "./steps";
 import { RefreshCcw } from "lucide-react";
-import { useForm } from "react-hook-form";
 import {
   useExecuteConversion,
   useGetCurrency,
@@ -30,8 +27,8 @@ export function SellTab() {
   const [receiveAmount, setReceiveAmount] = useState("");
   const [error, setError] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [sourceCurrency, setSourceCurrency] = useState("NGNX");
-  const [targetCurrency, setTargetCurrency] = useState("USDT");
+  const [sourceCurrency, setSourceCurrency] = useState("USDT");
+  const [targetCurrency, setTargetCurrency] = useState("NGNX");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
 
@@ -167,8 +164,8 @@ export function SellTab() {
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={SELL_SOURCE_OPTIONS}
             currencyId
-            selectedCurrency={targetCurrency}
-            onCurrencyChange={setTargetCurrency}
+            selectedCurrency={sourceCurrency}
+            onCurrencyChange={setSourceCurrency}
           />
           <p className="text-[10px] text-text px-1">
             Min: 15 USDT • Max: 20,000 USDT
@@ -184,8 +181,8 @@ export function SellTab() {
             }
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={FIAT_OPTIONS}
-            selectedCurrency={sourceCurrency}
-            onCurrencyChange={setSourceCurrency}
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
           />
 
           {RateConversionData?.data?.estimatedPrice && (
@@ -201,6 +198,7 @@ export function SellTab() {
           <Button
             onClick={handleQuoteModal}
             className="w-full transition-colors"
+            disabled={!amount || Number(amount) <= 0}
           >
             Get Quote
           </Button>
@@ -217,13 +215,13 @@ export function SellTab() {
         </div>
       </div>
 
-      <ConfirmModal
+      { quoteData?.netPayout && <ConfirmModal
         open={confirmOpen}
         handleReset={handleReset}
         mode="SELL"
         payAmount={Number(amount || 0)}
         paySymbol={sourceCurrency}
-        receiveAmount={`${quoteData?.netPayout} ${targetCurrency}`}
+        receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
         receiveSymbol={targetCurrency}
         rate={
           quoteData
@@ -235,7 +233,7 @@ export function SellTab() {
         quoteId={quoteData?.quoteId || ""}
         sourceCurrency={sourceCurrency}
         targetCurrency={targetCurrency}
-      />
+      />}
     </>
   );
 }

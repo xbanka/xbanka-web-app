@@ -26,10 +26,10 @@ export function ProcessingStep({
   sourceCurrency: string;
   targetCurrency: string;
   onSuccess: (data: ConversionResult) => void;
-  onError: () => void;
+  onError: (error: Error) => void;
 }) {
   const { mutate, isPending } = useExecuteConversion();
- 
+
   useEffect(() => {
     if (!quoteId) return;
     mutate(
@@ -45,49 +45,34 @@ export function ProcessingStep({
           onSuccess({
             youPaid: payAmount,
             youReceived: receiveAmount,
-            rate: res?.data?.rate,
+            rate: res?.data?.rate ?? "N0.00",
             fee: res?.data?.fee ?? "₦0.00",
             dateTime: res?.data?.createdAt,
-            transactionId: res?.data?.reference ?? res?.data?.transactionId,
+            transactionId: res?.data?.reference,
           });
         },
-        onError: () => {
-          onError();
+        onError: (error) => {
+          console.log("Conversion error", error.message);
+          onError(error);
         },
-      }
+      },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteId]);
- 
+
   return (
-    <Modal className="pt-6 space-y-6" onClose={() => {}}>
-      <div className="flex flex-col items-center gap-6 text-center px-6 pb-10">
-        <Spinner icon={LucideArrowLeftRight} size={52} />
- 
-        <div className="space-y-2">
-          <h3 className="text-2xl font-semibold leading-8 text-card-text">
-            Processing your {mode === "BUY" ? "purchase" : "sale"}…
-          </h3>
-          <p className="text-base font-normal leading-6 text-text">
-            We are completing your order. Please don't close this window.
-          </p>
-        </div>
- 
-        {/* Mini summary */}
-        <div className="w-full bg-background border border-border rounded-xl p-4 space-y-3 text-left">
-          <div className="flex justify-between text-xs">
-            <span className="text-text">
-              {mode === "BUY" ? "You Pay" : "You Sell"}
-            </span>
-            <span className="font-semibold text-card-text">
-              {payAmount} {paySymbol}
-            </span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-text">You Receive</span>
-            <span className="font-semibold text-Green">{receiveAmount}</span>
-          </div>
-        </div>
+    <Modal className="space-y-6 text-center p-10" onClose={() => {}}>
+      <div className="flex justify-center">
+        <Spinner icon={LucideArrowLeftRight} size={80} />
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-2xl font-semibold leading-8 text-card-text">
+          Processing your {mode === "BUY" ? "purchase" : "sale"}…
+        </h3>
+        <p className="text-base font-normal leading-6 text-text">
+          We are completing your order. Please don't close this window.
+        </p>
       </div>
     </Modal>
   );
