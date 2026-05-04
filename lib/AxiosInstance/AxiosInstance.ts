@@ -61,6 +61,7 @@ AxiosInstance.interceptors.response.use(
         const newAccessToken = refreshResponse.data?.access_token;
         if (newAccessToken) {
           tokenStore.set(newAccessToken);
+          localStorage.setItem("accessToken", newAccessToken);
           // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           originalRequest.headers = {
             ...(originalRequest.headers || {}),
@@ -71,6 +72,7 @@ AxiosInstance.interceptors.response.use(
       } catch (refreshError) {
         tokenStore.clear();
         if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
           window.location.href = "/sign-in";
         }
         return Promise.reject(refreshError);
