@@ -81,25 +81,24 @@ export const DepositSidebar = ({
 
       {/* sidebar */}
       <div
-        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background border-8 border-border rounded-tl-[20px] rounded-bl-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* your content */}
-        <div className="space-y-8">
-          <div className="py-6 px-10 flex items-start justify-between border-b border-input">
-            <div className="">
-              <h1 className="font-semibold leading-8 text-2xl text-card-text">
-                Deposit Crypto
-              </h1>
-              <p className="text-[16px] font-normal text-text">
-                Protect your account with a PIN
-              </p>
-            </div>
-            <CloseBtn onClose={onClose} />
+        <div className="py-6 px-8 flex items-start justify-between border-b border-input">
+          <div className="">
+            <h1 className="font-semibold leading-8 text-2xl text-card-text">
+              Deposit Crypto
+            </h1>
+            <p className="text-[16px] font-normal text-text">
+              Protect your account with a PIN
+            </p>
           </div>
-
-          <div className="px-10 space-y-6 overflow-y-auto">
+          <CloseBtn onClose={onClose} />
+        </div>
+        <div className="space-y-8 py-6">
+          <div className="px-8 space-y-6 overflow-y-auto">
             {/* Currency */}
             <div>
               <SelectFieldWithValue
@@ -153,7 +152,7 @@ export const DepositSidebar = ({
             {error && <ErrorField message={error.message} />}
           </div>
 
-          <div className="px-10 space-y-4">
+          <div className="px-8 space-y-4">
             <h1 className="font-medium text-[12px] leading-5 text-card-text">
               Deposit address
             </h1>
@@ -167,7 +166,7 @@ export const DepositSidebar = ({
                     fgColor="#000000"
                   />
                 ) : (
-                  <div className="w-25 h-25 bg-gray-200 animate-pulse rounded" />
+                  <div className="w-25 h-25 bg-border animate-pulse rounded" />
                 )}
               </div>
               <div className="flex-1 min-w-0 space-y-1">
@@ -177,10 +176,10 @@ export const DepositSidebar = ({
                 <div className="flex items-center gap-2 w-full max-w-full">
                   <div className="w-full min-w-0 flex items-center h-10 py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text truncate">
                     <span className="truncate block w-full">
-                    {isLoading
-                      ? "Generating address..."
-                      : addressData?.data.address || "No address available"}
-                      </span>
+                      {isLoading
+                        ? "Generating address..."
+                        : addressData?.data.address || "No address available"}
+                    </span>
                   </div>
                   <button
                     onClick={handleCopy}

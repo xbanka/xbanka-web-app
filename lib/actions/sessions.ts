@@ -1,4 +1,5 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
+import { RevokeSessionsPayload } from "../types/sessions-types";
 
 export const getActiveSessions = async () => {
   const response = await AxiosInstance.get("/security/sessions");
@@ -6,8 +7,8 @@ export const getActiveSessions = async () => {
   return response.data;
 };
 
-export const RevokeSessions = async () => {
-  const response = await AxiosInstance.post("/security/sessions/revoke");
+export const RevokeSessions = async (payload: RevokeSessionsPayload) => {
+  const response = await AxiosInstance.post("/security/sessions/revoke", payload);
 
   return response.data;
 };
@@ -18,8 +19,8 @@ export const GetRegisteredDevices = async () => {
   return response.data;
 };
 
-export const RemoveDevice = async () => {
-  const response = await AxiosInstance.post("/security/devices/remove");
+export const RemoveDevice = async (payload: RevokeSessionsPayload) => {
+  const response = await AxiosInstance.post("/security/devices/remove", payload);
 
   return {
     success: true,

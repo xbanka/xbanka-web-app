@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { CurrencyOption } from "@/lib/crypto";
@@ -18,11 +18,25 @@ export const CryptoSelectField = ({
   currencyId
 }: CryptoSelectFieldProps) => {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const selected = options.find((o: any) => o.value === value) || options[0];
 
   return (
-    <div className="relative w-full">
+    <div ref={containerRef} className="relative w-full">
       {/* Selected */}
       <button
         onClick={() => setOpen((p) => !p)}
@@ -39,7 +53,7 @@ export const CryptoSelectField = ({
 
       {/* Dropdown */}
       {currencyId &&open && (
-        <div className="absolute z-50 mt-2 w-full bg-card-background border border-border rounded-lg shadow-lg">
+        <div className="absolute z-50 mt-2 w-full bg-card-background border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {options.map((o: any) => (
             <div
               key={o.value}
