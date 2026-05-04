@@ -7,8 +7,10 @@ export const getActiveSessions = async () => {
   return response.data;
 };
 
-export const RevokeSessions = async (payload: RevokeSessionsPayload) => {
-  const response = await AxiosInstance.post("/security/sessions/revoke", payload);
+export const RevokeSessions = async (id: string) => {
+  const response = await AxiosInstance.post("/security/sessions/revoke", {
+    sessionId: id,
+  });
 
   return response.data;
 };
@@ -19,8 +21,11 @@ export const GetRegisteredDevices = async () => {
   return response.data;
 };
 
-export const RemoveDevice = async (payload: RevokeSessionsPayload) => {
-  const response = await AxiosInstance.post("/security/devices/remove", payload);
+export const RemoveDevice = async (id: string) => {
+  const response = await AxiosInstance.post("/security/devices/remove", {
+    // deviceId: id,
+    sessionId: id,
+  });
 
   return {
     success: true,
