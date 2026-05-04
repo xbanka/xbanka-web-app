@@ -37,6 +37,7 @@ export const DepositSidebar = ({
     isLoading,
     error,
   } = useGenerateAddress(currency, network);
+  console.log("addressData", addressData?.data?.address || "none address");
 
   const networkOptions =
     currency && CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS]
@@ -158,30 +159,32 @@ export const DepositSidebar = ({
             </h1>
             <div className="flex items-start gap-4">
               <div>
-                {addressData?.address ? (
+                {addressData?.data?.address ? (
                   <QRCode
-                    value={addressData.address}
-                    size={100}
-                    bgColor="transparent"
+                    value={addressData.data.address}
+                    size={160}
+                    bgColor="#FFFFFF"
                     fgColor="#000000"
                   />
                 ) : (
                   <div className="w-25 h-25 bg-gray-200 animate-pulse rounded" />
                 )}
               </div>
-              <div className="w-full space-y-1">
+              <div className="flex-1 min-w-0 space-y-1">
                 <p className="font-medium text-[12px] leading-5 text-card-text">
                   Wallet address
                 </p>
-                <div className="flex items-center gap-2">
-                  <div className="w-full flex items-center h-10 break-all py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text">
+                <div className="flex items-center gap-2 w-full max-w-full">
+                  <div className="w-full min-w-0 flex items-center h-10 py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text truncate">
+                    <span className="truncate block w-full">
                     {isLoading
                       ? "Generating address..."
-                      : addressData?.address || "No address available"}
+                      : addressData?.data.address || "No address available"}
+                      </span>
                   </div>
                   <button
                     onClick={handleCopy}
-                    className="flex h-10 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-[#042F2E] rounded-lg"
+                    className="flex flex-shrink-0 h-10 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-[#042F2E] rounded-lg"
                   >
                     <Copy className="w-4 h-4 text-Green" />
                   </button>
