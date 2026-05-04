@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 
-export function MarketOverview() {
+export function MarketOverview({ show = true }: { show?: boolean }) {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const limit = 6;
@@ -116,7 +116,7 @@ export function MarketOverview() {
 
   return (
     <div className="bg-card-background border border-border rounded-2xl p-5 flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+      { show && <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-card-text">
           Market Overview
         </h3>
@@ -132,7 +132,7 @@ export function MarketOverview() {
             ),
           )}
         </div>
-      </div>
+      </div>}
       <div className="overflow-x-auto">
         <DataTableLayout
           data={marketPrices?.data.items || []}
@@ -141,7 +141,7 @@ export function MarketOverview() {
           isLoading={marketPricesPending}
           errorMessage={marketPricesError?.message}
           rowKey={(item) => item.id}
-          itemsPerPage={5}
+          itemsPerPage={6}
           pageTotal={marketPrices?.data?.meta.totalPages}
           currentPage={page}
           onPageChange={() => setPage(page)}

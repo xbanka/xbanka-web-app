@@ -15,7 +15,8 @@ export function ProcessingStep({
   recipientName,
   recipientAddress,
   onConfirm,
-  setSuccessDetails
+  setSuccessDetails,
+  onError
 }: {
   amount: string;
   asset?: UserWallet | null;
@@ -23,7 +24,8 @@ export function ProcessingStep({
   recipientAddress: string;
   recipientName?: string;
   onConfirm: () => void;
-  setSuccessDetails: (value: WalletSuccessState) => void
+  setSuccessDetails: (value: WalletSuccessState) => void;
+  onError: (error: Error) => void;
 }) {
   const shortAddr = `${recipientAddress.slice(0, 4)}...${recipientAddress.slice(-4)}`;
   const { mutate, isPending, error } = UseWithdrawCrypto();
@@ -44,6 +46,10 @@ export function ProcessingStep({
         setSuccessDetails(response.data)
         onConfirm();
       },
+      onError: (error) => {
+          console.log("Conversion error", error.message);
+          onError(error);
+        },
     });
   }, [asset?.currency, amount, recipientAddress, network]);
   return (

@@ -32,7 +32,8 @@ export function ConvertTab() {
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
   const [targetCurrency, setTargetCurrency] = useState("NGNX");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
-  const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
+  const [convertData, setConvertData] =
+    useState<CryptoGetConversionTypes | null>();
 
   const { data, mutate, isPending } = useQuoteConversion();
   const {
@@ -82,11 +83,11 @@ export function ConvertTab() {
   };
 
   const handleReset = () => {
-    setConvertData(null)
-    setQuoteData(null)
-    setAmount("")
+    setConvertData(null);
+    setQuoteData(null);
+    setAmount("");
     setConfirmOpen(false);
-  }
+  };
 
   const refetchQuote = () => {
     mutate(
@@ -164,9 +165,7 @@ export function ConvertTab() {
 
         <AmountRow
           label="You Receive"
-          value={
-            convertData?.netPayout ? convertData.netPayout.toString() : ""
-          }
+          value={convertData?.netPayout ? convertData.netPayout.toString() : ""}
           readOnly
           OPTIONS={TARGET_OPTIONS}
           currencyId
@@ -197,7 +196,9 @@ export function ConvertTab() {
           </div>
         )}
 
-        <Button onClick={handleQuoteModal} className="w-full transition-colors">Get Quote</Button>
+        <Button onClick={handleQuoteModal} className="w-full transition-colors">
+          Get Quote
+        </Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}
           <span className="text-Green cursor-pointer hover:underline">
@@ -210,25 +211,27 @@ export function ConvertTab() {
         </p>
       </DashboardCard>
       <MarketHighlight />
-      { quoteData?.netPayout && <ConfirmModal
-              open={confirmOpen}
-              handleReset={handleReset}
-              mode="SELL"
-              payAmount={Number(amount || 0)}
-              paySymbol={sourceCurrency}
-              receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
-              receiveSymbol={targetCurrency}
-              rate={
-                quoteData
-                  ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
-                  : ""
-              }
-              fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
-              onRefreshQuote={refetchQuote}
-              quoteId={quoteData?.quoteId || ""}
-              sourceCurrency={sourceCurrency}
-              targetCurrency={targetCurrency}
-            />}
+      {quoteData?.netPayout && (
+        <ConfirmModal
+          open={confirmOpen}
+          handleReset={handleReset}
+          mode="SELL"
+          payAmount={Number(amount || 0)}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          receiveSymbol={targetCurrency}
+          rate={
+            quoteData
+              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              : ""
+          }
+          fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
+          onRefreshQuote={refetchQuote}
+          quoteId={quoteData?.quoteId || ""}
+          sourceCurrency={sourceCurrency}
+          targetCurrency={targetCurrency}
+        />
+      )}
     </div>
   );
 }
