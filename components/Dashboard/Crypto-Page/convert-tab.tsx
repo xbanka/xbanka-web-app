@@ -148,7 +148,7 @@ export function ConvertTab() {
   }, [debouncedAmount, sourceCurrency, targetCurrency, groupedPairData]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-4">
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="You Receive"

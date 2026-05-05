@@ -8,7 +8,8 @@ export const OnboardingJourneyCard = ({
   step,
   title,
   desc,
-  label
+  label,
+  onClick
 }: OnboardingCardProps) => {
   return (
     <div
@@ -41,7 +42,7 @@ export const OnboardingJourneyCard = ({
         <p className="text-xs text-green-500 font-medium">Account created</p>
       ) : status === "active" ? (
         <div className="space-y-5">
-          <button className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity">
+          <button onClick={onClick} className="w-full cursor-pointer bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity">
             Continue →
           </button>
         </div>
