@@ -4,7 +4,7 @@ import { IdCard } from "lucide-react";
 import { SelectField } from "../../ui/select";
 import { FormField } from "../../ui/FormField";
 import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
@@ -13,6 +13,7 @@ import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { ErrorField } from "@/components/ui/field-error";
 import { useRouter } from "next/navigation";
+import { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
 
 interface Step3Props {
   setStep: (n: number) => void;
@@ -57,6 +58,10 @@ function Step3({ setStep }: Step3Props) {
       },
     });
   };
+
+  useEffect(() => {
+    loadFaceLandmarker();
+  }, []);
 
   const handleSkip = () => {
     skipMutate(userId, {
@@ -105,7 +110,12 @@ function Step3({ setStep }: Step3Props) {
         <ErrorField message={error?.message || skipError?.message} />
         <div className="space-y-3.25">
           <div className="flex flex-col md:flex-row gap-4 mt-1">
-            <Button onClick={()=> setStep(1)} variant="outline" size="lg" className="flex-1">
+            <Button
+              onClick={() => setStep(1)}
+              variant="outline"
+              size="lg"
+              className="flex-1"
+            >
               Back
             </Button>
             <Button
