@@ -26,7 +26,7 @@ import { IdSelfieStep } from "../Dashboard/Onboarding-Journey-Modal/id-selfie-mo
 
 let _faceLandmarker: FaceLandmarker | null = null;
 
-async function loadFaceLandmarker() {
+export async function loadFaceLandmarker() {
   if (_faceLandmarker) return _faceLandmarker;
 
   const vision = await FilesetResolver.forVisionTasks(
@@ -80,7 +80,10 @@ type LivenessDetectorProps = {
 const LivenessDetector = forwardRef<
   { startCamera: () => Promise<void> },
   LivenessDetectorProps
->(function LivenessDetector({ brandColor = "#36b6ab", onBack, onSuccess }, ref) {
+>(function LivenessDetector(
+  { brandColor = "#36b6ab", onBack, onSuccess },
+  ref,
+) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -123,7 +126,6 @@ const LivenessDetector = forwardRef<
   const startCamera = useCallback(async () => {
     try {
       setCameraStarted(true);
-      setModelLoading(true);
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -139,8 +141,8 @@ const LivenessDetector = forwardRef<
       video.onloadedmetadata = async () => {
         await video.play();
         setIsReady(true);
-        await loadFaceLandmarker();
-        setModelLoading(false);
+        // await loadFaceLandmarker();
+        // setModelLoading(false);
       };
     } catch (err) {
       setError("Camera permission denied");
@@ -243,6 +245,12 @@ const LivenessDetector = forwardRef<
     }
   }, [countdown]);
 
+  useEffect(() => {
+    loadFaceLandmarker().then(() => {
+      setModelLoading(false);
+    });
+  }, []);
+
   const captureImage = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -275,59 +283,68 @@ const LivenessDetector = forwardRef<
   };
 
   return (
-    <div style={{ width: "100%", maxWidth: 500, margin: "auto" }}>
+    <div
+      className="space-y-6"
+      style={{ width: "100%", maxWidth: 500, margin: "auto" }}
+    >
       {cameraStarted && !captured && (
-        <div style={{ position: "relative" }}>
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            style={{ width: "100%", transform: "scaleX(-1)" }}
-          />
+        <div className="space-y-4">
+          <div style={{ position: "relative" }}>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              style={{ width: "100%", transform: "scaleX(-1)" }}
+            />
 
-          <canvas
-            ref={canvasRef}
-            width={640}
-            height={480}
-            style={{ display: "none" }}
-          />
+            <canvas
+              ref={canvasRef}
+              width={640}
+              height={480}
+              style={{ display: "none" }}
+            />
 
-          <div
-            style={{
-              position: "absolute",
-              bottom: 20,
-              left: 0,
-              right: 0,
-              textAlign: "center",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 20,
-            }}
-          >
-            {instruction()}
-          </div>
-
-          {error && (
             <div
               style={{
                 position: "absolute",
-                top: 10,
-                left: 10,
-                right: 10,
-                background: "red",
+                bottom: 20,
+                left: 0,
+                right: 0,
+                textAlign: "center",
                 color: "#fff",
-                padding: 10,
-                borderRadius: 6,
+                fontWeight: 700,
+                fontSize: 20,
               }}
             >
-              {error}
+              {instruction()}
             </div>
-          )}
+
+            {error && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  background: "red",
+                  color: "#fff",
+                  padding: 10,
+                  borderRadius: 6,
+                }}
+              >
+                {error}
+              </div>
+            )}
+          </div>
+          <p className="text-xs font-normal leading-4.5 text-text text-center">
+            Good lighting. Neutral background. No hats or glasses.
+          </p>
         </div>
       )}
 
       {!cameraStarted && !captured && (
+        <div className="space-y-4 ">
         <div className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent">
           {/* {!streaming && !taken && (
             <div className="flex flex-col items-center gap-3 text-placeholder">
@@ -350,11 +367,20 @@ const LivenessDetector = forwardRef<
             className={taken ? "rounded-2xl block w-full" : "hidden"}
           /> */}
         </div>
+          <p className="text-xs font-normal leading-4.5 text-text text-center">
+            Good lighting. Neutral background. No hats or glasses.
+          </p>
+        </div>
       )}
       {(selfieError || skipError) && (
-        <p className="bg-error-text">
+        <div className="space-y-4">
+          <p className="bg-error-text">
           {selfieError?.message || skipError?.message}
         </p>
+          <p className="text-xs font-normal leading-4.5 text-text text-center">
+            Good lighting. Neutral background. No hats or glasses.
+          </p>
+        </div>
       )}
 
       {captured && (

@@ -83,7 +83,7 @@ export const DepositSidebar = ({
 
       {/* sidebar */}
       <div
-        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:border-0 max-sm:rounded-none max-sm:px-0 max-sm:pb-0 ${
+        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background border-8 border-border rounded-bl-[20px] rounded-tl-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:border-0 max-sm:rounded-none max-sm:px-0 max-sm:pb-0 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -104,7 +104,7 @@ export const DepositSidebar = ({
             />
           </div>
 
-          <div className="px-10 space-y-6 max-sm:px-0">
+          <div className="px-8 space-y-6 max-sm:px-0">
             {/* Currency */}
             <div>
               <SelectFieldWithValue
@@ -170,7 +170,7 @@ export const DepositSidebar = ({
             </h1>
             <div className="flex items-start gap-4 max-sm:flex-col">
               <div className="rounded-lg bg-white p-1">
-                {addressData?.address ? (
+                {addressData?.data?.address ? (
                   <QRCode
                     value={addressData.data.address}
                     size={160}
@@ -186,10 +186,10 @@ export const DepositSidebar = ({
                   Wallet address
                 </p>
                 <div className="flex items-center gap-2 max-sm:gap-3">
-                  <div className="w-full flex min-w-0 items-center h-10 truncate py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
+                  <div className="w-full flex min-w-0 items-center h-10 truncate text-ellipsis py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
                     {isLoading
                       ? "Generating address..."
-                      : addressData?.address || "No address available"}
+                      : addressData?.data?.address || "No address available"}
                   </div>
                   <button
                     onClick={handleCopy}

@@ -95,7 +95,8 @@ export function OnboardingJourney() {
           <OnboardingJourneyCard
             key={i}
             className="w-[72vw] max-w-[360px] shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
-            status={s.status}
+            status={"active"}
+            // status={s.status}
             step={s.step}
             title={s.title}
             desc={s.desc}
