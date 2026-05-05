@@ -67,7 +67,7 @@ export function BvnModal({
   return (
     <Modal className="p-0" onClose={onClose}>
       {step === "form" && (
-        <>
+        <div>
           <ModalHeader
             className="px-8"
             title="Verify Your BVN"
@@ -76,7 +76,7 @@ export function BvnModal({
           />
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3 px-8 pb-8 space-y-6"
+            className="flex flex-col gap-3 px-8 pb-8 pt-6 space-y-6"
           >
             <div>
               <FormField
@@ -116,7 +116,7 @@ export function BvnModal({
               </h1> */}
             </div>
           </form>
-        </>
+        </div>
       )}
 
       {step === "success" && (

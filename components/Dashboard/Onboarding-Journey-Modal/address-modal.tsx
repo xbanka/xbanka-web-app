@@ -3,7 +3,10 @@ import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectField } from "@/components/ui/select";
-import { AttachmentFile, AttachmentUpload } from "@/components/ui/UploadAttachment";
+import {
+  AttachmentFile,
+  AttachmentUpload,
+} from "@/components/ui/UploadAttachment";
 import { IdCard, MapPin } from "lucide-react";
 import { useState } from "react";
 import { SuccessState } from "./success-state";
@@ -65,72 +68,72 @@ export function AddressModal({
   };
 
   return (
-    <Modal onClose={onClose}>
+    <Modal className="p-0" onClose={onClose}>
       {step === "form" && (
         <>
-          <div className="text-center space-y-2">
-            <h1 className="text-[26px] font-bold text-card-text">
-              Proof of Address
-            </h1>
-            <p className="text-sm text-text leading-relaxed">
-              Please provide the address exactly as it appears on your document
-            </p>
-          </div>
+          <ModalHeader
+            className="px-8"
+            title="Proof of Address"
+            subtitle=" Please provide the address exactly as it appears on your document"
+            onClose={onClose}
+          />
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 px-8 pb-8 pt-6 space-y-6"
           >
-            <FormField
-              id="address"
-              icon={MapPin}
-              placeholder="Enter Address"
-              error={errors.address}
-              register={register}
-            />
-            <FormField
-              id="landmark"
-              icon={MapPin}
-              placeholder="Popular Landmark (optional)"
-              register={register}
-            />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
+              <FormField
+                id="address"
+                icon={MapPin}
+                placeholder="Enter Address"
+                error={errors.address}
+                register={register}
+              />
+              <FormField
+                id="landmark"
+                icon={MapPin}
+                placeholder="Popular Landmark (optional)"
+                register={register}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <SelectField
+                  id="country"
+                  placeholder="Country of Residence"
+                  error={errors.country}
+                  options={[
+                    { value: "ng", label: "Nigeria" },
+                    { value: "gh", label: "Ghana" },
+                  ]}
+                  register={register}
+                />
+                <SelectField
+                  id="state"
+                  placeholder="State"
+                  error={errors.state}
+                  options={[
+                    { value: "lag", label: "Lagos" },
+                    { value: "abj", label: "Abuja" },
+                    { value: "ph", label: "Port Harcourt" },
+                    { value: "kno", label: "Kano" },
+                  ]}
+                  register={register}
+                />
+              </div>
               <SelectField
-                id="country"
-                placeholder="Country of Residence"
-                error={errors.country}
+                id="residenceDocumentType"
+                icon={IdCard}
+                placeholder="Select document of choice"
+                error={errors.residenceDocumentType}
                 options={[
-                  { value: "ng", label: "Nigeria" },
-                  { value: "gh", label: "Ghana" },
+                  { value: "utility_bill", label: "Utility Bill" },
+                  { value: "bank_statement", label: "Bank Statement" },
+                  { value: "tenancy_agreement", label: "Tenancy Agreement" },
                 ]}
                 register={register}
               />
-              <SelectField
-                id="state"
-                placeholder="State"
-                error={errors.state}
-                options={[
-                  { value: "lag", label: "Lagos" },
-                  { value: "abj", label: "Abuja" },
-                  { value: "ph", label: "Port Harcourt" },
-                  { value: "kno", label: "Kano" },
-                ]}
-                register={register}
-              />
+              <AttachmentUpload value={attachments} onChange={setAttachments} />
+              <ErrorField message={error?.message} />
             </div>
-            <SelectField
-              id="residenceDocumentType"
-              icon={IdCard}
-              placeholder="Select document of choice"
-              error={errors.residenceDocumentType}
-              options={[
-                { value: "utility_bill", label: "Utility Bill" },
-                { value: "bank_statement", label: "Bank Statement" },
-                { value: "tenancy_agreement", label: "Tenancy Agreement" },
-              ]}
-              register={register}
-            />
-            <AttachmentUpload value={attachments} onChange={setAttachments} />
-            <ErrorField message={error?.message} />
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
                 <Button
