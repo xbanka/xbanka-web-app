@@ -16,6 +16,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
+import { ConfirmModal } from "./confirm-modal";
 
 type FormValues = {
   amount: string;
@@ -26,11 +27,13 @@ type FormValues = {
 export function ConvertTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
+  const [error, setError] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sourceCurrency, setSourceCurrency] = useState("USDT");
+  const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
-  const [sourceCurrency, setSourceCurrency] = useState("BTC");
-  const [targetCurrency, setTargetCurrency] = useState("USDT");
-  const [error, setError] = useState("");
 
   const { data, mutate, isPending } = useQuoteConversion();
   const {
@@ -73,6 +76,34 @@ export function ConvertTab() {
       value: p.code,
     }));
   }, [pairMap, sourceCurrency]);
+
+  const handleQuoteModal = () => {
+    refetchQuote();
+    setConfirmOpen(true);
+  };
+
+  const handleReset = () => {
+    setConvertData(null);
+    setQuoteData(null);
+    setAmount("");
+    setConfirmOpen(false);
+  };
+
+  const refetchQuote = () => {
+    mutate(
+      {
+        sourceCurrency,
+        targetCurrency,
+        amount: Number(debouncedAmount),
+        action: "SELL",
+      },
+      {
+        onSuccess: (res) => {
+          setQuoteData(res?.data);
+        },
+      },
+    );
+  };
 
   const debouncedAmount = useDebounce(amount, 500);
 
@@ -117,7 +148,7 @@ export function ConvertTab() {
   }, [debouncedAmount, sourceCurrency, targetCurrency, groupedPairData]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-4">
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="You Receive"
@@ -134,9 +165,7 @@ export function ConvertTab() {
 
         <AmountRow
           label="You Receive"
-          value={
-            convertData?.netPayout ? convertData.netPayout.toString() : ""
-          }
+          value={convertData?.netPayout ? convertData.netPayout.toString() : ""}
           readOnly
           OPTIONS={TARGET_OPTIONS}
           currencyId
@@ -167,7 +196,9 @@ export function ConvertTab() {
           </div>
         )}
 
-        <Button className="w-full transition-colors">Get Quote</Button>
+        <Button onClick={handleQuoteModal} className="w-full transition-colors">
+          Get Quote
+        </Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}
           <span className="text-Green cursor-pointer hover:underline">
@@ -180,6 +211,27 @@ export function ConvertTab() {
         </p>
       </DashboardCard>
       <MarketHighlight />
+      {quoteData?.netPayout && (
+        <ConfirmModal
+          open={confirmOpen}
+          handleReset={handleReset}
+          mode="SELL"
+          payAmount={Number(amount || 0)}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          receiveSymbol={targetCurrency}
+          rate={
+            quoteData
+              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              : ""
+          }
+          fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
+          onRefreshQuote={refetchQuote}
+          quoteId={quoteData?.quoteId || ""}
+          sourceCurrency={sourceCurrency}
+          targetCurrency={targetCurrency}
+        />
+      )}
     </div>
   );
 }

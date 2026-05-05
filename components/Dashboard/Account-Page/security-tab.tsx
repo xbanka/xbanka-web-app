@@ -42,6 +42,8 @@ export function SecurityTab() {
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
   const [enable2faModal, setEnable2faModal] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [removeSessionModal, setRemoveSessionModal] = useState(false);
+  const [removeDeviceModal, setRemoveDeviceModal] = useState(false);
   const securityItems = [
     {
       icon: Lock,
@@ -79,6 +81,7 @@ export function SecurityTab() {
       note: "",
     },
   ];
+  const [ removeDeviceId, setRemoveDeviceId ] = useState<string | null>(null);
 
   const {
     mutate: EnableTwoFactorMutate,
@@ -132,6 +135,15 @@ export function SecurityTab() {
   const handle2faModal = () => {
     setEnable2faModal(true);
   };
+
+  const handleModal = (id: string) => {
+    setRemoveDeviceModal(true);
+    setRemoveDeviceId(id);
+  }
+
+  const handleSessionModal = (id: string) => {
+    
+  } 
 
   const authItems = [
     {
@@ -241,10 +253,11 @@ export function SecurityTab() {
             return (
               <LittleCards
                 // Icon={Icon}
-                action={d.isTrusted ? "Remove" : "Removed"}
+                action={"Remove"}
                 date={d.createdAt}
                 key={i}
                 label={d.name}
+                onClick={() => handleModal(d?.id)}
               />
             );
           })}

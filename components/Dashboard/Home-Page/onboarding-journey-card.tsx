@@ -9,6 +9,7 @@ export const OnboardingJourneyCard = ({
   title,
   desc,
   label,
+  onClick
 }: OnboardingCardProps) => {
   return (
     <div
@@ -51,7 +52,7 @@ export const OnboardingJourneyCard = ({
         </p>
       ) : status === "active" ? (
         <div className="space-y-5">
-          <button className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]">
+          <button onClick={onClick} className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]">
             Continue
           </button>
         </div>

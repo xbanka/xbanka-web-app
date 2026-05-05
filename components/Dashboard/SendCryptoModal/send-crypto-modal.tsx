@@ -13,6 +13,7 @@ import {
 import { RecipientStep } from "./receipient-step";
 import { SelectAssetStep } from "./select-asset-step";
 import { WalletSuccessState } from "./crypto-modal-types";
+import { FailedStep } from "./failed-step";
 
 export const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -26,6 +27,7 @@ export function SendCryptoModal({
   onSuccess,
 }: SendCryptoModalProps) {
   const [step, setStep] = useState<SendStep>("select_asset");
+  const [ processingError, setProcessingError] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<UserWallet | null>();
   const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(
     "trc20",
@@ -144,6 +146,10 @@ export function SendCryptoModal({
         network={selectedNetworkId}
         recipientName={recipientName}
         recipientAddress={recipientAddress}
+        onError={(error) => {
+          setProcessingError(error.message);
+          setStep("failed");
+        }}
       />
     );
 
@@ -164,6 +170,16 @@ export function SendCryptoModal({
         }}
       />
     );
+
+    if (step === "failed") {
+        return (
+          <FailedStep
+            onClose={() => reset()}
+            onRetry={() => setStep("processing")}
+            errorMessage={processingError ? `${processingError}` : ""}
+          />
+        );
+      }
 
   return null;
 }
