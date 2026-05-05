@@ -6,16 +6,20 @@ import { Modal } from "@/components/ui/Modal";
 import { UpdatePinForm, updatePinSchema } from "@/lib/schema/bvn-schema";
 import { useUpdatePin } from "@/lib/services/security.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, X } from "lucide-react";
+import { Lock } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { CloseBtn } from "./create-pin-modal";
 import { ErrorField } from "@/components/ui/field-error";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { useOtpFlow } from "@/hooks/use-otp-flow";
 
-export const UpdatePinModal = ({ open, handleClose }: any) => {
+interface UpdatePinModalProps {
+  open: boolean;
+  handleClose: () => void;
+}
+
+export const UpdatePinModal = ({ open, handleClose }: UpdatePinModalProps) => {
   const [success, setSuccess] = useState(false);
   const { sendOtp, cooldown, canResend } = useOtpFlow();
   const { mutate, isPending, error } = useUpdatePin();
@@ -30,7 +34,7 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: UpdatePinForm) => {
     const payload = {
       otp: data.otp,
       oldPin: data.oldPin,
@@ -39,17 +43,16 @@ export const UpdatePinModal = ({ open, handleClose }: any) => {
     mutate(payload, {
       onSuccess: () => {
         reset();
-        handleClose();
         setSuccess(true);
       },
     });
   };
 
   useEffect(() => {
-      if (open) {
-        sendOtp();
-      }
-    }, [open]);
+    if (open) {
+      sendOtp();
+    }
+  }, [open, sendOtp]);
 
   if (!open) return null;
 

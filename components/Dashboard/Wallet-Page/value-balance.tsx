@@ -18,9 +18,13 @@ export const ValueBalance = () => {
     isPending: fiatIsPending,
   } = UseGetFiatWallet();
   const wallets = fiatData?.data?.data || [];
-  const fiatBalance = sumFiatBalances(wallets)
+  const fiatBalance = sumFiatBalances(wallets);
   const latestWallet = wallets[0];
-  const { data: cryptoData, error: cryptoError, isPending: cryptoIsPending } = UseGetCryptoWallet();
+  const {
+    data: cryptoData,
+    error: cryptoError,
+    isPending: cryptoIsPending,
+  } = UseGetCryptoWallet();
   const cryptoWallets = cryptoData?.data?.data || [];
   const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
   const totalBalance = fiatBalance + cryptoBalance;
@@ -43,7 +47,7 @@ export const ValueBalance = () => {
                 )}
               </button>
             </div>
-            <p className="text-3xl sm:text-4xl font-bold text-card-text">
+            <p className="text-3xl sm:text-4xl font-bold text-card-text ">
               {hidden
                 ? "₦•••••••"
                 : totalBalance
@@ -54,8 +58,8 @@ export const ValueBalance = () => {
               ≈ ₦{totalBalance.toLocaleString()} today
             </span>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="border-l-3 border-[#004C99] bg-border px-4 py-3">
+          <div className="flex flex-col sm:flex-row gap-4 max-sm:flex-row max-sm:w-full">
+            <div className="border-l-3 border-[#004C99] bg-border px-4 py-3 max-sm:w-full ">
               <p className="text-text font-medium leading-5 text-[12px]">
                 Fiat
               </p>
@@ -67,7 +71,7 @@ export const ValueBalance = () => {
                     : "₦0.00"}
               </p>
             </div>
-            <div className="border-l-3 border-[#2DD4BF] bg-border px-4 py-3">
+            <div className="border-l-3 border-[#2DD4BF] bg-border px-4 py-3 max-sm:w-full ">
               <p className="text-text font-medium leading-5 text-[12px]">
                 Crypto
               </p>

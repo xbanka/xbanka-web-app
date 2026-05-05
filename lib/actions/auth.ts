@@ -36,7 +36,7 @@ export const login = async (email: string, password: string) => {
     const response = await AxiosInstance.post("/auth/login", {
       email,
       password,
-    })
+    }, { withCredentials: true })
     return {
       success: true,
       data: response.data,
@@ -49,7 +49,7 @@ export const verifyDevice = async (data: VerifyDeviceData) => {
       userId: data.userId,
       deviceId: data.deviceId,
       code: data.code
-    })
+    }, { withCredentials: true })
     return {
       success: true,
       data: response.data,

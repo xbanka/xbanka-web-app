@@ -20,6 +20,8 @@ const CURRENCY_OPTIONS = [
   { label: "ETH", value: "ETH" },
 ];
 
+const QUICK_COINS = ["USDT", "BTC", "ETH", "SOL"];
+
 export const DepositSidebar = ({
   open,
   onClose,
@@ -81,24 +83,28 @@ export const DepositSidebar = ({
 
       {/* sidebar */}
       <div
-        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background border-8 border-border rounded-tl-[20px] rounded-bl-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:border-0 max-sm:rounded-none max-sm:px-0 max-sm:pb-0 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* your content */}
-        <div className="py-6 px-8 flex items-start justify-between border-b border-input">
-          <div className="">
-            <h1 className="font-semibold leading-8 text-2xl text-card-text">
-              Deposit Crypto
-            </h1>
-            <p className="text-[16px] font-normal text-text">
-              Protect your account with a PIN
-            </p>
+        <div className="flex h-full flex-col space-y-8 overflow-y-auto max-sm:space-y-6 max-sm:px-6 max-sm:py-8">
+          <div className="py-6 px-10 flex items-start justify-between border-b border-input max-sm:border-0 max-sm:p-0">
+            <div className="">
+              <h1 className="font-semibold leading-8 text-2xl text-card-text max-sm:text-[24px] max-sm:leading-8">
+                Deposit Crypto
+              </h1>
+              <p className="text-[16px] font-normal text-text max-sm:leading-7">
+                Transfer assets to external wallets or XBanka users.
+              </p>
+            </div>
+            <CloseBtn
+              onClose={onClose}
+              className="max-sm:h-14 max-sm:w-14 max-sm:border-input max-sm:bg-input-background"
+            />
           </div>
-          <CloseBtn onClose={onClose} />
-        </div>
-        <div className="space-y-8 py-6">
-          <div className="px-8 space-y-6 overflow-y-auto">
+
+          <div className="px-10 space-y-6 max-sm:px-0">
             {/* Currency */}
             <div>
               <SelectFieldWithValue
@@ -111,11 +117,16 @@ export const DepositSidebar = ({
                   setNetwork(""); // reset network
                 }}
               />
-              <div className="flex gap-2 mt-2">
-                {["USDT", "BTC", "ETH"].map((item) => (
-                  <div
+              <div className="-mx-6 flex gap-3 mt-3 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0">
+                {QUICK_COINS.map((item) => (
+                  <button
                     key={item}
-                    className="flex items-center gap-2 rounded-lg py-2.5 px-4 bg-input-background"
+                    type="button"
+                    onClick={() => {
+                      setCurrency(item);
+                      setNetwork("");
+                    }}
+                    className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
                   >
                     <Image
                       src={"/tether.svg"}
@@ -126,7 +137,7 @@ export const DepositSidebar = ({
                     <span className="text-[12px] font-normal leading-4.5 text-card-text">
                       {item}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -141,24 +152,25 @@ export const DepositSidebar = ({
                   setNetwork(value);
                 }}
               />
-              <div className="bg-background text-text py-3 px-4 rounded-lg flex items-center gap-4 mt-2">
-                <AlertTriangle className="w-4 h-4 text-text" />
-                <h1 className="font-normal text-[12px] leading-4.5">
-                  Only send USDT via the selected network. Sending via the wrong
-                  network may result in permanent loss of funds.
-                </h1>
+              <div className="bg-background text-text py-3 px-4 rounded-lg flex items-center gap-4 mt-3 max-sm:items-start">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-text max-sm:mt-1" />
+                <p className="font-normal text-[12px] leading-4.5 max-sm:text-[16px] max-sm:leading-7">
+                  Only send {currency || "USDT"} via the selected network.
+                  Sending via the wrong network may result in permanent loss of
+                  funds.
+                </p>
               </div>
             </div>
             {error && <ErrorField message={error.message} />}
           </div>
 
-          <div className="px-8 space-y-4">
-            <h1 className="font-medium text-[12px] leading-5 text-card-text">
+          <div className="px-8 space-y-4 max-sm:px-0">
+            <h1 className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
               Deposit address
             </h1>
-            <div className="flex items-start gap-4">
-              <div>
-                {addressData?.data?.address ? (
+            <div className="flex items-start gap-4 max-sm:flex-col">
+              <div className="rounded-lg bg-white p-1">
+                {addressData?.address ? (
                   <QRCode
                     value={addressData.data.address}
                     size={160}
@@ -170,62 +182,60 @@ export const DepositSidebar = ({
                 )}
               </div>
               <div className="flex-1 min-w-0 space-y-1">
-                <p className="font-medium text-[12px] leading-5 text-card-text">
+                <p className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
                   Wallet address
                 </p>
-                <div className="flex items-center gap-2 w-full max-w-full">
-                  <div className="w-full min-w-0 flex items-center h-10 py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text truncate">
-                    <span className="truncate block w-full">
-                      {isLoading
-                        ? "Generating address..."
-                        : addressData?.data.address || "No address available"}
-                    </span>
+                <div className="flex items-center gap-2 max-sm:gap-3">
+                  <div className="w-full flex min-w-0 items-center h-10 truncate py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
+                    {isLoading
+                      ? "Generating address..."
+                      : addressData?.address || "No address available"}
                   </div>
                   <button
                     onClick={handleCopy}
-                    className="flex flex-shrink-0 h-10 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-[#042F2E] rounded-lg"
+                    className="flex h-10 shrink-0 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-Green rounded-lg max-sm:h-14 max-sm:w-16 max-sm:justify-center"
                   >
-                    <Copy className="w-4 h-4 text-Green" />
+                    <Copy className="w-4 h-4 text-Green max-sm:h-6 max-sm:w-6" />
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="px-10 space-y-4">
-            <div className="rounded-lg bg-background p-4 space-y-2">
+          <div className="px-10 space-y-4 max-sm:px-0">
+            <div className="rounded-lg bg-background p-4 space-y-2 max-sm:bg-transparent max-sm:px-6">
               <div className="flex items-start justify-between">
-                <p className="font-medium text-[12px] leading-5 text-text">
+                <p className="font-medium text-[12px] leading-5 text-text max-sm:text-[16px] max-sm:leading-6">
                   Minimum amount
                 </p>
-                <p className="font-normal text-[14px] leading-6 text-card-text">
-                  10 USDT
+                <p className="font-normal text-[14px] leading-6 text-card-text max-sm:text-[16px]">
+                  10 {currency || "USDT"}
                 </p>
               </div>
               <div className="flex items-start justify-between">
-                <p className="font-medium text-[12px] leading-5 text-text">
+                <p className="font-medium text-[12px] leading-5 text-text max-sm:text-[16px] max-sm:leading-6">
                   Confirmation required
                 </p>
-                <p className="font-normal text-[14px] leading-6 text-card-text">
+                <p className="text-right font-normal text-[14px] leading-6 text-card-text max-sm:text-[16px]">
                   12 network confirmations
                 </p>
               </div>
               <div className="flex items-start justify-between">
-                <p className="font-medium text-[12px] leading-5 text-text">
-                  12 network confirmations
+                <p className="font-medium text-[12px] leading-5 text-text max-sm:text-[16px] max-sm:leading-6">
+                  Estimated arrival
                 </p>
-                <p className="font-normal text-[14px] leading-6 text-card-text">
+                <p className="font-normal text-[14px] leading-6 text-card-text max-sm:text-[16px]">
                   5-10 minutes
                 </p>
               </div>
             </div>
-            <h1 className="font-normal text-[12px] leading-4.5 text-text text-center">
+            <p className="font-normal text-[12px] leading-4.5 text-text text-center max-sm:text-[16px] max-sm:leading-7">
               After sending, your deposit will appear once confirmed on the
               blockchain.
-            </h1>
+            </p>
           </div>
-          <div className="px-10">
-            <Button variant={"secondary"} className="w-full p-4">
+          <div className="px-10 max-sm:mt-auto max-sm:px-0 max-sm:pb-6">
+            <Button variant={"secondary"} className="w-full p-4 max-sm:h-14 max-sm:text-[16px]">
               View Deposit History
             </Button>
           </div>
