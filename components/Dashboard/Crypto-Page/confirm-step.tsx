@@ -101,7 +101,6 @@ export function ConfirmStep({
           </Button>
           <Button
             onClick={onConfirm}
-            variant={mode === "BUY" ? "default" : "red"}
             className="flex-3 p-2.5"
           >
             Confirm {mode === "BUY" ? "Purchase" : "Sale"}

@@ -49,7 +49,7 @@ export const useRequestOtp = () => {
 
 export const useRevokeSessions = () => {
   return useMutation({
-    mutationFn: () => RevokeSessions(),
+    mutationFn: (id: string) => RevokeSessions(id),
 
     onSuccess: () => {
       toast.success("OTP sent to your email");
@@ -63,7 +63,7 @@ export const useRevokeSessions = () => {
 
 export const useRemoveDevice = () => {
   return useMutation({
-    mutationFn: () => RemoveDevice(),
+    mutationFn: (id: string) => RemoveDevice(id),
 
     onSuccess: () => {
       toast.success("OTP sent to your email");

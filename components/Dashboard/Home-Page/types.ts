@@ -9,3 +9,11 @@ export interface CryptoMarketOverview {
   rank: number;
   symbol: string;
 }
+
+export const stepsConfig = [
+  { key: "bvn", apiKey: "BVN", stepId: 2 },
+  { key: "id-selfie", apiKey: "ID_SELFIE", stepId: 3 },
+  { key: "address", apiKey: "ADDRESS", stepId: 4 },
+];
+
+export type ModalType = "bvn" | "id-selfie" | "address" | null;

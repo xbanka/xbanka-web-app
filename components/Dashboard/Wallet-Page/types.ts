@@ -1,6 +1,6 @@
 type WalletTab = "total" | "fiat" | "crypto";
 
-type CryptoSymbol = 'ETH' | 'BTC' | 'USDT';
+type CryptoSymbol = "ETH" | "BTC" | "USDT";
 
 type FundMethod = "bank" | "card" | null;
 export type FundStep =
@@ -16,7 +16,7 @@ export type FundStep =
   | "confirm_card"
   | "add_new_bank"
   | "add_new_card";
- 
+
 export interface AddFundsModalProps {
   open: boolean;
   onClose: () => void;
@@ -26,7 +26,7 @@ export interface AddFundsModalProps {
 export interface FiatValue {
   currency: string; // e.g., "NGN"
   amount: number;
-  rate: number;     // e.g., 1426
+  rate: number; // e.g., 1426
 }
 
 export interface WalletAddress {
@@ -47,8 +47,8 @@ export interface WalletAddress {
 export interface UserWallet {
   id: string;
   userId: string;
-  currency: string;      // e.g., "ETH"
-  type: "CRYPTO" | "FIAT"; 
+  currency: string; // e.g., "ETH"
+  type: "CRYPTO" | "FIAT";
   balance: number;
   fiatEquivalent: FiatValue | null;
   createdAt: string;
@@ -57,14 +57,15 @@ export interface UserWallet {
 }
 
 export type SendStep =
-  | "select_asset"      // NEW – step 1
-  | "recipient"         // step 2
-  | "select_network"    // step 3
-  | "enter_amount"      // step 4
-  | "confirm"           // step 5
+  | "select_asset" // NEW – step 1
+  | "recipient" // step 2
+  | "select_network" // step 3
+  | "enter_amount" // step 4
+  | "confirm" // step 5
   | "enter_pin"
   | "processing"
-  | "success";
+  | "success"
+  | "failed";
 
 export interface SendCryptoModalProps {
   open: boolean;
@@ -79,9 +80,9 @@ export interface SendCryptoModalProps {
  */
 export const getCurrencyHeader = (symbol: string): string => {
   const symbolMap: Record<string, string> = {
-    ETH: 'Ethereum',
-    BTC: 'Bitcoin',
-    USDT: 'Tether',
+    ETH: "Ethereum",
+    BTC: "Bitcoin",
+    USDT: "Tether",
   };
 
   // Returns the mapped name, or the original symbol if not found

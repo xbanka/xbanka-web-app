@@ -11,6 +11,7 @@ export interface OnboardingCardProps {
     title: string;
     desc?: string;
     label?: string;
+    onClick?: () => void;
 }
 export interface AccountCardProps {
     tier: string;

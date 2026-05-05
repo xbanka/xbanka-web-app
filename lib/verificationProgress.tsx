@@ -31,6 +31,7 @@ export const ONBOARDING_STEPS = (data: any) => {
   const stepGroups = [
     {
       key: "EMAIL",
+      modalKey: null,
       title: "Email Verification",
       ids: ["EMAIL_VERIFIED"],
       desc: "Unlocks basic account features",
@@ -38,6 +39,7 @@ export const ONBOARDING_STEPS = (data: any) => {
     },
     {
       key: "BVN",
+      modalKey: "bvn",
       title: "Verify BVN",
       ids: ["BVN"],
       desc: "Unlocks git card & bill payments",
@@ -45,6 +47,7 @@ export const ONBOARDING_STEPS = (data: any) => {
     },
     {
       key: "IDENTITY",
+      modalKey: "id-selfie",
       title: "ID & Selfie",
       ids: ["IDENTITY", "SELFIE"],
       desc: "Unlocks crypto & withdrawals",
@@ -52,6 +55,7 @@ export const ONBOARDING_STEPS = (data: any) => {
     },
     {
       key: "ADDRESS",
+      modalKey: "address",
       title: "Proof of Address",
       ids: ["ADDRESS"],
       desc: "Unlocks full platform access",
@@ -82,6 +86,7 @@ export const ONBOARDING_STEPS = (data: any) => {
       status,
       label: group.label,
       isCurrent, // 👈 important for button control
+      modalKey: group.modalKey,
     };
   });
 };

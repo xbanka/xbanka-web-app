@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 
-export function MarketOverview() {
+export function MarketOverview({ show = true }: { show?: boolean }) {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const limit = 6;
@@ -174,7 +174,7 @@ export function MarketOverview() {
           isLoading={marketPricesPending}
           errorMessage={marketPricesError?.message}
           rowKey={(item) => item.id}
-          itemsPerPage={5}
+          itemsPerPage={6}
           pageTotal={marketPrices?.data?.meta.totalPages}
           currentPage={page}
           onPageChange={handlePageChange}

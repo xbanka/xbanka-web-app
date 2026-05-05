@@ -7,6 +7,7 @@ import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
 import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
 import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
 import { useState } from "react";
+import { ModalType, stepsConfig } from "./types";
 
 export function OnboardingJourney() {
   const {
@@ -15,7 +16,7 @@ export function OnboardingJourney() {
     error,
   } = UseVerificationStatus();
   const [completedSteps, setCompletedSteps] = useState<number[]>([1]); // step 1 (email) pre-completed
-  const [openModal, setOpenModal] = useState<"bvn" | "id-selfie" | "address" | null>(null);
+  const [openModal, setOpenModal] = useState<ModalType>(null);
   const progress = ONBOARDING_STEPS(verificationStatus?.data);
   const completedCount = progress.filter(
     (step) => step.status === "done",
@@ -23,7 +24,7 @@ export function OnboardingJourney() {
 
   const markDone = (stepId: number) =>
     setCompletedSteps((prev) =>
-      prev.includes(stepId) ? prev : [...prev, stepId]
+      prev.includes(stepId) ? prev : [...prev, stepId],
     );
 
   const totalSteps = progress.length;
@@ -98,6 +99,11 @@ export function OnboardingJourney() {
             step={s.step}
             title={s.title}
             desc={s.desc}
+            onClick={() => {
+              if (s.modalKey) {
+                setOpenModal(s.modalKey as ModalType); // ✅ safe now
+              }
+            }}
           />
         ))}
       </div>

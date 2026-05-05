@@ -39,6 +39,7 @@ export const DepositSidebar = ({
     isLoading,
     error,
   } = useGenerateAddress(currency, network);
+  console.log("addressData", addressData?.data?.address || "none address");
 
   const networkOptions =
     currency && CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS]
@@ -163,7 +164,7 @@ export const DepositSidebar = ({
             {error && <ErrorField message={error.message} />}
           </div>
 
-          <div className="px-10 space-y-4 max-sm:px-0">
+          <div className="px-8 space-y-4 max-sm:px-0">
             <h1 className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
               Deposit address
             </h1>
@@ -171,16 +172,16 @@ export const DepositSidebar = ({
               <div className="rounded-lg bg-white p-1">
                 {addressData?.address ? (
                   <QRCode
-                    value={addressData.address}
-                    size={100}
-                    bgColor="transparent"
+                    value={addressData.data.address}
+                    size={160}
+                    bgColor="#FFFFFF"
                     fgColor="#000000"
                   />
                 ) : (
-                  <div className="w-25 h-25 bg-gray-200 animate-pulse rounded" />
+                  <div className="w-25 h-25 bg-border animate-pulse rounded" />
                 )}
               </div>
-              <div className="w-full space-y-1">
+              <div className="flex-1 min-w-0 space-y-1">
                 <p className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
                   Wallet address
                 </p>
