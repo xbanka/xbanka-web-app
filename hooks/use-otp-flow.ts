@@ -1,12 +1,12 @@
 import { useRequestOtp } from "@/lib/services/security.service";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useOtpFlow = () => {
   const { mutate: requestOtp, isPending, error } = useRequestOtp();
 
   const [cooldown, setCooldown] = useState(0);
 
-  const sendOtp = () => {
+  const sendOtp = useCallback(() => {
     if (cooldown > 0) return;
 
     requestOtp(undefined, {
@@ -14,7 +14,7 @@ export const useOtpFlow = () => {
         setCooldown(60); // 60 sec countdown
       },
     });
-  };
+  }, [cooldown, requestOtp]);
 
   // countdown timer
   useEffect(() => {

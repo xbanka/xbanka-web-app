@@ -137,8 +137,9 @@ export function OtpInput({
             ref={(el) => {
               inputRefs.current[i] = el;
             }}
-            type="password"
+            type="text"
             inputMode="numeric"
+            autoComplete={i === 0 ? "one-time-code" : undefined}
             pattern="\d*"
             maxLength={1}
             value={values[i]}

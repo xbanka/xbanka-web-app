@@ -6,7 +6,7 @@ export function StatusBadge({ status }: { status: string }) {
     Failed: "bg-red-500/10 text-red-500",
   };
   return (
-    <span className={`inline-flex px-2 py-0.5 border rounded-full text-xs font-medium ${map[status] ?? "bg-border text-text"}`}>
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-medium ${map[status] ?? "bg-border text-text"}`}>
       {status}
     </span>
   );
@@ -20,7 +20,7 @@ export function TransactionHistoryStatusBadge({ status }: { status: string }) {
     failed: "bg-red-500/10 text-red-500",
   };
   return (
-    <span className={`inline-flex px-2 py-0.5 border rounded-full text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
       {status}
     </span>
   );
