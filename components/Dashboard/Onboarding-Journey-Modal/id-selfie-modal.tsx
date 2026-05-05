@@ -88,7 +88,7 @@ export function IdSelfieModal({
     <Modal className="p-0" onClose={onClose}>
       {/* ── ID FORM ─────────────────────────────────────── */}
       {step === "id-form" && (
-        <>
+        <div>
           <ModalHeader
             className="px-8"
             title="Select your preferred ID"
@@ -97,7 +97,7 @@ export function IdSelfieModal({
           />
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3 px-8 pb-8 space-y-6"
+            className="flex flex-col gap-3 px-8 pb-8 pt-6 space-y-6"
           >
             <div className="space-y-4">
               <SelectField
@@ -158,7 +158,7 @@ export function IdSelfieModal({
                   </h1> */}
             </div>
           </form>
-        </>
+        </div>
       )}
 
       {/* ── ID SUCCESS ──────────────────────────────────── */}
@@ -182,7 +182,7 @@ export function IdSelfieModal({
             subtitle="We'll match your photo with your ID to confirm it's really you."
             onClose={onClose}
           />
-          <div className="text-center">
+          <div className="text-center pt-6">
             <LivenessDetector
               onBack={() => setStep("id-success")}
               onSuccess={() => setStep("selfie-success")}
