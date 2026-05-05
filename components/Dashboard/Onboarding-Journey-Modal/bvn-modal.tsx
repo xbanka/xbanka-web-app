@@ -27,68 +27,67 @@ export function BvnModal({
   );
 
   const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
-    // const {
-    //   isPending: skipPending,
-    //   error: skipError,
-    //   mutate: skipMutate,
-    // } = useSkipStep();
-  
-    const userId = useUserIdStore((s) => s.userId);
-  
-    const {
-      register,
-      reset,
-      formState: { errors, isValid },
-      handleSubmit,
-    } = useForm<step2FormValues>({
-      resolver: zodResolver(step2Schema),
-      mode: "onTouched",
+  // const {
+  //   isPending: skipPending,
+  //   error: skipError,
+  //   mutate: skipMutate,
+  // } = useSkipStep();
+
+  const userId = useUserIdStore((s) => s.userId);
+
+  const {
+    register,
+    reset,
+    formState: { errors, isValid },
+    handleSubmit,
+  } = useForm<step2FormValues>({
+    resolver: zodResolver(step2Schema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = (data: step2FormValues) => {
+    const payload = { userId, bvn: data.bvn };
+    verifyBvn(payload, {
+      onSuccess: () => {
+        reset();
+        setStep("success");
+      },
     });
-  
-    const onSubmit = (data: step2FormValues) => {
-      const payload = { userId, bvn: data.bvn };
-      verifyBvn(payload, {
-        onSuccess: () => {
-          reset();
-          setStep("success");
-        },
-      });
-    };
-  
-    // const handleSkip = () => {
-    //   skipMutate(userId, {
-    //     onSuccess: () => {
-    //       reset();
-    //       setStep(2);
-    //     },
-    //   });
-    // };
+  };
+
+  // const handleSkip = () => {
+  //   skipMutate(userId, {
+  //     onSuccess: () => {
+  //       reset();
+  //       setStep(2);
+  //     },
+  //   });
+  // };
 
   return (
-    <Modal onClose={onClose}>
+    <Modal className="p-0" onClose={onClose}>
       {step === "form" && (
         <>
-          <div className="text-center space-y-2">
-            <h1 className="text-[26px] font-bold text-card-text">
-              Verify Your BVN
-            </h1>
-            <p className="text-sm text-text leading-relaxed">
-              Your BVN helps us confirm your name and date of birth. We'll never
-              share it with anyone.
-            </p>
-          </div>
+          <ModalHeader
+            className="px-8"
+            title="Verify Your BVN"
+            subtitle="Your BVN helps us confirm your name and date of birth."
+            onClose={onClose}
+          />
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 px-8 pb-8 space-y-6"
           >
-            <FormField
-              id="bvn"
-              icon={IdCard}
-              placeholder="Enter BVN"
-              error={errors.bvn}
-              register={register}
-            />
-            <ErrorField message={error?.message} />
+            <div>
+              <FormField
+                id="bvn"
+                icon={IdCard}
+                placeholder="Enter BVN"
+                error={errors.bvn}
+                register={register}
+              />
+              <ErrorField message={error?.message} />
+            </div>
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
                 <Button

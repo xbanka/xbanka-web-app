@@ -16,7 +16,7 @@ import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField } from "@/components/ui/field-error";
-import LivenessDetector from "@/components/ui/LivenessDetector";
+import LivenessDetector, { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
 
 export type IdSelfieStep =
   | "id-form"
@@ -72,6 +72,11 @@ export function IdSelfieModal({
     });
   };
 
+  const handleIdSuccess = () => {
+    setStep("selfie")
+    loadFaceLandmarker();
+  };
+
   const stepTitles: Record<IdSelfieStep, string> = {
     "id-form": "Select Your Preferred ID",
     "id-success": "ID Submitted",
@@ -80,47 +85,47 @@ export function IdSelfieModal({
   };
 
   return (
-    <Modal onClose={onClose}>
+    <Modal className="p-0" onClose={onClose}>
       {/* ── ID FORM ─────────────────────────────────────── */}
       {step === "id-form" && (
         <>
-          <div className="text-center space-y-2">
-            <h1 className="text-[26px] font-bold text-card-text">
-              Select your preferred ID
-            </h1>
-            <p className="text-sm text-text">
-              Verify your identity to unlock your wallet
-            </p>
-          </div>
+          <ModalHeader
+            className="px-8"
+            title="Select your preferred ID"
+            subtitle="Verify your identity to unlock your wallet"
+            onClose={onClose}
+          />
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 px-8 pb-8 space-y-6"
           >
-            <SelectField
-              id="idType"
-              icon={IdCard}
-              placeholder="Select ID type"
-              error={errors.idType}
-              options={[
-                { value: "nin", label: "NIN" },
-                {
-                  value: "international_passport",
-                  label: "International Passport",
-                },
-                { value: "drivers_license", label: "Driver's License" },
-                { value: "voters_card", label: "Voter's Card" },
-              ]}
-              register={register}
-            />
-            <FormField
-              icon={IdCard}
-              placeholder="Enter ID number"
-              error={errors.idNumber}
-              register={register}
-              id="idNumber"
-            />
-            <AttachmentUpload value={attachments} onChange={setAttachments} />
-            <ErrorField message={error?.message || skipError?.message} />
+            <div className="space-y-4">
+              <SelectField
+                id="idType"
+                icon={IdCard}
+                placeholder="Select ID type"
+                error={errors.idType}
+                options={[
+                  { value: "nin", label: "NIN" },
+                  {
+                    value: "international_passport",
+                    label: "International Passport",
+                  },
+                  { value: "drivers_license", label: "Driver's License" },
+                  { value: "voters_card", label: "Voter's Card" },
+                ]}
+                register={register}
+              />
+              <FormField
+                icon={IdCard}
+                placeholder="Enter ID number"
+                error={errors.idNumber}
+                register={register}
+                id="idNumber"
+              />
+              <AttachmentUpload value={attachments} onChange={setAttachments} />
+              <ErrorField message={error?.message || skipError?.message} />
+            </div>
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
                 <Button
@@ -159,45 +164,38 @@ export function IdSelfieModal({
       {/* ── ID SUCCESS ──────────────────────────────────── */}
       {step === "id-success" && (
         <SuccessState
-          title="ID Submitted ✅"
+          title="ID Submitted"
           subtitle="Your document has been submitted successfully. Next, take a quick selfie so we can match it with your ID."
           badge="review"
           ctaLabel="Continue to Selfie"
-          onCta={() => setStep("selfie")}
+          onCta={handleIdSuccess}
           onClose={onClose}
         />
       )}
 
       {/* ── SELFIE ──────────────────────────────────────── */}
       {step === "selfie" && (
-        <>
-          <div className="text-center space-y-2">
-            <h1 className="text-[26px] font-bold text-card-text leading-tight">
-              Almost Done!
-              <br />
-              Let's take a Selfie
-            </h1>
-            <p className="text-sm text-text leading-relaxed">
-              We'll match your photo with your ID to confirm it's really you.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
+        <div className="pb-8">
+          <ModalHeader
+            className="px-8"
+            title="Almost Done!, Let's take a Selfie"
+            subtitle="We'll match your photo with your ID to confirm it's really you."
+            onClose={onClose}
+          />
+          <div className="text-center">
             <LivenessDetector
               onBack={() => setStep("id-success")}
               onSuccess={() => setStep("selfie-success")}
               brandColor="#36b6ab"
             />
-            <p className="text-xs text-text text-center">
-              Good lighting. Neutral background. No hats or glasses.
-            </p>
           </div>
-        </>
+        </div>
       )}
 
       {/* ── SELFIE SUCCESS ──────────────────────────────── */}
       {step === "selfie-success" && (
         <SuccessState
-          title="Selfie Captured! 📸"
+          title="Selfie Captured"
           subtitle="Great shot! Your selfie has been matched with your ID. You can now proceed to verify your address."
           badge="verified"
           ctaLabel="Move to Proof of Address"
