@@ -27,11 +27,9 @@ export function SendCryptoModal({
   onSuccess,
 }: SendCryptoModalProps) {
   const [step, setStep] = useState<SendStep>("select_asset");
-  const [ processingError, setProcessingError] = useState<string | null>(null);
+  const [processingError, setProcessingError] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<UserWallet | null>();
-  const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(
-    "trc20",
-  );
+  const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(null);
   const [recipientAddress, setRecipientAddress] = useState("");
   const [recipientName, setRecipientName] = useState<string | undefined>();
   const [amount, setAmount] = useState("");
@@ -171,15 +169,15 @@ export function SendCryptoModal({
       />
     );
 
-    if (step === "failed") {
-        return (
-          <FailedStep
-            onClose={() => reset()}
-            onRetry={() => setStep("processing")}
-            errorMessage={processingError ? `${processingError}` : ""}
-          />
-        );
-      }
+  if (step === "failed") {
+    return (
+      <FailedStep
+        onClose={() => reset()}
+        onRetry={() => setStep("processing")}
+        errorMessage={processingError ? `${processingError}` : ""}
+      />
+    );
+  }
 
   return null;
 }

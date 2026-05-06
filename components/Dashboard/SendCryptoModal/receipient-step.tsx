@@ -93,7 +93,7 @@ export function RecipientStep({
           </div> */}
 
           {/* Contact list */}
-          <div className="">
+          {/* <div className="">
             {RECENT_CONTACTS.map((c, i) => (
               <button
                 key={i}
@@ -116,7 +116,8 @@ export function RecipientStep({
                 </div>
               </button>
             ))}
-          </div>
+          </div> */}
+          <h1 className="text-sm font-medium text-card-text">No recent contacts</h1>
         </div>
 
         <div className="flex gap-4">
