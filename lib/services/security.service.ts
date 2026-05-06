@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createPin,
   passwordChange,
@@ -48,10 +48,12 @@ export const useRequestOtp = () => {
 };
 
 export const useRevokeSessions = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => RevokeSessions(id),
 
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["active-sessions"] });
       toast.success("OTP sent to your email");
     },
 
@@ -62,10 +64,12 @@ export const useRevokeSessions = () => {
 };
 
 export const useRemoveDevice = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => RemoveDevice(id),
 
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registered-devices"] });
       toast.success("OTP sent to your email");
     },
 

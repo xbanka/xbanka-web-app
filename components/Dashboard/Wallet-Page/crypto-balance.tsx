@@ -91,9 +91,6 @@ export const CryptoBalance = () => {
           </div>
         </div>
       </DashboardCard>
-      {/* {
-        addFundsOpen && <DepositModal onClose={() => setAddFundsOpen(false)} />
-      } */}
       <DepositSidebar
         open={addFundsOpen}
         onClose={() => setAddFundsOpen(false)}
