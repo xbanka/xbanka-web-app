@@ -101,22 +101,23 @@ export const UseWithdrawCrypto = () => {
 // };
 
 export const useGenerateAddress = (
-  currency: string,
-  network: string
 ) => {
-  return useQuery({
-    queryKey: ["wallet-address", currency, network],
+  const queryClient = useQueryClient();
 
-    queryFn: async () => {
+  return useMutation({
+    mutationFn: async ({ currency, network }: { currency: string; network: string }) => {
       const res = await generateDepositAddress({ currency, network });
       return res;
     },
-
-    enabled: !!currency && !!network, // only run when both exist
-
-    staleTime: 1000 * 60 * 10, // 10 mins (no refetch within this time)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
     gcTime: 1000 * 60 * 30, // keep in cache 30 mins
   });
+
 };
 
 export const UseGetFiatWallet = () => {
