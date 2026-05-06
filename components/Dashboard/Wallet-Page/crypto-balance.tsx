@@ -83,7 +83,7 @@ export const CryptoBalance = () => {
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex h-12 min-w-0 flex   items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
+              className="flex h-12 min-w-0 items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
               <RefreshCcw className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="truncate font-medium">Convert</span>

@@ -1,18 +1,18 @@
 import { z } from "zod";
 
 export const step1Schema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  dateOfBirth: z.string().min(1),
-  phoneNumber: z.string().min(7),
-  gender: z.enum(["male", "female", "other"]),
-  country: z.string().min(1),
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
+  phoneNumber: z.string().min(7, { message: "Phone number must be at least 7 characters" }),
+  gender: z.enum(["male", "female", "other"], { message: "Gender is required" }),
+  country: z.string().min(1, { message: "Country is required" }),
 });
 
 export type step1FormValues = z.infer<typeof step1Schema>;
 
 export const step2Schema = z.object({
-  bvn: z.string().length(11),
+  bvn: z.string().length(11, { message: "BVN must be 11 characters long" }),
 });
 
 export type step2FormValues = z.infer<typeof step2Schema>;

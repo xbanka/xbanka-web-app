@@ -17,12 +17,9 @@ export function FormField({
   onChange,
   className,
 }: FormFieldProps) {
-  
   return (
     <div className={cn("space-y-1", className)}>
-      {label && (
-        <Label label={label} />
-      )}
+      {label && <Label label={label} />}
       <div className="relative">
         {Icon && (
           <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
@@ -32,16 +29,16 @@ export function FormField({
           type={type}
           placeholder={placeholder}
           disabled={disabled}
-          className={`${Icon ? "pl-10 pr-4" : "px-4"}`}
-          // {...register(id)}
+          className={cn(
+            Icon ? "pl-10 pr-4" : "px-4",
+            type === "date" && "[&::-webkit-calendar-picker-indicator]:hidden",
+          )}
           value={value}
           onChange={onChange}
           {...(register ? register(id) : {})}
         />
       </div>
-      {error && (
-        <ErrorField message={error.message} />
-      )}
+      {error && <ErrorField message={error.message} />}
     </div>
   );
 }
