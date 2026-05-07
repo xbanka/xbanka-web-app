@@ -28,12 +28,12 @@ export function RecentTransactions() {
   };
   const getBadge = (status: string) => {
     if (status === "COMPLETED") {
-      return "w-6 h-6 text-[#6CE9A6]";
+      return "w-6 h-6 text-[#6CE9A6] bg-[#012E03]";
     }
     if (status === "PENDING") {
-      return "w-6 h-6 text-[#FF8882]";
+      return "w-6 h-6 text-[#FEC84B] bg-[#3E2E00]";
     }
-    return "w-6 h-6 text-[#FF8882]";
+    return "w-6 h-6 text-[#FF8882] bg-[#390201]";
   };
   return (
     <DashboardCard>
@@ -120,7 +120,7 @@ export function RecentTransactions() {
                 <p
                   className={`text-[14px] text-card-text font-medium leading-5`}
                 >
-                  {tx.amount}
+                  {tx.amount} {tx.currency}
                 </p>
                 <StatusBadge status={tx.status} />
               </div>
