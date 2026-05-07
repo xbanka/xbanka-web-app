@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { SearchSelectField } from "@/components/ui/search-select-field";
 import { SelectField } from "@/components/ui/select";
 import { bankOptions } from "@/lib/schema/bank-schema";
 import { UseFundFiatWalletBank } from "@/lib/services/wallet.service";
@@ -58,7 +59,7 @@ export function AddNewBankStep({
         className="px-10 pb-10 pt-6 space-y-8"
       >
         <div className="space-y-4">
-          <SelectField
+          <SearchSelectField
             id="bankName"
             // label="Bank Name"
             placeholder="Select bank"

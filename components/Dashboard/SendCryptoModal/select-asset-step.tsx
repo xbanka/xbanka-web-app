@@ -124,7 +124,7 @@ export function SelectAssetStep({
           >
             Back
           </Button>
-          <Button size="lg" className="flex-3" onClick={onNext}>
+          <Button disabled={!selectedId} variant={selectedId ? "default" : "disabled"} size="lg" className="flex-3" onClick={onNext}>
             Continue
           </Button>
         </div>

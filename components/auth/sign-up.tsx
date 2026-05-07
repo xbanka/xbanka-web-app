@@ -90,17 +90,12 @@ const SignUp = () => {
           </p>
           <ErrorField message={resendError?.message} />
         </div>
-        <Link href="/sign-in">
-          <Button type="submit" className="w-full p-2.5">
-            Ok
-          </Button>
-        </Link>
         <div className="text-center mt-6 font-normal leading-6 text-[16px] text-text">
           Did not get the email?{" "}
           <Button
             disabled={countdown > 0 || resendPending}
             onClick={handleResendVerification}
-            className="w-full border-none bg-transparent text-blue-500 hover:bg-none"
+            className="w-full border-none bg-transparent text-blue-500 hover:bg-transparent"
           >
             {resendPending
               ? "Sending..."

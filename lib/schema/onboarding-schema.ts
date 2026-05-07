@@ -1,18 +1,18 @@
 import { z } from "zod";
 
 export const step1Schema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  dateOfBirth: z.string().min(1),
-  phoneNumber: z.string().min(7),
-  gender: z.enum(["male", "female", "other"]),
-  country: z.string().min(1),
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
+  phoneNumber: z.string().min(7, { message: "Phone number must be at least 7 characters" }),
+  gender: z.enum(["male", "female", "other"], { message: "Gender is required" }),
+  country: z.string().min(1, { message: "Country is required" }),
 });
 
 export type step1FormValues = z.infer<typeof step1Schema>;
 
 export const step2Schema = z.object({
-  bvn: z.string().length(11),
+  bvn: z.string().length(11, { message: "BVN must be 11 characters long" }),
 });
 
 export type step2FormValues = z.infer<typeof step2Schema>;
@@ -24,7 +24,7 @@ export const step3Schema = z.object({
     "drivers_license",
     "voters_card",
   ]),
-  idNumber: z.string().min(5),
+  idNumber: z.string().min(5, { message: "ID number must be at least 5 characters" }),
   document: z.any(),
 });
 
@@ -37,10 +37,10 @@ export const step4Schema = z.object({
 export type step4FormValues = z.infer<typeof step4Schema>;
 
 export const step5Schema = z.object({
-  address: z.string().min(5),
-  landmark: z.string(),
-  country: z.string(),
-  state: z.string(),
+  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
+  landmark: z.string().min(2, { message: "Landmark must be at least 2 characters" }),
+  country: z.string().min(2),
+  state: z.string().min(2),
   residenceDocumentType: z.enum([
     "utility_bill",
     "bank_statement",

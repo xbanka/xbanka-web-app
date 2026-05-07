@@ -95,44 +95,51 @@ export function Sidebar({
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const active = pathname === `/${item.id}`;
+
                 const route = item.id === "dashboard" ? "/" : `/${item.id}`;
-                console.log(
-                  "Active:",
-                  active,
-                  "Pathname:",
-                  pathname,
-                  "Route:",
-                  route,
+
+                const active = pathname === route;
+
+                const content = (
+                  <div
+                    title={collapsed ? item.label : undefined}
+                    className={`w-full flex font-medium leading-5.5 items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors
+      ${
+        item.disabled
+          ? "opacity-50 cursor-not-allowed bg-card-background text-text"
+          : active
+            ? "border border-input bg-border text-card-text"
+            : "bg-card-background text-text hover:bg-text/8 hover:text-text"
+      }
+      ${collapsed ? "justify-center" : ""}`}
+                  >
+                    <Icon
+                      className={`${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`}
+                    />
+
+                    {!collapsed && (
+                      <>
+                        <span className="flex-1 text-left">{item.label}</span>
+
+                        {item.badge && (
+                          <span
+                            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${item.badgeColor}`}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
                 );
+
+                if (item.disabled) {
+                  return <div key={item.id}>{content}</div>;
+                }
+
                 return (
                   <Link href={route} key={item.id}>
-                    <div
-                      title={collapsed ? item.label : undefined}
-                      className={`w-full flex font-medium leading-5.5 items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors
-                        ${
-                          active
-                            ? "border border-input bg-border text-card-text"
-                            : "bg-card-background text-text hover:bg-text/8 hover:text-text"
-                        }
-                        ${collapsed ? "justify-center" : ""}`}
-                    >
-                      <Icon
-                        className={`${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`}
-                      />
-                      {!collapsed && (
-                        <>
-                          <span className="flex-1 text-left">{item.label}</span>
-                          {item.badge && (
-                            <span
-                              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${item.badgeColor}`}
-                            >
-                              {item.badge}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </div>
+                    {content}
                   </Link>
                 );
               })}

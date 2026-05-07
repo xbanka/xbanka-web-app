@@ -1,19 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { AvatarCircle } from "./avatarCircle";
-import { Input } from "@/components/ui/input";
-import { StepIndicator } from "./stepIndicator";
-import { NIGERIAN_BANKS } from "./mockData";
-import { useState } from "react";
 import { Recipient, Step } from "./types";
-import { SelectField } from "@/components/ui/select";
-import { AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { bankOptions } from "@/lib/schema/bank-schema";
 import { FormField } from "@/components/ui/FormField";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorField } from "@/components/ui/field-error";
+import { SearchSelectField } from "@/components/ui/search-select-field";
 
 const addBankSchema = z.object({
   bankName: z.string().min(1, "Please select a bank"),
@@ -81,7 +73,7 @@ export function BankAccountStep({
           error={errors.accountNumber}
         />
 
-        <SelectField
+        <SearchSelectField
           id="bankName"
           label="Bank Name"
           placeholder="Select bank"

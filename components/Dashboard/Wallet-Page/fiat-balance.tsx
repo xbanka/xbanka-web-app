@@ -19,8 +19,6 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const wallets = data?.data?.data || [];
   const latestWallet = wallets[0];
   const isAddFundDisabled = !isBvnVerified;
-  console.log("fiat wallet balance", data);
-  console.log("sendFundsOpen", sendFundsOpen);
   const { data: bankAccountList } = UseBankAccountList();
   return (
     <div>
