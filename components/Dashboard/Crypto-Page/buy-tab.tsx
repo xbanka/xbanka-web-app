@@ -228,7 +228,7 @@ export function BuyTab() {
           receiveSymbol={targetCurrency}
           rate={
             quoteData
-              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              ? `1 ${sourceCurrency} = ${quoteData.rate} ${targetCurrency}`
               : ""
           }
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
