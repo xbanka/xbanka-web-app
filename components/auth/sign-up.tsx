@@ -95,7 +95,7 @@ const SignUp = () => {
           <Button
             disabled={countdown > 0 || resendPending}
             onClick={handleResendVerification}
-            className="w-full border-none bg-transparent text-blue-500 hover:bg-transparent"
+            className="w-full border-none bg-transparent text-Green hover:bg-transparent"
           >
             {resendPending
               ? "Sending..."
