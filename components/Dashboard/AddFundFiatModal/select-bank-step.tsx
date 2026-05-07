@@ -37,6 +37,13 @@ export function SelectBankStep({
 
       <div className="space-y-8 px-10 pb-10">
         <div className="space-y-4">
+          {
+            linkedBanks.length === 0 && !loading && (
+              <div className="">
+               No linked bank accounts found.
+              </div>
+            )
+          }
           {linkedBanks?.map((b: BankAccount) => {
             const active = selectedId === b.id;
             return (

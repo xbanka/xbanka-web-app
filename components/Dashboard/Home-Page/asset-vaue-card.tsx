@@ -75,10 +75,6 @@ export function AssetValueCard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size={"sm"}>
-            <Plus className="w-4 h-4" />
-            Add funds
-          </Button>
           <Button
             variant={"outline"}
             size={"sm"}

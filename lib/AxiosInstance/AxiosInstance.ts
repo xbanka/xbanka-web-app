@@ -88,6 +88,8 @@ AxiosInstance.interceptors.response.use(
     } else if (!error.response) {
       apiMessage = "Network error. Please check your internet connection.";
       status = 503;
+    } else if (status === 500) {
+      apiMessage = "Service currently unavailable. Please try again later.";
     } else {
       apiMessage =
         error.response?.data?.message ||
