@@ -2,8 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { UseGetFiatWalletSavedCards } from "@/lib/services/wallet.service";
-import { cn } from "@/lib/utils";
-import { SAVED_CARDS } from "@/lib/wallet-page";
 import { Plus } from "lucide-react";
 
 export function SelectCardStep({

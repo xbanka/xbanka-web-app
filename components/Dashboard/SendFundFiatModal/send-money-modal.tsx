@@ -21,12 +21,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
   const [tab, setTab] = useState<Tab>("select-recipient"); // rename this
   const [recipient, setRecipient] = useState<Recipient | null>(null);
-  // accountNumber: "0123456789",
-  //      bankCode: "058",
-  //      bankName:"United Bank For Africa",
-  //      accountName: "JOHN DOE",
-  //      amount: 5000,
-  //      narration: "One-off payment to John"
+
   const [XbankaRecipient, setXbankaRecipient] =
     useState<RecipientXbankaUsersTypes | null>(null);
 
@@ -48,7 +43,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
 
   const handleGoToBank = () => {
     setTab("bank-form");
-    setStep("bank-form");
+    setStep("select-recipient");
   };
 
   const handleContinue = (updatedRecipient: Recipient) => {
@@ -79,16 +74,13 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
       <ModalHeader
         title="Send Money"
         subtitle="Send money to your friends and family quickly and securely"
-        onBack={
-          step === "bank-form"
-            ? () => setStep("select-recipient")
-            : step === "enter-amount"
-              ? () =>
-                  setStep(
-                    tab === "bank-form" ? "bank-form" : "select-recipient",
-                  )
-              : onBack
-        }
+        onBack={() => {
+          if (tab === "bank-form") {
+            setStep("select-recipient");
+          } else {
+            setStep("select-recipient");
+          }
+        }}
         onClose={onClose}
         className="px-8 py-6"
       />
@@ -100,11 +92,9 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           step={step}
         />
       </div> */}
-      {step === "select-recipient" && (
-        <div className="px-8 pb-3">
-          <TabToggle active={tab} onChange={handleTabChange} />
-        </div>
-      )}
+      <div className="px-8 pb-3">
+        <TabToggle active={tab} onChange={handleTabChange} />
+      </div>
       <div className="px-0">
         {/* STEP 1 */}
         {step === "select-recipient" && tab === "select-recipient" && (
@@ -118,7 +108,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             setStep={setStep}
             setRecipient={setRecipient}
             recipient={recipient}
-            onBack={() => handleTabChange("xbanka")}
+            onBack={() => handleTabChange("select-recipient")}
             onFound={handleBankFound}
             onNotFound={() => {}}
           />
@@ -127,11 +117,13 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
         {step === "enter-amount" && recipient && (
           <EnterAmountStep
             recipient={recipient}
-            onBack={() =>
-              setStep(
-                tab === "select-recipient" ? "select-recipient" : "bank-form",
-              )
-            }
+            onBack={() => {
+              if (tab === "bank-form") {
+                setStep("select-recipient");
+              } else {
+                setStep("select-recipient");
+              }
+            }}
             onContinue={handleContinue} // This now receives the full object
           />
         )}

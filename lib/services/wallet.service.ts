@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  ActiveNetworksCrypto,
   addBankAcounts,
   deleteFiatWalletSavedCard,
   executeConversion,
@@ -262,6 +263,20 @@ export const UseBankAccountList = () => {
     queryFn: async () => {
       try {
         const response = await getBankAcountsList();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
+export const UseActiveNetworksCrypto = () => {
+  return useQuery({
+    queryKey: ["active-networks-crypto"],
+    queryFn: async () => {
+      try {
+        const response = await ActiveNetworksCrypto();
         return response;
       } catch (err) {
         handleApiError(err);
