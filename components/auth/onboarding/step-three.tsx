@@ -106,7 +106,13 @@ function Step3({ setStep }: Step3Props) {
           register={register}
           id="idNumber"
         />
+        <div className="space-y-2">
+          <div className="space-y-1 text-left">
+            <h1 className="font-medium text-sm leading-5 text-card-text">Upload ID</h1>
+            <p className="font-normal text-sm leading-6 text-text">Include receipt of transaction</p>
+          </div>
         <AttachmentUpload value={attachments} onChange={setAttachments} />
+        </div>
         <ErrorField message={error?.message || skipError?.message} />
         <div className="space-y-3.25">
           <div className="flex flex-col md:flex-row gap-4 mt-1">

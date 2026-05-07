@@ -8,6 +8,7 @@ interface NavItem {
   icon: React.ElementType;
   badge?: string;
   badgeColor?: string;
+  disabled?: boolean,
 }
  
 interface NavSection {

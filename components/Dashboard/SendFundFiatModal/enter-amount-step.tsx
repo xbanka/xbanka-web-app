@@ -5,6 +5,8 @@ import { Recipient, Step } from "./types";
 import { AvatarCircle } from "./avatarCircle";
 import { QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
+import { UseGetFiatWallet } from "@/lib/services/wallet.service";
+import { sumFiatBalances } from "@/lib/sumBalances";
 
 export function EnterAmountStep({
   recipient,
@@ -15,8 +17,10 @@ export function EnterAmountStep({
   onBack: () => void;
   onContinue: (Recipient: Recipient) => void;
 }) {
-  const [amount, setAmount] = useState("20,000");
+  const [amount, setAmount] = useState("");
   const [narration, setNarration] = useState("");
+  const { data, error, isPending } = UseGetFiatWallet();
+  const wallets = data?.data?.data || [];
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
   const balance = 4250890.5;
@@ -79,7 +83,10 @@ export function EnterAmountStep({
             <span>Minimum transfer: ₦{minTransfer.toLocaleString()}</span>
             <span>
               Balance: ₦
-              {balance.toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+              {/* {balance.toLocaleString("en-NG", { minimumFractionDigits: 2 })} */}
+              {data?.data
+                ? `${sumFiatBalances(wallets).toLocaleString()}`
+                : "₦0.00"}
             </span>
           </div>
         </div>
@@ -114,13 +121,14 @@ export function EnterAmountStep({
           />
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-4 pt-2">
           <Button variant="outline" className="flex-1" onClick={onBack}>
             Back
           </Button>
           <Button
-            className="flex-1"
+            className="flex-3"
             disabled={!isValid}
+            variant={isValid ? "default" : "disabled"}
             onClick={handleContinue}
           >
             Continue
