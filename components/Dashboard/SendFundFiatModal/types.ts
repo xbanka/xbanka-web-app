@@ -1,5 +1,12 @@
-export type Tab = "select-recipient" | "bank-form" | "xbanka";
-export type Step = "select-recipient" | "bank-form" | "enter-amount" | "confirm_bank" | "enter_pin" | "success" | "processing" ;
+export type Tab = "select-recipient" | "bank-form";
+
+export type Step =
+  | "select-recipient"
+  | "enter-amount"
+  | "confirm_bank"
+  | "enter_pin"
+  | "processing"
+  | "success";
 
 export interface Recipient {
   accountNumber: string;

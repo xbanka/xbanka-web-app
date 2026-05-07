@@ -35,8 +35,9 @@ export function AddFundsModal({
   } = UseGetBankAcounts();
   const linkedBanks = bankAccountData?.data?.data;
 
-  const selectedBank: BankAccount =
-    linkedBanks?.find((b: BankAccount) => b.id === selectedBankId);
+  const selectedBank: BankAccount = linkedBanks?.find(
+    (b: BankAccount) => b.id === selectedBankId,
+  );
   const selectedCard =
     SAVED_CARDS.find((c) => c.id === selectedCardId) ?? SAVED_CARDS[0];
   const source = method === "card" ? selectedCard : selectedBank;
@@ -76,8 +77,8 @@ export function AddFundsModal({
   if (step === "select_bank")
     return (
       <SelectBankStep
-      loading={bankAccountPending}
-      error={bankAccountError?.message}
+        loading={bankAccountPending}
+        error={bankAccountError?.message}
         linkedBanks={linkedBanks}
         selectedId={selectedBankId}
         onSelect={setSelectedBankId}

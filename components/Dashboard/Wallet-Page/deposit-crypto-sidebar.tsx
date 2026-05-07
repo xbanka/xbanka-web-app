@@ -2,7 +2,10 @@ import { Button } from "@/components/ui/button";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { ErrorField } from "@/components/ui/field-error";
 import { SelectFieldWithValue } from "@/components/ui/select-with-value";
-import { useGenerateAddress } from "@/lib/services/wallet.service";
+import {
+  UseActiveNetworksCrypto,
+  useGenerateAddress,
+} from "@/lib/services/wallet.service";
 import { AlertTriangle, Copy } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -26,13 +29,20 @@ export const DepositSidebar = ({
     error,
     mutate: generateAddressMutate,
   } = useGenerateAddress();
+  const {
+    data: activeNetworksData,
+    isPending: activeNetworksisLoading,
+    error: activeNetworksError,
+  } = UseActiveNetworksCrypto();
+  const cryptoData = activeNetworksData?.data?.data || {};
+  console.log("active crypto networks", cryptoData);
   console.log("addressData", addressData?.data?.address || "none address");
 
   const networkOptions =
-    currency && CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS]
-      ? CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS].map((n) => ({
-          label: n,
-          value: n,
+    currency && cryptoData[currency]?.networks
+      ? cryptoData[currency].networks.map((network: any) => ({
+          label: network.networkName,
+          value: network.networkCode,
         }))
       : [];
 
@@ -46,11 +56,11 @@ export const DepositSidebar = ({
   };
 
   useEffect(() => {
-  // Only trigger the request if both values are present
-  if (currency && network) {
-    generateAddressMutate({ currency, network });
-  }
-}, [currency, network, generateAddressMutate]);
+    // Only trigger the request if both values are present
+    if (currency && network) {
+      generateAddressMutate({ currency, network });
+    }
+  }, [currency, network, generateAddressMutate]);
 
   return (
     <div
@@ -95,7 +105,16 @@ export const DepositSidebar = ({
               <SelectFieldWithValue
                 label="Select a coin"
                 placeholder="Select Currency"
-                options={CURRENCY_OPTIONS}
+                options={Object.entries(cryptoData)
+                  .filter(
+                    ([_, value]: any) =>
+                      value.currencyType === "CRYPTO" ||
+                      value.currencyType === "STABLE",
+                  )
+                  .map(([key, value]: any) => ({
+                    label: `${key} - ${value.currencyName}`,
+                    value: key,
+                  }))}
                 value={currency}
                 onChange={(value) => {
                   setCurrency(value);
@@ -103,27 +122,29 @@ export const DepositSidebar = ({
                 }}
               />
               <div className="-mx-6 flex gap-3 mt-3 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0">
-                {QUICK_COINS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => {
-                      setCurrency(item);
-                      setNetwork("");
-                    }}
-                    className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
-                  >
-                    <Image
-                      src={"/tether.svg"}
-                      alt="tether"
-                      width={16}
-                      height={16}
-                    />
-                    <span className="text-[12px] font-normal leading-4.5 text-card-text">
-                      {item}
-                    </span>
-                  </button>
-                ))}
+                {Object.keys(cryptoData)
+                  .filter((key) => ["USDT", "BTC", "ETH", "SOL"].includes(key))
+                  .map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => {
+                        setCurrency(item);
+                        setNetwork("");
+                      }}
+                      className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
+                    >
+                      <Image
+                        src={"/tether.svg"}
+                        alt="tether"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="text-[12px] font-normal leading-4.5 text-card-text">
+                        {item}
+                      </span>
+                    </button>
+                  ))}
               </div>
             </div>
             {/* Network */}

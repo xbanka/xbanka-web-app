@@ -199,8 +199,8 @@ export const addBankAcounts = async (data: AddBankAccountPayload) => {
   };
 };
 
-export const ActiveNetworksCrypto = async (data: AddBankAccountPayload) => {
-  const response = await AxiosInstance.post("/wallets/active-networks");
+export const ActiveNetworksCrypto = async () => {
+  const response = await AxiosInstance.get("/wallets/active-networks");
 
   return {
     success: true,

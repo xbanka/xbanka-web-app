@@ -33,7 +33,7 @@ export function SelectRecipientStep({
             Recent Recipients
           </p>
           <div>
-            {RECENT_RECIPIENTS.map((r) => (
+            {/* {RECENT_RECIPIENTS.map((r) => (
               <button
                 key={r.id}
                 onClick={() => onSelectXbanka(r)}
@@ -58,7 +58,8 @@ export function SelectRecipientStep({
                   </svg>
                 </div>
               </button>
-            ))}
+            ))} */}
+            No recent recipients
           </div>
         </div>
       </div>

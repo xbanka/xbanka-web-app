@@ -4,7 +4,6 @@ import { AssetValueCard } from "./asset-vaue-card";
 import { MarketOverview } from "./market-overview";
 import { OnboardingJourney } from "./onboarding-journey";
 import { QuickActions } from "./quick-actions";
-import { TopGiftCards } from "./top-gift-card";
 import { useUserStore } from "@/store/user.store";
 
 export default function DashboardPage() {

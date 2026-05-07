@@ -31,7 +31,9 @@ export function FormField({
           disabled={disabled}
           className={cn(
             Icon ? "pl-10 pr-4" : "px-4",
-            type === "date" && "[&::-webkit-calendar-picker-indicator]:hidden",
+            // Use opacity-0 instead of hidden to keep the functionality
+            type === "date" &&
+              "[&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
           )}
           value={value}
           onChange={onChange}
