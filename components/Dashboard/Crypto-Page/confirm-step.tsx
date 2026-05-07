@@ -48,7 +48,7 @@ export function ConfirmStep({
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-background border border-border rounded-xl py-4 px-5">
                 <p className="text-xs font-normal leading-4.5 text-text mb-2">
-                  {mode === "BUY" ? "You Buy" : "You Sell"}
+                  {mode === "BUY" ? "You Pay" : "You Sell"}
                 </p>
                 <p className="text-base font-normal leading-6 text-card-text">
                   {payAmount}
@@ -56,7 +56,7 @@ export function ConfirmStep({
                 {/* <p className="text-xs text-text mt-0.5">{paySymbol}</p> */}
               </div>
               <div className="bg-background border border-border rounded-xl py-4 px-5">
-                <p className="text-xs text-text mb-1">{mode === "BUY" ? "You Pay" : "You Receive"}</p>
+                <p className="text-xs text-text mb-1">{mode === "BUY" ? "You Receive" : "You Receive"}</p>
                 {isValidAmount ? (
                   <p className="text-base font-bold text-Green">
                     {receiveAmount}
