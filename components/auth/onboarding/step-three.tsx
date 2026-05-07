@@ -109,7 +109,7 @@ function Step3({ setStep }: Step3Props) {
         <div className="space-y-2">
           <div className="space-y-1 text-left">
             <h1 className="font-medium text-sm leading-5 text-card-text">Upload ID</h1>
-            <p className="font-normal text-sm leading-6 text-tex">Include receipt of transaction</p>
+            <p className="font-normal text-sm leading-6 text-text">Include receipt of transaction</p>
           </div>
         <AttachmentUpload value={attachments} onChange={setAttachments} />
         </div>

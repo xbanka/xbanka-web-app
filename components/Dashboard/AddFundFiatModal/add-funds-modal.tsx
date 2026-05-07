@@ -61,8 +61,6 @@ export function AddFundsModal({
 
   const startProcessing = async () => {
     setStep("processing");
-    // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
-    // setStep("success");
   };
 
   // ── Bank flow ──
@@ -79,7 +77,7 @@ export function AddFundsModal({
     return (
       <SelectBankStep
       loading={bankAccountPending}
-      error={bankAccountError}
+      error={bankAccountError?.message}
         linkedBanks={linkedBanks}
         selectedId={selectedBankId}
         onSelect={setSelectedBankId}

@@ -24,7 +24,7 @@ export const step3Schema = z.object({
     "drivers_license",
     "voters_card",
   ]),
-  idNumber: z.string().min(5),
+  idNumber: z.string().min(5, { message: "ID number must be at least 5 characters" }),
   document: z.any(),
 });
 
@@ -37,10 +37,10 @@ export const step4Schema = z.object({
 export type step4FormValues = z.infer<typeof step4Schema>;
 
 export const step5Schema = z.object({
-  address: z.string().min(5),
-  landmark: z.string(),
-  country: z.string(),
-  state: z.string(),
+  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
+  landmark: z.string().min(2, { message: "Landmark must be at least 2 characters" }),
+  country: z.string().min(2),
+  state: z.string().min(2),
   residenceDocumentType: z.enum([
     "utility_bill",
     "bank_statement",

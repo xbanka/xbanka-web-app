@@ -28,7 +28,7 @@ export const SelectWithRadioButton = ({
       className={cn(
         "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
         active
-          ? "border-Green bg-Green/5"
+          ? "border-border-active bg-[#042F2E]"
           : "border-border hover:border-border-active",
       )}
     >
