@@ -198,9 +198,21 @@ export function SellTab() {
           <Button
             onClick={handleQuoteModal}
             className="w-full transition-colors"
-            disabled={!amount || Number(amount) <= 0}
+            variant={
+                !amount || Number(amount) <= 0 || isPending
+                  ? "disabled"
+                  : "default"
+              }
+              disabled={
+                !amount ||
+                Number(amount) <= 0 ||
+                RateConversionPending ||
+                isPending
+              }
           >
-            Get Quote
+            {RateConversionPending || isPending
+                ? "Getting Quote..."
+                : "Get Quote"}
           </Button>
           <p className="text-[10px] text-text text-center">
             By Proceeding, you agree to Xbanka{" "}
