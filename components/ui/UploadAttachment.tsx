@@ -56,10 +56,10 @@ export function AttachmentUpload({
       {/* Upload box */}
       <div
         onClick={() => inputRef.current?.click()}
-        className="border-2 border-dashed border-[#E5E7EB] rounded-lg py-4 px-[48px] text-center cursor-pointer hover:bg-gray-50 transition"
+        className="border border-input rounded-lg py-4 px-12 bg-input-background text-center cursor-pointer hover:bg-input-background/80 transition"
       >
         <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-        <p className="text-[12px] font-[400] leading-[16px] text-gray-600">
+        <p className="text-[12px] font-normal leading-4 text-gray-600">
           Upload screenshot, receipt, or proof document
         </p>
         <p className="text-xs text-gray-400 mt-1">

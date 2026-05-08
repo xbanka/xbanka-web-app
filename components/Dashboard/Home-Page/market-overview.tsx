@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 
-export function MarketOverview({ show = true }: { show?: boolean }) {
+export function MarketOverview() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const limit = 6;
@@ -73,7 +73,7 @@ export function MarketOverview({ show = true }: { show?: boolean }) {
     {
       key: "symbol",
       header: "Assets",
-      className: "w-[200px]",
+      // className: "w-[200px]",
       render: (item: CryptoMarketOverview) => (
         <div className="flex items-center gap-2 ">
           <div className="bg-card-background h-8 w-8 rounded-full"></div>

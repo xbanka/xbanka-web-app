@@ -42,42 +42,42 @@ AxiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/login") &&
-      !originalRequest.url.includes("/auth/signup") &&
-      !originalRequest.url.includes("/auth/verify-email")
-    ) {
-      originalRequest._retry = true;
+    // if (
+    //   error.response?.status === 401 &&
+    //   !originalRequest._retry &&
+    //   !originalRequest.url.includes("/auth/login") &&
+    //   !originalRequest.url.includes("/auth/signup") &&
+    //   !originalRequest.url.includes("/auth/verify-email")
+    // ) {
+    //   originalRequest._retry = true;
 
-      try {
-        const refreshResponse = await AxiosInstance.post(
-          "/auth/refresh",
-          {},
-          { withCredentials: true },
-        );
+    //   try {
+    //     const refreshResponse = await AxiosInstance.post(
+    //       "/auth/refresh",
+    //       {},
+    //       { withCredentials: true },
+    //     );
 
-        const newAccessToken = refreshResponse.data?.access_token;
-        if (newAccessToken) {
-          tokenStore.set(newAccessToken);
-          localStorage.setItem("accessToken", newAccessToken);
-          // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          originalRequest.headers = {
-            ...(originalRequest.headers || {}),
-            Authorization: `Bearer ${newAccessToken}`,
-          };
-        }
-        return AxiosInstance(originalRequest);
-      } catch (refreshError) {
-        tokenStore.clear();
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("accessToken");
-          window.location.href = "/sign-in";
-        }
-        return Promise.reject(refreshError);
-      }
-    }
+    //     const newAccessToken = refreshResponse.data?.access_token;
+    //     if (newAccessToken) {
+    //       tokenStore.set(newAccessToken);
+    //       localStorage.setItem("accessToken", newAccessToken);
+    //       // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+    //       originalRequest.headers = {
+    //         ...(originalRequest.headers || {}),
+    //         Authorization: `Bearer ${newAccessToken}`,
+    //       };
+    //     }
+    //     return AxiosInstance(originalRequest);
+    //   } catch (refreshError) {
+    //     tokenStore.clear();
+    //     if (typeof window !== "undefined") {
+    //       localStorage.removeItem("accessToken");
+    //       window.location.href = "/sign-in";
+    //     }
+    //     return Promise.reject(refreshError);
+    //   }
+    // }
     // NETWORK / TIMEOUT HANDLING
     let apiMessage = "Something went wrong";
     let status = error.response?.status || 500;
@@ -88,6 +88,8 @@ AxiosInstance.interceptors.response.use(
     } else if (!error.response) {
       apiMessage = "Network error. Please check your internet connection.";
       status = 503;
+    } else if (status === 500) {
+      apiMessage = "Service currently unavailable. Please try again later.";
     } else {
       apiMessage =
         error.response?.data?.message ||

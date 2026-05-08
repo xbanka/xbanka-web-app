@@ -5,7 +5,9 @@ import { ConfirmModal } from "./confirm-modal";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
+  UseGetCryptoWallet,
   useGetCurrency,
+  UseGetFiatWallet,
   useGetGroupedPair,
   useGetRateConversion,
   useQuoteConversion,
@@ -13,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
+import { sumFiatBalances } from "@/lib/sumBalances";
 
 type FormValues = {
   receiveAmount: string;
@@ -27,10 +30,17 @@ export function BuyTab() {
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
-  const [sourceCurrency, setSourceCurrency] = useState("NGNX");
-  const [targetCurrency, setTargetCurrency] = useState("USDT");
+  const [sourceCurrency, setSourceCurrency] = useState("USDT");
+  const [targetCurrency, setTargetCurrency] = useState("NGNX");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
+  const {
+    data: walletData,
+    error: walletError,
+    isPending: walletPending,
+  } = UseGetFiatWallet();
+  const wallets = walletData?.data?.data || [];
+  const latestWallet = wallets[0];
 
   const { data, mutate, isPending } = useQuoteConversion();
   const {
@@ -38,7 +48,6 @@ export function BuyTab() {
     mutate: RateConversionMutate,
     isPending: RateConversionPending,
   } = useGetRateConversion();
-  console.log("RateConversionData", RateConversionData);
   const {
     data: groupedPairData,
     error: groupedPairError,
@@ -55,10 +64,10 @@ export function BuyTab() {
   const { fiat, crypto } = splitCurrencies(currencies);
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
 
-  const validTargets =
-    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+  const validSources =
+    pairMap.find((item: any) => item.code === targetCurrency)?.pairs || [];
 
-  const TARGET_OPTIONS = validTargets.map((pair: any) => ({
+  const SOURCE_OPTIONS = validSources.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
   }));
@@ -90,17 +99,18 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
+          console.log("refetchQuote id:", res?.data.id)
         },
       },
     );
   };
   useEffect(() => {
-    if (validTargets.length > 0) {
-      const hasUSDT = validTargets.find((p: any) => p.code === "USDT");
+    if (validSources.length > 0) {
+      const hasUSDT = validSources.find((p: any) => p.code === "USDT");
 
-      setTargetCurrency(hasUSDT ? "USDT" : validTargets[0].code);
+      setSourceCurrency(hasUSDT ? "USDT" : validSources[0].code);
     }
-  }, [validTargets]);
+  }, [validSources]);
 
   useEffect(() => {
     if (!debouncedAmount) {
@@ -140,25 +150,29 @@ export function BuyTab() {
       <div className="gap-4">
         <div className="space-y-6">
           <AmountRow
-            label="You Buy"
-            available="₦40,000"
+            label="You Pay"
+            available={
+              wallets
+                ? `₦${sumFiatBalances(wallets).toLocaleString()}`
+                : "₦0.00"
+            }
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={FIAT_OPTIONS}
-            selectedCurrency={sourceCurrency}
-            onCurrencyChange={setSourceCurrency}
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
           />
           <div className="space-y-3">
             <AmountRow
-              label="You Pay"
+              label="You Receive"
               value={
                 convertData?.netPayout ? convertData.netPayout.toString() : ""
               }
               readOnly
-              OPTIONS={TARGET_OPTIONS}
+              OPTIONS={SOURCE_OPTIONS}
               currencyId
-              selectedCurrency={targetCurrency}
-              onCurrencyChange={setTargetCurrency}
+              selectedCurrency={sourceCurrency}
+              onCurrencyChange={setSourceCurrency}
             />
             {RateConversionData?.data?.estimatedPrice && (
               <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
@@ -175,9 +189,21 @@ export function BuyTab() {
             <Button
               onClick={handleQuoteModal}
               className="w-full transition-colors"
-              disabled={!amount || Number(amount) <= 0}
+              variant={
+                !amount || Number(amount) <= 0 || isPending
+                  ? "disabled"
+                  : "default"
+              }
+              disabled={
+                !amount ||
+                Number(amount) <= 0 ||
+                RateConversionPending ||
+                isPending
+              }
             >
-              Get Quote
+              {RateConversionPending || isPending
+                ? "Getting Quote..."
+                : "Get Quote"}
             </Button>
             <p className="text-[10px] text-text text-center">
               By Proceeding, you agree to Xbanka{" "}
@@ -199,12 +225,12 @@ export function BuyTab() {
           handleReset={handleReset}
           mode="BUY"
           payAmount={Number(amount || 0)}
-          paySymbol={sourceCurrency}
-          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          paySymbol={targetCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${sourceCurrency}` || ""}
           receiveSymbol={targetCurrency}
           rate={
             quoteData
-              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              ? `1 ${sourceCurrency} = ${quoteData.rate} ${targetCurrency}`
               : ""
           }
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}

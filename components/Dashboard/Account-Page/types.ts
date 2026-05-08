@@ -67,3 +67,15 @@ export interface AddBankModalProps {
   onClose: () => void;
   onSuccess?: () => void;
 }
+
+export interface RemoveDeviceModalProps {
+  open: boolean;
+  onClose: () => void;
+  deviceId: string;
+}
+
+export interface RevokeSessionModalProps {
+  open: boolean;
+  onClose: () => void;
+  deviceId: string;
+}

@@ -13,7 +13,7 @@ export default function FundCallbackPage() {
   const params = useSearchParams();
   const router = useRouter();
 
-  const reference = params?.get("reference");
+  const reference = params?.get("paymentReference");
   console.log("reference", reference);
 
   const { mutate, error, isSuccess } = UseVerifyFund();
@@ -23,13 +23,12 @@ export default function FundCallbackPage() {
   );
 
   useEffect(() => {
-    if (!reference) {
-      setStatus("failed");
-      return;
-    }
+    if (!reference) return;
+    console.log("Verifying fund with reference:", reference);
 
     mutate(reference, {
       onSuccess: () => {
+        setStatus("success");
         // 🔥 delay redirect so user sees success
         setTimeout(() => {
           router.push("/wallet");
@@ -39,9 +38,9 @@ export default function FundCallbackPage() {
         setStatus("failed");
       },
     });
-  }, [reference]);
+  }, [reference, mutate, router]);
 
-  if (isSuccess)
+  if (isSuccess || status === "success")
   return (
     <div className="flex items-center justify-center h-screen">
       <Modal className="pt-6 space-y-6" onClose={() => {}}>
@@ -83,6 +82,7 @@ export default function FundCallbackPage() {
       </div>
     );
   }
+
   return (
     <div className="flex items-center justify-center h-screen">
       <Modal className="pt-6 space-y-6" onClose={() => {}}>

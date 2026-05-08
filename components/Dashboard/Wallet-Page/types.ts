@@ -88,3 +88,17 @@ export const getCurrencyHeader = (symbol: string): string => {
   // Returns the mapped name, or the original symbol if not found
   return symbolMap[symbol.toUpperCase()] ?? symbol;
 };
+
+export const CRYPTO_NETWORKS = {
+  USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
+  BTC: ["BTC"],
+  ETH: ["ETH", "BSC"],
+};
+
+export const CURRENCY_OPTIONS = [
+  { label: "USDT", value: "USDT" },
+  { label: "BTC", value: "BTC" },
+  { label: "ETH", value: "ETH" },
+];
+
+export const QUICK_COINS = ["USDT", "BTC", "ETH", "SOL"];
