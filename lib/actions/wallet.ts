@@ -243,7 +243,7 @@ export const quoteConversion = async (data: QuoteExecutePayload) => {
 };
 
 export const executeConversion = async (data: ConvertExecutePayload) => {
-  const response = await AxiosInstance.post("/wallets/convert/execute", data);
+  const response = await AxiosInstance.post("/wallets/convert/accept", data);
 
   return response.data;
 };
