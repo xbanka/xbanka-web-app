@@ -28,8 +28,24 @@ export const NAV: NavSection[] = [
     items: [
       { id: "wallet", label: "Wallet", icon: Wallet },
       { id: "account", label: "Account", icon: User },
-      // { id: "gift-cards", label: "Gift Cards", icon: CreditCard },
-      // { id: "bill-payment", label: "Bill Payments", icon: Receipt },
+      {
+        id: "gift-cards",
+        label: "Gift Cards",
+        icon: CreditCard,
+        disabled: true,
+        badge: "Soon",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      },
+      {
+        id: "bill-payment",
+        label: "Bill Payments",
+        icon: Receipt,
+        disabled: true,
+        badge: "Soon",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      },
     ],
   },
   {
@@ -74,7 +90,8 @@ export const NAV: NavSection[] = [
         icon: Settings,
         disabled: true,
         badge: "Soon",
-        badgeColor: "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
       },
       {
         id: "affiliate",
@@ -82,7 +99,8 @@ export const NAV: NavSection[] = [
         icon: Users,
         disabled: true,
         badge: "Soon",
-        badgeColor: "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
       },
       {
         id: "referrals",
@@ -90,7 +108,8 @@ export const NAV: NavSection[] = [
         icon: Gift,
         disabled: true,
         badge: "Soon",
-        badgeColor: "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
       },
       {
         id: "help",
@@ -98,7 +117,8 @@ export const NAV: NavSection[] = [
         icon: HelpCircle,
         disabled: true,
         badge: "Soon",
-        badgeColor: "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
       },
     ],
   },

@@ -21,10 +21,12 @@ import {
 import { RemoveDevice, RevokeSessions } from "../actions/sessions";
 
 export const useCreatePin = () => {
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationFn: (data: CreatePinPayload) => createPin(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -80,10 +82,12 @@ export const useRemoveDevice = () => {
 };
 
 export const useUpdatePin = () => {
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationFn: (data: UpdatePinPayload) => updatePin(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
