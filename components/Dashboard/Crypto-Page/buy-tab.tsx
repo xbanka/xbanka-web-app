@@ -39,11 +39,6 @@ export function BuyTab() {
     error: walletError,
     isPending: walletPending,
   } = UseGetFiatWallet();
-  const {
-    data: cryptoWalletData,
-    error: cryptoWalletError,
-    isPending: cryptoWalletPending,
-  } = UseGetCryptoWallet();
   const wallets = walletData?.data?.data || [];
   const latestWallet = wallets[0];
 
@@ -104,6 +99,7 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
+          console.log("refetchQuote id:", res?.data.id)
         },
       },
     );

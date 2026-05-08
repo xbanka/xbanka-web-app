@@ -35,9 +35,9 @@ export function ProcessingStep({
     mutate(
       {
         quoteId,
-        sourceCurrency,
-        targetCurrency,
-        amount: Number(payAmount),
+        // sourceCurrency,
+        // targetCurrency,
+        // amount: Number(payAmount),
       },
       {
         onSuccess: (res: any) => {
