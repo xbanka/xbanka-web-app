@@ -32,16 +32,17 @@ export function SelectAssetStep({
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
-        className="px-8"
+        className="px-8 max-sm:px-6"
         title="Send Crypto"
         subtitle="Transfer assets to external wallets or XBanka users."
+        onBack={onClose}
         onClose={onClose}
       />
-      <div className="px-8 pb-3">
+      <div className="px-8 pb-3 max-sm:px-6">
         <ProgressBar step="select_asset" />
       </div>
 
-      <div className="px-8 pt-4 pb-8 space-y-8">
+      <div className="px-8 pt-4 pb-8 space-y-8 max-sm:px-6">
         <div className="space-y-4">
           {/* Search */}
           <div className="relative">
@@ -63,24 +64,24 @@ export function SelectAssetStep({
                   key={asset.id}
                   onClick={() => onSelect(asset)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-colors",
+                    "w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-colors max-sm:gap-2 max-sm:p-3",
                     active
                       ? "border-Green bg-Green/5"
                       : "border-border hover:border-border-active",
                   )}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 max-sm:gap-2">
                     <CoinAvatar
                       symbol={asset.currency}
                       size={40}
                     />
-                    <div className="flex">
-                      <div className="flex-1 min-w-0 border-r border-input pr-6">
-                        <div className="flex items-center gap-3">
-                          <p className="text-sm font-medium leading-5 text-card-text">
+                    <div className="flex min-w-0 flex-1 items-center">
+                      <div className="min-w-0 flex-1 border-r border-input pr-6 max-sm:pr-2">
+                        <div className="flex min-w-0 items-center gap-3 max-sm:gap-2">
+                          <p className="truncate text-sm font-medium leading-5 text-card-text max-sm:text-[13px]">
                             {getCurrencyHeader(asset.currency)}
                           </p>
-                          <span className="text-[10px] font-semibold px-2 rounded border border-input bg-background text-text">
+                          <span className="shrink-0 text-[10px] font-semibold px-2 rounded border border-input bg-background text-text max-sm:px-1.5">
                             {asset.currency}
                           </span>
                         </div>
@@ -88,11 +89,11 @@ export function SelectAssetStep({
                           {asset.wallet}
                         </p> */}
                       </div>
-                      <div className="text-left shrink-0 px-6">
-                        <p className="text-sm font-semibold text-card-text">
+                      <div className="min-w-[82px] shrink-0 px-6 text-left max-sm:min-w-[64px] max-sm:px-2">
+                        <p className="truncate text-sm font-semibold text-card-text max-sm:text-[13px]">
                           {asset.balance} {asset.currency}
                         </p>
-                        <p className="text-xs text-text mt-0.5">
+                        <p className="mt-0.5 truncate text-xs text-text max-sm:text-[11px]">
                           ₦{asset.fiatEquivalent?.amount}
                         </p>
                       </div>

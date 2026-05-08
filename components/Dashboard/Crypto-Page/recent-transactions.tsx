@@ -83,7 +83,7 @@ export function RecentTransactions() {
         {!transactionHistoryPending &&
           !transactionHistoryIsError &&
           fiatTransactions?.length === 0 && (
-            <div className="absolute -top-1/2 translate-1/2 left-0 mx-auto border-none text-center">
+            <div className="flex min-h-[120px] flex-col items-center justify-center border-none text-center text-sm font-medium text-text">
               <Image
                 className="mx-auto mb-1"
                 alt="frame"

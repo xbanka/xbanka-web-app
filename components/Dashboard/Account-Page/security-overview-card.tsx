@@ -11,7 +11,7 @@ export const SecurityOverviewCard = ({
   return (
     <div
       key={key}
-      className="w-full bg-border border border-border rounded-xl p-5 space-y-3"
+      className="w-full min-w-[144px] bg-border border border-border rounded-xl p-5 space-y-3 max-sm:w-[144px] max-sm:shrink-0 max-sm:p-4"
     >
       <div className="flex items-center justify-between">
         <Icon className="w-4 h-4 text-text" />

@@ -45,10 +45,10 @@ export function CryptoView() {
       {/* My Holdings */}
       <div className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-medium text-card-text text-[16px] leading-6 max-sm:text-[20px] max-sm:leading-8">
+          <h3 className="font-medium text-card-text text-[16px] leading-6 max-sm:text-[16px] max-sm:leading-6">
             My Holdings
           </h3>
-          <span className="border rounded-[36px] px-2 bg-background border-input text-xs text-text max-sm:px-4 max-sm:py-1 max-sm:text-[16px]">
+          <span className="border rounded-[36px] px-2 bg-background border-input text-xs text-text max-sm:px-3 max-sm:py-1 max-sm:text-[12px]">
             {wallets.length} Assets
           </span>
         </div>
@@ -65,7 +65,7 @@ export function CryptoView() {
           />
         </div>
         <div className="rounded-2xl bg-border p-4 md:hidden">
-          <div className="grid grid-cols-[minmax(0,1fr)_76px_72px] gap-2 border-b border-input px-4 py-3 text-[16px] font-medium leading-6 text-text">
+          <div className="grid grid-cols-[minmax(0,1fr)_76px_72px] gap-2 border-b border-input px-4 py-3 text-[12px] font-medium leading-5 text-text">
             <span>Assets</span>
             <span>Balance</span>
             <span className="text-right">Action</span>
@@ -94,18 +94,18 @@ export function CryptoView() {
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="h-11 w-11 shrink-0 rounded-full bg-card-background" />
                   <div className="min-w-0">
-                    <p className="truncate text-[17px] font-medium leading-6 text-card-text">
+                    <p className="truncate text-[13px] font-medium leading-5 text-card-text">
                       {getCurrencyHeader(wallet.currency)}
                     </p>
-                    <p className="truncate text-[15px] font-medium leading-6 text-text">
+                    <p className="truncate text-[12px] font-medium leading-5 text-text">
                       {wallet.currency}
                     </p>
                   </div>
                 </div>
-                <p className="text-[17px] font-medium leading-6 text-card-text">
+                <p className="text-[13px] font-medium leading-5 text-card-text">
                   {wallet.balance ?? "0.00"}
                 </p>
-                <button className="text-right text-[17px] font-medium leading-6 text-Green">
+                <button className="text-right text-[13px] font-medium leading-5 text-Green">
                   Trade
                 </button>
               </div>

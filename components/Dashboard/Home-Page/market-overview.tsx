@@ -190,8 +190,8 @@ export function MarketOverview({ show = true }: { show?: boolean }) {
         </div>
 
         <div className="overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="min-w-[640px]">
-            <div className="grid grid-cols-[260px_120px_150px_90px] gap-3 border-b border-input px-4 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
+          <div className="min-w-[500px]">
+            <div className="grid grid-cols-[190px_95px_120px_65px] gap-2 border-b border-input px-2 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
               <span>Assets</span>
               <span>Price</span>
               <span>24h Change</span>
@@ -214,7 +214,7 @@ export function MarketOverview({ show = true }: { show?: boolean }) {
                 return (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[260px_120px_150px_90px] items-center gap-3 border-b border-input px-4 py-4 last:border-b-0"
+                    className="grid grid-cols-[190px_95px_120px_65px] items-center gap-2 border-b border-input px-2 py-4 last:border-b-0"
                   >
                     <div className="flex min-w-0 items-center gap-3 ">
                       <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]" />

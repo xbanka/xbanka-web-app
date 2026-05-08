@@ -202,7 +202,7 @@ export function SecurityTab() {
             Your account security health is at 80%. Good
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 max-sm:-mx-4 max-sm:px-4 sm:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {securityItems.map((item, i) => {
             const Icon = item.icon;
             return (
