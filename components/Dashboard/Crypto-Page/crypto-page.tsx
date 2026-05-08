@@ -8,6 +8,7 @@ import { HowTo } from "./steps";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { P2PPage } from "./p2p-tab";
+import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 
 type CryptoTab = "buy" | "sell" | "convert" | "p2p";
 
@@ -20,6 +21,15 @@ export function CryptoPage() {
   ];
   // Buy & Sell share a sub-tab
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
+  const {
+      data: cryptoWalletData,
+      error: cryptoWalletError,
+      isPending: cryptoWalletPending,
+    } = UseGetCryptoWallet();
+    const handleModeChange = (mode: "buy" | "sell") => () => {
+      setTradeMode(mode);
+      UseGetCryptoWallet();
+    }
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
@@ -48,7 +58,7 @@ export function CryptoPage() {
                     <Button
                       variant={tradeMode === m ? "default" : "outline"}
                       key={m}
-                      onClick={() => setTradeMode(m)}
+                      onClick={handleModeChange(m)}
                       className={`flex-1 py-2 px-3 rounded-lg border-none text-sm font-semibold capitalize transition-colors
                   ${tradeMode === m ? "bg-[#042F2E] text-white" : "text-text hover:text-card-text"}`}
                     >
