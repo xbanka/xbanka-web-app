@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { CRYPTO_NETWORKS } from "../Wallet-Page/wallet-mock-data";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
-import { AlertTriangle, Search } from "lucide-react";
+import { AlertTriangle, Search, Wallet } from "lucide-react";
 import { useState } from "react";
 import { UserWallet } from "../Wallet-Page/types";
 import { UseActiveNetworksCrypto } from "@/lib/services/wallet.service";
@@ -78,17 +78,22 @@ export function SelectNetworkStep({
                   className={cn(
                     "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
                     active
-                      ? "border-Green bg-Green/5"
+                      ? "border-border-active bg-[#042F2E]"
                       : "border-border hover:border-border-active",
                   )}
                 >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-card-text">
-                      {network.networkName}
-                    </p>
-                    <p className="text-xs text-text mt-0.5">
-                      Fee ≈ {network.withdrawalFee}
-                    </p>
+                  <div className="flex min-w-0 flex-1 gap-3 items-center">
+                    <div className="rounded-[360px] p-1.5 h-10 w-10 bg-background mx-auto items-center justify-center">
+                      <Wallet size={24} className="text-[#0C9A8E] mx-auto" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-card-text">
+                        {network.networkName}
+                      </p>
+                      <p className="text-xs text-text mt-0.5">
+                        Fee ≈ {network.withdrawalFee}
+                      </p>
+                    </div>
                   </div>
                   <div
                     className={cn(

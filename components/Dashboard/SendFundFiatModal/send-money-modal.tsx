@@ -205,9 +205,9 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             handleStep={setStep}
           />
         )}
-        {step === "success" && recipient && (
+        {step === "success" && (recipient || xbankaRecipient) && (
           <SuccessStep
-            amount={recipient.amount.toString() ?? "0"}
+            amount={recipient?.amount.toString() ?? xbankaRecipient?.amount?.toString() ?? "0"}
             // recipient={recipient}
             onDone={() => {
               // onSuccess?.();

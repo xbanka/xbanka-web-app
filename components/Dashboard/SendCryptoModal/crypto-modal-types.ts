@@ -11,4 +11,13 @@ export interface WalletSuccessState {
   memo: string | null;
   createdAt: string; // Or Date if you parse it
   updatedAt: string;
+  amount: number,
+  currency: string;
+  // status: "PENDING" | "COMPLETED" | "FAILED";
+  status: string;
+  // type: "DEPOSIT" | "WITHDRAWAL";
+  type: string;
+  note: string | null;
+  reference: string;
+  userId: string;
 }
