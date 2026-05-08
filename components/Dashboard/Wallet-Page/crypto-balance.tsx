@@ -7,16 +7,32 @@ import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { sumCryptoBalance, sumCryptoFiatEquivalent } from "@/lib/sumBalances";
 import { SendCryptoModal } from "../SendCryptoModal/send-crypto-modal";
 import { DepositSidebar } from "./deposit-crypto-sidebar";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { CreatePinModal } from "../Account-Page/create-pin-modal";
 
 export const CryptoBalance = () => {
   const [hidden, setHidden] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
+  const [openCreatePin, setOpenCreatePin] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 
   const latestWallet = wallets[0];
+
+  const { data: profileData } = UseProfileUser();
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
+
+  const handleSendCrypto = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
+
+    setSendCrptoModalOpen(true);
+  };
   return (
     <div>
       <DashboardCard className="border-[#0F766E] bg-[#042F2E] max-sm:p-4">
@@ -66,7 +82,7 @@ export const CryptoBalance = () => {
             <Button
               size={"sm"}
               onClick={() => setAddFundsOpen(true)}
-              className="flex h-12 min-w-0 flex     items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
+              className="flex h-12 min-w-0 flex items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="truncate font-medium">Deposit</span>
@@ -75,7 +91,7 @@ export const CryptoBalance = () => {
               size={"sm"}
               variant={"outline"}
               className="flex h-12 min-w-0 flex    items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
-              onClick={() => setSendCrptoModalOpen(true)}
+              onClick={handleSendCrypto}
             >
               <Send className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="truncate font-medium">Send</span>
@@ -99,6 +115,13 @@ export const CryptoBalance = () => {
         <SendCryptoModal
           open={sendCrptoModalOpen}
           onClose={() => setSendCrptoModalOpen(false)}
+        />
+      )}
+
+      {openCreatePin && (
+        <CreatePinModal
+          open={openCreatePin}
+          handleClose={() => setOpenCreatePin(false)}
         />
       )}
     </div>

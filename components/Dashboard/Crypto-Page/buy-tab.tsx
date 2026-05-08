@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { sumFiatBalances } from "@/lib/sumBalances";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { CreatePinModal } from "../Account-Page/create-pin-modal";
 
 type FormValues = {
   receiveAmount: string;
@@ -33,6 +35,7 @@ export function BuyTab() {
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
   const [targetCurrency, setTargetCurrency] = useState("NGNX");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [openCreatePin, setOpenCreatePin] = useState(false);
   const [error, setError] = useState("");
   const {
     data: walletData,
@@ -59,6 +62,9 @@ export function BuyTab() {
     data: currencyData,
     isPending: currencyPending,
   } = useGetCurrency();
+  const { data: profileData } = UseProfileUser();
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
 
   const currencies = currencyData?.data || [];
   const { fiat, crypto } = splitCurrencies(currencies);
@@ -77,6 +83,10 @@ export function BuyTab() {
   const debouncedAmount = useDebounce(amount, 500);
 
   const handleQuoteModal = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
     refetchQuote();
     setConfirmOpen(true);
   };
@@ -99,7 +109,7 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
-          console.log("refetchQuote id:", res?.data.id)
+          console.log("refetchQuote id:", res?.data);
         },
       },
     );
@@ -238,6 +248,12 @@ export function BuyTab() {
           quoteId={quoteData?.quoteId || ""}
           sourceCurrency={sourceCurrency}
           targetCurrency={targetCurrency}
+        />
+      )}
+      {openCreatePin && (
+        <CreatePinModal
+          open={openCreatePin}
+          handleClose={() => setOpenCreatePin(false)}
         />
       )}
     </>

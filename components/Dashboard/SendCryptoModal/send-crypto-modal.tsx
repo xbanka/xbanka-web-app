@@ -14,6 +14,7 @@ import { RecipientStep } from "./receipient-step";
 import { SelectAssetStep } from "./select-asset-step";
 import { WalletSuccessState } from "./crypto-modal-types";
 import { FailedStep } from "./failed-step";
+import { RecipientXbankaUsersTypes } from "./types";
 
 export const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -35,6 +36,12 @@ export function SendCryptoModal({
   const [amount, setAmount] = useState("");
   const [successDetails, setSuccessDetails] =
     useState<WalletSuccessState | null>(null);
+  const [recipientType, setRecipientType] = useState<
+  "wallet" | "xbanka-user"
+>("wallet");
+
+const [xbankaRecipient, setXbankaRecipient] =
+  useState<RecipientXbankaUsersTypes | null>(null);
 
   if (!open) return null;
 

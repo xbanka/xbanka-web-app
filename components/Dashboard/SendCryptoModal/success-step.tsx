@@ -72,7 +72,7 @@ export function SuccessStep({
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Network</span>
             <span className="font-medium text-card-text">
-              {successDetails?.network}
+              {successDetails?.currency}
             </span>
           </div>
           {/* Network label with info */}
@@ -99,7 +99,7 @@ export function SuccessStep({
               onClick={copy}
               className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
             >
-              <span>{successDetails?.providerRef}</span>
+              <span>{successDetails?.reference}</span>
               {copied ? (
                 <CheckCircle className="w-3.5 h-3.5 text-Green" />
               ) : (
@@ -112,7 +112,7 @@ export function SuccessStep({
               <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>
               <div className="space-y-1">
                 <p className="font-medium text-[14px] leading-5 text-Green"></p>
-                <h2 className="font-normal text-xs leading-4.5 text-text">₦32,400.00</h2>
+                <h2 className="font-normal text-xs leading-4.5 text-text">{successDetails?.amount?.toFixed(2)} {successDetails?.currency}</h2>
               </div>
             </div>
         </div>
