@@ -4,7 +4,7 @@ import { MouseEvent } from "react";
 export function Modal({
   onClose,
   children,
-  className
+  className,
 }: {
   onClose: () => void;
   children: React.ReactNode;
@@ -27,12 +27,12 @@ export function Modal({
   // }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px] animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px] animate-in fade-in duration-150 "
       onClick={handleBackdropClick}
     >
       <div
         className={cn(
-          "relative z-10 w-full max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150",
+          "relative z-10 w-full max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ",
           className,
         )}
         onClick={(event) => event.stopPropagation()}

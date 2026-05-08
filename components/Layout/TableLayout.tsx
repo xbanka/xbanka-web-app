@@ -97,6 +97,12 @@ export function DataTableLayout<T>({
 
   // Filter columns for mobile (show only non-hidden columns)
   const visibleColumns = columns.filter((col) => !col.hiddenOnMobile);
+  const formatMobileRequestId = (value: unknown) => {
+    const text = String(value ?? "");
+    return text.length > 25 ? `${text.slice(0, 20)}.....` : text;
+  };
+  const getRecordValue = (item: T, key: string) =>
+    (item as Record<string, unknown>)[key];
 
   return (
     <div
@@ -201,26 +207,29 @@ export function DataTableLayout<T>({
         )}
 
         {!isLoading && !isError && paginatedData?.length === 0 && (
-          <div className="p-6 text-center text-[#111827] text-[14px] font-medium leading-4.5">
+          <div className="p-6 text-center text-card-text text-[14px] font-medium leading-4.5">
             {emptyMessage}
           </div>
         )}
 
         {!isLoading && !isError && (
-          <div className="space-y-4 p-4">
+          <div className="space-y-4 p-0 sm:p-4">
             {paginatedData?.map((item) => (
               <div
                 key={rowKey(item)}
-                className="bg-white border border-[#E5E7EB] rounded-[10px] p-4 shadow-sm space-y-3"
+                className="w-full min-w-0 space-y-3 rounded-[10px] border border-border bg-card-background p-4 shadow-sm"
               >
                 {/* Main top row */}
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-col">
-                    <span className="text-[12px] text-[#606368] font-medium">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-[12px] text-text font-medium">
                       Request ID
                     </span>
-                    <span className="text-[15px] font-semibold text-[#111827]">
-                      {(item as any).requestId ?? (item as any).id}
+                    <span className="truncate text-[15px] font-semibold text-card-text">
+                      {formatMobileRequestId(
+                        getRecordValue(item, "requestId") ??
+                          getRecordValue(item, "id"),
+                      )}
                     </span>
                   </div>
 
@@ -231,7 +240,7 @@ export function DataTableLayout<T>({
                 </div>
 
                 {/* Other fields */}
-                <div className="space-y-2 pt-2 border-t border-[#E5E7EB]">
+                <div className="space-y-2 border-t border-input pt-2">
                   {visibleColumns
                     .filter(
                       (col) =>
@@ -242,15 +251,15 @@ export function DataTableLayout<T>({
                     .map((col) => (
                       <div
                         key={col.key as string}
-                        className="flex justify-between items-start"
+                        className="flex min-w-0 items-start justify-between gap-3"
                       >
-                        <span className="text-[12px] text-[#606368] font-medium">
+                        <span className="shrink-0 text-[12px] text-text font-medium">
                           {col.header}
                         </span>
-                        <span className="text-[14px] font-medium text-[#111827] text-right">
+                        <span className="min-w-0 max-w-[62%] text-right text-[14px] font-medium text-card-text [&_*]:min-w-0">
                           {col.render
                             ? col.render(item)
-                            : (item as any)[col.key]}
+                            : getRecordValue(item, col.key as string)}
                         </span>
                       </div>
                     ))}
