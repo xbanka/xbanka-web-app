@@ -10,7 +10,6 @@ import { AlertTriangle, Copy } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-import { CRYPTO_NETWORKS, CURRENCY_OPTIONS, QUICK_COINS } from "./types";
 import { toast } from "sonner";
 
 export const DepositSidebar = ({

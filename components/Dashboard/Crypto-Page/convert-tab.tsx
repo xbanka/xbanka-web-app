@@ -18,6 +18,7 @@ import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "./confirm-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 type FormValues = {
   amount: string;
@@ -32,6 +33,7 @@ export function ConvertTab() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
   const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [openCreatePin, setOpenCreatePin] = useState(false);
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
@@ -60,6 +62,10 @@ export function ConvertTab() {
     isPending: currencyPending,
   } = useGetCurrency();
 
+  const { data: profileData } = UseProfileUser();
+    const hasTransactionPin = profileData?.data?.hasTransactionPin;
+    console.log(hasTransactionPin);
+
   const currencies = currencyData?.data || [];
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
 
@@ -84,6 +90,10 @@ export function ConvertTab() {
   }, [pairMap, sourceCurrency]);
 
   const handleQuoteModal = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
     refetchQuote();
     setConfirmOpen(true);
   };

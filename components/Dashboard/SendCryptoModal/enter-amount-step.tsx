@@ -23,6 +23,7 @@ export function EnterAmountStep({
   onNext: () => void;
 }) {
   const numericBalance = asset?.balance ?? 0;
+  console.log("Numeric balance:", numericBalance);
   // const fee = parseFloat(network.fee);
   const inputAmount = parseFloat(amount) || 0;
   const rate = asset?.fiatEquivalent?.rate ?? 0;
@@ -122,8 +123,8 @@ export function EnterAmountStep({
           <Button
             size="lg"
             className="flex-3"
-            // disabled={!isValid}
-            // variant={isValid ? "default" : "disabled"}
+            disabled={!isValid}
+            variant={isValid ? "default" : "disabled"}
             onClick={onNext}
           >
             Continue

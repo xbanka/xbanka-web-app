@@ -10,16 +10,32 @@ import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { AddFundsModal } from "../AddFundFiatModal/add-funds-modal";
 import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { CreatePinModal } from "../Account-Page/create-pin-modal";
 
 export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const [hidden, setHidden] = useState(false);
   const { data, error, isPending } = UseGetFiatWallet();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendFundsOpen, setSendFundsOpen] = useState(false);
+  const [openCreatePin, setOpenCreatePin] = useState(false);
   const wallets = data?.data?.data || [];
   const latestWallet = wallets[0];
-  const isAddFundDisabled = !isBvnVerified;
   const { data: bankAccountList } = UseBankAccountList();
+  const { data: profileData } = UseProfileUser();
+  const hasTransactionPin =
+    profileData?.data?.hasTransactionPin;
+    console.log(hasTransactionPin);
+
+    const handleAddFund = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
+
+    setAddFundsOpen(true);
+  };
+
   return (
     <div>
       <DashboardCard className="border-[#004C99] bg-[#051D33]">
@@ -52,7 +68,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
           <div className="flex items-start gap-4">
             <div className="">
               <Button
-                onClick={() => setAddFundsOpen(true)}
+                onClick={handleAddFund}
                 variant={"default"}
                 size={"sm"}
                 className="flex items-center transition-colors"
@@ -88,6 +104,12 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
           <SendMoneyModal
             onClose={() => setSendFundsOpen(false)}
             onBack={() => setSendFundsOpen(false)}
+          />
+        )}
+        {openCreatePin && (
+          <CreatePinModal
+            open={openCreatePin}
+            handleClose={() => setOpenCreatePin(false)}
           />
         )}
       </DashboardCard>
