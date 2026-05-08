@@ -55,7 +55,7 @@ export function SelectAssetStep({
           </div>
 
           {/* Asset list */}
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[400px] overflow-y-auto">
             {filtered.map((asset: UserWallet) => {
               const active = selectedId?.id === asset.id;
               return (

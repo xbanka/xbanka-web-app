@@ -23,7 +23,6 @@ export function EnterAmountStep({
   const wallets = data?.data?.data || [];
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const balance = 4250890.5;
   const minTransfer = 5000;
 
   const formatAmount = (val: string) => {
@@ -31,7 +30,7 @@ export function EnterAmountStep({
     return digits ? Number(digits).toLocaleString() : "";
   };
 
-  const isValid = numericAmount >= minTransfer && numericAmount <= balance;
+  const isValid = numericAmount >= minTransfer && numericAmount <= sumFiatBalances(wallets);
 
   const handleContinue = () => {
     // We spread the existing recipient and add the new amount/narration
