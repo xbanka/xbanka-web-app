@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building2, Search } from "lucide-react";
-import { RECENT_RECIPIENTS } from "./mockData";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { XbankaTransferRecipient, XbankaUser } from "./types";
@@ -44,7 +43,7 @@ export function SelectRecipientStep({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-[120px] overflow-y-auto">
           {search &&
             filteredUsers.map((user: XbankaUser) => (
               <button
