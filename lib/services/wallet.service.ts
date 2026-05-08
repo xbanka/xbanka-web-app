@@ -328,7 +328,7 @@ export const UseFundBankAcounts = () => {
   });
 };
 
-export const UseGetTransactionHistory = (page = 1, limit = 10) => {
+export const UseGetTransactionHistory = (page, limit) => {
   return useQuery({
     queryKey: ["transaction-history", page, limit],
     queryFn: async () => {
