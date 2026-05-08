@@ -9,7 +9,7 @@ export const OnboardingJourneyCard = ({
   title,
   desc,
   label,
-  onClick
+  onClick,
 }: OnboardingCardProps) => {
   return (
     <div
@@ -46,7 +46,7 @@ export const OnboardingJourneyCard = ({
           </p>
         )}
       </div>
-      {status === "done" ? (
+      {/* {status === "done" ? (
         <p className="text-xs text-[#A6F4C5] font-medium max-sm:text-[14px] max-sm:leading-6">
           Account created
         </p>
@@ -60,6 +60,19 @@ export const OnboardingJourneyCard = ({
         <p className="text-xs leading-5 text-text font-medium max-sm:text-[16px] max-sm:leading-6 line-clamp-2">
           {desc}
         </p>
+      )} */}
+      {status === "done" && (
+        <p className="text-xs text-[#A6F4C5] font-medium max-sm:text-[14px] max-sm:leading-6">
+          Account created
+        </p>
+      )}
+      {status === "active" && (
+        <button
+          onClick={onClick}
+          className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]"
+        >
+          Continue
+        </button>
       )}
     </div>
   );
