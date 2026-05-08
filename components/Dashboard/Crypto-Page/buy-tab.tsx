@@ -99,7 +99,7 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
-          console.log("refetchQuote id:", res?.data.id)
+          console.log("refetchQuote id:", res?.data)
         },
       },
     );

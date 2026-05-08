@@ -4,10 +4,10 @@ import { EnterAmountStep } from "./enter-amount-step";
 import { ModalHeader } from "@/components/ui/modal-header";
 import {
   Recipient,
-  RecipientXbankaUsersTypes,
   SendMoneyModalProps,
   Step,
   Tab,
+  XbankaTransferRecipient,
 } from "./types";
 import { useState } from "react";
 import { SelectRecipientStep } from "./selectRecepient";
@@ -16,14 +16,17 @@ import { ConfirmStep } from "./confirm-step";
 import { EnterPinStep } from "./enter-pin-step";
 import { ProcessingStep } from "./processing-step";
 import { SuccessStep } from "./success-step";
+import { EnterAmountXbankaStep } from "./enter-amount-xbanka-users";
+import { ConfirmXbankaUserStep } from "./confirm-step-xbanka-users";
+import { EnterPinXbankaStep } from "./enter-pin-xbanka-users";
+import { ProcessingXbankaStep } from "./processing-xbanka-users-step";
 
 export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
   const [tab, setTab] = useState<Tab>("select-recipient"); // rename this
   const [recipient, setRecipient] = useState<Recipient | null>(null);
-
-  const [XbankaRecipient, setXbankaRecipient] =
-    useState<RecipientXbankaUsersTypes | null>(null);
+  const [xbankaRecipient, setXbankaRecipient] =
+    useState<XbankaTransferRecipient | null>(null);
 
   const handleTabChange = (t: Tab) => {
     setTab(t);
@@ -31,9 +34,9 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
     setRecipient(null);
   };
 
-  const handleSelectXbanka = (r: RecipientXbankaUsersTypes) => {
+  const handleSelectXbanka = (r: XbankaTransferRecipient) => {
     setXbankaRecipient(r);
-    setStep("enter-amount");
+    setStep("enter-amount-xbanka");
   };
 
   const handleBankFound = (r: Recipient) => {
@@ -65,6 +68,11 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
 
   const startProcessing = async () => {
     setStep("processing");
+    // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
+    // setStep("success");
+  };
+  const startXbankaUsersProcessing = async () => {
+    setStep("processing-xbanka-users");
     // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
     // setStep("success");
   };
@@ -127,6 +135,16 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             onContinue={handleContinue} // This now receives the full object
           />
         )}
+        {step === "enter-amount-xbanka" && xbankaRecipient && (
+          <EnterAmountXbankaStep
+            recipient={xbankaRecipient}
+            onBack={() => setStep("select-recipient")}
+            onContinue={(updatedRecipient) => {
+              setXbankaRecipient(updatedRecipient);
+              setStep("confirm-xbanka");
+            }}
+          />
+        )}
         {step === "confirm_bank" && recipient && (
           <ConfirmStep
             amount={
@@ -140,11 +158,29 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             onConfirm={() => setStep("enter_pin")}
           />
         )}
+        {step === "confirm-xbanka" && xbankaRecipient && (
+          <ConfirmXbankaUserStep
+            amount={xbankaRecipient.amount?.toString() || "0"}
+            sourceLabel={xbankaRecipient.uid}
+            accountName={xbankaRecipient.name}
+            fee="0.00"
+            onBack={() => setStep("enter-amount-xbanka")}
+            onClose={handleClose}
+            onConfirm={() => setStep("enter_pin_xbanka")}
+          />
+        )}
         {step === "enter_pin" && recipient && (
           <EnterPinStep
             onBack={() => setStep("confirm_bank")}
             onClose={handleClose}
             onConfirm={startProcessing}
+          />
+        )}
+        {step === "enter_pin_xbanka" && xbankaRecipient && (
+          <EnterPinXbankaStep
+            onBack={() => setStep("confirm-xbanka")}
+            onClose={handleClose}
+            onConfirm={startXbankaUsersProcessing}
           />
         )}
         {step === "processing" && recipient && (
@@ -155,6 +191,17 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             }
             mandateId={recipient.accountNumber}
             accountName={recipient.accountName}
+            handleStep={setStep}
+          />
+        )}
+        {step === "processing-xbanka-users" && xbankaRecipient && (
+          <ProcessingXbankaStep
+            recipient={xbankaRecipient}
+            amount={
+              xbankaRecipient?.name.toString() ? xbankaRecipient?.id.toString() : "0"
+            }
+            mandateId={xbankaRecipient.uid}
+            accountName={xbankaRecipient.name}
             handleStep={setStep}
           />
         )}
