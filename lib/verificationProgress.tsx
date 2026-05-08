@@ -23,9 +23,7 @@ export const ONBOARDING_STEPS = (data: any) => {
   if (!data?.progress) return [];
 
   // ❌ Remove SIGNUP
-  const filtered = data.progress.filter(
-    (step: any) => step.id !== "SIGNUP"
-  );
+  const filtered = data.progress.filter((step: any) => step.id !== "SIGNUP");
 
   // ✅ Group into 4 steps
   const stepGroups = [
@@ -43,7 +41,7 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "Verify BVN",
       ids: ["BVN"],
       desc: "Unlocks git card & bill payments",
-      label: "Unlocked: Gift Cards • Bill Payments • ₦50k limit"
+      label: "Unlocked: Gift Cards • Bill Payments • ₦50k limit",
     },
     {
       key: "IDENTITY",
@@ -51,7 +49,7 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "ID & Selfie",
       ids: ["IDENTITY", "SELFIE"],
       desc: "Unlocks crypto & withdrawals",
-      label: "Unlocked: Crypto • Withdrawals • ₦500k limit"
+      label: "Unlocked: Crypto • Withdrawals • ₦500k limit",
     },
     {
       key: "ADDRESS",
@@ -59,23 +57,37 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "Proof of Address",
       ids: ["ADDRESS"],
       desc: "Unlocks full platform access",
-      label: "Unlocked: Full access • ₦2M limit"
+      label: "Unlocked: Full access • ₦2M limit",
     },
   ];
 
   return stepGroups.map((group, index) => {
-    const steps = filtered.filter((s: any) =>
-      group.ids.includes(s.id)
-    );
+    //
+    const steps = filtered
+      .filter((s: any) => group.ids.includes(s.id))
+      .map((step: any) => {
+        // ✅ Fix inconsistent backend response
+        if (step.id === "EMAIL_VERIFIED") {
+          return {
+            ...step,
+            isCompleted: data.emailVerified,
+          };
+        }
 
+        return step;
+      });
+
+    // ✅ ALL completed
     const isCompleted = steps.every((s: any) => s.isCompleted);
-    const isCurrent = steps.some((s: any) => s.status === "current");
+
+    // ✅ ANY incomplete
+    const hasIncomplete = steps.some((s: any) => !s.isCompleted);
 
     let status: "done" | "active" | "pending" = "pending";
 
     if (isCompleted) {
       status = "done";
-    } else if (isCurrent) {
+    } else if (hasIncomplete) {
       status = "active";
     }
 
@@ -85,7 +97,6 @@ export const ONBOARDING_STEPS = (data: any) => {
       desc: group.desc,
       status,
       label: group.label,
-      isCurrent, // 👈 important for button control
       modalKey: group.modalKey,
     };
   });

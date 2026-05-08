@@ -81,7 +81,7 @@ export function AttachmentUpload({
           {value.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between border rounded-md py-2 px-4 border-border bg-[#F9FAFB]"
+              className="flex items-center justify-between border rounded-md py-2 px-4 border-input bg-input-background"
             >
               <div className="flex items-center gap-3">
                 {item.previewUrl ? (

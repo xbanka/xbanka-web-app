@@ -23,17 +23,25 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
   const latestWallet = wallets[0];
   const { data: bankAccountList } = UseBankAccountList();
   const { data: profileData } = UseProfileUser();
-  const hasTransactionPin =
-    profileData?.data?.hasTransactionPin;
-    console.log(hasTransactionPin);
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
 
-    const handleAddFund = () => {
+  const handleAddFund = () => {
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
     }
 
     setAddFundsOpen(true);
+  };
+
+  const handleSendFund = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
+
+    setSendFundsOpen(true);
   };
 
   return (
@@ -83,7 +91,7 @@ export const FiatBalance = ({ isBvnVerified }: { isBvnVerified: boolean }) => {
               )} */}
             </div>
             <Button
-              onClick={() => setSendFundsOpen(true)}
+              onClick={handleSendFund}
               variant={"outline"}
               size={"sm"}
               className="flex items-center transition-colors"
