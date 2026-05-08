@@ -7,6 +7,7 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { useForm } from "react-hook-form";
 import {
   useExecuteConversion,
+  UseGetCryptoWallet,
   useGetCurrency,
   useGetGroupedPair,
   useGetRateConversion,
@@ -36,6 +37,11 @@ export function ConvertTab() {
     useState<CryptoGetConversionTypes | null>();
 
   const { data, mutate, isPending } = useQuoteConversion();
+  const {
+      data: cryptoWalletData,
+      error: cryptoWalletError,
+      isPending: cryptoWalletPending,
+    } = UseGetCryptoWallet();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,

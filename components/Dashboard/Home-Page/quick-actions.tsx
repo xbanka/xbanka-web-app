@@ -11,6 +11,7 @@ export function QuickActions() {
       iconColor: "bg-[#0F766E]",
       page: "crypto",
       icon: BlocksIcon,
+      disabled: false,
     },
     {
       title: "Buy/Sell Gift Cards",
@@ -19,6 +20,7 @@ export function QuickActions() {
       iconColor: "bg-[#9A0283]",
       page: "gift-cards",
       icon: LucideGift,
+      disabled: true,
     },
     {
       title: "Bill Payments",
@@ -27,6 +29,7 @@ export function QuickActions() {
       iconColor: "bg-[#004C99]",
       page: "bills",
       icon: BlocksIcon,
+      disabled: true,
     },
   ];
   return (
@@ -38,13 +41,19 @@ export function QuickActions() {
         {actions.map((a) => (
           <Link
             key={a.title}
-            href={`/${a.page}`}
-            className="w-[76vw] max-w-[360px] shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
+            href={a.disabled ? "#" : `/${a.page}`}
+            className="w-[76vw] max-w-90 shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
           >
             <div
-              className={`relative cursor-pointer flex min-h-24 gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden max-sm:min-h-28`}
+              className={`relative cursor-pointer flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}
             >
-              <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 opacity-60" />
+              {!a.disabled ? (
+                <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 opacity-60" />
+              ) : (
+                <span className="absolute top-3 right-3 bg-white/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/80 border border-white/10">
+                  Soon
+                </span>
+              )}
               <div className={`${a.iconColor} p-2.5 rounded-lg max-sm:p-4`}>
                 <a.icon className="w-4 h-4 max-sm:h-[20px] max-sm:w-[20px]" />
               </div>

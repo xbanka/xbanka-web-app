@@ -2,25 +2,16 @@ import { Button } from "@/components/ui/button";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { ErrorField } from "@/components/ui/field-error";
 import { SelectFieldWithValue } from "@/components/ui/select-with-value";
-import { useGenerateAddress } from "@/lib/services/wallet.service";
+import {
+  UseActiveNetworksCrypto,
+  useGenerateAddress,
+} from "@/lib/services/wallet.service";
 import { AlertTriangle, Copy } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-
-const CRYPTO_NETWORKS = {
-  USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
-  BTC: ["BTC"],
-  ETH: ["ETH", "BSC"],
-};
-
-const CURRENCY_OPTIONS = [
-  { label: "USDT", value: "USDT" },
-  { label: "BTC", value: "BTC" },
-  { label: "ETH", value: "ETH" },
-];
-
-const QUICK_COINS = ["USDT", "BTC", "ETH", "SOL"];
+import { CRYPTO_NETWORKS, CURRENCY_OPTIONS, QUICK_COINS } from "./types";
+import { toast } from "sonner";
 
 export const DepositSidebar = ({
   open,
@@ -31,42 +22,46 @@ export const DepositSidebar = ({
 }) => {
   const [currency, setCurrency] = useState("");
   const [network, setNetwork] = useState("");
-  // const [addressData, setAddressData] = useState<WalletAccount | null>(null);
 
-  // const { mutate, isPending, error } = useGenerateAddress();
   const {
     data: addressData,
-    isLoading,
+    isPending: isLoading,
     error,
-  } = useGenerateAddress(currency, network);
+    mutate: generateAddressMutate,
+  } = useGenerateAddress();
+  const {
+    data: activeNetworksData,
+    isPending: activeNetworksisLoading,
+    error: activeNetworksError,
+  } = UseActiveNetworksCrypto();
+  const cryptoData = activeNetworksData?.data?.data || {};
+  console.log("active crypto networks", cryptoData);
   console.log("addressData", addressData?.data?.address || "none address");
 
   const networkOptions =
-    currency && CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS]
-      ? CRYPTO_NETWORKS[currency as keyof typeof CRYPTO_NETWORKS].map((n) => ({
-          label: n,
-          value: n,
+    currency && cryptoData[currency]?.networks
+      ? cryptoData[currency].networks.map((network: any) => ({
+          label: network.networkName,
+          value: network.networkCode,
         }))
       : [];
 
   const handleCopy = () => {
-    if (!addressData?.address) return;
-
-    navigator.clipboard.writeText(addressData.address);
+    const fullAddress = addressData?.data?.address;
+    if (fullAddress) {
+      navigator.clipboard.writeText(fullAddress);
+      // Optional: Add a toast notification here if you have one
+      toast.success("Address copied!");
+    }
   };
 
-  // useEffect(() => {
-  //   if (!currency || !network) return;
+  useEffect(() => {
+    // Only trigger the request if both values are present
+    if (currency && network) {
+      generateAddressMutate({ currency, network });
+    }
+  }, [currency, network, generateAddressMutate]);
 
-  //   mutate(
-  //     { currency, network },
-  //     {
-  //       onSuccess: (data) => {
-  //         setAddressData(data);
-  //       },
-  //     },
-  //   );
-  // }, [currency, network]);
   return (
     <div
       className={`fixed inset-0 z-50 transition ${
@@ -110,7 +105,16 @@ export const DepositSidebar = ({
               <SelectFieldWithValue
                 label="Select a coin"
                 placeholder="Select Currency"
-                options={CURRENCY_OPTIONS}
+                options={Object.entries(cryptoData)
+                  .filter(
+                    ([_, value]: any) =>
+                      value.currencyType === "CRYPTO" ||
+                      value.currencyType === "STABLE",
+                  )
+                  .map(([key, value]: any) => ({
+                    label: `${key} - ${value.currencyName}`,
+                    value: key,
+                  }))}
                 value={currency}
                 onChange={(value) => {
                   setCurrency(value);
@@ -118,27 +122,29 @@ export const DepositSidebar = ({
                 }}
               />
               <div className="-mx-6 flex gap-3 mt-3 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0">
-                {QUICK_COINS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => {
-                      setCurrency(item);
-                      setNetwork("");
-                    }}
-                    className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
-                  >
-                    <Image
-                      src={"/tether.svg"}
-                      alt="tether"
-                      width={16}
-                      height={16}
-                    />
-                    <span className="text-[12px] font-normal leading-4.5 text-card-text">
-                      {item}
-                    </span>
-                  </button>
-                ))}
+                {Object.keys(cryptoData)
+                  .filter((key) => ["USDT", "BTC", "ETH", "SOL"].includes(key))
+                  .map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => {
+                        setCurrency(item);
+                        setNetwork("");
+                      }}
+                      className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
+                    >
+                      <Image
+                        src={"/tether.svg"}
+                        alt="tether"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="text-[12px] font-normal leading-4.5 text-card-text">
+                        {item}
+                      </span>
+                    </button>
+                  ))}
               </div>
             </div>
             {/* Network */}
@@ -185,7 +191,7 @@ export const DepositSidebar = ({
                 <p className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
                   Wallet address
                 </p>
-                <div className="flex items-center gap-2 max-sm:gap-3">
+                <div className="flex items-center gap-2 text-ellipsis max-sm:gap-3">
                   <div className="w-full flex min-w-0 items-center h-10 truncate text-ellipsis py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
                     {isLoading
                       ? "Generating address..."
@@ -235,7 +241,10 @@ export const DepositSidebar = ({
             </p>
           </div>
           <div className="px-10 max-sm:mt-auto max-sm:px-0 max-sm:pb-6">
-            <Button variant={"secondary"} className="w-full p-4 max-sm:h-14 max-sm:text-[16px]">
+            <Button
+              variant={"secondary"}
+              className="w-full p-4 max-sm:h-14 max-sm:text-[16px]"
+            >
               View Deposit History
             </Button>
           </div>

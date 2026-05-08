@@ -5,6 +5,7 @@ import { ConfirmModal } from "./confirm-modal";
 import { RefreshCcw } from "lucide-react";
 import {
   useExecuteConversion,
+  UseGetCryptoWallet,
   useGetCurrency,
   useGetGroupedPair,
   useGetRateConversion,
@@ -34,6 +35,11 @@ export function SellTab() {
 
   // const { mutate, isPending } = useExecuteConversion();
   const { data, mutate, isPending } = useQuoteConversion();
+  const {
+      data: cryptoWalletData,
+      error: cryptoWalletError,
+      isPending: cryptoWalletPending,
+    } = UseGetCryptoWallet();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -198,9 +204,21 @@ export function SellTab() {
           <Button
             onClick={handleQuoteModal}
             className="w-full transition-colors"
-            disabled={!amount || Number(amount) <= 0}
+            variant={
+                !amount || Number(amount) <= 0 || isPending
+                  ? "disabled"
+                  : "default"
+              }
+              disabled={
+                !amount ||
+                Number(amount) <= 0 ||
+                RateConversionPending ||
+                isPending
+              }
           >
-            Get Quote
+            {RateConversionPending || isPending
+                ? "Getting Quote..."
+                : "Get Quote"}
           </Button>
           <p className="text-[10px] text-text text-center">
             By Proceeding, you agree to Xbanka{" "}

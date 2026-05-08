@@ -4,7 +4,17 @@ import {
   ConvertExecutePayload,
   QuoteExecutePayload,
 } from "../types/crypto-types";
-import { AddBankAccountPayload, DeleteFiatWalletBankSavedCardPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, GenerateDepositAddressPayload, sendWalletPayload, WithdrawCryptoPayload } from "../types/wallet-types";
+import {
+  AddBankAccountPayload,
+  DeleteFiatWalletBankSavedCardPayload,
+  fundWalletBankPayload,
+  fundWalletBankSavedCardPayload,
+  fundWalletPayload,
+  fundWalletSavedCardPayload,
+  GenerateDepositAddressPayload,
+  sendWalletPayload,
+  WithdrawCryptoPayload,
+} from "../types/wallet-types";
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
@@ -38,11 +48,10 @@ export const getCryptoWallet = async () => {
   };
 };
 
-export const generateDepositAddress = async (payload: GenerateDepositAddressPayload) => {
-  const response = await AxiosInstance.post(
-    "/wallets/deposit/crypto",
-    payload
-  );
+export const generateDepositAddress = async (
+  payload: GenerateDepositAddressPayload,
+) => {
+  const response = await AxiosInstance.post("/wallets/deposit/crypto", payload);
 
   return response.data;
 };
@@ -85,14 +94,21 @@ export const sendFiatWallet = async (data: sendWalletPayload) => {
   return response.data;
 };
 
-export const fundFiatWalletSavedCard = async (data: fundWalletSavedCardPayload) => {
-  const response = await AxiosInstance.post("/wallets/fiat/fund/saved-card", data);
+export const fundFiatWalletSavedCard = async (
+  data: fundWalletSavedCardPayload,
+) => {
+  const response = await AxiosInstance.post(
+    "/wallets/fiat/fund/saved-card",
+    data,
+  );
 
   return response.data;
 };
 
 export const deleteFiatWalletSavedCard = async (cardId: string) => {
-  const response = await AxiosInstance.delete(`/wallets/fiat/saved-cards/${cardId}`);
+  const response = await AxiosInstance.delete(
+    `/wallets/fiat/saved-cards/${cardId}`,
+  );
 
   return response.data;
 };
@@ -110,30 +126,45 @@ export const verifyFund = async (reference: string) => {
 };
 
 export const FundFiatWalletBank = async (data: fundWalletBankPayload) => {
-  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/initiate", {
-    accountNumber: data.accountNumber,
-    callback_url: `${window.location.origin}/wallet/fund-callback`,
-    bankCode: data.bankCode,
-    // amount: 50
-  });
+  const response = await AxiosInstance.post(
+    "/wallets/fiat/direct-debit/initiate",
+    {
+      accountNumber: data.accountNumber,
+      callback_url: `${window.location.origin}/wallet/fund-callback`,
+      bankCode: data.bankCode,
+      // amount: 50
+    },
+  );
 
   return response.data;
 };
 
 export const VerifyFundFiatWalletBank = async (reference: string) => {
-  const response = await AxiosInstance.post(`/wallets/fiat/direct-debit/verify/${reference}`);
+  const response = await AxiosInstance.post(
+    `/wallets/fiat/direct-debit/verify/${reference}`,
+  );
 
   return response.data;
 };
 
-export const fundFiatWalletBankSavedCard = async (data: fundWalletBankSavedCardPayload) => {
-  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/charge", data);
+export const fundFiatWalletBankSavedCard = async (
+  data: fundWalletBankSavedCardPayload,
+) => {
+  const response = await AxiosInstance.post(
+    "/wallets/fiat/direct-debit/charge",
+    data,
+  );
 
   return response.data;
 };
 
-export const deleteFiatWalletBankSavedCard = async (data: DeleteFiatWalletBankSavedCardPayload) => {
-  const response = await AxiosInstance.post("/wallets/fiat/direct-debit/deactivate", data );
+export const deleteFiatWalletBankSavedCard = async (
+  data: DeleteFiatWalletBankSavedCardPayload,
+) => {
+  const response = await AxiosInstance.post(
+    "/wallets/fiat/direct-debit/deactivate",
+    data,
+  );
 
   return response.data;
 };
@@ -160,6 +191,16 @@ export const getBankAcountsList = async () => {
 
 export const addBankAcounts = async (data: AddBankAccountPayload) => {
   const response = await AxiosInstance.post("/wallet/banks", data);
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const ActiveNetworksCrypto = async () => {
+  const response = await AxiosInstance.get("/wallets/active-networks");
 
   return {
     success: true,
@@ -202,7 +243,7 @@ export const quoteConversion = async (data: QuoteExecutePayload) => {
 };
 
 export const executeConversion = async (data: ConvertExecutePayload) => {
-  const response = await AxiosInstance.post("/wallets/convert/execute", data);
+  const response = await AxiosInstance.post("/wallets/convert/accept", data);
 
   return response.data;
 };

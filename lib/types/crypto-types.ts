@@ -7,9 +7,9 @@ export interface QuoteExecutePayload {
 
 export interface ConvertExecutePayload {
   quoteId: string;
-  sourceCurrency: string;
-  targetCurrency: string;
-  amount: number;
+  // sourceCurrency: string;
+  // targetCurrency: string;
+  // amount: number;
 }
 
 export interface ConvertExecuteResponse {

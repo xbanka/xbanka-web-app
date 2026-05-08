@@ -56,7 +56,7 @@ export function ConfirmStep({
                 {/* <p className="text-xs text-text mt-0.5">{paySymbol}</p> */}
               </div>
               <div className="bg-background border border-border rounded-xl py-4 px-5">
-                <p className="text-xs text-text mb-1">You Receive</p>
+                <p className="text-xs text-text mb-1">{mode === "BUY" ? "You Receive" : "You Receive"}</p>
                 {isValidAmount ? (
                   <p className="text-base font-bold text-Green">
                     {receiveAmount}

@@ -33,6 +33,8 @@ import {
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";
 import { Enable2faModal } from "./enable2fa-modal";
+import { RemoveDeviceModal } from "./remove-device-modal";
+import { RemoveSessionModal } from "./remove-session-modal";
 
 export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
@@ -81,7 +83,7 @@ export function SecurityTab() {
       note: "",
     },
   ];
-  const [ removeDeviceId, setRemoveDeviceId ] = useState<string | null>(null);
+  const [removeDeviceId, setRemoveDeviceId] = useState<string | null>(null);
 
   const {
     mutate: EnableTwoFactorMutate,
@@ -109,16 +111,6 @@ export function SecurityTab() {
   } = UseGetRegisteredDevices();
 
   const { mutate: requestOtp, isPending: otpLoading } = useRequestOtp();
-  const {
-    mutate: revokeSessionsMutate,
-    isPending: revokeLoading,
-    error: revokeError,
-  } = useRevokeSessions();
-  const {
-    mutate: removeDeviceMutate,
-    isPending: removeLoading,
-    error: removeError,
-  } = useRemoveDevice();
 
   const handleChangePassword = () => {
     setOpenChangePassword(true);
@@ -139,11 +131,14 @@ export function SecurityTab() {
   const handleModal = (id: string) => {
     setRemoveDeviceModal(true);
     setRemoveDeviceId(id);
-  }
+    console.log("Device ID to remove:", id);
+  };
 
   const handleSessionModal = (id: string) => {
-    
-  } 
+    setRemoveSessionModal(true);
+    setRemoveDeviceId(id);
+    console.log("session ID to remove:", id);
+  };
 
   const authItems = [
     {
@@ -281,6 +276,7 @@ export function SecurityTab() {
                 lastTime={formatRelativeTime(s.lastActiveAt)}
                 key={i}
                 label={s.device.type[0].toUpperCase() + s.device.type.slice(1)}
+                onClick={() => handleSessionModal(s?.id)}
               />
             );
           })}
@@ -347,6 +343,23 @@ export function SecurityTab() {
         <Enable2faModal
           open={enable2faModal}
           onClose={() => setEnable2faModal(false)}
+        />
+      )}
+
+      {/* Remove Device Modal */}
+      {removeDeviceModal && (
+        <RemoveDeviceModal
+          open={removeDeviceModal}
+          onClose={() => setRemoveDeviceModal(false)}
+          deviceId={removeDeviceId ?? ""}
+        />
+      )}
+
+      {removeSessionModal && (
+        <RemoveSessionModal
+          open={removeSessionModal}
+          deviceId={removeDeviceId ?? ""}
+          onClose={() => setRemoveSessionModal(false)}
         />
       )}
     </div>
