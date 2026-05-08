@@ -5,6 +5,7 @@ import { ConfirmModal } from "./confirm-modal";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
+  UseGetCryptoWallet,
   useGetCurrency,
   UseGetFiatWallet,
   useGetGroupedPair,
@@ -38,6 +39,11 @@ export function BuyTab() {
     error: walletError,
     isPending: walletPending,
   } = UseGetFiatWallet();
+  const {
+    data: cryptoWalletData,
+    error: cryptoWalletError,
+    isPending: cryptoWalletPending,
+  } = UseGetCryptoWallet();
   const wallets = walletData?.data?.data || [];
   const latestWallet = wallets[0];
 
@@ -223,8 +229,8 @@ export function BuyTab() {
           handleReset={handleReset}
           mode="BUY"
           payAmount={Number(amount || 0)}
-          paySymbol={sourceCurrency}
-          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          paySymbol={targetCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${sourceCurrency}` || ""}
           receiveSymbol={targetCurrency}
           rate={
             quoteData

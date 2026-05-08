@@ -5,6 +5,7 @@ import { ConfirmModal } from "./confirm-modal";
 import { RefreshCcw } from "lucide-react";
 import {
   useExecuteConversion,
+  UseGetCryptoWallet,
   useGetCurrency,
   useGetGroupedPair,
   useGetRateConversion,
@@ -34,6 +35,11 @@ export function SellTab() {
 
   // const { mutate, isPending } = useExecuteConversion();
   const { data, mutate, isPending } = useQuoteConversion();
+  const {
+      data: cryptoWalletData,
+      error: cryptoWalletError,
+      isPending: cryptoWalletPending,
+    } = UseGetCryptoWallet();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
