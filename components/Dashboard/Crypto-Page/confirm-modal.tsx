@@ -104,7 +104,7 @@ export function ConfirmModal({
           setStep("success");
         }}
         onError={(error) => {
-          setProcessingError(error.message);
+          setProcessingError(error.raw.response.data.details.errors[0].message || error.message);
           setStep("failed");
         }}
       />

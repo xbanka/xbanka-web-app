@@ -246,10 +246,14 @@ export const UseFundFiatWalletBank = () => {
 };
 
 export const UseSendFiatWallet = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: sendWalletPayload) => sendFiatWallet(data),
     onSuccess: (result) => {
       console.log("FULL result", result);
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -367,10 +371,14 @@ export const useQuoteConversion = () => {
 };
 
 export const useExecuteConversion = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ConvertExecutePayload) => executeConversion(data),
     onSuccess: (result) => {
       toast.success("Conversion successful");
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
     onError: (err) => {
       handleApiError(err);

@@ -52,7 +52,6 @@ export function ProcessingStep({
           });
         },
         onError: (error) => {
-          console.log("Conversion error", error.message);
           onError(error);
         },
       },
