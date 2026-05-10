@@ -5,51 +5,40 @@ import { UseWithdrawCrypto } from "@/lib/services/wallet.service";
 import { useEffect } from "react";
 import { UserWallet } from "../Wallet-Page/types";
 import { WalletSuccessState } from "./crypto-modal-types";
+import { RecipientXbankaUsersTypes } from "./types";
+import { useTransferCryptoToXbankaUsers } from "@/lib/services/send-crypto.service";
 
-export function ProcessingStep({
+export function ProcessingXbankaStep({
   amount,
-  asset,
-  network,
-  recipientName,
-  recipientAddress,
+  recipient,
   onConfirm,
-  setSuccessDetails,
-  onError
+  onError,
 }: {
   amount: string;
-  asset?: UserWallet | null;
-  network: string | null;
-  recipientAddress: string;
-  recipientName?: string;
+  recipient: RecipientXbankaUsersTypes;
   onConfirm: () => void;
-  setSuccessDetails: (value: WalletSuccessState) => void;
   onError: (error: Error) => void;
 }) {
-  const shortAddr = `${recipientAddress.slice(0, 4)}...${recipientAddress.slice(-4)}`;
-  const { mutate, isPending, error } = UseWithdrawCrypto();
+//   const shortAddr = `${recipientAddress.slice(0, 4)}...${recipientAddress.slice(-4)}`;
+
+  const { mutate } = useTransferCryptoToXbankaUsers();
 
   useEffect(() => {
-    if (!asset?.currency || !amount || !recipientAddress || !network) return;
-    const mainAmount = Number(amount.replace(/,/g, ""));
-    const payload = {
-      currency: asset?.currency,
-      network,
-      address: recipientAddress,
-      amount: mainAmount,
-      memo: "none",
-      narration: "none",
-    };
-    mutate(payload, {
-      onSuccess: (response) => {
-        setSuccessDetails(response.data)
-        onConfirm();
+    mutate(
+      {
+        targetUserId: recipient.id,
+        amount: Number(amount),
       },
-      onError: (error) => {
-          console.log("Conversion error", error.message);
+      {
+        onSuccess: () => {
+          onConfirm();
+        },
+        onError: (error) => {
           onError(error);
         },
-    });
-  }, [asset?.currency, amount, recipientAddress, network]);
+      }
+    );
+  }, []);
   return (
     <Modal onClose={() => {}}>
       <div className="py-10 flex flex-col items-center gap-5 text-center space-y-6">

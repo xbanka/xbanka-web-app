@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { UserWallet } from "../Wallet-Page/types";
+import { RecipientXbankaUsersTypes } from "./types";
 
 export function EnterAmountStep({
   asset,
@@ -13,6 +14,8 @@ export function EnterAmountStep({
   onBack,
   onClose,
   onNext,
+  recipientType,
+  xbankaRecipient,
 }: {
   asset?: UserWallet | null;
   network: string | null;
@@ -21,6 +24,8 @@ export function EnterAmountStep({
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
+  recipientType?: "wallet" | "xbanka-user";
+  xbankaRecipient?: RecipientXbankaUsersTypes | null;
 }) {
   const numericBalance = asset?.balance ?? 0;
   console.log("Numeric balance:", numericBalance);

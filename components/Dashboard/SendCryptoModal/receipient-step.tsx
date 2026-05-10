@@ -6,9 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { RECENT_CONTACTS } from "../Wallet-Page/wallet-mock-data";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { RecipientXbankaUsersTypes, XbankaUser } from "./types";
+import { UseGetActiveXbankaUsers } from "@/lib/services/send-fiat.service";
 
 const recipientSchema = z.object({
   address: z.string().min(4, "Enter a valid wallet address or XBanka UID"),
@@ -22,19 +23,42 @@ export function RecipientStep({
 }: {
   onBack: () => void;
   onClose: () => void;
-  onNext: (address: string, name?: string) => void;
+  onNext: (data: {
+    type: "wallet" | "xbanka-user";
+    address?: string;
+    name?: string;
+    user?: RecipientXbankaUsersTypes;
+  }) => void;
 }) {
   const [tab, setTab] = useState<"recent" | "favorites">("recent");
-  const [search, setSearch] = useState("");
+  const { data, isPending } = UseGetActiveXbankaUsers();
+
+  const users = data?.data || [];
   const {
     register,
     handleSubmit,
+    watch,
     setValue,
     formState: { errors, isValid },
   } = useForm<RecipientForm>({
     resolver: zodResolver(recipientSchema),
     mode: "onChange",
   });
+
+  const search = watch("address") || "";
+
+  const filteredUsers = users.filter((user: XbankaUser) => {
+  const value = search.toLowerCase().trim();
+
+  if (!value) return false;
+
+  return (
+    user.id?.toLowerCase()?.includes(value) ||
+    user.profile?.firstName?.toLowerCase()?.includes(value) ||
+    user.profile?.lastName?.toLowerCase()?.includes(value) ||
+    user.email?.toLowerCase()?.includes(value)
+  );
+});
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -50,7 +74,12 @@ export function RecipientStep({
       </div>
 
       <form
-        onSubmit={handleSubmit((d) => onNext(d.address))}
+        onSubmit={handleSubmit((d) => {
+          onNext({
+            type: "wallet",
+            address: d.address,
+          })},
+        )}
         className="px-8 pt-4 pb-8 space-y-8"
       >
         <div className="space-y-4">
@@ -92,6 +121,41 @@ export function RecipientStep({
             />
           </div> */}
 
+          <div className="space-y-2 max-h-[120px] overflow-y-auto">
+            {search &&
+              filteredUsers.map((user: XbankaUser) => (
+                <button
+                  key={user.id}
+                  onClick={() =>
+                    onNext({
+                      type: "xbanka-user",
+                      user: {
+                        id: user.id,
+                        name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                        uid: user.id,
+                      },
+                      name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                    })
+                  }
+                  className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-background transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* <AvatarCircle name={user.name} color="bg-Green" /> */}
+
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-card-text">
+                        {user.profile
+                          ? `${user.profile.firstName} ${user.profile.lastName}`
+                          : user.id}
+                      </p>
+
+                      <p className="text-xs text-text">{user.id}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+          </div>
+
           {/* Contact list */}
           {/* <div className="">
             {RECENT_CONTACTS.map((c, i) => (
@@ -117,7 +181,9 @@ export function RecipientStep({
               </button>
             ))}
           </div> */}
-          <h1 className="text-sm font-medium text-card-text">No recent contacts</h1>
+          <h1 className="text-sm font-medium text-card-text">
+            No recent contacts
+          </h1>
         </div>
 
         <div className="flex gap-4">
