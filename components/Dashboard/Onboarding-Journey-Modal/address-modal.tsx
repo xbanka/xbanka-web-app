@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField } from "@/components/ui/field-error";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 export function AddressModal({
   onClose,
@@ -28,10 +29,11 @@ export function AddressModal({
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [step, setStep] = useState<"form" | "success">("form");
   const [showSuccess, setShowSuccess] = useState(false);
-  const userId = useUserIdStore((s) => s.userId);
   const clearUserId = useUserIdStore((s) => s.clearUserId);
   const { mutate, isPending, data, isSuccess, error } = useAddressProof();
   const router = useRouter();
+  const { data: profileData } = UseProfileUser();
+    const userId = profileData?.data?.userId;
 
   const {
     register,

@@ -3,8 +3,9 @@ import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
-import { SendCryptoConfirmList } from "../Wallet-Page/send-crypto-confirm-list";
+import { SendCryptoConfirmList } from "./send-crypto-confirm-list";
 import { UserWallet } from "../Wallet-Page/types";
+import { RecipientXbankaUsersTypes } from "./types";
 
 export function ConfirmStep({
   amount,
@@ -15,6 +16,8 @@ export function ConfirmStep({
   onBack,
   onClose,
   onNext,
+  recipientType,
+  xbankaRecipient,
 }: {
   amount: string;
   asset?: UserWallet | null;
@@ -24,6 +27,8 @@ export function ConfirmStep({
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
+  recipientType?: "wallet" | "xbanka-user";
+  xbankaRecipient?: RecipientXbankaUsersTypes | null;
 }) {
   // const fee = parseFloat(network.fee);
   const total = parseFloat(amount).toFixed(2);
@@ -72,11 +77,19 @@ export function ConfirmStep({
               title="Asset"
               value={asset?.currency ?? ""}
             />
-            <SendCryptoConfirmList
-              title="Receipt"
-              value="John Doe"
-              subValue="TL8x...9pQ2"
-            />
+            {recipientType === "wallet" ? (
+              <SendCryptoConfirmList
+                title="Receipt"
+                value={recipientName || "Wallet Address"}
+                subValue={shortAddr}
+              />
+            ) : (
+              <SendCryptoConfirmList
+                title="XBanka User"
+                value={xbankaRecipient?.name || ""}
+                subValue={xbankaRecipient?.uid || ""}
+              />
+            )}
             <SendCryptoConfirmList title="Network" value={network || ""} />
             {/* <div className="px-2 py-2.5 bg-background flex justify-between rounded-lg">
               <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>

@@ -19,13 +19,6 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 
-type FormValues = {
-  receiveAmount: string;
-  amount: string;
-  sourceCurrency: string;
-  targetCurrency: string;
-};
-
 export function BuyTab() {
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
