@@ -23,8 +23,7 @@ export function MarketOverview() {
     isError: marketPricesIsError,
     isPending: marketPricesPending,
   } = useGetMarketPrices(page, limit);
-  console.log("marketPrices", marketPrices);
-  const marketItems = marketPrices?.data.items || [];
+  const marketItems = marketPrices?.data.items.slice(0, 6) || [];
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -182,10 +181,10 @@ export function MarketOverview() {
           isLoading={marketPricesPending}
           errorMessage={marketPricesError?.message}
           rowKey={(item) => item.id}
-          itemsPerPage={6}
-          pageTotal={marketPrices?.data?.meta.totalPages}
-          currentPage={page}
-          onPageChange={handlePageChange}
+          // itemsPerPage={6}
+          // pageTotal={marketPrices?.data?.meta.totalPages}
+          // currentPage={page}
+          // onPageChange={handlePageChange}
           emptyMessage="No transaction history available."
         />
       </div>
