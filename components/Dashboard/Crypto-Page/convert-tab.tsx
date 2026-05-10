@@ -40,10 +40,10 @@ export function ConvertTab() {
 
   const { data, mutate, isPending } = useQuoteConversion();
   const {
-      data: cryptoWalletData,
-      error: cryptoWalletError,
-      isPending: cryptoWalletPending,
-    } = UseGetCryptoWallet();
+    data: cryptoWalletData,
+    error: cryptoWalletError,
+    isPending: cryptoWalletPending,
+  } = UseGetCryptoWallet();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -63,8 +63,8 @@ export function ConvertTab() {
   } = useGetCurrency();
 
   const { data: profileData } = UseProfileUser();
-    const hasTransactionPin = profileData?.data?.hasTransactionPin;
-    console.log(hasTransactionPin);
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
 
   const currencies = currencyData?.data || [];
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
@@ -212,8 +212,19 @@ export function ConvertTab() {
           </div>
         )}
 
-        <Button onClick={handleQuoteModal} className="w-full transition-colors">
-          Get Quote
+        <Button
+          onClick={handleQuoteModal}
+          className="w-full transition-colors"
+          variant={
+            !amount || Number(amount) <= 0 || isPending ? "disabled" : "default"
+          }
+          disabled={
+            !amount || Number(amount) <= 0 || RateConversionPending || isPending
+          }
+        >
+          {RateConversionPending || isPending
+            ? "Getting Quote..."
+            : "Get Quote"}
         </Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}

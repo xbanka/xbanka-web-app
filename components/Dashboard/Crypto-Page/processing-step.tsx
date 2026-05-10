@@ -26,7 +26,7 @@ export function ProcessingStep({
   sourceCurrency: string;
   targetCurrency: string;
   onSuccess: (data: ConversionResult) => void;
-  onError: (error: Error) => void;
+  onError: (error: any) => void;
 }) {
   const { mutate, isPending } = useExecuteConversion();
 
@@ -52,7 +52,6 @@ export function ProcessingStep({
           });
         },
         onError: (error) => {
-          console.log("Conversion error", error.message);
           onError(error);
         },
       },

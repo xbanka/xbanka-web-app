@@ -1,11 +1,9 @@
 import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
-import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { ArrowLeftRight } from "lucide-react";
 import { UseWithdrawCrypto } from "@/lib/services/wallet.service";
 import { useEffect } from "react";
-import { SendStep, UserWallet } from "../Wallet-Page/types";
+import { UserWallet } from "../Wallet-Page/types";
 import { WalletSuccessState } from "./crypto-modal-types";
 
 export function ProcessingStep({
