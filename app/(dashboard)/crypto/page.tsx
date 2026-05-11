@@ -1,10 +1,11 @@
 import { CryptoPage } from "@/components/Dashboard/Crypto-Page/crypto-page";
+import { Suspense } from "react";
 
 const page = () => {
   return (
-    <div>
+    <Suspense fallback={<p>Signing you in...</p>}>
         <CryptoPage />
-    </div>
+    </Suspense>
   )
 };
 

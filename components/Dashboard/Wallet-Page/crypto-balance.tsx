@@ -9,8 +9,10 @@ import { SendCryptoModal } from "../SendCryptoModal/send-crypto-modal";
 import { DepositSidebar } from "./deposit-crypto-sidebar";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
+import { useRouter } from "next/navigation";
 
 export const CryptoBalance = () => {
+  const router = useRouter();
   const [hidden, setHidden] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
@@ -99,6 +101,7 @@ export const CryptoBalance = () => {
             <Button
               size={"sm"}
               variant={"outline"}
+              onClick={() => router.push("/crypto?tab=convert")}
               className="flex h-12 min-w-0 items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
               <RefreshCcw className="h-4 w-4 sm:h-5 sm:w-5" />
