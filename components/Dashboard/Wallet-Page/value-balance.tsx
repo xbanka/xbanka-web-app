@@ -2,13 +2,12 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ErrorField } from "@/components/ui/field-error";
 import {
-  UseGetAllWalletBalances,
   UseGetCryptoWallet,
   UseGetFiatWallet,
 } from "@/lib/services/wallet.service";
 import { sumCryptoFiatEquivalent, sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 export const ValueBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -82,7 +81,7 @@ export const ValueBalance = () => {
                     : "₦0.00"}
               </p>
             </div>
-            <div className="border-l-3 border-[#2DD4BF] bg-border px-4 py-3 max-sm:w-full ">
+            <div className="border-l-3 border-border-active bg-border px-4 py-3 max-sm:w-full ">
               <p className="text-text font-medium leading-5 text-[12px]">
                 Crypto
               </p>
