@@ -51,7 +51,7 @@ export const ValueBalance = () => {
                 Your balance might have changed
               </div>
             )}
-            {!fiatIsPending && !cryptoIsPending && (
+            {(!fiatIsPending && !cryptoIsPending && !fiatError && !cryptoError) && (
               <p className="text-3xl sm:text-4xl font-bold text-card-text ">
                 {hidden
                   ? "₦•••••••"
