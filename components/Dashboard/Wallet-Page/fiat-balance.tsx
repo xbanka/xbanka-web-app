@@ -13,6 +13,7 @@ import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { DisabledTooltipButton } from "@/components/ui/disabled-tooltip-button";
+import { ErrorField } from "@/components/ui/field-error";
 
 export const FiatBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -65,15 +66,26 @@ export const FiatBalance = () => {
                 )}
               </button>
             </div>
-            <p className="text-3xl sm:text-4xl font-bold text-card-text">
-              {hidden
-                ? "₦•••••••"
-                : data?.data
-                  ? `₦${sumFiatBalances(wallets).toLocaleString()}`
-                  : "₦0.00"}
-            </p>
+            {isPending && (
+              <div className="text-sm text-card-text font-bold leading-11">
+                Your balance might have changed
+              </div>
+            )}
+            {(!isPending && !error) && (
+              <p className="text-3xl sm:text-4xl font-bold text-card-text">
+                {hidden
+                  ? "₦•••••••"
+                  : data?.data
+                    ? `₦${sumFiatBalances(wallets).toLocaleString()}`
+                    : "₦0.00"}
+            </p>)}
+            {(error || !isPending) && (
+              <ErrorField
+                message={error?.message}
+              />
+            )}
             <span className="text-text text-xs font-normal leading-4.5">
-              ≈ ₦{latestWallet?.balance ?? 0} today
+              {isPending ? "Calculating..." : `≈ ₦${latestWallet?.balance ?? 0} today`}
             </span>
           </div>
           <div className="flex items-start gap-4">
