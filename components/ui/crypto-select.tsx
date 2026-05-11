@@ -3,19 +3,22 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { CurrencyOption } from "@/lib/crypto";
+import { cn } from "@/lib/utils";
 
 export interface CryptoSelectFieldProps {
   currencyId?: boolean;
   options: CurrencyOption[] | any[];
   onChange: (value: string) => void;
   value: string;
+  className?: string;
 }
 
 export const CryptoSelectField = ({
   options,
   value,
   onChange,
-  currencyId
+  currencyId,
+  className
 }: CryptoSelectFieldProps) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +39,7 @@ export const CryptoSelectField = ({
   const selected = options.find((o: any) => o.value === value) || options[0];
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className={cn("relative w-full", className)}>
       {/* Selected */}
       <button
         onClick={() => setOpen((p) => !p)}
