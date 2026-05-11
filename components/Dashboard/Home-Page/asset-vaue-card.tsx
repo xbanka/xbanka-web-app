@@ -53,7 +53,7 @@ export function AssetValueCard() {
                 Your balance might have changed
               </div>
             )}
-            {!fiatIsPending && (
+            {(!fiatIsPending && !cryptoIsPending) && (
               <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
                 {hidden
                   ? "•••••••"
@@ -63,7 +63,9 @@ export function AssetValueCard() {
               </span>
             )}
             {(fiatError || cryptoError) && (
-              <ErrorField message={fiatError?.message || cryptoError?.message} />
+              <ErrorField
+                message={fiatError?.message || cryptoError?.message}
+              />
             )}
             <select
               value={view}
