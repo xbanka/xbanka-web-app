@@ -85,6 +85,14 @@ export function SellTab() {
       }));
   }, [pairMap]);
 
+  const wallets = cryptoWalletData?.data?.data || [];
+
+  const selectedWallet = wallets.find(
+    (wallet: any) => wallet.currency === sourceCurrency,
+  );
+
+  const availableBalance = selectedWallet?.balance || 0;
+
   const validTargets =
     pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
 
@@ -178,6 +186,7 @@ export function SellTab() {
         <div className="space-y-3">
           <AmountRow
             label="You Sell"
+            available={`${availableBalance} ${sourceCurrency}`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={SELL_SOURCE_OPTIONS}
@@ -190,7 +199,6 @@ export function SellTab() {
           </p>
           <AmountRow
             label="You Receive"
-            available="₦40,000"
             readOnly
             value={
               convertData?.netPayout ? convertData?.netPayout.toString() : ""

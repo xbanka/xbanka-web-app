@@ -44,6 +44,7 @@ export function ConvertTab() {
     error: cryptoWalletError,
     isPending: cryptoWalletPending,
   } = UseGetCryptoWallet();
+
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -78,6 +79,14 @@ export function ConvertTab() {
       value: item.code,
     }));
   }, [currencies]);
+
+  const wallets = cryptoWalletData?.data?.data || [];
+
+  const selectedWallet = wallets.find(
+    (wallet: any) => wallet.currency === sourceCurrency,
+  );
+
+  const availableBalance = selectedWallet?.balance || 0;
 
   const TARGET_OPTIONS = useMemo(() => {
     const pairs =
@@ -168,6 +177,7 @@ export function ConvertTab() {
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="You Receive"
+          available={`${availableBalance} ${sourceCurrency}`}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           OPTIONS={SOURCE_OPTIONS}
