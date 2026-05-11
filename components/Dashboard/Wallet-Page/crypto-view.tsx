@@ -113,7 +113,7 @@ export function CryptoView() {
         </div>
       </div>
 
-      <TransactionHistory tableType="CRYPTO" isCrypto />
+      <TransactionHistory tableType="CRYPTO" />
     </div>
   );
 }

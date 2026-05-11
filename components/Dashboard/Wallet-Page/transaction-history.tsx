@@ -3,6 +3,7 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { CryptoSelectField } from "@/components/ui/crypto-select";
 import { Input } from "@/components/ui/input";
+import { SelectFieldWithValue } from "@/components/ui/select-with-value";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
@@ -17,15 +18,12 @@ export interface TransactionHistoryProps {
   tableType?: "FIAT" | "CRYPTO" | "GIFTCARD";
 }
 
-export function TransactionHistory({
-  isCrypto = false,
-  tableType,
-}: TransactionHistoryProps) {
+export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedType, setSelectedType] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 4
+  const limit = 4;
   const tabs = ["All", "Pending", "Completed", "In Progress", "Failed"];
   const {
     data: transactionHistory,
@@ -33,7 +31,6 @@ export function TransactionHistory({
     isError,
     error,
   } = UseGetTransactionHistory(page, limit);
-  
 
   const transactions = transactionHistory?.data?.data?.items || [];
 
@@ -43,15 +40,19 @@ export function TransactionHistory({
         const searchStr = searchQuery.toLowerCase();
         const matchesSearch =
           item?.type?.toLowerCase().includes(searchStr) ||
-          item?.reference?.toLowerCase().includes(searchStr);
+          item?.reference?.toLowerCase().includes(searchStr) ||
+          item?.currency?.toLowerCase().includes(searchStr) ||
+          item?.status?.toLowerCase().includes(searchStr) ||
+          item?.note?.toLowerCase().includes(searchStr) ||
+          item?.category?.toLowerCase().includes(searchStr) ||
+          String(item?.amount).includes(searchStr);
 
         const matchesStatus =
           filter.toLowerCase() === "all" ||
           item.status?.toLowerCase() === filter.toLowerCase();
 
         const matchesTransactionType =
-          !selectedType || // 👈 handles empty ""
-          selectedType.toLowerCase() === "all" ||
+          selectedType === "ALL" ||
           item.type?.toLowerCase() === selectedType.toLowerCase();
 
         return matchesSearch && matchesStatus && matchesTransactionType;
@@ -61,7 +62,6 @@ export function TransactionHistory({
 
   const fiatTransactions = transactionHistoryType("FIAT", filteredData);
   const cryptoTransactions = transactionHistoryType("CRYPTO", filteredData);
-
 
   const columns = [
     {
@@ -191,27 +191,31 @@ export function TransactionHistory({
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-placeholder" />
             <Input
               placeholder="Search by name or email"
-              className="pl-8 pr-3"
+              className="pl-8 pr-3 w-[250px]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <CryptoSelectField
+          <SelectFieldWithValue
+            placeholder="Transaction Type"
+            // className="w-[150px] text-center"
             options={[
               { value: "ALL", label: "All" },
               { value: "DEPOSIT", label: "DEPOSIT" },
               { value: "WITHDRAWAL", label: "WITHDRAWAL" },
-              { value: "TRANSFER_IN", label: "TRANSFER IN" },
-              { value: "TRANSFER_OUT", label: "TRANSFER OUT" },
+              // { value: "TRANSFER_IN", label: "TRANSFER IN" },
+              // { value: "TRANSFER_OUT", label: "TRANSFER OUT" },
             ]}
             value={selectedType}
-            onChange={setSelectedType}
+            onChange={(value) => {
+              setSelectedType(value);
+            }}
           />
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        {isCrypto ? (
+        {tableType === "CRYPTO" ? (
           <DataTableLayout
             data={cryptoTransactions}
             columns={cryptoColumns}
@@ -219,13 +223,13 @@ export function TransactionHistory({
             isLoading={isPending}
             errorMessage={error?.message}
             rowKey={(item) => item.id}
-            itemsPerPage={10}
+            itemsPerPage={limit}
             pageTotal={transactionHistory?.data?.data?.meta.totalPages}
             currentPage={page}
             onPageChange={setPage}
             emptyMessage="No transaction history available."
           />
-        ) : (
+        ) : tableType === "FIAT" ? (
           <DataTableLayout
             data={fiatTransactions}
             columns={columns}
@@ -233,7 +237,21 @@ export function TransactionHistory({
             isLoading={isPending}
             errorMessage={error?.message}
             rowKey={(item) => item.id}
-            itemsPerPage={10}
+            itemsPerPage={limit}
+            pageTotal={transactionHistory?.data?.data?.meta.totalPages}
+            currentPage={page}
+            onPageChange={setPage}
+            emptyMessage="No transaction history available."
+          />
+        ) : (
+          <DataTableLayout
+            data={filteredData}
+            columns={columns}
+            isError={isError}
+            isLoading={isPending}
+            errorMessage={error?.message}
+            rowKey={(item) => item.id}
+            itemsPerPage={limit}
             pageTotal={transactionHistory?.data?.data?.meta.totalPages}
             currentPage={page}
             onPageChange={setPage}
