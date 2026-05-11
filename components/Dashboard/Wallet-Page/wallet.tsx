@@ -9,7 +9,6 @@ import { FiatBalance } from "./fiat-balance";
 import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
 import { VerifyBvnModal } from "./verify-bvn-modal";
-import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function WalletPage() {
@@ -19,23 +18,6 @@ export default function WalletPage() {
   const searchParams = useSearchParams();
 
   const currentTab = searchParams.get("tab") || "total";
-
-  // ── Add Funds modal
-  const [addFundsOpen, setAddFundsOpen] = useState(false);
-  const {
-    data: verificationData,
-    isPending: verificationPending,
-    error: verificationError,
-  } = UseVerificationStatus();
-
-  const verification = verificationData?.data;
-
-  const isStepCompleted = (stepId: string) =>
-    verification?.progress?.some(
-      (step: any) => step.id === stepId && step.isCompleted,
-    );
-
-  const isBvnVerified = isStepCompleted("BVN");
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
@@ -91,7 +73,7 @@ export default function WalletPage() {
           ))}
         </div>
         {currentTab === "total" && <ValueBalance />}
-        {currentTab === "fiat" && <FiatBalance isBvnVerified={isBvnVerified} />}
+        {currentTab === "fiat" && <FiatBalance />}
         {currentTab === "crypto" && <CryptoBalance />}
       </DashboardCard>
 
