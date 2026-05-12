@@ -28,6 +28,8 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [xbankaRecipient, setXbankaRecipient] =
     useState<XbankaTransferRecipient | null>(null);
 
+  const showTabs = step === "select-recipient";
+
   const handleTabChange = (t: Tab) => {
     setTab(t);
     setStep("select-recipient");
@@ -100,9 +102,11 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           step={step}
         />
       </div> */}
-      <div className="px-8 pb-3">
-        <TabToggle active={tab} onChange={handleTabChange} />
-      </div>
+      {showTabs && (
+        <div className="px-8 pb-3">
+          <TabToggle active={tab} onChange={handleTabChange} />
+        </div>
+      )}
       <div className="px-0">
         {/* STEP 1 */}
         {step === "select-recipient" && tab === "select-recipient" && (
@@ -198,7 +202,9 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           <ProcessingXbankaStep
             recipient={xbankaRecipient}
             amount={
-              xbankaRecipient?.name.toString() ? xbankaRecipient?.id.toString() : "0"
+              xbankaRecipient?.name.toString()
+                ? xbankaRecipient?.id.toString()
+                : "0"
             }
             mandateId={xbankaRecipient.uid}
             accountName={xbankaRecipient.name}
@@ -207,7 +213,11 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
         )}
         {step === "success" && (recipient || xbankaRecipient) && (
           <SuccessStep
-            amount={recipient?.amount.toString() ?? xbankaRecipient?.amount?.toString() ?? "0"}
+            amount={
+              recipient?.amount.toString() ??
+              xbankaRecipient?.amount?.toString() ??
+              "0"
+            }
             // recipient={recipient}
             onDone={() => {
               // onSuccess?.();
