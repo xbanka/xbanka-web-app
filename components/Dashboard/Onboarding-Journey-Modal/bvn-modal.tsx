@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { useForm } from "react-hook-form";
 import { ErrorField } from "@/components/ui/field-error";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 export function BvnModal({
   onClose,
@@ -27,13 +28,13 @@ export function BvnModal({
   );
 
   const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
+  const { data: profileData } = UseProfileUser();
+  const userId = profileData?.data?.userId;
   // const {
   //   isPending: skipPending,
   //   error: skipError,
   //   mutate: skipMutate,
   // } = useSkipStep();
-
-  const userId = useUserIdStore((s) => s.userId);
 
   const {
     register,

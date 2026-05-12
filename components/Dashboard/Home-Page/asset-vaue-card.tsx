@@ -2,23 +2,19 @@
 
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
+import { ErrorField } from "@/components/ui/field-error";
 import {
   UseGetAllWalletBalances,
   UseGetCryptoWallet,
   UseGetFiatWallet,
 } from "@/lib/services/wallet.service";
-import {
-  sumCryptoBalance,
-  sumCryptoFiatEquivalent,
-  sumFiatBalances,
-} from "@/lib/sumBalances";
+import { sumCryptoFiatEquivalent, sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, HelpCircle, Plus } from "lucide-react";
 import { useState } from "react";
 
 export function AssetValueCard() {
   const [hidden, setHidden] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
-  const { data, error, isPending } = UseGetAllWalletBalances();
   const {
     data: fiatData,
     error: fiatError,
@@ -26,7 +22,6 @@ export function AssetValueCard() {
   } = UseGetFiatWallet();
   const wallets = fiatData?.data?.data || [];
   const fiatBalance = sumFiatBalances(wallets);
-  const latestWallet = wallets[0];
   const {
     data: cryptoData,
     error: cryptoError,
@@ -53,14 +48,25 @@ export function AssetValueCard() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            {fiatIsPending && <div className="text-sm text-card-text font-bold leading-11">Your balance might have changed</div>}
-            { !fiatIsPending && <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
-              {hidden
-                ? "•••••••"
-                : view === "NGN"
-                  ? `₦${totalBalance.toLocaleString()}`
-                  : `$${"0".toLocaleString()}`}
-            </span>}
+            {(fiatIsPending || cryptoIsPending) && (
+              <div className="text-sm text-card-text font-bold leading-11">
+                Your balance might have changed
+              </div>
+            )}
+            {(!fiatIsPending && !cryptoIsPending) && (
+              <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
+                {hidden
+                  ? "•••••••"
+                  : view === "NGN"
+                    ? `₦${totalBalance.toLocaleString()}`
+                    : `$${"0".toLocaleString()}`}
+              </span>
+            )}
+            {(fiatError || cryptoError) && (
+              <ErrorField
+                message={fiatError?.message || cryptoError?.message}
+              />
+            )}
             <select
               value={view}
               onChange={(e) => setView(e.target.value as "NGN" | "CRYPTO")}

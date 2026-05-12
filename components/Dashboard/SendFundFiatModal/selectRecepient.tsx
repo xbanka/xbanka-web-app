@@ -1,19 +1,35 @@
 import { Button } from "@/components/ui/button";
-import { Building2, Search } from "lucide-react";
-import { RECENT_RECIPIENTS } from "./mockData";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { RecipientXbankaUsersTypes, Tab } from "./types";
+import { XbankaTransferRecipient, XbankaUser } from "./types";
+import { UseGetActiveXbankaUsers } from "@/lib/services/send-fiat.service";
 import { AvatarCircle } from "./avatarCircle";
 
 export function SelectRecipientStep({
   onSelectXbanka,
   onSelectBank,
 }: {
-  onSelectXbanka: (r: RecipientXbankaUsersTypes) => void;
+  onSelectXbanka: (r: XbankaTransferRecipient) => void;
   onSelectBank: () => void;
 }) {
+  const { data, isPending } = UseGetActiveXbankaUsers();
+
+  const users = data?.data || [];
+  console.log("Active Xbanka Users:", users);
   const [search, setSearch] = useState("");
+
+  const filteredUsers = users.filter((user: XbankaUser) => {
+    const value = search.toLowerCase();
+
+    return (
+      user.id?.toLowerCase().includes(value) ||
+      user.profile?.firstName?.toLowerCase().includes(value) ||
+      user.profile?.lastName?.toLowerCase().includes(value) ||
+      user.email?.toLowerCase().includes(value)
+    );
+  });
+  console.log("Filtered Users:", filteredUsers);
 
   return (
     <div className="px-8 pb-8 pt-4 space-y-8">
@@ -27,7 +43,34 @@ export function SelectRecipientStep({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <div className="space-y-2 max-h-[120px] overflow-y-auto">
+          {search &&
+            filteredUsers.map((user: XbankaUser) => (
+              <button
+                key={user.id}
+                onClick={() =>
+                  onSelectXbanka({
+                    id: user.id,
+                    name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                    uid: user.id,
+                  })
+                }
+                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-background transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  {/* <AvatarCircle name={user.name} color="bg-Green" /> */}
 
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-card-text">
+                      {user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.id}
+                    </p>
+
+                    <p className="text-xs text-text">{user.id}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+        </div>
         <div className="space-y-4">
           <p className="text-xs text-text font-medium mb-2">
             Recent Recipients

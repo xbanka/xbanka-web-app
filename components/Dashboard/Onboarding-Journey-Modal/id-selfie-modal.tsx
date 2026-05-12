@@ -9,7 +9,7 @@ import {
   AttachmentFile,
   AttachmentUpload,
 } from "@/components/ui/UploadAttachment";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField } from "@/components/ui/field-error";
 import LivenessDetector, { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 export type IdSelfieStep =
   | "id-form"
@@ -35,12 +36,13 @@ export function IdSelfieModal({
 
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending, error } = useIdentity();
-  const userId = useUserIdStore((s) => s.userId);
   const {
     isPending: skipPending,
     error: skipError,
     mutate: skipMutate,
   } = useSkipStep();
+  const { data: profileData } = UseProfileUser();
+    const userId = profileData?.data?.userId;
 
   const {
     register,
