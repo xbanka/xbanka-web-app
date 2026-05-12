@@ -18,6 +18,7 @@ import { CRYPTO_OPTIONS, FIAT_OPTIONS } from "@/lib/currencyOptions";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "./confirm-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 type FormValues = {
   amount: string;
@@ -32,16 +33,18 @@ export function ConvertTab() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
   const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [openCreatePin, setOpenCreatePin] = useState(false);
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
 
   const { data, mutate, isPending } = useQuoteConversion();
   const {
-      data: cryptoWalletData,
-      error: cryptoWalletError,
-      isPending: cryptoWalletPending,
-    } = UseGetCryptoWallet();
+    data: cryptoWalletData,
+    error: cryptoWalletError,
+    isPending: cryptoWalletPending,
+  } = UseGetCryptoWallet();
+
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -60,6 +63,10 @@ export function ConvertTab() {
     isPending: currencyPending,
   } = useGetCurrency();
 
+  const { data: profileData } = UseProfileUser();
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
+
   const currencies = currencyData?.data || [];
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
 
@@ -73,6 +80,14 @@ export function ConvertTab() {
     }));
   }, [currencies]);
 
+  const wallets = cryptoWalletData?.data?.data || [];
+
+  const selectedWallet = wallets.find(
+    (wallet: any) => wallet.currency === sourceCurrency,
+  );
+
+  const availableBalance = selectedWallet?.balance || 0;
+
   const TARGET_OPTIONS = useMemo(() => {
     const pairs =
       pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
@@ -84,6 +99,10 @@ export function ConvertTab() {
   }, [pairMap, sourceCurrency]);
 
   const handleQuoteModal = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
     refetchQuote();
     setConfirmOpen(true);
   };
@@ -158,6 +177,7 @@ export function ConvertTab() {
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="You Receive"
+          available={`${availableBalance} ${sourceCurrency}`}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           OPTIONS={SOURCE_OPTIONS}
@@ -202,8 +222,19 @@ export function ConvertTab() {
           </div>
         )}
 
-        <Button onClick={handleQuoteModal} className="w-full transition-colors">
-          Get Quote
+        <Button
+          onClick={handleQuoteModal}
+          className="w-full transition-colors"
+          variant={
+            !amount || Number(amount) <= 0 || isPending ? "disabled" : "default"
+          }
+          disabled={
+            !amount || Number(amount) <= 0 || RateConversionPending || isPending
+          }
+        >
+          {RateConversionPending || isPending
+            ? "Getting Quote..."
+            : "Get Quote"}
         </Button>
         <p className="text-[10px] text-text text-center">
           By Proceeding, you agree to Xbanka{" "}

@@ -14,6 +14,9 @@ import { RecipientStep } from "./receipient-step";
 import { SelectAssetStep } from "./select-asset-step";
 import { WalletSuccessState } from "./crypto-modal-types";
 import { FailedStep } from "./failed-step";
+import { RecipientXbankaUsersTypes } from "./types";
+import { ProcessingXbankaStep } from "./processing-xbanka-step";
+import { SuccessStepXbanka } from "./success-step-xbanka";
 
 export const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -29,12 +32,20 @@ export function SendCryptoModal({
   const [step, setStep] = useState<SendStep>("select_asset");
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<UserWallet | null>();
-  const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(null);
+  const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(
+    null,
+  );
   const [recipientAddress, setRecipientAddress] = useState("");
   const [recipientName, setRecipientName] = useState<string | undefined>();
   const [amount, setAmount] = useState("");
   const [successDetails, setSuccessDetails] =
     useState<WalletSuccessState | null>(null);
+  const [recipientType, setRecipientType] = useState<"wallet" | "xbanka-user">(
+    "wallet",
+  );
+
+  const [xbankaRecipient, setXbankaRecipient] =
+    useState<RecipientXbankaUsersTypes | null>(null);
 
   if (!open) return null;
 
@@ -50,6 +61,10 @@ export function SendCryptoModal({
     setRecipientAddress("");
     setRecipientName(undefined);
     setAmount("");
+    setXbankaRecipient(null);
+    setRecipientType("wallet");
+    setProcessingError(null);
+    setSuccessDetails(null);
   };
 
   const handleClose = () => {
@@ -78,10 +93,21 @@ export function SendCryptoModal({
       <RecipientStep
         onBack={() => setStep("select_asset")}
         onClose={handleClose}
-        onNext={(addr, name) => {
-          setRecipientAddress(addr);
-          setRecipientName(name);
-          setStep("select_network");
+        onNext={(data) => {
+          setRecipientType(data.type);
+
+          if (data.type === "wallet") {
+            setRecipientAddress(data.address || "");
+            setRecipientName(data.name);
+            setStep("select_network");
+          }
+
+          if (data.type === "xbanka-user") {
+            setXbankaRecipient(data.user || null);
+
+            // internal transfer skips network step
+            setStep("enter_amount");
+          }
         }}
       />
     );
@@ -134,7 +160,20 @@ export function SendCryptoModal({
       />
     );
 
-  if (step === "processing")
+  if (step === "processing") {
+    if (recipientType === "xbanka-user" && xbankaRecipient) {
+      return (
+        <ProcessingXbankaStep
+          amount={amount}
+          recipient={xbankaRecipient}
+          onConfirm={() => setStep("success")}
+          onError={(error) => {
+            setProcessingError(error.message);
+            setStep("failed");
+          }}
+        />
+      );
+    }
     return (
       <ProcessingStep
         setSuccessDetails={setSuccessDetails}
@@ -150,8 +189,28 @@ export function SendCryptoModal({
         }}
       />
     );
+  }
 
-  if (step === "success")
+  if (step === "success") {
+    if (recipientType === "xbanka-user" && xbankaRecipient) {
+      return (
+        <SuccessStepXbanka
+          amount={amount}
+          successDetails={successDetails}
+          asset={selectedAssetId}
+          network={selectedNetworkId}
+          txHash={mockTxHash}
+          onDone={() => {
+            onSuccess?.();
+            handleClose();
+          }}
+          onViewHistory={() => {
+            handleClose(); /* navigate to transactions */
+          }}
+        />
+        // <p>ball</p>
+      );
+    }
     return (
       <SuccessStep
         amount={amount}
@@ -168,6 +227,7 @@ export function SendCryptoModal({
         }}
       />
     );
+  }
 
   if (step === "failed") {
     return (

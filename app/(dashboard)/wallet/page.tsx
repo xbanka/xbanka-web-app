@@ -1,9 +1,10 @@
 import WalletPage from '@/components/Dashboard/Wallet-Page/wallet'
+import { Suspense } from 'react'
 
 export default function Page() {
   return (
-    <div>
+    <Suspense fallback={<p>Wallet page...</p>}>
       <WalletPage />
-    </div>
+    </Suspense>
   )
 }

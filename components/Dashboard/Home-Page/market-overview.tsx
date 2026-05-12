@@ -23,8 +23,7 @@ export function MarketOverview() {
     isError: marketPricesIsError,
     isPending: marketPricesPending,
   } = useGetMarketPrices(page, limit);
-  console.log("marketPrices", marketPrices);
-  const marketItems = marketPrices?.data.items || [];
+  const marketItems = marketPrices?.data.items.slice(0, 6) || [];
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -36,29 +35,30 @@ export function MarketOverview() {
     };
 
     eventSource.onmessage = (event) => {
-      const update = JSON.parse(event.data);
+      console.log("NEW SSE MESSAGE", event.data);
+      try {
+        const update = JSON.parse(event.data);
 
-      // try {
-      //   const update = JSON.parse(event.data);
-      // } catch (err) {
-      //   console.error("Invalid SSE data", err);
-      // }
+        queryClient.setQueryData(
+          ["market-prices", page, limit],
+          (oldData: any) => {
+            if (!oldData?.data?.items) return oldData;
 
-      queryClient.setQueryData<CryptoMarketOverview[]>(
-        ["market-prices"],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return oldData.map((item) =>
-            item.symbol === update.symbol ? { ...item, ...update } : item,
-          );
-        },
-      );
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                items: oldData.data.items.map((item: any) =>
+                  item.symbol === update.symbol ? { ...item, ...update } : item,
+                ),
+              },
+            };
+          },
+        );
+      } catch (err) {
+        console.error("Invalid SSE data", err);
+      }
     };
-
-    // eventSource.onerror = () => {
-    //   eventSource.close();
-    // };
 
     eventSource.onerror = (err) => {
       console.error("SSE error", err);
@@ -67,7 +67,7 @@ export function MarketOverview() {
     return () => {
       eventSource.close();
     };
-  }, [queryClient]);
+  }, [queryClient, page, limit]);
 
   const columns = [
     {
@@ -134,7 +134,14 @@ export function MarketOverview() {
       : page <= 3
         ? [1, 2, 3, 4, "...", totalPages]
         : page >= totalPages - 2
-          ? [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+          ? [
+              1,
+              "...",
+              totalPages - 3,
+              totalPages - 2,
+              totalPages - 1,
+              totalPages,
+            ]
           : [1, "...", page - 1, page, page + 1, "...", totalPages];
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -174,10 +181,10 @@ export function MarketOverview() {
           isLoading={marketPricesPending}
           errorMessage={marketPricesError?.message}
           rowKey={(item) => item.id}
-          itemsPerPage={6}
-          pageTotal={marketPrices?.data?.meta.totalPages}
-          currentPage={page}
-          onPageChange={handlePageChange}
+          // itemsPerPage={6}
+          // pageTotal={marketPrices?.data?.meta.totalPages}
+          // currentPage={page}
+          // onPageChange={handlePageChange}
           emptyMessage="No transaction history available."
         />
       </div>

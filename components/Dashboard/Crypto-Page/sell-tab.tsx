@@ -16,6 +16,8 @@ import { isValidPair } from "@/lib/isValidPair";
 import { mapCurrenciesToOptions, splitCurrencies } from "@/lib/crypto";
 import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
+import { CreatePinModal } from "../Account-Page/create-pin-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 type FormValues = {
   amount: string;
@@ -31,15 +33,17 @@ export function SellTab() {
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
   const [targetCurrency, setTargetCurrency] = useState("NGNX");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
-  const [convertData, setConvertData] = useState<CryptoGetConversionTypes | null>();
+  const [openCreatePin, setOpenCreatePin] = useState(false);
+  const [convertData, setConvertData] =
+    useState<CryptoGetConversionTypes | null>();
 
   // const { mutate, isPending } = useExecuteConversion();
   const { data, mutate, isPending } = useQuoteConversion();
   const {
-      data: cryptoWalletData,
-      error: cryptoWalletError,
-      isPending: cryptoWalletPending,
-    } = UseGetCryptoWallet();
+    data: cryptoWalletData,
+    error: cryptoWalletError,
+    isPending: cryptoWalletPending,
+  } = UseGetCryptoWallet();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -57,6 +61,10 @@ export function SellTab() {
     data: currencyData,
     isPending: currencyPending,
   } = useGetCurrency();
+
+  const { data: profileData } = UseProfileUser();
+  const hasTransactionPin = profileData?.data?.hasTransactionPin;
+  console.log(hasTransactionPin);
 
   const debouncedAmount = useDebounce(amount, 500);
 
@@ -77,6 +85,14 @@ export function SellTab() {
       }));
   }, [pairMap]);
 
+  const wallets = cryptoWalletData?.data?.data || [];
+
+  const selectedWallet = wallets.find(
+    (wallet: any) => wallet.currency === sourceCurrency,
+  );
+
+  const availableBalance = selectedWallet?.balance || 0;
+
   const validTargets =
     pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
 
@@ -86,16 +102,20 @@ export function SellTab() {
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
   const handleQuoteModal = () => {
+    if (!hasTransactionPin) {
+      setOpenCreatePin(true);
+      return;
+    }
     refetchQuote();
     setConfirmOpen(true);
   };
 
   const handleReset = () => {
-    setConvertData(null)
-    setQuoteData(null)
-    setAmount("")
+    setConvertData(null);
+    setQuoteData(null);
+    setAmount("");
     setConfirmOpen(false);
-  }
+  };
 
   const refetchQuote = () => {
     mutate(
@@ -166,6 +186,7 @@ export function SellTab() {
         <div className="space-y-3">
           <AmountRow
             label="You Sell"
+            available={`${availableBalance} ${sourceCurrency}`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={SELL_SOURCE_OPTIONS}
@@ -178,12 +199,9 @@ export function SellTab() {
           </p>
           <AmountRow
             label="You Receive"
-            available="₦40,000"
             readOnly
             value={
-              convertData?.netPayout
-                ? convertData?.netPayout.toString()
-                : ""
+              convertData?.netPayout ? convertData?.netPayout.toString() : ""
             }
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={FIAT_OPTIONS}
@@ -192,33 +210,33 @@ export function SellTab() {
           />
 
           {RateConversionData?.data?.estimatedPrice && (
-              <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
-                <div className="flex items-center gap-1.5">
-                  <span>{RateConversionData?.data?.estimatedPrice}</span>
-                  <button className="text-card-text hover:text-Green/80 transition-colors">
-                    <RefreshCcw className="w-4 h-4" />
-                  </button>
-                </div>
+            <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+              <div className="flex items-center gap-1.5">
+                <span>{RateConversionData?.data?.estimatedPrice}</span>
+                <button className="text-card-text hover:text-Green/80 transition-colors">
+                  <RefreshCcw className="w-4 h-4" />
+                </button>
               </div>
-            )}
+            </div>
+          )}
           <Button
             onClick={handleQuoteModal}
             className="w-full transition-colors"
             variant={
-                !amount || Number(amount) <= 0 || isPending
-                  ? "disabled"
-                  : "default"
-              }
-              disabled={
-                !amount ||
-                Number(amount) <= 0 ||
-                RateConversionPending ||
-                isPending
-              }
+              !amount || Number(amount) <= 0 || isPending
+                ? "disabled"
+                : "default"
+            }
+            disabled={
+              !amount ||
+              Number(amount) <= 0 ||
+              RateConversionPending ||
+              isPending
+            }
           >
             {RateConversionPending || isPending
-                ? "Getting Quote..."
-                : "Get Quote"}
+              ? "Getting Quote..."
+              : "Get Quote"}
           </Button>
           <p className="text-[10px] text-text text-center">
             By Proceeding, you agree to Xbanka{" "}
@@ -233,25 +251,34 @@ export function SellTab() {
         </div>
       </div>
 
-      { quoteData?.netPayout && <ConfirmModal
-        open={confirmOpen}
-        handleReset={handleReset}
-        mode="SELL"
-        payAmount={Number(amount || 0)}
-        paySymbol={sourceCurrency}
-        receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
-        receiveSymbol={targetCurrency}
-        rate={
-          quoteData
-            ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
-            : ""
-        }
-        fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
-        onRefreshQuote={refetchQuote}
-        quoteId={quoteData?.quoteId || ""}
-        sourceCurrency={sourceCurrency}
-        targetCurrency={targetCurrency}
-      />}
+      {quoteData?.netPayout && (
+        <ConfirmModal
+          open={confirmOpen}
+          handleReset={handleReset}
+          mode="SELL"
+          payAmount={Number(amount || 0)}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
+          receiveSymbol={targetCurrency}
+          rate={
+            quoteData
+              ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`
+              : ""
+          }
+          fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
+          onRefreshQuote={refetchQuote}
+          quoteId={quoteData?.quoteId || ""}
+          sourceCurrency={sourceCurrency}
+          targetCurrency={targetCurrency}
+        />
+      )}
+
+      {openCreatePin && (
+        <CreatePinModal
+          open={openCreatePin}
+          handleClose={() => setOpenCreatePin(false)}
+        />
+      )}
     </>
   );
 }

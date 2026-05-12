@@ -9,27 +9,27 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { P2PPage } from "./p2p-tab";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type CryptoTab = "buy" | "sell" | "convert" | "p2p";
 
 export function CryptoPage() {
-  const [tab, setTab] = useState<CryptoTab>("buy");
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const tabs: { id: CryptoTab; label: string }[] = [
     { id: "buy", label: "Buy & Sell" },
     { id: "convert", label: "Convert" },
     // { id: "p2p", label: "P2P Trading" },
   ];
-  // Buy & Sell share a sub-tab
-  const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy");
-  const {
-      data: cryptoWalletData,
-      error: cryptoWalletError,
-      isPending: cryptoWalletPending,
-    } = UseGetCryptoWallet();
-    const handleModeChange = (mode: "buy" | "sell") => () => {
-      setTradeMode(mode);
-      UseGetCryptoWallet();
-    }
+
+  const currentTab = (searchParams.get("tab") as CryptoTab) || "buy";
+
+  const tradeMode =
+  (searchParams.get("mode") as "buy" | "sell") || "buy";
+
+  const handleModeChange = (mode: "buy" | "sell") => () => {
+    router.push(`/crypto?tab=buy&mode=${mode}`);
+  };
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
@@ -38,16 +38,16 @@ export function CryptoPage() {
         {tabs.map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => router.push(`/crypto?tab=${t.id}`)}
             className={`pb-2.5 px-4 text-sm font-medium border-b-4 transition-colors -mb-px
-              ${tab === t.id ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}
+              ${currentTab === t.id ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}
           >
             {t.label}
           </button>
         ))}
       </div>
 
-      {tab === "buy" && (
+      {currentTab === "buy" && (
         <div className="space-y-4">
           {/* Buy / Sell sub-tabs */}
           <div className="space-y-10">
@@ -78,7 +78,7 @@ export function CryptoPage() {
           </div>
         </div>
       )}
-      {tab === "convert" && <ConvertTab />}
+      {currentTab === "convert" && <ConvertTab />}
       {/* {tab === "p2p" && <P2PPage embedded />} */}
     </div>
   );

@@ -16,7 +16,12 @@ export function RecentTransactions() {
     error: transactionHistoryError,
   } = UseGetTransactionHistory();
   const transactions = transactionHistory?.data?.data?.items || [];
-  const fiatTransactions = transactionHistoryType("CRYPTO", transactions);
+  const fiatTransactions = transactionHistoryType("CRYPTO", transactions)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 4);
   const getIcon = (status: string) => {
     if (status === "COMPLETED") {
       return <ArrowUp className="w-6 h-6 text-[#6CE9A6]" />;

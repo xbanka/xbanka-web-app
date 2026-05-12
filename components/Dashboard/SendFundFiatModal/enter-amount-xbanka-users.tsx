@@ -1,21 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Recipient, Step } from "./types";
+import { Recipient, Step, XbankaTransferRecipient } from "./types";
 import { AvatarCircle } from "./avatarCircle";
 import { QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 
-export function EnterAmountStep({
+export function EnterAmountXbankaStep({
   recipient,
   onBack,
   onContinue,
 }: {
-  recipient: Recipient;
+  recipient: XbankaTransferRecipient;
   onBack: () => void;
-  onContinue: (Recipient: Recipient) => void;
+  onContinue: (Recipient: XbankaTransferRecipient) => void;
 }) {
   const [amount, setAmount] = useState("");
   const [narration, setNarration] = useState("");
@@ -34,7 +34,7 @@ export function EnterAmountStep({
 
   const handleContinue = () => {
     // We spread the existing recipient and add the new amount/narration
-    const updatedRecipient: Recipient = {
+    const updatedRecipient: XbankaTransferRecipient = {
       ...recipient,
       amount: numericAmount,
       narration: narration,
@@ -50,14 +50,14 @@ export function EnterAmountStep({
       <div className="px-8 pb-3">
         {/* Recipient pill */}
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border bg-background">
-          <AvatarCircle name={recipient.bankName} color="bg-orange-500" />
+          <AvatarCircle name={recipient?.name} color="bg-orange-500" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-card-text truncate">
-              {recipient.accountName}
+              {recipient.name}
             </p>
             <p className="text-xs text-text truncate">
-              {recipient.accountNumber}
-              {recipient.bankName ? ` · ${recipient.bankName}` : ""}
+              {recipient.id}
+              {/* {recipient.bankName ? ` · ${recipient.bankName}` : ""} */}
             </p>
           </div>
         </div>

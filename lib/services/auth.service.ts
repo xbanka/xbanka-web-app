@@ -85,6 +85,7 @@ export const useVerifyDevice = () => {
     mutationFn: (data: VerifyDeviceData) => verifyDevice(data),
     onSuccess: (result) => {
       const token = getAccessToken(result.data);
+      console.log(token);
       if (token) {
         localStorage.setItem("accessToken", token);
         tokenStore.set(token);

@@ -8,30 +8,16 @@ import { ValueBalance } from "./value-balance";
 import { FiatBalance } from "./fiat-balance";
 import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, X } from "lucide-react";
 import { VerifyBvnModal } from "./verify-bvn-modal";
-import { UseVerificationStatus } from "@/lib/services/profile.service";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function WalletPage() {
   const [tab, setTab] = useState("total");
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // ── Add Funds modal
-  const [addFundsOpen, setAddFundsOpen] = useState(false);
-  const {
-    data: verificationData,
-    isPending: verificationPending,
-    error: verificationError,
-  } = UseVerificationStatus();
-
-  const verification = verificationData?.data;
-
-  const isStepCompleted = (stepId: string) =>
-    verification?.progress?.some(
-      (step: any) => step.id === stepId && step.isCompleted,
-    );
-
-  const isBvnVerified = isStepCompleted("BVN");
+  const currentTab = searchParams.get("tab") || "total";
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
@@ -74,11 +60,11 @@ export default function WalletPage() {
           {["total", "fiat", "crypto"].map((t) => (
             <Button
               size="sm"
-              variant={tab === t ? "disabled" : "outline"}
+              variant={currentTab === t ? "disabled" : "outline"}
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => router.push(`/wallet?tab=${t}`)}
               className={`h-9 capitalize shadow-none border-none transition-colors
-                ${tab === t ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
+                ${currentTab === t ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
             >
               {t === "total"
                 ? "Total Value"
@@ -86,15 +72,15 @@ export default function WalletPage() {
             </Button>
           ))}
         </div>
-        {tab === "total" && <ValueBalance />}
-        {tab === "fiat" && <FiatBalance isBvnVerified={isBvnVerified} />}
-        {tab === "crypto" && <CryptoBalance />}
+        {currentTab === "total" && <ValueBalance />}
+        {currentTab === "fiat" && <FiatBalance />}
+        {currentTab === "crypto" && <CryptoBalance />}
       </DashboardCard>
 
       {/* Tab content */}
-      {tab === "total" && <TotalValueView />}
-      {tab === "fiat" && <FlatView />}
-      {tab === "crypto" && <CryptoView />}
+      {currentTab === "total" && <TotalValueView />}
+      {currentTab === "fiat" && <FlatView />}
+      {currentTab === "crypto" && <CryptoView />}
 
       <VerifyBvnModal
         open={verifyModalOpen}
