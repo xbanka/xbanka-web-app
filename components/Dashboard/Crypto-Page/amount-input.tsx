@@ -15,12 +15,15 @@ export interface AmountRowProps {
   currencyId?: boolean;
   onCurrencyChange: (val: string) => void;
   error?: string;
-  readOnly?: boolean
+  readOnly?: boolean;
+  availableBalanceLoading?: boolean;
+  dropDownLoading?: boolean;
 }
 
 export function AmountRow({
   label,
   available,
+  availableBalanceLoading,
   value,
   onChange,
   selectedCurrency,
@@ -28,7 +31,8 @@ export function AmountRow({
   currencyId,
   onCurrencyChange,
   error,
-  readOnly
+  readOnly,
+  dropDownLoading
 }: AmountRowProps) {
   return (
     <div>
@@ -38,7 +42,11 @@ export function AmountRow({
             <span className="font-normal text-[12px] leading-4.5 text-text">
               {label}
             </span>
-            {available && (
+            {
+              availableBalanceLoading && (
+                <div className="h-8 w-8 rounded-full bg-border" />)
+            }
+            {(!availableBalanceLoading && available) && (
               <span className="font-normal text-[12px] leading-4.5 text-text">
                 Available:{" "}
                 <span className="text-Green font-normal">{available}</span>
@@ -64,6 +72,7 @@ export function AmountRow({
         </div>
         <div className="flex flex-1 items-center gap-1.5 bg-border hover:bg-border/80 transition-colors py-4 pl-4 border-l border-disabled-background shrink-0">
           <CryptoSelectField
+          loading={dropDownLoading}
             currencyId={currencyId}
             value={selectedCurrency}
             options={OPTIONS}

@@ -28,7 +28,6 @@ type FormValues = {
 
 export function ConvertTab() {
   const [amount, setAmount] = useState("");
-  const [receiveAmount, setReceiveAmount] = useState("");
   const [error, setError] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sourceCurrency, setSourceCurrency] = useState("USDT");
@@ -38,7 +37,7 @@ export function ConvertTab() {
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
 
-  const { data, mutate, isPending } = useQuoteConversion();
+  const { mutate, isPending } = useQuoteConversion();
   const {
     data: cryptoWalletData,
     error: cryptoWalletError,
@@ -69,9 +68,6 @@ export function ConvertTab() {
 
   const currencies = currencyData?.data || [];
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);
-
-  const validTargets =
-    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
 
   const SOURCE_OPTIONS = useMemo(() => {
     return currencies.map((item: any) => ({
@@ -141,7 +137,6 @@ export function ConvertTab() {
   useEffect(() => {
     if (!debouncedAmount) {
       setError("Amount is required");
-      setReceiveAmount("");
       return;
     }
 
@@ -162,10 +157,6 @@ export function ConvertTab() {
       {
         onSuccess: (res) => {
           const result = res?.data;
-          console.log("convert result", result);
-
-          setReceiveAmount(result?.netPayout?.toString());
-          console.log("quote result", result);
           setConvertData(result);
         },
       },
@@ -177,7 +168,9 @@ export function ConvertTab() {
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
           label="You Receive"
+          dropDownLoading={currencyPending}
           available={`${availableBalance} ${sourceCurrency}`}
+          availableBalanceLoading={cryptoWalletPending}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           OPTIONS={SOURCE_OPTIONS}
@@ -191,6 +184,7 @@ export function ConvertTab() {
 
         <AmountRow
           label="You Receive"
+          dropDownLoading={groupedPairPending}
           value={convertData?.netPayout ? convertData.netPayout.toString() : ""}
           readOnly
           OPTIONS={TARGET_OPTIONS}

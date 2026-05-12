@@ -38,7 +38,7 @@ export function BuyTab() {
   const wallets = walletData?.data?.data || [];
   const latestWallet = wallets[0];
 
-  const { data, mutate, isPending } = useQuoteConversion();
+  const { mutate, isPending } = useQuoteConversion();
   const {
     data: RateConversionData,
     mutate: RateConversionMutate,
@@ -154,6 +154,8 @@ export function BuyTab() {
         <div className="space-y-6">
           <AmountRow
             label="You Pay"
+            dropDownLoading={currencyPending}
+            availableBalanceLoading={walletPending}
             available={
               wallets
                 ? `₦${sumFiatBalances(wallets).toLocaleString()}`
@@ -168,6 +170,7 @@ export function BuyTab() {
           <div className="space-y-3">
             <AmountRow
               label="You Receive"
+              dropDownLoading={groupedPairPending}
               value={
                 convertData?.netPayout ? convertData.netPayout.toString() : ""
               }
