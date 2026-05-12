@@ -18,6 +18,7 @@
   --error-text: #FF8882;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
+  --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;
@@ -47,6 +48,7 @@
   --color-error-text: var(--error-text);
   --color-error-bg-button: var(--error-bg-button);
   --color-error-border-button: var(--error-border-button);
+  --color-error-bg-layout: var(--error-bg-layout);
   --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
   --color-giftcard-green: var(--giftcard-green);
@@ -74,6 +76,7 @@
   --error-text: #FF8882;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
+  --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
   --giftcard-green: #039C0A;

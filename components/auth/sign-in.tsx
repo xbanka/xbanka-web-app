@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useLogin } from "@/lib/services/auth.service";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { ErrorLayout } from "../ui/error-layout";
 
 const SignIn = () => {
   const { loginWithGoogle } = useGoogleAuth();
@@ -98,7 +99,7 @@ const SignIn = () => {
             error={methods.formState.errors?.password}
             className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
           />
-          <h1 className="text-error-text">{error?.message}</h1>
+          <ErrorLayout message={error?.message} />
         </div>
         <Button
           type="submit"

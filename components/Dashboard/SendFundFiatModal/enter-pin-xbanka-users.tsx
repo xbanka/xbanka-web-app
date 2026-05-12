@@ -5,7 +5,7 @@ import { OtpInput } from "@/components/ui/otp-input";
 import { useValidatePin } from "@/lib/services/security.service";
 import { useState } from "react";
 import { FundStep } from "../Wallet-Page/types";
-import { ErrorField } from "@/components/ui/field-error";
+import { ErrorLayout } from "@/components/ui/error-layout";
 
 export function EnterPinXbankaStep({
   onBack,
@@ -45,7 +45,7 @@ export function EnterPinXbankaStep({
         <div className="py-4 space-y-5">
           <OtpInput length={4} onChange={setPin} />
           <div className="text-center flex justify-center">
-          <ErrorField message={error?.message} />
+          <ErrorLayout message={error?.message} />
           </div>
           <div className="">
             <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
