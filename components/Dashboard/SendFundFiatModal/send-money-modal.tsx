@@ -20,10 +20,13 @@ import { EnterAmountXbankaStep } from "./enter-amount-xbanka-users";
 import { ConfirmXbankaUserStep } from "./confirm-step-xbanka-users";
 import { EnterPinXbankaStep } from "./enter-pin-xbanka-users";
 import { ProcessingXbankaStep } from "./processing-xbanka-users-step";
+import { formatTransactionDate } from "@/lib/formatDate";
 
 export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
   const [tab, setTab] = useState<Tab>("select-recipient"); // rename this
+  const [reference, setReference] = useState("");
+  const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState<Recipient | null>(null);
   const [xbankaRecipient, setXbankaRecipient] =
     useState<XbankaTransferRecipient | null>(null);
@@ -121,8 +124,6 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             setRecipient={setRecipient}
             recipient={recipient}
             onBack={() => handleTabChange("select-recipient")}
-            onFound={handleBankFound}
-            onNotFound={() => {}}
           />
         )}
         {/* STEP 2 */}
@@ -206,6 +207,8 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
                 ? xbankaRecipient?.id.toString()
                 : "0"
             }
+            setReference={(data: string) => setReference(data)}
+            setMessage={(data: string) => setMessage(data)}
             mandateId={xbankaRecipient.uid}
             accountName={xbankaRecipient.name}
             handleStep={setStep}
@@ -218,7 +221,12 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
               xbankaRecipient?.amount?.toString() ??
               "0"
             }
-            // recipient={recipient}
+            name={recipient?.accountName || xbankaRecipient?.name || ""}
+            bank={recipient?.bankName || xbankaRecipient?.id || ""}
+            fee={"₦0.00"}
+            date={formatTransactionDate(new Date())}
+            reference={reference || ""}
+            message={message}
             onDone={() => {
               // onSuccess?.();
               handleClose();

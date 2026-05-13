@@ -31,3 +31,14 @@ export function timeAgo(date: string) {
     duration /= division.amount;
   }
 }
+
+export const formatTransactionDate = (date: Date = new Date()) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+};
