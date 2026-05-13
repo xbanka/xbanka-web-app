@@ -12,6 +12,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
+import { getCoinImage } from "@/lib/coin-images";
+import Image from "next/image";
 
 export function MarketOverview() {
   const queryClient = useQueryClient();
@@ -76,7 +78,14 @@ export function MarketOverview() {
       // className: "w-[200px]",
       render: (item: CryptoMarketOverview) => (
         <div className="flex items-center gap-2 ">
-          <div className="bg-card-background h-8 w-8 rounded-full"></div>
+          <div className="bg-card-background h-8 w-8 rounded-full">
+            <Image
+              src={getCoinImage(item.symbol)}
+              alt={item.symbol}
+              width={32}
+              height={32}
+            />
+          </div>
           <div>
             <p className="font-normal text-[14px] leading-6 text-card-text">
               {item.name}
