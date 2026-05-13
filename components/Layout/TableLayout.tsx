@@ -104,6 +104,20 @@ export function DataTableLayout<T>({
   const getRecordValue = (item: T, key: string) =>
     (item as Record<string, unknown>)[key];
 
+  const renderRecordValue = (item: T, key: string): React.ReactNode => {
+    const value = getRecordValue(item, key);
+
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      return value;
+    }
+
+    return value == null ? "" : String(value);
+  };
+
   return (
     <div
       className={cn(
@@ -184,7 +198,7 @@ export function DataTableLayout<T>({
                         >
                           {col.render
                             ? col.render(item)
-                            : (item as never)[col.key]}
+                            : renderRecordValue(item, col.key as string)}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -259,7 +273,7 @@ export function DataTableLayout<T>({
                         <span className="min-w-0 max-w-[62%] text-right text-[14px] font-medium text-card-text [&_*]:min-w-0">
                           {col.render
                             ? col.render(item)
-                            : getRecordValue(item, col.key as string)}
+                            : renderRecordValue(item, col.key as string)}
                         </span>
                       </div>
                     ))}

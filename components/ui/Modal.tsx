@@ -5,10 +5,12 @@ export function Modal({
   onClose,
   children,
   className,
+  backdropClassName,
 }: {
   onClose: () => void;
   children: React.ReactNode;
   className?: string;
+  backdropClassName?: string;
 }) {
   const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -27,7 +29,10 @@ export function Modal({
   // }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px] animate-in fade-in duration-150 "
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px] animate-in fade-in duration-150",
+        backdropClassName,
+      )}
       onClick={handleBackdropClick}
     >
       <div

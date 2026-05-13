@@ -25,6 +25,8 @@
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
   --badge-border-green: #012E03;
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: "Courier New", Courier, monospace;
 }
 
 @theme inline {
@@ -146,4 +148,38 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans);
   @apply bg-background text-foreground font-sans antialiased;
+}
+
+.send-crypto-sheet {
+  animation: send-crypto-desktop-in 220ms ease-out both;
+}
+
+@keyframes send-crypto-desktop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 639px) {
+  .send-crypto-sheet {
+    animation: send-crypto-mobile-up 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes send-crypto-mobile-up {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
