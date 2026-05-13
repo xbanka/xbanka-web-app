@@ -86,67 +86,65 @@ export function SelectAssetStep({
             </div>
           )}
           {/* Asset list */}
-          {!isPending && !error && <div className="space-y-4 max-h-100 overflow-y-auto">
-            {filtered.map((asset: UserWallet) => {
-              const active = selectedId?.id === asset.id;
-              return (
-                <button
-                  key={asset.id}
-                  onClick={() => onSelect(asset)}
-                  className={cn(
-                    "w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-colors",
-                    active
-                      ? "border-Green bg-Green/5"
-                      : "border-border hover:border-border-active",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <CoinAvatar symbol={asset.currency} size={40} />
-                    <div className="flex">
-                      <div className="flex-1 min-w-0 border-r border-input pr-6">
-                        <div className="flex items-center gap-3">
-                          <p className="text-sm font-medium leading-5 text-card-text">
-                            {getCurrencyHeader(asset.currency)}
-                          </p>
-                          <span className="text-[10px] font-semibold px-2 rounded border border-input bg-background text-text">
-                            {asset.currency}
-                          </span>
-                        </div>
-                        {/* <p className="text-xs text-text mt-0.5">
-                          {asset.wallet}
-                        </p> */}
-                      </div>
-                      <div className="text-left shrink-0 px-6">
-                        <p className="text-sm font-semibold text-card-text">
-                          {asset.balance} {asset.currency}
-                        </p>
-                        <p className="text-xs text-text mt-0.5">
-                          ₦{asset.fiatEquivalent?.amount}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Radio */}
-                  <div
+          {!isPending && !error && (
+            <div className="space-y-4 max-h-100 overflow-y-auto">
+              {filtered.map((asset: UserWallet) => {
+                const active = selectedId?.id === asset.id;
+                return (
+                  <button
+                    key={asset.id}
+                    onClick={() => onSelect(asset)}
                     className={cn(
-                      "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center",
-                      active ? "border-Green" : "border-text",
+                      "w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-colors",
+                      active
+                        ? "border-Green bg-Green/5"
+                        : "border-border hover:border-border-active",
                     )}
                   >
-                    {active && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-Green" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>}
+                    <div className="flex items-center gap-3">
+                      <CoinAvatar currency={asset.currency} size={40} />
+                      <div className="flex">
+                        <div className="flex-1 min-w-0 border-r border-input pr-6">
+                          <div className="flex items-center gap-3">
+                            <p className="text-sm font-medium leading-5 text-card-text">
+                              {getCurrencyHeader(asset.currency)}
+                            </p>
+                            <span className="text-[10px] font-semibold px-2 rounded border border-input bg-background text-text">
+                              {asset.currency}
+                            </span>
+                          </div>
+                          {/* <p className="text-xs text-text mt-0.5">
+                          {asset.wallet}
+                        </p> */}
+                        </div>
+                        <div className="text-left shrink-0 px-6">
+                          <p className="text-sm font-semibold text-card-text">
+                            {asset.balance} {asset.currency}
+                          </p>
+                          <p className="text-xs text-text mt-0.5">
+                            ₦{asset.fiatEquivalent?.amount}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Radio */}
+                    <div
+                      className={cn(
+                        "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center",
+                        active ? "border-Green" : "border-text",
+                      )}
+                    >
+                      {active && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-Green" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {
-            error && (
-              <ErrorLayout message={error.message} />
-            )
-          }
+          {error && <ErrorLayout message={error.message} />}
 
           {!isPending && !filtered.length && (
             <p className="text-center text-sm text-placeholder">
