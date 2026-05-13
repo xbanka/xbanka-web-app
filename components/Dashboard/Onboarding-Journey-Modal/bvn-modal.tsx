@@ -1,17 +1,16 @@
 import { Modal } from "@/components/ui/Modal";
 import { SuccessState } from "./success-state";
 import { ModalHeader } from "@/components/ui/modal-header";
-import { IdCard, Shield } from "lucide-react";
+import { IdCard } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useVerifyBvn } from "@/lib/services/onboarding.service";
 import { step2FormValues, step2Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserIdStore } from "@/store/verify-id.store";
 import { useForm } from "react-hook-form";
-import { ErrorField } from "@/components/ui/field-error";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { ErrorLayout } from "@/components/ui/error-layout";
 
 export function BvnModal({
   onClose,
@@ -79,7 +78,7 @@ export function BvnModal({
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-3 px-8 pb-8 pt-6 space-y-6"
           >
-            <div>
+            <div className="space-y-4">
               <FormField
                 id="bvn"
                 icon={IdCard}
@@ -87,7 +86,7 @@ export function BvnModal({
                 error={errors.bvn}
                 register={register}
               />
-              <ErrorField message={error?.message} />
+              <ErrorLayout message={error?.message} />
             </div>
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
