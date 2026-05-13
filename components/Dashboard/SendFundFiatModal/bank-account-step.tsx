@@ -15,15 +15,11 @@ type AddBankForm = z.infer<typeof addBankSchema>;
 
 export function BankAccountStep({
   onBack,
-  onFound,
-  onNotFound,
   setStep,
   setRecipient,
   recipient
 }: {
   onBack: () => void;
-  onFound: (r: Recipient) => void;
-  onNotFound: () => void;
   setStep: (value: Step) => void;
   setRecipient: (Recipient: Recipient) => void;
   recipient: Recipient | null

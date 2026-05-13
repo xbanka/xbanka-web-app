@@ -3,6 +3,7 @@ import { Modal } from "@/components/ui/Modal";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store/user.store";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
 export function ConfirmXbankaUserStep({
@@ -22,15 +23,10 @@ export function ConfirmXbankaUserStep({
   onClose: () => void;
   onConfirm: () => void;
 }) {
-  const { data, isPending, error } = UseProfileUser()
-  const firstName = data?.data?.firstName;
-  const lastName = data?.data?.lastName;
-  const userId = data?.data?.userId;
+  const userData = useUserStore((state) => state.user);
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
   const feeNum = parseFloat(fee) || 0;
   const total = (numeric + feeNum).toLocaleString();
-
-  console.log("ConfirmXbankaUserStep props:", firstName)
 
   return (
     <Modal className="pt-6 space-y-8" onClose={onClose}>
@@ -60,7 +56,7 @@ export function ConfirmXbankaUserStep({
 
           {/* Breakdown */}
           <div className="space-y-3">
-            <TransactionDescriptionField label="From" value={firstName + " " + lastName} isAccount />
+            <TransactionDescriptionField label="From" value={userData?.firstName + " " + userData?.lastName} isAccount />
             <TransactionDescriptionField label="Account name" value={accountName} />
             <TransactionDescriptionField label="Fee" value={`₦${feeNum.toFixed(2)}`} />
             <TransactionDescriptionField className="pt-3 border-t border-input" label="Total Debit" value={`₦${total}`} amount={true} />

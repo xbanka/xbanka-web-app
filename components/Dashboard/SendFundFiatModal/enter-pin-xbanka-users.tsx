@@ -68,10 +68,11 @@ export function EnterPinXbankaStep({
             size="lg"
             className="flex-3"
             disabled={pin.length < 4 || isPending}
-            variant={pin.length >= 4 ? "default" : isPending ? "disabled" : "disabled"}
+            // variant={pin.length >= 4 ? "default" : isPending ? "disabled" : "disabled"}
+            variant={isPending ? "disabled" : pin.length >= 4 ? "default" : "disabled"}
             onClick={handleConfirm}
           >
-            Confirm
+            {isPending ? "Validating..." : "Confirm"}
           </Button>
         </div>
       </div>
