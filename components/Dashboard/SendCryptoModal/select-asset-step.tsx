@@ -144,7 +144,7 @@ export function SelectAssetStep({
 
           {
             error && (
-              <ErrorLayout message={error.messag} />
+              <ErrorLayout message={error.message} />
             )
           }
 
