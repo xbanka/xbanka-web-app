@@ -20,13 +20,18 @@ import { EnterAmountXbankaStep } from "./enter-amount-xbanka-users";
 import { ConfirmXbankaUserStep } from "./confirm-step-xbanka-users";
 import { EnterPinXbankaStep } from "./enter-pin-xbanka-users";
 import { ProcessingXbankaStep } from "./processing-xbanka-users-step";
+import { formatTransactionDate } from "@/lib/formatDate";
 
 export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
   const [tab, setTab] = useState<Tab>("select-recipient"); // rename this
+  const [reference, setReference] = useState("");
+  const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState<Recipient | null>(null);
   const [xbankaRecipient, setXbankaRecipient] =
     useState<XbankaTransferRecipient | null>(null);
+
+  const showTabs = step === "select-recipient";
 
   const handleTabChange = (t: Tab) => {
     setTab(t);
@@ -100,9 +105,11 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           step={step}
         />
       </div> */}
-      <div className="px-8 pb-3">
-        <TabToggle active={tab} onChange={handleTabChange} />
-      </div>
+      {showTabs && (
+        <div className="px-8 pb-3">
+          <TabToggle active={tab} onChange={handleTabChange} />
+        </div>
+      )}
       <div className="px-0">
         {/* STEP 1 */}
         {step === "select-recipient" && tab === "select-recipient" && (
@@ -117,8 +124,6 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             setRecipient={setRecipient}
             recipient={recipient}
             onBack={() => handleTabChange("select-recipient")}
-            onFound={handleBankFound}
-            onNotFound={() => {}}
           />
         )}
         {/* STEP 2 */}
@@ -198,8 +203,12 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
           <ProcessingXbankaStep
             recipient={xbankaRecipient}
             amount={
-              xbankaRecipient?.name.toString() ? xbankaRecipient?.id.toString() : "0"
+              xbankaRecipient?.name.toString()
+                ? xbankaRecipient?.id.toString()
+                : "0"
             }
+            setReference={(data: string) => setReference(data)}
+            setMessage={(data: string) => setMessage(data)}
             mandateId={xbankaRecipient.uid}
             accountName={xbankaRecipient.name}
             handleStep={setStep}
@@ -207,8 +216,17 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
         )}
         {step === "success" && (recipient || xbankaRecipient) && (
           <SuccessStep
-            amount={recipient?.amount.toString() ?? xbankaRecipient?.amount?.toString() ?? "0"}
-            // recipient={recipient}
+            amount={
+              recipient?.amount.toString() ??
+              xbankaRecipient?.amount?.toString() ??
+              "0"
+            }
+            name={recipient?.accountName || xbankaRecipient?.name || ""}
+            bank={recipient?.bankName || xbankaRecipient?.id || ""}
+            fee={"₦0.00"}
+            date={formatTransactionDate(new Date())}
+            reference={reference || ""}
+            message={message}
             onDone={() => {
               // onSuccess?.();
               handleClose();

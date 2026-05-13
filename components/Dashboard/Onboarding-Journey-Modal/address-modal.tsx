@@ -16,8 +16,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorField } from "@/components/ui/field-error";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { ErrorLayout } from "@/components/ui/error-layout";
 
 export function AddressModal({
   onClose,
@@ -134,7 +134,7 @@ export function AddressModal({
                 register={register}
               />
               <AttachmentUpload value={attachments} onChange={setAttachments} />
-              <ErrorField message={error?.message} />
+              <ErrorLayout message={error?.message} />
             </div>
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
