@@ -3,6 +3,8 @@ import { TransactionHistory } from "./transaction-history";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "./types";
+import { getCoinImage } from "@/lib/coin-images";
+import Image from "next/image";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
@@ -12,32 +14,64 @@ export function CryptoView() {
     {
       key: "currency",
       header: "Assets",
-      render: (item: UserWallet) => <div>
-        <p className="font-normal text-sm leading-6 text-card-text">{getCurrencyHeader(item.currency)}</p>
-        <p className="font-medium text-xs leading-5 text-text">{item.currency}</p>
-        </div>,
+      render: (item: UserWallet) => (
+        <div className="flex items-center gap-2">
+          <div className="bg-card-background h-8 w-8 rounded-full">
+            <Image
+              src={getCoinImage(item.currency)}
+              alt={item.currency}
+              width={32}
+              height={32}
+              // onError={(e) => {
+              //   e.currentTarget.src = "/images/default-coin.png";
+              // }}
+            />
+          </div>
+          <div>
+            <p className="font-normal text-sm leading-6 text-card-text">
+              {getCurrencyHeader(item.currency)}
+            </p>
+            <p className="font-medium text-xs leading-5 text-text">
+              {item.currency}
+            </p>
+          </div>
+        </div>
+      ),
     },
     {
       key: "balance",
       header: "Balance",
-      render: (item: UserWallet) => <span className="font-normal text-sm leading-6 text-card-text">{item.balance}</span>,
+      render: (item: UserWallet) => (
+        <span className="font-normal text-sm leading-6 text-card-text">
+          {item.balance}
+        </span>
+      ),
     },
     {
       key: "amount",
       header: "Amount",
-      render: (item: UserWallet) => <span className="font-normal text-sm leading-6 text-card-text">{item?.fiatEquivalent?.amount ?? "-"}</span>,
+      render: (item: UserWallet) => (
+        <span className="font-normal text-sm leading-6 text-card-text">
+          {item?.fiatEquivalent?.amount ?? "-"}
+        </span>
+      ),
     },
     {
       key: "chznge",
       header: "24h Change",
       render: () => (
-        <span className="font-normal text-sm leading-6 text-card-text"> - </span>
+        <span className="font-normal text-sm leading-6 text-card-text">
+          {" "}
+          -{" "}
+        </span>
       ),
     },
     {
       key: "note",
       header: "Action",
-      render: () => <span className="font-normal text-sm leading-6 text-Green">Trade</span>,
+      render: () => (
+        <span className="font-normal text-sm leading-6 text-Green">Trade</span>
+      ),
     },
   ];
   return (
@@ -92,14 +126,23 @@ export function CryptoView() {
                 className="grid grid-cols-[minmax(0,1fr)_76px_72px] items-center gap-2 border-b border-input px-4 py-4 last:border-b-0"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="h-11 w-11 shrink-0 rounded-full bg-card-background" />
-                  <div className="min-w-0">
-                    <p className="truncate text-[17px] font-medium leading-6 text-card-text">
-                      {getCurrencyHeader(wallet.currency)}
-                    </p>
-                    <p className="truncate text-[15px] font-medium leading-6 text-text">
-                      {wallet.currency}
-                    </p>
+                  <div className="min-w-0 flex items-center gap-2">
+                    <div className="bg-card-background h-8 w-8 rounded-full">
+                    <Image
+                      src={getCoinImage(wallet.currency)}
+                      alt={wallet.currency}
+                      width={32}
+                      height={32}
+                    />
+                    </div>
+                    <div>
+                      <p className="truncate text-[17px] font-medium leading-6 text-card-text">
+                        {getCurrencyHeader(wallet.currency)}
+                      </p>
+                      <p className="truncate text-[15px] font-medium leading-6 text-text">
+                        {wallet.currency}
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <p className="text-[17px] font-medium leading-6 text-card-text">
