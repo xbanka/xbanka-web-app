@@ -1,10 +1,27 @@
-export function CoinAvatar({ symbol, size = 40 }: { symbol: string; size?: number }) {
+import { getCoinImage } from "@/lib/coin-images";
+import Image from "next/image";
+
+export function CoinAvatar({
+  currency,
+  size = 40,
+}: {
+  currency: string;
+  size?: number;
+}) {
   return (
     <div
-      className="rounded-full flex items-center border border-input justify-center text-white font-bold shrink-0"
-      style={{ width: size, height: size, fontSize: size * 0.32 }}
+      className="rounded-full flex items-center border border-input mx-auto h-auto justify-center font-bold shrink-0"
+      style={{ width: size, height: size}}
     >
-      {symbol[0]}
+      <Image
+        src={getCoinImage(currency)}
+        alt={currency}
+        width={size}
+        height={size}
+        // onError={(e) => {
+        //   e.currentTarget.src = "/images/default-coin.png";
+        // }}
+      />
     </div>
   );
 }

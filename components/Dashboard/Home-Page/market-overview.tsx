@@ -233,7 +233,14 @@ export function MarketOverview() {
                     className="grid grid-cols-[260px_120px_150px_90px] items-center gap-3 border-b border-input px-4 py-4 last:border-b-0"
                   >
                     <div className="flex min-w-0 items-center gap-3 ">
-                      <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]" />
+                      <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]">
+                        <Image
+                          src={getCoinImage(item.symbol)}
+                          alt={item.symbol}
+                          width={32}
+                          height={32}
+                        />
+                      </div>
                       <div className="min-w-0">
                         <p className="truncate text-[16px] max-sm:text-[12px] max-sm:leading-[20px] font-medium leading-6 text-card-text">
                           {item.name}
@@ -265,7 +272,7 @@ export function MarketOverview() {
           </div>
         </div>
 
-        {totalPages > 1 && (
+        {/* {totalPages > 1 && (
           <div className="mt-4 flex items-center justify-between gap-3 border-t border-input pt-4">
             <p className="shrink-0 text-[12px] font-medium leading-4 text-text">
               Page {page} of {totalPages}
@@ -313,7 +320,7 @@ export function MarketOverview() {
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

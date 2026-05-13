@@ -46,14 +46,14 @@ export function SuccessStep({
           { bank && <TransactionDescriptionField label="Bank" value={bank} />}
           { amount && <TransactionDescriptionField label="Amount" value={amount} />}
           { fee && <TransactionDescriptionField label="Fee" value={fee} />}
-          { date && <TransactionDescriptionField label="Date" value={date} />}
+          { date && <TransactionDescriptionField className="pt-3 border-t border-input" label="Date" value={date} />}
           { reference && <TransactionDescriptionField label="Reference" value={reference} />}
         </div>
         <div className="w-full space-y-3">
           {/* <Button size="lg" className="w-full" onClick={onDone}>
             Done
           </Button> */}
-          <Button size="lg" className="w-full bg-none text-Green" onClick={onDone}>
+          <Button size="lg" className="w-full bg-none" onClick={onDone}>
             View Transaction History
           </Button>
           <button

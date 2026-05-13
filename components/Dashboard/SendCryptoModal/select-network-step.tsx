@@ -8,6 +8,8 @@ import { AlertTriangle, Search, Wallet } from "lucide-react";
 import { useState } from "react";
 import { UserWallet } from "../Wallet-Page/types";
 import { UseActiveNetworksCrypto } from "@/lib/services/wallet.service";
+import { ErrorLayout } from "@/components/ui/error-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SelectNetworkStep({
   asset,
@@ -25,7 +27,7 @@ export function SelectNetworkStep({
   onNext: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const { data } = UseActiveNetworksCrypto();
+  const { data, isPending, error } = UseActiveNetworksCrypto();
 
   const networks =
     asset?.currency && data?.data?.data?.[asset.currency]?.networks
@@ -69,7 +71,7 @@ export function SelectNetworkStep({
             />
           </div>
           <div className="space-y-4">
-            {networks.map((network: any) => {
+            {!isPending && networks.map((network: any) => {
               const active = selectedNetworkId === network.networkCode;
               return (
                 <button
@@ -108,6 +110,32 @@ export function SelectNetworkStep({
                 </button>
               );
             })}
+            {
+              isPending && (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors animate-pulse"
+                    >
+                      <Skeleton className="rounded-[360px] p-1.5 h-10 w-10 bg-border mx-auto" />
+                      <div className="flex-1 min-w-0">
+                        <Skeleton className="h-4 w-1/2 rounded mb-2" />
+                        <Skeleton className="h-3 w-1/3 rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+            {
+              !isPending && error && (
+                <ErrorLayout message={error.message} />
+              )
+            }
+            {!isPending && !error && networks.length === 0 && (
+              <p className="text-center text-sm text-text">No networks available for this asset.</p>
+            )}
           </div>
         </div>
 

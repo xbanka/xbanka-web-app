@@ -1,20 +1,31 @@
+const BASE =
+  "https://assets.coincap.io/assets/icons";
+
 export const COIN_IMAGES: Record<string, string> = {
-  BTC: "https://assets.coincap.io/assets/icons/btc@2x.png",
-  ETH: "https://assets.coincap.io/assets/icons/eth@2x.png",
-  USDT: "https://assets.coincap.io/assets/icons/usdt@2x.png",
-  XRP: "https://assets.coincap.io/assets/icons/xrp@2x.png",
-  BNB: "https://assets.coincap.io/assets/icons/bnb@2x.png",
-  USDC: "https://assets.coincap.io/assets/icons/usdc@2x.png",
-  SOL: "https://assets.coincap.io/assets/icons/sol@2x.png",
-  DOGE: "https://assets.coincap.io/assets/icons/doge@2x.png",
-  TRX: "https://assets.coincap.io/assets/icons/trx@2x.png",
-  STETH: "https://assets.coincap.io/assets/icons/steth@2x.png",
-  AXS: "https://assets.coincap.io/assets/icons/axs@2x.png",
+  BTC: `${BASE}/btc@2x.png`,
+  ETH: `${BASE}/eth@2x.png`,
+  USDT: `${BASE}/usdt@2x.png`,
+  XRP: `${BASE}/xrp@2x.png`,
+  BNB: `${BASE}/bnb@2x.png`,
+  USDC: `${BASE}/usdc@2x.png`,
+  SOL: `${BASE}/sol@2x.png`,
+  DOGE: `${BASE}/doge@2x.png`,
+  TRX: `${BASE}/trx@2x.png`,
+  STETH: `${BASE}/steth@2x.png`,
+  AXS: `${BASE}/axs@2x.png`,
+  AVAX: `${BASE}/avax@2x.png`,
+  BUSD: `${BASE}/busd@2x.png`,
+  MATIC: `${BASE}/matic@2x.png`,
 };
 
-export const getCoinImage = (symbol: string) => {
-  return (
-    COIN_IMAGES[symbol.toUpperCase()] ||
-    "/images/default-coin.png"
-  );
+export const getCoinImage = (symbol?: string) => {
+  if (!symbol) return "/images/default-coin.png";
+
+  const upper = symbol.toUpperCase();
+
+  if (COIN_IMAGES[upper]) {
+    return COIN_IMAGES[upper];
+  }
+
+  return `/images/fallback/${upper.toLowerCase()}.png`;
 };
