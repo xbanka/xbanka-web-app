@@ -33,6 +33,7 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
   const hasPassword = true;
+  const whiteList = false;
   const userData = useUserStore((state) => state.user);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
@@ -79,32 +80,32 @@ export function SecurityTab() {
     {
       icon: Mail,
       label: "Email",
-      status: "Active",
-      statusLabel: profile.data.isEmailVerified ? "Active" : "Not enabled",
+      status: profile?.data?.isEmailVerified,
+      statusLabel: profile?.data?.isEmailVerified ? "Active" : "Not enabled",
       statusColor: "text-text",
       note: "",
     },
     {
       icon: Smartphone,
       label: "Phone",
-      status: profile.data.phoneNumber && profile.data.phoneNumber !== "",
-      statusLabel: (profile.data.phoneNumber && profile.data.phoneNumber !== "") ? "Active" : "Not enabled",
+      status: profile?.data?.phoneNumber && profile?.data?.phoneNumber !== "",
+      statusLabel: (profile?.data?.phoneNumber && profile?.data?.phoneNumber !== "") ? "Active" : "Not enabled",
       statusColor: "text-text",
       note: "",
     },
     {
       icon: Phone,
       label: "Google Authenticator",
-      status: profile.data?.isTwoFactorEnabled,
-      statusLabel: profile.data?.isTwoFactorEnabled ? "Active" : "Not enabled",
+      status: profile?.data?.isTwoFactorEnabled,
+      statusLabel: profile?.data?.isTwoFactorEnabled ? "Active" : "Not enabled",
       statusColor: "text-yellow-500",
       note: "",
     },
     {
       icon: Lock,
       label: "Whitelist",
-      status: "Not Configured",
-      statusLabel: hasPassword ? "Active" : "Not Configured",
+      status: false,
+      statusLabel: whiteList ? "Active" : "Not Configured",
       statusColor: "text-text",
       note: "",
     },
