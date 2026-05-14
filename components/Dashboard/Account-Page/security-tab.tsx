@@ -1,9 +1,6 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import {
-  Chrome,
-  Laptop,
-  List,
   Lock,
   Mail,
   Phone,
@@ -21,20 +18,17 @@ import { formatRelativeTime } from "@/lib/formatTime";
 import { useState } from "react";
 import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
-import { updatePin } from "@/lib/actions/security";
 import {
   useDisable2FA,
   useEnable2FA,
-  useRemoveDevice,
   useRequestOtp,
-  useRevokeSessions,
-  useTwoFactorAuthenticationGenerate,
 } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";
 import { Enable2faModal } from "./enable2fa-modal";
 import { RemoveDeviceModal } from "./remove-device-modal";
 import { RemoveSessionModal } from "./remove-session-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
 
 export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
@@ -46,50 +40,13 @@ export function SecurityTab() {
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const [removeSessionModal, setRemoveSessionModal] = useState(false);
   const [removeDeviceModal, setRemoveDeviceModal] = useState(false);
-  const securityItems = [
-    {
-      icon: Lock,
-      label: "Password",
-      status: "Set",
-      statusColor: "text-text",
-      note: "",
-    },
-    {
-      icon: Mail,
-      label: "Email",
-      status: "Active",
-      statusColor: "text-text",
-      note: "",
-    },
-    {
-      icon: Smartphone,
-      label: "Phone",
-      status: "Active",
-      statusColor: "text-text",
-      note: "",
-    },
-    {
-      icon: Phone,
-      label: "Google Authenticator",
-      status: "Not enabled",
-      statusColor: "text-yellow-500",
-      note: "",
-    },
-    {
-      icon: Lock,
-      label: "Whitelist",
-      status: "Not Configured",
-      statusColor: "text-text",
-      note: "",
-    },
-  ];
+  
   const [removeDeviceId, setRemoveDeviceId] = useState<string | null>(null);
-
-  const {
-    mutate: EnableTwoFactorMutate,
-    isPending: EnableTwoFactorPending,
-    error: EnableTwoFactorError,
-  } = useEnable2FA();
+   const {
+    data: profile,
+    error: profileError,
+    isPending: profilePending,
+  } = UseProfileUser();
 
   const {
     mutate: DisableTwoFactorMutate,
@@ -110,7 +67,48 @@ export function SecurityTab() {
     error: RegisteredDevicesError,
   } = UseGetRegisteredDevices();
 
-  const { mutate: requestOtp, isPending: otpLoading } = useRequestOtp();
+  const securityItems = [
+    {
+      icon: Lock,
+      label: "Password",
+      status: hasPassword,
+      statusLabel: hasPassword ? "Set" : "Not enabled",
+      statusColor: "text-text",
+      note: "",
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      status: "Active",
+      statusLabel: profile.data.isEmailVerified ? "Active" : "Not enabled",
+      statusColor: "text-text",
+      note: "",
+    },
+    {
+      icon: Smartphone,
+      label: "Phone",
+      status: profile.data.phoneNumber && profile.data.phoneNumber !== "",
+      statusLabel: (profile.data.phoneNumber && profile.data.phoneNumber !== "") ? "Active" : "Not enabled",
+      statusColor: "text-text",
+      note: "",
+    },
+    {
+      icon: Phone,
+      label: "Google Authenticator",
+      status: profile.data?.isTwoFactorEnabled,
+      statusLabel: profile.data?.isTwoFactorEnabled ? "Active" : "Not enabled",
+      statusColor: "text-yellow-500",
+      note: "",
+    },
+    {
+      icon: Lock,
+      label: "Whitelist",
+      status: "Not Configured",
+      statusLabel: hasPassword ? "Active" : "Not Configured",
+      statusColor: "text-text",
+      note: "",
+    },
+  ];
 
   const handleChangePassword = () => {
     setOpenChangePassword(true);
@@ -206,6 +204,7 @@ export function SecurityTab() {
                 label={item.label}
                 statusColor={item.statusColor}
                 status={item.status}
+                statusLabel={item.statusLabel}
                 key={i}
               />
             );
