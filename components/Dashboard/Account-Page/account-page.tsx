@@ -6,7 +6,6 @@ import { SecurityTab } from "./security-tab";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AccountPage() {
-  const [tab, setTab] = useState<AccountTab>("info");
   const router = useRouter();
   const searchParams = useSearchParams();
 
