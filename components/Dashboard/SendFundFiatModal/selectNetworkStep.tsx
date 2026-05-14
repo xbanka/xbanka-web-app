@@ -21,7 +21,7 @@ export function SelectNetworkStep({ asset, selectedNetworkId, onNetworkChange, o
       <div className="space-y-3 mt-4">
         {/* Chosen asset display */}
         <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-3">
-          <CoinAvatar symbol={asset.symbol} size={36} />
+          {/* <CoinAvatar symbol={asset.symbol} size={36} /> */}
           <div className="flex-1">
             <p className="text-sm font-semibold text-card-text">{asset.name}</p>
             <p className="text-xs text-text">{asset.balance} {asset.symbol}</p>

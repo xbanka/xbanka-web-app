@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
+import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
+import { UseProfileUser } from "@/lib/services/profile.service";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store/user.store";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
 export function ConfirmXbankaUserStep({
@@ -20,6 +23,7 @@ export function ConfirmXbankaUserStep({
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const userData = useUserStore((state) => state.user);
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
   const feeNum = parseFloat(fee) || 0;
   const total = (numeric + feeNum).toLocaleString();
@@ -34,7 +38,7 @@ export function ConfirmXbankaUserStep({
           </div>
         </div>
         <div className="font-semibold text-center text-2xl leading-8 text-card-text">
-          Review & Confirm Transaction
+          Review & Confirm<br /> Transaction
         </div>
       </div>
 
@@ -52,46 +56,10 @@ export function ConfirmXbankaUserStep({
 
           {/* Breakdown */}
           <div className="space-y-3">
-            {[
-              { label: "From", value: sourceLabel, isAccount: true },
-              { label: "Account name", value: accountName },
-              { label: "Fee", value: `₦${feeNum.toFixed(2)}` },
-              {
-                label: "Total Debit",
-                value: `₦${total}`,
-                bold: true,
-                green: true,
-              },
-            ].map((row) => (
-              <div
-                key={row.label}
-                className="flex items-center justify-between text-xs"
-              >
-                <span className="font-medium text-xs leading-5 text-text">
-                  {row.label}
-                </span>
-                {row.isAccount ? (
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[8px] font-bold">
-                      {sourceLabel[0]}
-                    </div>
-                    <span className="font-medium text-card-text">
-                      {sourceLabel}
-                    </span>
-                  </div>
-                ) : (
-                  <span
-                    className={cn(
-                      "font-medium",
-                      row.green ? "text-Green" : "text-card-text",
-                      row.bold && "font-semibold",
-                    )}
-                  >
-                    {row.value}
-                  </span>
-                )}
-              </div>
-            ))}
+            <TransactionDescriptionField label="From" value={userData?.firstName + " " + userData?.lastName} isAccount />
+            <TransactionDescriptionField label="Account name" value={accountName} />
+            <TransactionDescriptionField label="Fee" value={`₦${feeNum.toFixed(2)}`} />
+            <TransactionDescriptionField className="pt-3 border-t border-input" label="Total Debit" value={`₦${total}`} amount={true} />
           </div>
         </div>
 

@@ -38,7 +38,7 @@ export function SellTab() {
     useState<CryptoGetConversionTypes | null>();
 
   // const { mutate, isPending } = useExecuteConversion();
-  const { data, mutate, isPending } = useQuoteConversion();
+  const { mutate, isPending } = useQuoteConversion();
   const {
     data: cryptoWalletData,
     error: cryptoWalletError,
@@ -64,11 +64,9 @@ export function SellTab() {
 
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
-  console.log(hasTransactionPin);
 
   const debouncedAmount = useDebounce(amount, 500);
 
-  const [quoteId, setQuoteId] = useState("");
   const currencies = currencyData?.data || [];
 
   const { fiat, crypto } = splitCurrencies(currencies);
@@ -186,7 +184,9 @@ export function SellTab() {
         <div className="space-y-3">
           <AmountRow
             label="You Sell"
+            dropDownLoading={groupedPairPending}
             available={`${availableBalance} ${sourceCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             OPTIONS={SELL_SOURCE_OPTIONS}
@@ -199,6 +199,7 @@ export function SellTab() {
           </p>
           <AmountRow
             label="You Receive"
+            dropDownLoading={currencyPending}
             readOnly
             value={
               convertData?.netPayout ? convertData?.netPayout.toString() : ""

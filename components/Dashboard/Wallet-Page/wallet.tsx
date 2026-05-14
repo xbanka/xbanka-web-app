@@ -12,7 +12,6 @@ import { VerifyBvnModal } from "./verify-bvn-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function WalletPage() {
-  const [tab, setTab] = useState("total");
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();

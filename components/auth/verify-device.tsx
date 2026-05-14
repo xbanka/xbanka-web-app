@@ -7,9 +7,11 @@ import { useVerifyDevice } from "@/lib/services/auth.service";
 import { Card } from "../ui/FormCard";
 import { FormHeader } from "../ui/FormHeader";
 import { maskEmail } from "@/lib/maskEmail";
+import { useOtpFlow } from "@/hooks/use-otp-flow";
 
 export default function VerifyDevice() {
   const [code, setCode] = useState("");
+  const { sendOtp, cooldown, canResend } = useOtpFlow();
   const verifyEmail =
     typeof window !== "undefined" ? localStorage.getItem("verifyEmail") : null;
 
@@ -61,6 +63,17 @@ export default function VerifyDevice() {
         placeholder="6-digit code"
       /> */}
       <OtpInput onChange={handleChange} error={error?.message} />
+      <div className="flex items-center justify-between">
+        <p className="text-text ont-normal text-sm leading-6">
+          Code expires in 00:{cooldown}
+        </p>
+        <p
+          onClick={sendOtp}
+          className={` font-normal text-sm leading-6 ${canResend ? "text-Green cursor-pointer" : "text-text cursor-not-allowed"} `}
+        >
+          Resend code
+        </p>
+      </div>
       <Button
         onClick={handleVerify}
         disabled={code.length !== 6 || isPending}
