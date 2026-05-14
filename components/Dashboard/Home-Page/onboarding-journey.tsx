@@ -8,6 +8,7 @@ import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
 import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
 import { useState } from "react";
 import { ModalType, stepsConfig } from "./types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function OnboardingJourney() {
   const {
@@ -48,19 +49,19 @@ export function OnboardingJourney() {
               className="p-4 rounded-lg border border-border space-y-3"
             >
               {/* Icon / badge */}
-              <div className="h-8 w-8 rounded-full bg-border" />
+              <Skeleton className="h-8 w-8 rounded-full bg-border" />
 
               {/* Title */}
-              <div className="h-4 w-3/4 bg-border rounded" />
+              <Skeleton className="h-4 w-3/4 bg-border rounded" />
 
               {/* Description */}
               <div className="space-y-2">
-                <div className="h-3 w-full bg-border rounded" />
-                <div className="h-3 w-5/6 bg-border rounded" />
+                <Skeleton className="h-3 w-full bg-border rounded" />
+                <Skeleton className="h-3 w-5/6 bg-border rounded" />
               </div>
 
               {/* Status badge */}
-              <div className="h-5 w-16 bg-border rounded-full" />
+              <Skeleton className="h-5 w-16 bg-border rounded-full" />
             </div>
           ))}
         </div>

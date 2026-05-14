@@ -5,6 +5,9 @@ import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "../Wallet-Page/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorLayout } from "@/components/ui/error-layout";
+import { CoinAvatar } from "../Wallet-Page/coin-avatar";
 
 const formatNaira = (amount?: number) =>
   typeof amount === "number"
@@ -35,9 +38,11 @@ export function SelectAssetStep({
   const { data, error, isPending, isError } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
   const filtered = wallets.filter(
-    (a: UserWallet) =>
-      a.currency.toLowerCase().includes(search.toLowerCase()) ||
-      getCurrencyHeader(a.currency).toLowerCase().includes(search.toLowerCase()),
+    (asset: UserWallet) =>
+      asset.currency.toLowerCase().includes(search.toLowerCase()) ||
+      getCurrencyHeader(asset.currency)
+        .toLowerCase()
+        .includes(search.toLowerCase()),
   );
 
   return (
@@ -66,30 +71,48 @@ export function SelectAssetStep({
         </div>
 
         <div className="relative mb-5 shrink-0 max-sm:mb-4">
-            <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-placeholder max-sm:left-4 max-sm:h-4 max-sm:w-4" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search asset"
-              className="h-[52px] w-full rounded-xl border-2 border-input bg-transparent pl-[52px] pr-5 text-[16px] text-card-text outline-none transition-colors placeholder:text-placeholder focus:border-border-active max-sm:h-11 max-sm:pl-11 max-sm:text-[13px]"
-            />
-          </div>
+          <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-placeholder max-sm:left-4 max-sm:h-4 max-sm:w-4" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search asset"
+            className="h-[52px] w-full rounded-xl border-2 border-input bg-transparent pl-[52px] pr-5 text-[16px] text-card-text outline-none transition-colors placeholder:text-placeholder focus:border-border-active max-sm:h-11 max-sm:pl-11 max-sm:text-[13px]"
+          />
+        </div>
 
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 max-sm:space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {isPending && (
-              <div className="py-8 text-center text-text">Loading...</div>
-            )}
-            {isError && (
-              <div className="py-8 text-center text-error-text">
-                {error?.message}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 max-sm:space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {isPending &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_28px] items-center gap-4 rounded-xl border-2 border-input px-5 py-4 max-sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_22px] max-sm:gap-2 max-sm:px-3 max-sm:py-3"
+              >
+                <div className="flex min-w-0 items-center gap-4 border-r-2 border-input pr-4 max-sm:gap-2 max-sm:pr-2">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-full bg-border max-sm:h-8 max-sm:w-8" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <Skeleton className="h-4 w-28 rounded bg-border max-sm:w-20" />
+                    <Skeleton className="h-3 w-20 rounded bg-border max-sm:w-16" />
+                  </div>
+                </div>
+                <div className="min-w-0 space-y-2">
+                  <Skeleton className="h-4 w-24 rounded bg-border max-sm:w-16" />
+                  <Skeleton className="h-3 w-20 rounded bg-border max-sm:w-14" />
+                </div>
+                <Skeleton className="h-6 w-6 rounded-full bg-border max-sm:h-5 max-sm:w-5" />
               </div>
-            )}
-            {!isPending && !isError && filtered.length === 0 && (
-              <div className="py-8 text-center text-text">
-                No crypto assets found.
-              </div>
-            )}
-            {!isPending && !isError && filtered.map((asset: UserWallet, index: number) => {
+            ))}
+
+          {isError && <ErrorLayout message={error?.message} />}
+
+          {!isPending && !isError && filtered.length === 0 && (
+            <div className="py-8 text-center text-text">
+              No crypto assets found.
+            </div>
+          )}
+
+          {!isPending &&
+            !isError &&
+            filtered.map((asset: UserWallet, index: number) => {
               const active = selectedId?.id === asset.id;
               return (
                 <button
@@ -103,9 +126,7 @@ export function SelectAssetStep({
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-4 border-r-2 border-input pr-4 max-sm:gap-2 max-sm:pr-2">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FF9F1C] text-[24px] font-bold leading-none text-white max-sm:h-8 max-sm:w-8 max-sm:text-[20px]">
-                      ₿
-                    </div>
+                    <CoinAvatar currency={asset.currency} size={40} />
                     <div className="min-w-0">
                       <div className="flex min-w-0 items-center gap-3 max-sm:gap-1.5">
                         <p className="truncate text-[16px] font-semibold leading-6 text-card-text max-sm:text-[13px] max-sm:leading-5">
@@ -143,7 +164,8 @@ export function SelectAssetStep({
                 </button>
               );
             })}
-          </div>
+        </div>
+
         <div className="mt-6 grid shrink-0 grid-cols-[0.95fr_1.55fr] gap-5 max-sm:mt-4 max-sm:grid-cols-[0.9fr_1.35fr] max-sm:gap-3">
           <Button
             type="button"

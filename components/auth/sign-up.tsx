@@ -17,6 +17,7 @@ import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { maskEmail } from "@/lib/maskEmail";
 import { ErrorField } from "../ui/field-error";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { ErrorLayout } from "../ui/error-layout";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -167,7 +168,7 @@ const SignUp = () => {
               register={methods.register}
               className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:text-base"
             />
-            <h1 className="text-error-text">{error?.message}</h1>
+            <ErrorLayout message={error?.message} />
           </div>
           <Button
             type="submit"

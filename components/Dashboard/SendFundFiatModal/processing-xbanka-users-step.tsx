@@ -15,9 +15,13 @@ export function ProcessingXbankaStep({
   mandateId,
   handleStep,
   recipient,
+  setReference,
+  setMessage
 }: {
   amount: string;
   savedCardId?: string;
+  setReference: (data: string) => void;
+  setMessage: (data: string) => void;
   mandateId?: string;
   accountName: string;
   handleStep: (value: Step) => void;
@@ -34,7 +38,11 @@ export function ProcessingXbankaStep({
         amount: recipient.amount || 0,
       },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          console.log("Transfer successful, reference:", result);
+          console.log("Transfer successful, reference:", result.data.transactions[0].reference);
+          setReference(result.data.transactions[0].reference);
+          setMessage(result.data.message);
           handleStep("success");
         },
         onError: () => {

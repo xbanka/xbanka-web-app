@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorField } from "@/components/ui/field-error";
 import LivenessDetector, { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { ErrorLayout } from "@/components/ui/error-layout";
 
 export type IdSelfieStep =
   | "id-form"
@@ -126,7 +127,7 @@ export function IdSelfieModal({
                 id="idNumber"
               />
               <AttachmentUpload value={attachments} onChange={setAttachments} />
-              <ErrorField message={error?.message || skipError?.message} />
+              <ErrorLayout message={error?.message || skipError?.message} />
             </div>
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">
