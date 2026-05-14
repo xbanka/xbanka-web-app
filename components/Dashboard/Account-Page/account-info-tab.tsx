@@ -18,12 +18,14 @@ import { UseGetBankAcounts } from "@/lib/services/wallet.service";
 import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
+import { EditProfileModal } from "../Edit-Profile-Modal/edit-modal-profile";
 
 export function AccountInfoTab() {
   const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
   const [openAccountModal, setOpenAccountModal] = useState(false);
+  const [editProfileModal, setEditProfileModal] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
   const {
     data: getBankAccounts,
@@ -55,6 +57,10 @@ export function AccountInfoTab() {
     // open add account modal
     setOpenAccountModal(true);
   };
+
+  const handleEditModal = () => {
+    setEditProfileModal(true)
+  }
 
   return (
     <div className="space-y-4">
@@ -119,6 +125,7 @@ export function AccountInfoTab() {
           <Button
             variant={"outline"}
             size={"sm"}
+            onClick={handleEditModal}
             className="gap-2 text-Green border border-input transition-colors"
           >
             Edit Profile
@@ -204,7 +211,7 @@ export function AccountInfoTab() {
               Last updated: {formatDate(userData?.createdAt ?? "")}
             </p>
           </div>
-          <button className="flex items-center gap-1.5 text-xs text-Green hover:underline">
+          <button onClick={handleEditModal} className="flex items-center gap-1.5 text-xs text-Green hover:underline">
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
@@ -214,33 +221,33 @@ export function AccountInfoTab() {
           <PersonalInfoTab
             label="First Name"
             value={userData?.firstName || ""}
-            onSave={(val) => handleUpdate("firstName", val)}
+            // onSave={(val) => handleUpdate("firstName", val)}
           />
 
           {/* ✅ Last Name */}
           <PersonalInfoTab
             label="Last Name"
             value={userData?.lastName || ""}
-            onSave={(val) => handleUpdate("lastName", val)}
+            // onSave={(val) => handleUpdate("lastName", val)}
           />
 
           {/* ✅ Email */}
           <PersonalInfoTab
             label="Email Address"
             value={userData?.email || ""}
-            onSave={(val) => handleUpdate("email", val)}
+            // onSave={(val) => handleUpdate("email", val)}
           />
           <PersonalInfoTab
             label="Phone Number"
             value={userData?.phoneNumber || ""}
-            onSave={(val) => handleUpdate("email", val)}
+            // onSave={(val) => handleUpdate("email", val)}
           />
 
           {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
             value={formatDate(userData?.dateOfBirth ?? "")}
-            onSave={(val) => handleUpdate("dateOfBirth", val)}
+            // onSave={(val) => handleUpdate("dateOfBirth", val)}
             renderInput={(value, onChange) => (
               <DatePicker value={value} onChange={onChange} />
             )}
@@ -248,12 +255,12 @@ export function AccountInfoTab() {
           <PersonalInfoTab
             label="Gender"
             value={userData?.gender || ""}
-            onSave={(val) => handleUpdate("gender", val)}
+            // onSave={(val) => handleUpdate("gender", val)}
           />
           <PersonalInfoTab
             label="Nationality"
             value={userData?.country || ""}
-            onSave={(val) => handleUpdate("country", val)}
+            // onSave={(val) => handleUpdate("country", val)}
           />
         </div>
 
@@ -263,6 +270,10 @@ export function AccountInfoTab() {
             open={openAccountModal}
           />
         )}
+
+        {
+          editProfileModal && <EditProfileModal onClose={() => setEditProfileModal(false)} />
+        }
       </DashboardCard>
     </div>
   );

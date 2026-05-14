@@ -1,32 +1,25 @@
 export interface UserProfileTypes {
-  userId: string; // UUID
-
+  userId: string;
   email: string;
   isEmailVerified: boolean;
-
-  currentStep: string; // e.g. "BVN"
+  currentStep: string;
   referralCode: string;
-
   isTwoFactorEnabled: boolean;
   hasTransactionPin: boolean;
-
   firstName: string;
   lastName: string;
   phoneNumber: string;
-
-  dateOfBirth: string; // ISO 8601
+  dateOfBirth: string;
   gender: string;
-
   country: string;
   state: string;
-
   avatarUrl: string | null;
+
+  completedOnboardingSteps: string[];
 
   kycStatus: {
     bvnVerified: boolean;
-    // idStatus: "PENDING" | "VERIFIED" | "REJECTED";
     idStatus: string;
-    // addressStatus: "PENDING" | "VERIFIED" | "REJECTED";
     addressStatus: string;
   };
 

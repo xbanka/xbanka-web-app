@@ -3,7 +3,8 @@ import { LucideIcon } from "lucide-react";
 export interface securityOverviewCardProps {
   label: string;
   statusColor: string;
-  status: string;
+  status: boolean;
+  statusLabel: string;
   icon: LucideIcon;
   key: string | number;
 }

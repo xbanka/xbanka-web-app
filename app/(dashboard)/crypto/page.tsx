@@ -4,9 +4,9 @@ import { Suspense } from "react";
 const page = () => {
   return (
     <Suspense fallback={<p>Signing you in...</p>}>
-        <CryptoPage />
+      <CryptoPage />
     </Suspense>
-  )
+  );
 };
 
-export default page
+export default page;
