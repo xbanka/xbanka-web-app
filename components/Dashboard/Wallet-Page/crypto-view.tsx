@@ -8,7 +8,11 @@ import Image from "next/image";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
-  const wallets = data?.data?.data || [];
+  // const wallets = data?.data?.data || [];
+  const wallets =
+    data?.data?.data?.filter(
+      (wallet: UserWallet) => Number(wallet.balance) > 0,
+    ) || [];
 
   const columns = [
     {
@@ -128,12 +132,12 @@ export function CryptoView() {
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="min-w-0 flex items-center gap-2">
                     <div className="bg-card-background h-8 w-8 rounded-full">
-                    <Image
-                      src={getCoinImage(wallet.currency)}
-                      alt={wallet.currency}
-                      width={32}
-                      height={32}
-                    />
+                      <Image
+                        src={getCoinImage(wallet.currency)}
+                        alt={wallet.currency}
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <div>
                       <p className="truncate text-[17px] font-medium leading-6 text-card-text">
