@@ -69,7 +69,7 @@ export const OnboardingJourneyCard = ({
       {status === "active" && (
         <button
           onClick={onClick}
-          className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]"
+          className="w-full rounded-lg bg-Green py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 max-sm:h-9 max-sm:text-[13px]"
         >
           Continue
         </button>

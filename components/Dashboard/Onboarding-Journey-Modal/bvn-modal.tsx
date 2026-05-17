@@ -100,7 +100,7 @@ export function BvnModal({
                 </Button>
                 <Button
                   size="lg"
-                  className="flex-3"
+                  className="flex-3 max-sm:"
                   disabled={!isValid || isPending}
                   variant={isPending || !isValid ? "disabled" : "default"}
                   type="submit"
