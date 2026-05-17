@@ -42,6 +42,10 @@ export function AttachmentUpload({
     });
 
     onChange(newFiles.slice(0, 1));
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   };
 
   const removeFile = (index: number) => {
@@ -49,6 +53,10 @@ export function AttachmentUpload({
     const removed = updated.splice(index, 1)[0];
     if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl);
     onChange(updated);
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   };
 
   return (
@@ -95,7 +103,9 @@ export function AttachmentUpload({
                 )}
 
                 <div className="text-sm">
-                  <p className="font-medium text-[14px] leading-[20px]">{item.file.name}</p>
+                  <p className="font-medium text-[14px] leading-[20px]">
+                    {item.file.name}
+                  </p>
                   <p className="text-xs text-[#585859] font-[500] leading-[16px]">
                     {(item.file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
