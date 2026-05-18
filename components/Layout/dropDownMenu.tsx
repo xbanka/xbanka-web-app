@@ -1,20 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import {
-  User,
-  ShieldCheck,
-  BadgeCheck,
-  Gift,
-  Star,
-  Settings,
-  HelpCircle,
-  LogOut,
-  ChevronDown,
-  Wifi,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { MENU_ITEMS } from "@/lib/nav";
 import { useUserStore } from "@/store/user.store";
-import { useUserProfile } from "@/lib/services/onboarding.service";
 import {
   UseProfileUser,
   UseVerificationStatus,
@@ -39,9 +27,14 @@ export default function UserDropdown({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const userData = useUserStore((state) => state.user);
+  const {
+    data: profileData,
+    isPending: profileDataPending,
+    error: profileDataError,
+  } = UseProfileUser();
   const { openModal } = useLogoutStore();
+  const avatar = profileData?.data?.avatarUrl;
 
-  const { data, isPending, error } = UseProfileUser();
   const {
     data: verificationData,
     isPending: verificationPending,
@@ -80,7 +73,17 @@ export default function UserDropdown({
         {/* Avatar */}
         <div className="relative shrink-0">
           <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-white text-xs font-bold">
-            {avatarInitials}
+            {avatar ? (
+              <Image
+                src={avatar}
+                alt="profile"
+                fill
+                className="object-cover rounded-full"
+              />
+            ) : (
+              `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
+              userData?.email[0]
+            )}
           </div>
         </div>
 
@@ -109,7 +112,17 @@ export default function UserDropdown({
             <div className="bg-border py-2 px-2.75 rounded-xl flex items-center gap-3">
               <div className="relative shrink-0">
                 <div className="w-10 h-10 rounded-full bg-Green flex items-center justify-center text-white text-sm font-bold">
-                  {avatarInitials}
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      alt="profile"
+                      fill
+                      className="object-cover rounded-full"
+                    />
+                  ) : (
+                    `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
+                    userData?.email[0]
+                  )}
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-card-background" />
               </div>
@@ -121,10 +134,38 @@ export default function UserDropdown({
                   <p className="text-xs text-text mt-0.5">
                     UID: {shortenUid(userData?.userId)}
                   </p>
-                  {verificationData?.data?.tierLevel === 0 && <Image width={60} height={19} alt="tier" src={"/Tier0.svg"} />}
-                  {verificationData?.data?.tierLevel === 1 && <Image width={60} height={19} alt="tier" src={"/Tier1.svg"} />}
-                  {verificationData?.data?.tierLevel === 2 && <Image width={60} height={19} alt="tier" src={"/Tier2.svg"} />}
-                  {verificationData?.data?.tierLevel === 3 && <Image width={60} height={19} alt="tier" src={"/Tier3.svg"} />}
+                  {verificationData?.data?.tierLevel === 0 && (
+                    <Image
+                      width={60}
+                      height={19}
+                      alt="tier"
+                      src={"/Tier0.svg"}
+                    />
+                  )}
+                  {verificationData?.data?.tierLevel === 1 && (
+                    <Image
+                      width={60}
+                      height={19}
+                      alt="tier"
+                      src={"/Tier1.svg"}
+                    />
+                  )}
+                  {verificationData?.data?.tierLevel === 2 && (
+                    <Image
+                      width={60}
+                      height={19}
+                      alt="tier"
+                      src={"/Tier2.svg"}
+                    />
+                  )}
+                  {verificationData?.data?.tierLevel === 3 && (
+                    <Image
+                      width={60}
+                      height={19}
+                      alt="tier"
+                      src={"/Tier3.svg"}
+                    />
+                  )}
                 </div>
               </div>
             </div>
