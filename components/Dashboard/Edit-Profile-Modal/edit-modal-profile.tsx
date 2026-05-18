@@ -23,7 +23,8 @@ interface EditProfileModalProps {
   defaultValues?: {
     displayName?: string;
     gender?: string;
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
     phone?: string;
     email?: string;
     dateOfBirth?: string;
@@ -44,7 +45,8 @@ export function EditProfileModal({
   defaultValues = {
     displayName: "Cooljoe",
     gender: "male",
-    fullName: "Joseph Eyebiokin",
+    firstName: "Joseph",
+    lastName: "Eyebiokin",
     phone: "+234 700 000 000",
     email: "Eyebiokin.joseph1@gmail.com",
     dateOfBirth: "",
@@ -78,7 +80,7 @@ export function EditProfileModal({
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-Green/20 text-Green text-2xl font-bold">
-                  {(defaultValues.fullName ?? "U")[0]}
+                  {(defaultValues.firstName ?? "U")[0]}
                 </div>
               )}
             </div>
@@ -95,7 +97,7 @@ export function EditProfileModal({
         {/* Form */}
         <div className="space-y-4">
           {/* Row 1: Display Name + Gender */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* <div className="grid grid-cols-2 gap-3">
             <FormField
               id="displayName"
               label="Display Name"
@@ -109,22 +111,37 @@ export function EditProfileModal({
               placeholder="Select gender"
               options={genderOptions}
             />
-          </div>
+          </div> */}
+          <SelectField
+            id="gender"
+            label="Gender"
+            placeholder="Select gender"
+            options={genderOptions}
+          />
 
           {/* Full Name — locked */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
+          <div className="space-y-1 flex items-start gap-4">
+            {/* <div className="flex items-center justify-between">
               <Label label="Full Name" />
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3" />
                 Cannot be changed
               </span>
-            </div>
+            </div> */}
             <FormField
-              id="fullName"
-              placeholder="Full Name"
-              value={defaultValues.fullName}
-              disabled
+              id="firstName"
+              label="First Name"
+              placeholder="First Name"
+              className="w-full"
+              value={defaultValues.firstName}
+              icon={Lock}
+            />
+            <FormField
+              id="lastName"
+              label="Last Name"
+              placeholder="Last Name"
+              className="w-full"
+              value={defaultValues.lastName}
               icon={Lock}
             />
           </div>
