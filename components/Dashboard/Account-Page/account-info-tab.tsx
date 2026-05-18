@@ -162,7 +162,7 @@ export function AccountInfoTab() {
 
         {!getBankAccountsPending &&
           !getBankAccountsError &&
-          getBankAccounts?.data?.length === 0 && (
+          getBankAccounts?.data?.data?.length === 0 && (
             <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
               <Image
                 className="mx-auto mb-1"
