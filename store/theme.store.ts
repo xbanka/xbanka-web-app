@@ -12,9 +12,9 @@ export interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: "light",
+      theme: "dark",
       setTheme: (theme: Theme) => {
-        document.documentElement.setAttribute("data-theme", theme ?? "light");
+        document.documentElement.setAttribute("data-theme", theme);
         set({ theme });
       },
       toggleTheme: () =>

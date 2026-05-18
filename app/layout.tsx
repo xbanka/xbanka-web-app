@@ -29,7 +29,32 @@ export default function RootLayout({
   return (
     <QueryProvider>
       <Providers>
-        <html lang="en" data-theme="light">
+        <html lang="en" data-theme="dark">
+          <head>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+              (function() {
+                try {
+                  const storedTheme = localStorage.getItem("theme-preference");
+                  
+                  let theme = "dark";
+
+                  if (storedTheme) {
+                    const parsed = JSON.parse(storedTheme);
+                    theme = parsed.state?.theme || "dark";
+                  }
+
+                  document.documentElement.setAttribute(
+                    "data-theme",
+                    theme
+                  );
+                } catch (e) {}
+              })();
+            `,
+              }}
+            />
+          </head>
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >

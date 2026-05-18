@@ -1,7 +1,7 @@
 export const ErrorField = ({ message }: { message?: string }) =>
   message ? (
     <p className="text-sm text-error-text flex items-center gap-1">
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+      {/* <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
         <circle cx="10" cy="10" r="10" />
         <text
           x="50%"
@@ -14,7 +14,7 @@ export const ErrorField = ({ message }: { message?: string }) =>
         >
           !
         </text>
-      </svg>
+      </svg> */}
       {message}
     </p>
   ) : null;

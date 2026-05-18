@@ -103,10 +103,10 @@ export function AttachmentUpload({
                 )}
 
                 <div className="text-sm">
-                  <p className="font-medium text-[14px] leading-[20px]">
+                  <p className="font-medium text-[14px] leading-5">
                     {item.file.name}
                   </p>
-                  <p className="text-xs text-[#585859] font-[500] leading-[16px]">
+                  <p className="text-xs text-[#585859] font-medium leading-4">
                     {(item.file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>

@@ -35,7 +35,7 @@ export function EnterPinStep({
       <ModalHeader
         className="px-10"
         title="Enter PIN"
-        subtitle="Enter your 6-digit transaction PIN to confirm this send."
+        subtitle="Enter your 4-digit transaction PIN to confirm this send."
         onBack={onBack}
         onClose={onClose}
       />
