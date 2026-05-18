@@ -31,7 +31,7 @@ export function AssetValueCard() {
   const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
   const totalBalance = fiatBalance + cryptoBalance;
   return (
-    <DashboardCard className="border border-[#0F766E] bg-[#042F2E]">
+    <DashboardCard className="border border-teal-border bg-teal-light">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-text text-sm">
