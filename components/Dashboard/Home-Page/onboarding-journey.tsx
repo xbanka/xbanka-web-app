@@ -80,7 +80,7 @@ export function OnboardingJourney() {
     <DashboardCard className="space-y-4 overflow-hidden">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <h3 className="font-medium text-card-text text-[16px] max-sm:text-[14px] max-sm:leading-[20px] leading-6">
+          <h3 className="font-medium text-card-text text-[16px] max-sm:text-[14px] max-sm:leading-5 leading-6">
             Complete your Onboarding Journey
           </h3>
           <p className="text-xs text-text max-sm:hidden">
@@ -95,7 +95,7 @@ export function OnboardingJourney() {
         {progress.map((s, i) => (
           <OnboardingJourneyCard
             key={i}
-            className="w-[72vw] max-w-[360px] shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
+            className="w-[72vw] max-w-90 shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
             status={s.status}
             step={s.step}
             title={s.title}

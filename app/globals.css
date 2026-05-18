@@ -15,7 +15,7 @@
   --input-background: #F9F9F9;
   --placeholder: #4b5563;
   --text: #4b5563;
-  --error-text: #FF8882;
+  --error-text: #E50500;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
   --error-bg-layout: #390201;
@@ -26,6 +26,16 @@
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
   --badge-border-green: #012E03;
+  --teal-light: #F0FDFA;
+  --teal-border: #99F6E4;
+  --teal-text: #0F766E;
+  --success-text: #037508;
+  --coral-text: #9A0283;
+  --coral-border: #FFADE8;
+  --coral-light: #FFF0FB;
+  --blue-light: #F0F7FF;
+  --blue-border: #B7DBFF;
+  --blue-text: #004C99;
 }
 
 @theme inline {
@@ -55,7 +65,17 @@
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple);
-  --color-badge-border-green: var(--badge-border-green)
+  --color-badge-border-green: var(--badge-border-green);
+  --color-teal-light: var(--teal-light);
+  --color-teal-text: var(--teal-text);
+  --color-teal-border: var(--teal-border);
+  --color-coral-light: var(--coral-light);
+  --color-coral-text: var(--coral-text);
+  --color-coral-border: var(--coral-border);
+  --color-blue-light: var(--blue-light);
+  --color-blue-text: var(--blue-text);
+  --color-blue-border: var(--blue-border);
+  --color-success-text: var(--success-text);
 }
 
 [data-theme="dark"] {
@@ -84,6 +104,16 @@
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
   --badge-border-green: #012E03;
+  --teal-light: #042F2E;
+  --teal-border: #0F766E;
+  --teal-text: #5EEAD4;
+  --success-text: #A6F4C5;
+  --coral-text: #FFD6F3;
+  --coral-border: #9A0283;
+  --coral-light: #36002E;
+  --blue-light: #051D33;
+  --blue-border: #004C99;
+  --blue-text: #B7DBFF;
 }
 
 @theme {
