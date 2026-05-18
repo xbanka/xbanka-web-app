@@ -29,7 +29,7 @@ export const ValueBalance = () => {
 
   return (
     <div>
-      <DashboardCard className="border-[#004C99] bg-[#051D33]">
+      <DashboardCard className="border-blue-border bg-blue-light">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-text text-[14px] leading-6 font-normal">
