@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
 import {
+  UseProfileUser,
   useUpdateAvatar,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
@@ -27,6 +28,9 @@ export function AccountInfoTab() {
   const [openAccountModal, setOpenAccountModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
+  const { data: profileData } = UseProfileUser();
+  const avatar = profileData?.data?.avatarUrl;
+
   const {
     data: getBankAccounts,
     isPending: getBankAccountsPending,
@@ -59,8 +63,8 @@ export function AccountInfoTab() {
   };
 
   const handleEditModal = () => {
-    setEditProfileModal(true)
-  }
+    setEditProfileModal(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -69,15 +73,15 @@ export function AccountInfoTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
-              {image ? (
+              {(image || avatar) ? (
                 <Image
-                  src={image ?? ""}
+                  src={image || avatar}
                   alt="profile"
                   fill
                   className="object-cover"
                 />
               ) : (
-                "CJ"
+                `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` || userData?.email[0]
               )}
 
               <input
@@ -211,7 +215,10 @@ export function AccountInfoTab() {
               Last updated: {formatDate(userData?.createdAt ?? "")}
             </p>
           </div>
-          <button onClick={handleEditModal} className="flex items-center gap-1.5 text-xs text-Green hover:underline">
+          <button
+            onClick={handleEditModal}
+            className="flex items-center gap-1.5 text-xs text-Green hover:underline"
+          >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
@@ -221,46 +228,33 @@ export function AccountInfoTab() {
           <PersonalInfoTab
             label="First Name"
             value={userData?.firstName || ""}
-            // onSave={(val) => handleUpdate("firstName", val)}
           />
 
           {/* ✅ Last Name */}
-          <PersonalInfoTab
-            label="Last Name"
-            value={userData?.lastName || ""}
-            // onSave={(val) => handleUpdate("lastName", val)}
-          />
+          <PersonalInfoTab label="Last Name" value={userData?.lastName || ""} />
 
           {/* ✅ Email */}
           <PersonalInfoTab
             label="Email Address"
             value={userData?.email || ""}
-            // onSave={(val) => handleUpdate("email", val)}
           />
           <PersonalInfoTab
             label="Phone Number"
             value={userData?.phoneNumber || ""}
-            // onSave={(val) => handleUpdate("email", val)}
           />
 
           {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
             value={formatDate(userData?.dateOfBirth ?? "")}
-            // onSave={(val) => handleUpdate("dateOfBirth", val)}
             renderInput={(value, onChange) => (
               <DatePicker value={value} onChange={onChange} />
             )}
           />
-          <PersonalInfoTab
-            label="Gender"
-            value={userData?.gender || ""}
-            // onSave={(val) => handleUpdate("gender", val)}
-          />
+          <PersonalInfoTab label="Gender" value={userData?.gender || ""} />
           <PersonalInfoTab
             label="Nationality"
             value={userData?.country || ""}
-            // onSave={(val) => handleUpdate("country", val)}
           />
         </div>
 
@@ -271,9 +265,9 @@ export function AccountInfoTab() {
           />
         )}
 
-        {
-          editProfileModal && <EditProfileModal onClose={() => setEditProfileModal(false)} />
-        }
+        {editProfileModal && (
+          <EditProfileModal onClose={() => setEditProfileModal(false)} />
+        )}
       </DashboardCard>
     </div>
   );
