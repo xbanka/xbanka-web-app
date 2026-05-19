@@ -52,12 +52,14 @@ export function DataTableLayout<T>({
   isError = false,
   errorMessage = "Failed to load data.",
   className,
-  pageTotal
+  pageTotal,
 }: DataTableLayoutProps<T>) {
   const [localPage, setLocalPage] = useState(1);
   const page = currentPage ?? localPage;
   const totalItems = totalCount ?? data?.length;
-  const totalPages = pageTotal ? pageTotal : Math.ceil(totalItems / itemsPerPage);
+  const totalPages = pageTotal
+    ? pageTotal
+    : Math.ceil(totalItems / itemsPerPage);
 
   const paginatedData = !onPageChange
     ? data.slice((page - 1) * itemsPerPage, page * itemsPerPage)
@@ -86,7 +88,7 @@ export function DataTableLayout<T>({
           totalPages - 3,
           totalPages - 2,
           totalPages - 1,
-          totalPages
+          totalPages,
         );
       } else {
         pages.push(1, "...", page - 1, page, page + 1, "...", totalPages);
@@ -122,19 +124,24 @@ export function DataTableLayout<T>({
     <div
       className={cn(
         "w-full max-w-full bg-border border border-border p-3 rounded-lg",
-        className
+        className,
       )}
     >
-      <div className="hidden md:flex w-full rounded-lg">
+      <div className="hidden md:flex w-full rounded-lg ">
         <div className="relative w-full overflow-x-auto rounded-lg">
           <div className="min-w-full">
-            <Table className={cn("w-full table-fixed", isLoading || isError ? "pointer-events-none" : "")}>
+            <Table
+              className={cn(
+                "w-full table-fixed",
+                isLoading || isError ? "pointer-events-none" : "",
+              )}
+            >
               <TableHeader>
                 <TableRow className="">
                   {columns.map((col) => (
                     <TableHead
                       key={col.key as string}
-                      className={`truncate font-medium py-1.5 px-4 text-[12px] border-b border-[#374151] leading-5 text-text ${
+                      className={`truncate font-medium py-1.5 px-4 text-[12px] border-b border-[#374151] leading-5 text-text  ${
                         col.className ?? ""
                       }`}
                     >
@@ -150,7 +157,7 @@ export function DataTableLayout<T>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="text-center py-6 text-gray-500"
+                      className="text-center py-6 text-gray-500 "
                     >
                       Loading...
                     </TableCell>
@@ -175,7 +182,13 @@ export function DataTableLayout<T>({
                       colSpan={columns.length}
                       className="text-center text-card-text text-[14px] font-medium leading-5 py-6"
                     >
-                      <Image className="mx-auto mb-1" alt="frame" width={96} height={122} src={"/Frame.svg"}/>
+                      <Image
+                        className="mx-auto mb-1"
+                        alt="frame"
+                        width={96}
+                        height={122}
+                        src={"/Frame.svg"}
+                      />
                       {emptyMessage}
                     </TableCell>
                   </TableRow>
@@ -192,7 +205,7 @@ export function DataTableLayout<T>({
                         <TableCell
                           className={cn(
                             "py-0.5 border-b border-input leading-6 px-4 text-left whitespace-nowrap overflow-hidden text-ellipsis",
-                            col.className
+                            col.className,
                           )}
                           key={col.key as string}
                         >
@@ -211,7 +224,7 @@ export function DataTableLayout<T>({
 
       {/* MOBILE CARD VIEW */}
       {/* MOBILE CARD VIEW */}
-      <div className="md:hidden">
+      <div className="md:hidden ">
         {isLoading && (
           <div className="p-6 text-center text-gray-500">Loading...</div>
         )}
@@ -239,7 +252,7 @@ export function DataTableLayout<T>({
                     <span className="text-[12px] text-text font-medium">
                       Request ID
                     </span>
-                    <span className="truncate text-[15px] font-semibold text-card-text">
+                    <span className="truncate text-[15px] max-sm:text-[12px]  font-semibold text-card-text">
                       {formatMobileRequestId(
                         getRecordValue(item, "requestId") ??
                           getRecordValue(item, "id"),
@@ -254,13 +267,13 @@ export function DataTableLayout<T>({
                 </div>
 
                 {/* Other fields */}
-                <div className="space-y-2 border-t border-input pt-2">
+                <div className="space-y-2 border-t border-input pt-2 ">
                   {visibleColumns
                     .filter(
                       (col) =>
                         col.key !== "status" &&
                         col.key !== "actions" &&
-                        col.key !== "requestId"
+                        col.key !== "requestId",
                     )
                     .map((col) => (
                       <div
@@ -270,7 +283,7 @@ export function DataTableLayout<T>({
                         <span className="shrink-0 text-[12px] text-text font-medium">
                           {col.header}
                         </span>
-                        <span className="min-w-0 max-w-[62%] text-right text-[14px] font-medium text-card-text [&_*]:min-w-0">
+                        <span className="min-w-0 max-w-[62%] text-right text-[14px] max-sm:text-[12px] font-medium text-card-text [&_*]:min-w-0">
                           {col.render
                             ? col.render(item)
                             : renderRecordValue(item, col.key as string)}
@@ -306,12 +319,12 @@ export function DataTableLayout<T>({
                   key={i}
                   variant={p === page ? "default" : "outline"}
                   size="sm"
-                  className={`${ p !== page && "border-none"} "w-6 h-6 p-2 rounded-[6px] font-normal text-[12px] leading-4" `}
+                  className={`${p !== page && "border-none"} "w-6 h-6 p-2 rounded-[6px] font-normal text-[12px] leading-4" `}
                   onClick={() => handlePageChange(p as number)}
                 >
                   {p}
                 </Button>
-              )
+              ),
             )}
           </div>
           <div className="flex items-center gap-2 overflow-x-auto">
