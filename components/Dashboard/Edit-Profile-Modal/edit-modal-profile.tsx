@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   X,
   Camera,
@@ -17,6 +17,15 @@ import { FormField } from "@/components/ui/FormField";
 import { SelectField } from "@/components/ui/select";
 import { SidebarWrapper } from "@/components/ui/sidebar";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { COUNTRIES, Country, countryOptions } from "@/lib/countries";
+import PhoneNumberField from "@/components/ui/Phonenumberfield";
+import z from "zod";
+import {
+  UseProfileUser,
+  useUpdateProfile,
+} from "@/lib/services/profile.service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface EditProfileModalProps {
   onClose: () => void;
@@ -40,34 +49,95 @@ const genderOptions = [
   { value: "other", label: "Prefer not to say" },
 ];
 
+const schema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  gender: z.string().min(1, "Gender is required"),
+  phoneNumber: z.string().min(6, "Phone number is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  country: z.string().min(1, "Country is required"),
+});
+
+type FormValues = z.infer<typeof schema>;
+
 export function EditProfileModal({
   onClose,
-  defaultValues = {
-    displayName: "Cooljoe",
-    gender: "male",
-    firstName: "Joseph",
-    lastName: "Eyebiokin",
-    phone: "+234 700 000 000",
-    email: "Eyebiokin.joseph1@gmail.com",
-    dateOfBirth: "",
-    countryOfResidence: "Nigeria",
-    address: "",
-  },
   avatarUrl,
 }: EditProfileModalProps) {
-  const [displayName, setDisplayName] = useState(
-    defaultValues.displayName ?? "",
-  );
-  const [gender, setGender] = useState(defaultValues.gender ?? "");
-  const [phone, setPhone] = useState(defaultValues.phone ?? "");
-  const [address, setAddress] = useState(defaultValues.address ?? "");
+  const [address, setAddress] = useState("");
+
+  const [country, setCountry] = useState<Country>(COUNTRIES[0]);
+  const { data: profileData } = UseProfileUser();
+  const { mutate: updateProfile, isPending } = useUpdateProfile();
+  const profile = profileData?.data;
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      gender: "",
+      phoneNumber: "",
+      dateOfBirth: "",
+      country: "",
+    },
+  });
+
+  useEffect(() => {
+    if (!profile) return;
+
+    reset({
+      firstName: profile.firstName || "",
+      lastName: profile.lastName || "",
+      gender: profile.gender || "",
+      phoneNumber: profile.phoneNumber || "",
+      dateOfBirth: profile.dateOfBirth ? profile.dateOfBirth.split("T")[0] : "",
+      country: profile.country || "",
+    });
+
+    const matchedCountry =
+      COUNTRIES.find(
+        (c) => c.code.toLowerCase() === profile.country?.toLowerCase(),
+      ) || COUNTRIES[0];
+
+    setCountry(matchedCountry);
+  }, [profile, reset]);
+
+  const onSubmit = (values: FormValues) => {
+    if (!profile?.userId) return;
+
+    updateProfile(
+      {
+        userId: profile.userId,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        gender: values.gender,
+        phoneNumber: values.phoneNumber,
+        dateOfBirth: new Date(values.dateOfBirth).toISOString(),
+        country: values.country,
+        profilePicture: null,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      },
+    );
+  };
 
   return (
     <SidebarWrapper onClose={onClose} open={true}>
       {/* Header */}
       <ModalHeader title="Edit Profile" onClose={onClose} />
 
-      <div className="pt-6 pb-10 px-10 max-h-180 overflow-y-scroll">
+      <form onSubmit={handleSubmit(onSubmit)} className="pt-6 pb-10 px-10 max-h-180 overflow-y-scroll">
         {/* Avatar */}
         <div className="flex flex-col items-center mb-5">
           <div className="relative w-20 h-20">
@@ -80,7 +150,7 @@ export function EditProfileModal({
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-Green/20 text-Green text-2xl font-bold">
-                  {(defaultValues.firstName ?? "U")[0]}
+                  {(watch("firstName") || "U")[0]}
                 </div>
               )}
             </div>
@@ -117,6 +187,8 @@ export function EditProfileModal({
             label="Gender"
             placeholder="Select gender"
             options={genderOptions}
+            register={register}
+            error={errors.gender}
           />
 
           {/* Full Name — locked */}
@@ -133,78 +205,75 @@ export function EditProfileModal({
               label="First Name"
               placeholder="First Name"
               className="w-full"
-              value={defaultValues.firstName}
-              icon={Lock}
+              register={register}
+              error={errors.firstName}
             />
             <FormField
               id="lastName"
               label="Last Name"
               placeholder="Last Name"
               className="w-full"
-              value={defaultValues.lastName}
-              icon={Lock}
+              register={register}
+              error={errors.lastName}
             />
           </div>
 
           {/* Phone Number */}
-          <FormField
-            id="phone"
-            label="Phone Number"
-            placeholder="+234 000 000 000"
-            icon={Phone}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+          <PhoneNumberField
+            selectedCountry={country}
+            onCountryChange={setCountry}
+            id="phoneNumber"
+            placeholder="Phone number"
+            register={register}
+            error={errors.phoneNumber}
           />
 
           {/* Email — locked */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <Label label="Email Address" />
-            </div>
-            <FormField
-              id="email"
-              type="email"
-              placeholder="email@example.com"
-              icon={Mail}
-              value={defaultValues.email}
-              disabled
-            />
-          </div>
+          <FormField
+            id="email"
+            type="email"
+            label="Email Address"
+            placeholder="email@example.com"
+            icon={Mail}
+            value={profile?.email || ""}
+            disabled
+          />
 
           {/* Date of Birth — locked */}
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <Label label="Date of Birth" />
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3" />
                 Cannot be changed
               </span>
-            </div>
+            </div> */}
             <FormField
               id="dateOfBirth"
               type="date"
-              placeholder="Date of Birth"
+              label="Date of Birth"
               icon={Calendar}
-              value={defaultValues.dateOfBirth}
-              disabled
+              register={register}
+              error={errors.dateOfBirth}
             />
           </div>
 
           {/* Country of Residence — locked */}
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <Label label="Country of Residence" />
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3" />
                 Cannot be changed
               </span>
-            </div>
-            <FormField
+            </div> */}
+            <SelectField
               id="country"
+              label="Country"
               placeholder="Country"
-              icon={MapPin}
-              value={defaultValues.countryOfResidence}
-              disabled
+              options={countryOptions}
+              register={register}
+              error={errors.country}
             />
           </div>
 
@@ -229,6 +298,7 @@ export function EditProfileModal({
         {/* Actions */}
         <div className="flex items-center gap-3 mt-8">
           <Button
+          type="button"
             variant="outline"
             size="default"
             className="flex-1"
@@ -236,11 +306,17 @@ export function EditProfileModal({
           >
             Cancel
           </Button>
-          <Button variant="default" size="default" className="flex-1">
-            Save Changes
+          <Button
+          type="submit"
+            variant={isPending ? "disabled" : "default"}
+            size="default"
+            disabled={isPending}
+            className="flex-3"
+          >
+            {isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
-      </div>
+      </form>
     </SidebarWrapper>
   );
 }
