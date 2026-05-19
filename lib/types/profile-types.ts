@@ -35,6 +35,7 @@ export interface UpdateProfileData {
   phoneNumber: string;
   gender: string;
   country: string;
+  profilePicture: null;
 };
 
 export interface OnboardingStep {
