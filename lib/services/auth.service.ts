@@ -1,15 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+  forgotPassword,
   login,
   resendEmailVerification,
+  resetPassword,
   signup,
   verifyDevice,
   verifyEmail,
 } from "../actions/auth";
 import { handleApiError } from "../errors/error";
 import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
-import { logInFormData } from "../schema/auth-schema";
+import { forgotPasswordData, logInFormData, resetPasswordData } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
 import { tokenStore } from "@/store/token.store";
 
@@ -29,10 +31,37 @@ const getAccessToken = (result: TokenResponse) =>
   result.data?.token;
 
 export const useSignup = () => {
-  //   const router = useRouter();
   const mutate = useMutation({
     mutationFn: (data: SignupFormData) =>
       signup(data.email, data.password, data.referralCode || ""),
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+};
+
+export const useResetPassword = () => {
+  const mutate = useMutation({
+    mutationFn: (data: resetPasswordData) =>
+      resetPassword(data.email, data.password, data.otp),
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+  return mutate;
+};
+
+export const useForgotPassword = () => {
+  const mutate = useMutation({
+    mutationFn: (data: forgotPasswordData) =>
+      forgotPassword(data.email),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },

@@ -22,7 +22,6 @@ import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "../Edit-Profile-Modal/edit-modal-profile";
 
 export function AccountInfoTab() {
-  const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
   const [openAccountModal, setOpenAccountModal] = useState(false);
