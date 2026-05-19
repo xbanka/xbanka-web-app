@@ -158,6 +158,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             sourceLabel={recipient.bankName + " " + recipient.accountNumber}
             accountName={recipient.accountName}
             fee="0.00"
+            note={recipient.narration}
             onBack={() => setStep("enter-amount")}
             onClose={handleClose}
             onConfirm={() => setStep("enter_pin")}

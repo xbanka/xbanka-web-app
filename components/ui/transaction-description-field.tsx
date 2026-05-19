@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { bankColor, bankInitials } from "@/lib/wallet-page";
 import { Label } from "./label";
 
 export interface TransactionDescriptionFieldProps {
@@ -14,32 +15,34 @@ export interface TransactionDescriptionFieldProps {
 export const TransactionDescriptionField = ({
   label,
   value,
-  sourceLabel,
   isAccount,
   amount,
   loading,
   className,
 }: TransactionDescriptionFieldProps) => {
-  console.log("TransactionDescriptionField props:", {
-    label,
-    value,
-    sourceLabel,
-    isAccount,
-    amount,
-    loading,
-  });
+  const bankName = value?.split(/\s+/)[0] || value || "";
   return (
-    <div className={cn("flex items-center justify-between text-xs", className)}>
-      <Label className="text-text" label={label} />
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 text-xs",
+        className,
+      )}
+    >
+      <Label className="text-text shrink-0" label={label} />
       {isAccount ? (
-        <div className="flex items-center gap-1.5">
-          <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[8px] font-bold">
-            {value ? value[0] : "-"}
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div
+            className={cn(
+              "w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold shrink-0",
+              bankColor(bankName),
+            )}
+          >
+            {bankInitials(bankName).slice(0, 1) || "-"}
           </div>
-          <span className="font-medium text-card-text">{value}</span>
+          <span className="font-medium text-card-text truncate">{value}</span>
         </div>
       ) : (
-        <div>
+        <div className="min-w-0">
           {loading ? (
             <span className="text-card-text bg-border h-2 w-[10%] animate-pulse">
               -
@@ -47,9 +50,8 @@ export const TransactionDescriptionField = ({
           ) : (
             <span
               className={cn(
-                "font-normal text-sm leading-6",
+                "font-normal text-sm leading-6 truncate block text-right max-sm:text-[13px]",
                 amount ? "text-Green" : "text-card-text",
-                // row.bold && "font-semibold",
               )}
             >
               {value}

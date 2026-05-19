@@ -116,7 +116,7 @@ export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
         <form onSubmit={bvnForm.handleSubmit(handleBvnSubmit)}>
           <CloseBtn onClose={handleClose} />
 
-          <div className="pt-18 space-y-6 text-center">
+          <div className="pt-18 space-y-6 text-center ">
             <div className="space-y-2">
               <h2 className="text-4xl font-bold leading-11 text-card-text">
                 Verify Your BVN

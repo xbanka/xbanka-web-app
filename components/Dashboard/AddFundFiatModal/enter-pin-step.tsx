@@ -7,6 +7,8 @@ import { useState } from "react";
 import { FundStep } from "../Wallet-Page/types";
 import { ErrorField } from "@/components/ui/field-error";
 
+const PIN_LENGTH = 4;
+
 export function EnterPinStep({
   onBack,
   onClose,
@@ -17,44 +19,43 @@ export function EnterPinStep({
   onConfirm: (value: FundStep) => void;
 }) {
   const [pin, setPin] = useState("");
-  const {mutate, isPending, error} = useValidatePin()
+  const { mutate, isPending, error } = useValidatePin();
 
   const handleConfirm = () => {
-    // call API here with pin
-    const payload = {
-      pin
-    }
+    const payload = { pin };
     mutate(payload, {
       onSuccess: () => {
         onConfirm("processing");
-      }
-    })
+      },
+    });
   };
+
+  const isComplete = pin.length >= PIN_LENGTH;
 
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
-        className="px-10 py-6"
+        className="px-10 py-6 max-sm:px-5 max-sm:py-5"
         title="Enter PIN"
         subtitle="Enter your 6-digit transaction PIN to confirm this send."
         onBack={onBack}
         onClose={onClose}
       />
 
-      <div className="pt-6 px-10 pb-10">
-        <div className="py-4 space-y-5">
-          <OtpInput length={4} onChange={setPin} />
+      <div className="pt-6 px-10 pb-10 max-sm:px-5 max-sm:pb-6 max-sm:pt-2">
+        <div className="py-4 space-y-5 max-sm:py-2 max-sm:space-y-4">
+          <OtpInput length={PIN_LENGTH} onChange={setPin} />
           <div className="text-center flex justify-center">
-          <ErrorField message={error?.message} />
+            <ErrorField message={error?.message} />
           </div>
-          <div className="">
+          <div>
             <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
               Forgot PIN?
             </button>
           </div>
         </div>
 
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-4 max-sm:gap-3">
           <Button
             type="button"
             variant="outline"
@@ -67,11 +68,11 @@ export function EnterPinStep({
           <Button
             size="lg"
             className="flex-3"
-            disabled={pin.length < 4 || isPending}
-            variant={pin.length >= 4 ? "default" : isPending ? "disabled" : "disabled"}
+            disabled={!isComplete || isPending}
+            variant={isComplete && !isPending ? "default" : "disabled"}
             onClick={handleConfirm}
           >
-            Confirm
+            Confirm Transaction
           </Button>
         </div>
       </div>

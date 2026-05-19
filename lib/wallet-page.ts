@@ -10,6 +10,30 @@ export const SAVED_CARDS = [
  
 export const QUICK_AMOUNTS = [5_000, 10_000, 50_000, 100_000, 150_000];
  
+const BANK_AVATAR_COLORS = [
+  "bg-orange-500",
+  "bg-blue-600",
+  "bg-emerald-600",
+  "bg-purple-600",
+  "bg-pink-500",
+  "bg-amber-500",
+];
+
+export const bankColor = (name: string) => {
+  if (!name) return BANK_AVATAR_COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash + name.charCodeAt(i)) | 0;
+  return BANK_AVATAR_COLORS[Math.abs(hash) % BANK_AVATAR_COLORS.length];
+};
+
+export const bankInitials = (name: string) =>
+  (name || "")
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
+
 export const BANK_OPTIONS = [
   { value: "gtb", label: "GTBank" },
   { value: "access", label: "Access Bank" },

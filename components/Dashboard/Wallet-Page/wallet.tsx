@@ -54,7 +54,7 @@ export default function WalletPage() {
       </div>
 
       {/* Tabs */}
-      <DashboardCard className="space-y-3">
+      <DashboardCard className="space-y-3 ">
         <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5 ">
           {["total", "fiat", "crypto"].map((t) => (
             <Button

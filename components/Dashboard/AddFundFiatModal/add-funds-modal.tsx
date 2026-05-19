@@ -203,6 +203,16 @@ export function AddFundsModal({
     return (
       <SuccessStep
         amount={amount}
+        sourceLabel={
+          method === "card"
+            ? selectedCard.masked
+            : selectedBank
+              ? `${selectedBank.bankName}- ${selectedBank.accountNumber}`
+              : undefined
+        }
+        accountName={
+          method === "card" ? selectedCard.name : selectedBank?.accountName
+        }
         onDone={() => {
           onSuccess?.();
           handleClose();
