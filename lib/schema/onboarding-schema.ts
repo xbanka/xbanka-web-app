@@ -4,8 +4,12 @@ export const step1Schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
   dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
-  phoneNumber: z.string().min(7, { message: "Phone number must be at least 7 characters" }),
-  gender: z.enum(["male", "female", "other"], { message: "Gender is required" }),
+  phoneNumber: z
+    .string()
+    .min(7, { message: "Phone number must be at least 7 characters" }),
+  gender: z.enum(["male", "female", "other"], {
+    message: "Gender is required",
+  }),
   country: z.string().min(1, { message: "Country is required" }),
 });
 
@@ -18,13 +22,15 @@ export const step2Schema = z.object({
 export type step2FormValues = z.infer<typeof step2Schema>;
 
 export const step3Schema = z.object({
-  idType: z.enum([
-    "international_passport",
-    "nin",
-    "drivers_license",
-    "voters_card",
-  ]),
-  idNumber: z.string().min(5, { message: "ID number must be at least 5 characters" }),
+  idType: z.enum(
+    ["international_passport", "nin", "drivers_license", "voters_card"],
+    {
+      message: "Please select a valid ID type",
+    },
+  ),
+  idNumber: z
+    .string()
+    .min(5, { message: "ID number must be at least 5 characters" }),
   document: z.any(),
 });
 
@@ -37,15 +43,26 @@ export const step4Schema = z.object({
 export type step4FormValues = z.infer<typeof step4Schema>;
 
 export const step5Schema = z.object({
-  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
-  landmark: z.string().min(2, { message: "Landmark must be at least 2 characters" }),
-  country: z.string().min(2),
-  state: z.string().min(2),
-  residenceDocumentType: z.enum([
-    "utility_bill",
-    "bank_statement",
-    "tenancy_agreement",
-  ]),
+  address: z
+    .string()
+    .min(5, { message: "Address must be at least 5 characters" }),
+  landmark: z
+    .string()
+    .min(2, { message: "Landmark must be at least 2 characters" }),
+  country: z.string({
+    message: "Please select your country",
+  }),
+
+  state: z.string({
+    message: "Please select your state",
+  }),
+
+  residenceDocumentType: z.enum(
+    ["utility_bill", "bank_statement", "tenancy_agreement"],
+    {
+      message: "Please select a valid document type",
+    },
+  ),
   residenceDocument: z.any(),
 });
 
