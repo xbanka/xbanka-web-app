@@ -11,7 +11,7 @@ import { TransactionHistoryStatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface TransactionHistoryProps {
   isCrypto?: boolean;
@@ -30,7 +30,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
     isPending,
     isError,
     error,
-  } = UseGetTransactionHistory(page, limit);
+  } = UseGetTransactionHistory(page, limit, tableType);
 
   const transactions = transactionHistory?.data?.data?.items || [];
 
@@ -46,7 +46,6 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           item?.note?.toLowerCase().includes(searchStr) ||
           item?.category?.toLowerCase().includes(searchStr) ||
           String(item?.amount).includes(searchStr);
-
         const matchesStatus =
           filter.toLowerCase() === "all" ||
           item.status?.toLowerCase() === filter.toLowerCase();
@@ -55,13 +54,10 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           selectedType === "ALL" ||
           item.type?.toLowerCase() === selectedType.toLowerCase();
 
-        return matchesSearch && matchesStatus && matchesTransactionType;
+        return matchesStatus && matchesTransactionType && matchesSearch;
       }) || []
     );
-  }, [transactions, filter, selectedType, searchQuery, tableType]);
-
-  const fiatTransactions = transactionHistoryType("FIAT", filteredData);
-  const cryptoTransactions = transactionHistoryType("CRYPTO", filteredData);
+  }, [transactions, filter, selectedType, searchQuery]);
 
   const columns = [
     {
@@ -161,6 +157,10 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
     },
   ];
 
+  useEffect(() => {
+    setPage(1);
+  }, [tableType, searchQuery, filter, selectedType]);
+
   return (
     <DashboardCard className="">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -215,7 +215,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
       </div>
 
       <div className="overflow-x-auto">
-        {tableType === "CRYPTO" ? (
+        {/* {tableType === "CRYPTO" ? (
           <DataTableLayout
             data={cryptoTransactions}
             columns={cryptoColumns}
@@ -257,7 +257,20 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
             onPageChange={setPage}
             emptyMessage="No transaction history available."
           />
-        )}
+        )} */}
+        <DataTableLayout
+          data={filteredData}
+          columns={tableType === "CRYPTO" ? cryptoColumns : columns}
+          isError={isError}
+          isLoading={isPending}
+          errorMessage={error?.message}
+          rowKey={(item) => item.id}
+          itemsPerPage={limit}
+          pageTotal={transactionHistory?.data?.data?.meta.totalPages}
+          currentPage={page}
+          onPageChange={setPage}
+          emptyMessage="No transaction history available."
+        />
       </div>
     </DashboardCard>
   );
