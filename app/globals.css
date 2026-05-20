@@ -21,7 +21,6 @@
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
@@ -37,7 +36,9 @@
   --blue-border: #B7DBFF;
   --blue-text: #004C99;
   --yellow-warning-light: #3E2E00;
-  --yellow-warning-dark: #C19700
+  --yellow-warning-dark: #C19700;
+  --green-success-border: #037508;
+  --green-success-dark: #039C0A;
 }
 
 @theme inline {
@@ -63,7 +64,6 @@
   --color-error-bg-layout: var(--error-bg-layout);
   --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
-  --color-giftcard-green: var(--giftcard-green);
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple);
@@ -80,6 +80,8 @@
   --color-success-text: var(--success-text);
   --color-yellow-warning-light: var(--yellow-warning-light);
   --color-yellow-warning-dark: var(--yellow-warning-dark);
+  --color-green-success-border: var(--green-success-border);
+  --color-green-success-dark: var(--green-success-dark);
 }
 
 [data-theme="dark"] {
@@ -103,7 +105,6 @@
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
@@ -119,7 +120,9 @@
   --blue-border: #004C99;
   --blue-text: #B7DBFF;
   --yellow-warning-light: #3E2E00;
-  --yellow-warning-dark: #C19700
+  --yellow-warning-dark: #C19700;
+  --green-success-border: #037508;
+  --green-success-dark: #039C0A;
 }
 
 @theme {

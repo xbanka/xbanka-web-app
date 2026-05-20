@@ -7,6 +7,7 @@ import {
   useExecuteConversion,
   UseGetCryptoWallet,
   useGetCurrency,
+  UseGetFiatWallet,
   useGetGroupedPair,
   useGetRateConversion,
   useQuoteConversion,
@@ -18,6 +19,7 @@ import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { sumFiatBalances } from "@/lib/sumBalances";
 
 type FormValues = {
   amount: string;
@@ -30,8 +32,8 @@ export function SellTab() {
   const [receiveAmount, setReceiveAmount] = useState("");
   const [error, setError] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [sourceCurrency, setSourceCurrency] = useState("USDT");
-  const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [sourceCurrency, setSourceCurrency] = useState("NGNX");
+  const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [convertData, setConvertData] =
@@ -62,6 +64,14 @@ export function SellTab() {
     isPending: currencyPending,
   } = useGetCurrency();
 
+  const {
+    data: walletData,
+    error: walletError,
+    isPending: walletPending,
+  } = UseGetFiatWallet();
+
+  const fiatWallets = walletData?.data?.data || [];
+
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
 
@@ -72,10 +82,12 @@ export function SellTab() {
   const { fiat, crypto } = splitCurrencies(currencies);
   const pairMap = groupedPairData?.data || [];
 
-  const SELL_SOURCE_OPTIONS = useMemo(() => {
+  const TARGET_OPTIONS = useMemo(() => {
     return pairMap
       .filter((item: any) =>
-        item.pairs?.some((p: any) => p.code === "NGNX" && p.side === "SELL"),
+        item.pairs?.some(
+          (pair: any) => pair.code === "NGNX" && pair.side === "SELL",
+        ),
       )
       .map((item: any) => ({
         label: item.code,
@@ -86,13 +98,13 @@ export function SellTab() {
   const wallets = cryptoWalletData?.data?.data || [];
 
   const selectedWallet = wallets.find(
-    (wallet: any) => wallet.currency === sourceCurrency,
+    (wallet: any) => wallet.currency === targetCurrency,
   );
 
   const availableBalance = selectedWallet?.balance || 0;
 
   const validTargets =
-    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+    pairMap.find((item: any) => item.code === "NGNX")?.pairs || [];
 
   const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
 
@@ -133,9 +145,9 @@ export function SellTab() {
 
   useEffect(() => {
     if (!validTargets.find((p: any) => p.code === targetCurrency)) {
-      setTargetCurrency("NGNX");
+      setTargetCurrency("USDT");
     }
-  }, [sourceCurrency, groupedPairData]);
+  }, [groupedPairData]);
 
   // 🔥 Auto call backend when user stops typing
   useEffect(() => {
@@ -184,31 +196,37 @@ export function SellTab() {
         <div className="space-y-3">
           <AmountRow
             label="You Sell"
-            dropDownLoading={groupedPairPending}
-            available={`${availableBalance} ${sourceCurrency}`}
-            availableBalanceLoading={cryptoWalletPending}
+            dropDownLoading={currencyPending}
+            availableBalanceLoading={walletPending}
+            available={
+              wallets
+                ? `₦${sumFiatBalances(fiatWallets).toLocaleString()}`
+                : "₦0.00"
+            }
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            OPTIONS={SELL_SOURCE_OPTIONS}
-            currencyId
+            OPTIONS={FIAT_OPTIONS}
             selectedCurrency={sourceCurrency}
             onCurrencyChange={setSourceCurrency}
           />
-          <p className="text-[10px] text-text px-1">
-            Min: 15 USDT • Max: 20,000 USDT
-          </p>
           <AmountRow
             label="You Receive"
-            dropDownLoading={currencyPending}
-            readOnly
+            dropDownLoading={groupedPairPending}
+            available={`${availableBalance} ${targetCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
             value={
               convertData?.netPayout ? convertData?.netPayout.toString() : ""
             }
             onChange={(e) => setAmount(e.target.value)}
-            OPTIONS={FIAT_OPTIONS}
+            OPTIONS={TARGET_OPTIONS}
+            readOnly
+            currencyId
             selectedCurrency={targetCurrency}
             onCurrencyChange={setTargetCurrency}
           />
+          <p className="text-[10px] text-text px-1">
+            Min: 15 USDT • Max: 20,000 USDT
+          </p>
 
           {RateConversionData?.data?.estimatedPrice && (
             <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">

@@ -152,7 +152,7 @@ export function ConvertTab() {
         sourceCurrency,
         targetCurrency,
         amount: Number(debouncedAmount),
-        action: "BUY",
+        action: "SELL",
       },
       {
         onSuccess: (res) => {
