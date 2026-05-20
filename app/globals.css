@@ -36,6 +36,8 @@
   --blue-light: #F0F7FF;
   --blue-border: #B7DBFF;
   --blue-text: #004C99;
+  --yellow-warning-light: #3E2E00;
+  --yellow-warning-dark: #C19700
 }
 
 @theme inline {
@@ -76,6 +78,8 @@
   --color-blue-text: var(--blue-text);
   --color-blue-border: var(--blue-border);
   --color-success-text: var(--success-text);
+  --color-yellow-warning-light: var(--yellow-warning-light);
+  --color-yellow-warning-dark: var(--yellow-warning-dark);
 }
 
 [data-theme="dark"] {
@@ -114,6 +118,8 @@
   --blue-light: #051D33;
   --blue-border: #004C99;
   --blue-text: #B7DBFF;
+  --yellow-warning-light: #3E2E00;
+  --yellow-warning-dark: #C19700
 }
 
 @theme {

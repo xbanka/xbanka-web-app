@@ -19,26 +19,62 @@ export function WelcomeScreen() {
 
   return (
     <div className="min-h-screen flex items-center justify-center ">
-      <Card className="w-[600px] space-y-6">
+      <Card className="w-150 space-y-6">
         {/* Logo */}
         <span className="text-[13px] font-bold tracking-wide text-card-text">
           <span className="text-Green">x</span>banka
         </span>
 
         {/* Card */}
-        <div className="w-full bg-card-background rounded-2xl px-[33.5px] flex flex-col items-center gap-5">
+        <div className="w-full bg-card-background rounded-2xl px-[33.5px]">
           {/* Illustration area */}
           {/* <Image src={"/Content.svg"} alt="content" width={400} height={260} /> */}
-          <div className="h-[260px] w-100 border-t-6 border-x-6 border-input rounded-tl-[20px] rounded-tr-[20px]"></div>
+          <div className="h-65 w-100 mx-auto border-t-6 border-x-6 border-input rounded-tl-[20px] rounded-tr-[20px]"></div>
 
           {/* Avatars */}
-          <div className="flex items-center relative">
-            <Image className="z-10" alt="" src={"/Rectangle3.svg"} width={64} height={64}/>
-            <Image className="z-15 absolute left-9" alt="" src={"/Rectangle2.svg"} width={80} height={80}/>
-            <Image className="z-20 absolute" alt="" src={"/Rectangle1.svg"} width={120} height={120}/>
-            <Image className="z-30" alt="" src={"/Rectangle.svg"} width={120} height={120}/>
-            <Image className="z-40" alt="" src={"/Rectangle5.svg"} width={80} height={80}/>
-            <Image className="rounded-full z-50" alt="" src={"/Rectangle4.svg"} width={64} height={64}/>
+          <div className="relative flex items-center justify-center h-18 w-full">
+            <Image
+              className="z-10 -mr-4"
+              alt=""
+              src="/Rectangle3.svg"
+              width={64}
+              height={64}
+            />
+            <Image
+              className="z-20 -mr-4"
+              alt=""
+              src="/Rectangle2.svg"
+              width={80}
+              height={80}
+            />
+            <Image
+              className="z-30 -mr-4"
+              alt=""
+              src="/Rectangle1.svg"
+              width={100}
+              height={100}
+            />
+            <Image
+              className="z-40 -mr-4"
+              alt=""
+              src="/Rectangle.svg"
+              width={100}
+              height={100}
+            />
+            <Image
+              className="z-50 -mr-4"
+              alt=""
+              src="/Rectangle5.svg"
+              width={80}
+              height={80}
+            />
+            <Image
+              className="rounded-full z-60"
+              alt=""
+              src="/Rectangle4.svg"
+              width={64}
+              height={64}
+            />
           </div>
         </div>
 
