@@ -81,7 +81,6 @@ export const useLogin = () => {
     mutationFn: (data: logInFormData) => login(data.email, data.password),
     onSuccess: (res, variables) => {
       const result = res.data;
-      console.log(res);
       const token = getAccessToken(result);
       console.log(variables)
 
@@ -141,7 +140,7 @@ export const useVerifyMail = () => {
       const result = res.data;
       console.log(result)
       toast.success(result.data.message);
-      const token = result.access_token;
+      const token = result.data.access_token;
       localStorage.setItem("accessToken", token);
       tokenStore.set(token);
     },
