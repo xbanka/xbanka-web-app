@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, Clock, Shield } from "lucide-react";
 import Image from "next/image";
 
-export function SuccessState({
+export function ForgotPasswordSuccessState({
   title,
   subtitle,
   badge,
@@ -21,8 +21,7 @@ export function SuccessState({
 }) {
   return (
     <div className="text-center">
-      <ModalHeader className="px-8" onClose={onClose} />
-      <div className="space-y-6 px-8 pb-8">
+      <div className="space-y-6 ">
         <div className="space-y-4">
           {/* Icon */}
           <div
@@ -62,12 +61,6 @@ export function SuccessState({
               <ArrowRight className="w-4 h-4" />
             </Button>
           )}
-          <Button
-            onClick={onClose}
-            className="w-full bg-transparent text-Green border-none hover:bg-[#232838] transition-colors"
-          >
-            Close
-          </Button>
         </div>
       </div>
     </div>
