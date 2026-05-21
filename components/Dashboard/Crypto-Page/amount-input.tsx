@@ -36,7 +36,7 @@ export function AmountRow({
 }: AmountRowProps) {
   return (
     <div>
-      <div className="bg-border flex w-full rounded-xl py-3.25 px-5 gap-6">
+      <div className="bg-card-secondary flex w-full rounded-xl py-3.25 px-5 gap-6">
         <div className="flex-4 flex flex-col gap-2">
           <div className="flex items-center justify-between text-xs text-text">
             <span className="font-normal text-[12px] leading-4.5 text-text">
@@ -70,7 +70,7 @@ export function AmountRow({
             )}
           </div>
         </div>
-        <div className="flex flex-1 items-center gap-1.5 bg-border hover:bg-border/80 transition-colors py-4 pl-4 border-l border-disabled-background shrink-0">
+        <div className="flex flex-1 items-center gap-1.5 bg-card-secondary hover:bg-card-secondary/80 transition-colors py-4 pl-4 border-l border-disabled-background shrink-0">
           <CryptoSelectField
           loading={dropDownLoading}
             currencyId={currencyId}

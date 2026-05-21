@@ -39,6 +39,9 @@
   --yellow-warning-dark: #C19700;
   --green-success-border: #037508;
   --green-success-dark: #039C0A;
+  --green-success-light: #ECFDF3;
+  --input-text: #1B1D20;
+  --card-secondary: #F9F9F9;
 }
 
 @theme inline {
@@ -82,6 +85,9 @@
   --color-yellow-warning-dark: var(--yellow-warning-dark);
   --color-green-success-border: var(--green-success-border);
   --color-green-success-dark: var(--green-success-dark);
+  --color-green-success-light: var(--green-success-light);
+  --color-input-text: var(--input-text);
+  --color-card-secondary: var(--card-secondary);
 }
 
 [data-theme="dark"] {
@@ -123,6 +129,9 @@
   --yellow-warning-dark: #C19700;
   --green-success-border: #037508;
   --green-success-dark: #039C0A;
+  --green-success-light: #012E03;
+  --input-text: #F9F9F9;
+  --card-secondary: #25272B;
 }
 
 @theme {
