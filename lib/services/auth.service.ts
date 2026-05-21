@@ -11,7 +11,11 @@ import {
 } from "../actions/auth";
 import { handleApiError } from "../errors/error";
 import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
-import { forgotPasswordData, logInFormData, resetPasswordData } from "../schema/auth-schema";
+import {
+  forgotPasswordData,
+  logInFormData,
+  resetPasswordData,
+} from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
 import { tokenStore } from "@/store/token.store";
 
@@ -60,8 +64,7 @@ export const useResetPassword = () => {
 
 export const useForgotPassword = () => {
   const mutate = useMutation({
-    mutationFn: (data: forgotPasswordData) =>
-      forgotPassword(data.email),
+    mutationFn: (data: forgotPasswordData) => forgotPassword(data.email),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },
@@ -80,6 +83,7 @@ export const useLogin = () => {
       const result = res.data;
       console.log(res);
       const token = getAccessToken(result);
+      console.log(variables)
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         localStorage.removeItem("accessToken");
@@ -131,11 +135,15 @@ export const useVerifyDevice = () => {
 };
 
 export const useVerifyMail = () => {
-  //   const router = useRouter();
   const mutate = useMutation({
     mutationFn: (data: string) => verifyEmail(data),
-    onSuccess: (result) => {
+    onSuccess: (res) => {
+      const result = res.data;
+      console.log(result)
       toast.success(result.data.message);
+      const token = result.access_token;
+      localStorage.setItem("accessToken", token);
+      tokenStore.set(token);
     },
     onError: (err) => {
       handleApiError(err);

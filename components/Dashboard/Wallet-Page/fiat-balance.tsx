@@ -14,6 +14,7 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { DisabledTooltipButton } from "@/components/ui/disabled-tooltip-button";
 import { ErrorField } from "@/components/ui/field-error";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export const FiatBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -21,6 +22,7 @@ export const FiatBalance = () => {
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendFundsOpen, setSendFundsOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
+  const { validateUser } = useOnboardingGuard();
   const wallets = data?.data?.data || [];
   const latestWallet = wallets?.[0];
   const { data: bankAccountList } = UseBankAccountList();
@@ -40,6 +42,9 @@ export const FiatBalance = () => {
   };
 
   const handleSendFund = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
@@ -71,21 +76,20 @@ export const FiatBalance = () => {
                 Your balance might have changed
               </div>
             )}
-            {(!isPending && !error) && (
+            {!isPending && !error && (
               <p className="text-3xl sm:text-4xl font-bold text-card-text">
                 {hidden
                   ? "₦•••••••"
                   : data?.data
                     ? `₦${sumFiatBalances(wallets).toLocaleString()}`
                     : "₦0.00"}
-            </p>)}
-            {(error || !isPending) && (
-              <ErrorField
-                message={error?.message}
-              />
+              </p>
             )}
+            {(error || !isPending) && <ErrorField message={error?.message} />}
             <span className="text-text text-xs font-normal leading-4.5">
-              {isPending ? "Calculating..." : `≈ ₦${latestWallet?.balance ?? 0} today`}
+              {isPending
+                ? "Calculating..."
+                : `≈ ₦${latestWallet?.balance ?? 0} today`}
             </span>
           </div>
           <div className="flex items-start gap-4">
