@@ -24,12 +24,12 @@ export const OnboardingJourneyCard = ({
             {step}
           </span>
           {status === "done" && (
-            <div className="bg-success-text rounded-full p-0.75">
-              <Check className="w-4 h-4 text-background max-sm:h-6 max-sm:w-6" />
+            <div className="bg-green-success-dark border-2 border-green-success-border rounded-full p-0.75">
+              <Check className="w-4 h-4 text-input-text max-sm:h-6 max-sm:w-6" />
             </div>
           )}
           {status === "active" && (
-            <span className="w-6 h-6 rounded-full bg-[#37703F1A]/80 animate-pulse" />
+            <span className="w-6 h-6 rounded-full bg-yellow-warning-dark border-2 border-yellow-warning-light p-0.75 animate-pulse" />
           )}
         </div>
         <p className="text-sm font-semibold text-card-text max-sm:text-[14px] max-sm:leading-5 tracking-[-3%]">

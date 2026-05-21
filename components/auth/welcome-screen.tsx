@@ -1,18 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "../ui/FormCard";
 import Image from "next/image";
-
-const AVATARS = [
-  { emoji: "🧕", bg: "#1b1d20" },
-  { emoji: "👨‍🦱", bg: "#1b1d20" },
-  { emoji: "🧔", bg: "#1b1d20" },
-  { emoji: "🧑🏿", bg: "#1b1d20" },
-  { emoji: "👩🏽", bg: "#1b1d20" },
-];
 
 export function WelcomeScreen() {
   const router = useRouter();
@@ -97,7 +88,7 @@ export function WelcomeScreen() {
           variant="default"
           size="default"
           className="w-full"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push("/")}
         >
           Go to Dashboard
         </Button>
