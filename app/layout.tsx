@@ -5,6 +5,7 @@ import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
 import Script from "next/script";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
+import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,6 +61,7 @@ export default function RootLayout({
           >
             {children}
             <GlobalLogout />
+            <OnboardingModalProvider />
           </body>
         </html>
       </Providers>
