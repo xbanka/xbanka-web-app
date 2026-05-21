@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 type FormValues = {
   amount: string;
@@ -38,6 +39,7 @@ export function SellTab() {
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
+  const { validateUser } = useOnboardingGuard();
 
   // const { mutate, isPending } = useExecuteConversion();
   const { mutate, isPending } = useQuoteConversion();
@@ -112,6 +114,9 @@ export function SellTab() {
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
   const handleQuoteModal = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
