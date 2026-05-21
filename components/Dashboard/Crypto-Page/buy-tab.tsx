@@ -18,6 +18,7 @@ import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export function BuyTab() {
   const [amount, setAmount] = useState("");
@@ -25,11 +26,13 @@ export function BuyTab() {
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
-  const [sourceCurrency, setSourceCurrency] = useState("USDT");
-  const [targetCurrency, setTargetCurrency] = useState("NGNX");
+  const [sourceCurrency, setSourceCurrency] = useState("NGNX");
+  const [targetCurrency, setTargetCurrency] = useState("USDT");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [error, setError] = useState("");
+  const { validateUser } = useOnboardingGuard();
+
   const {
     data: walletData,
     error: walletError,
@@ -55,6 +58,11 @@ export function BuyTab() {
     data: currencyData,
     isPending: currencyPending,
   } = useGetCurrency();
+  const {
+    data: cryptoWalletData,
+    error: cryptoWalletError,
+    isPending: cryptoWalletPending,
+  } = UseGetCryptoWallet();
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
   console.log(hasTransactionPin);
@@ -66,16 +74,35 @@ export function BuyTab() {
   const validSources =
     pairMap.find((item: any) => item.code === targetCurrency)?.pairs || [];
 
+  const validTargets =
+    pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+
   const SOURCE_OPTIONS = validSources.map((pair: any) => ({
+    label: pair.code,
+    value: pair.code,
+  }));
+
+  const TARGET_OPTIONS = validTargets.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
   }));
   const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
 
+  const cryptoWallets = cryptoWalletData?.data?.data || [];
+
+  const selectedWallet = cryptoWallets.find(
+    (wallet: any) => wallet.currency === targetCurrency,
+  );
+
+  const availableBalance = selectedWallet?.balance || 0;
+
   const debouncedAmount = useDebounce(amount, 500);
 
   const handleQuoteModal = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
@@ -108,12 +135,12 @@ export function BuyTab() {
     );
   };
   useEffect(() => {
-    if (validSources.length > 0) {
-      const hasUSDT = validSources.find((p: any) => p.code === "USDT");
+    if (validTargets.length > 0) {
+      const hasUSDT = validTargets.find((p: any) => p.code === "USDT");
 
-      setSourceCurrency(hasUSDT ? "USDT" : validSources[0].code);
+      setTargetCurrency(hasUSDT ? "USDT" : validTargets[0].code);
     }
-  }, [validSources]);
+  }, [validTargets]);
 
   useEffect(() => {
     if (!debouncedAmount) {
@@ -154,29 +181,31 @@ export function BuyTab() {
         <div className="space-y-6">
           <AmountRow
             label="You Pay"
-            dropDownLoading={currencyPending}
-            availableBalanceLoading={walletPending}
-            available={
-              wallets
-                ? `₦${sumFiatBalances(wallets).toLocaleString()}`
-                : "₦0.00"
-            }
+            dropDownLoading={groupedPairPending}
+            available={`${availableBalance} ${targetCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
+            OPTIONS={TARGET_OPTIONS}
+            currencyId
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            OPTIONS={FIAT_OPTIONS}
             selectedCurrency={targetCurrency}
             onCurrencyChange={setTargetCurrency}
           />
           <div className="space-y-3">
             <AmountRow
               label="You Receive"
-              dropDownLoading={groupedPairPending}
+              dropDownLoading={currencyPending}
+              availableBalanceLoading={walletPending}
+              available={
+                wallets
+                  ? `₦${sumFiatBalances(wallets).toLocaleString()}`
+                  : "₦0.00"
+              }
               value={
                 convertData?.netPayout ? convertData.netPayout.toString() : ""
               }
               readOnly
-              OPTIONS={SOURCE_OPTIONS}
-              currencyId
+              OPTIONS={FIAT_OPTIONS}
               selectedCurrency={sourceCurrency}
               onCurrencyChange={setSourceCurrency}
             />

@@ -42,7 +42,7 @@ const VerifyPage = ({ token }: { token?: string }) => {
             Your email has been verified successfully
           </p>
         </div>
-        <Link href="/onboarding">
+        <Link href="/welcome">
           <Button type="submit" className="w-full p-2.5">
             Continue
           </Button>

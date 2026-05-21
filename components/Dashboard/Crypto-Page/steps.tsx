@@ -7,10 +7,10 @@ export function HowTo({ action = "buy" }: { action?: string }) {
       <h3 className="text-[16px] font-medium leading-6 text-card-text text-center">
         How to {action} crypto on Xbanka
       </h3>
-      <div className="bg-border grid grid-cols-2 sm:grid-cols-4 gap-3 p-3">
+      <div className="bg-border grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg">
         {HOW_TO_STEPS.map((s) => (
           <div key={s.n} className="flex flex-col items-center text-center gap-2">
-            <div className="w-10 h-10 rounded-[36px] p-1 bg-[#012E03] text-card-text flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="w-10 h-10 rounded-[36px] p-1 bg-green-success-light text-input-text flex items-center justify-center text-xs font-bold shrink-0">
               {s.n}
             </div>
             <div>

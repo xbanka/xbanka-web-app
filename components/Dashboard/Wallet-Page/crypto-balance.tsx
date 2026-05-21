@@ -10,6 +10,7 @@ import { DepositSidebar } from "./deposit-crypto-sidebar";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useRouter } from "next/navigation";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export const CryptoBalance = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ export const CryptoBalance = () => {
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
+  const { validateUser } = useOnboardingGuard();
   const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 
@@ -28,6 +30,9 @@ export const CryptoBalance = () => {
   console.log(hasTransactionPin);
 
   const handleSendCrypto = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
@@ -84,7 +89,7 @@ export const CryptoBalance = () => {
             <Button
               size={"sm"}
               onClick={() => setAddFundsOpen(true)}
-              className="flex h-12 min-w-0 flex items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
+              className="flex h-12 min-w-0 items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="truncate font-medium">Deposit</span>
@@ -92,7 +97,7 @@ export const CryptoBalance = () => {
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex h-12 min-w-0 flex    items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
+              className="flex h-12 min-w-0 items-center gap-1 px-2 text-xs transition-colors sm:h-10 sm:flex-row sm:px-3 sm:text-sm"
               onClick={handleSendCrypto}
             >
               <Send className="h-4 w-4 sm:h-5 sm:w-5" />
