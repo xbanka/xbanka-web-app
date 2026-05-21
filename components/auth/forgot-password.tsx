@@ -71,7 +71,7 @@ const ForgotPassword = () => {
           variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
           className="w-full max-sm:mt-auto max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
         >
-          {isPending ? "Signing In..." : "Sign In"}
+          {isPending ? "Sending..." : "Send Otp"}
         </Button>
       </form>
 

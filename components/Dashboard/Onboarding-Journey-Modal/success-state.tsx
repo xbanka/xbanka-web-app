@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
-import { ArrowRight, CheckCircle, Clock, Shield } from "lucide-react";
+import { ArrowRight, Clock, Shield } from "lucide-react";
 import Image from "next/image";
 
 export function SuccessState({
