@@ -18,6 +18,7 @@ import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export function BuyTab() {
   const [amount, setAmount] = useState("");
@@ -30,6 +31,8 @@ export function BuyTab() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [error, setError] = useState("");
+  const { validateUser } = useOnboardingGuard();
+
   const {
     data: walletData,
     error: walletError,
@@ -97,6 +100,9 @@ export function BuyTab() {
   const debouncedAmount = useDebounce(amount, 500);
 
   const handleQuoteModal = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;

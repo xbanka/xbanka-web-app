@@ -22,11 +22,7 @@ export const PersonalInfoModal = ({ onClose }: { onClose: () => void }) => {
   const userId = profileData?.data?.userId;
 
   const { isPending, error, mutate } = useUserProfile();
-  const {
-    isPending: skipPending,
-    error: skipError,
-    mutate: skipMutate,
-  } = useSkipStep();
+
   const {
     register,
     reset,
@@ -124,7 +120,7 @@ export const PersonalInfoModal = ({ onClose }: { onClose: () => void }) => {
               register={register}
             />
 
-            <ErrorLayout message={error?.message || skipError?.message} />
+            <ErrorLayout message={error?.message} />
 
             <div className="space-y-3.25">
               <div className="flex flex-col md:flex-row gap-4 mt-1">

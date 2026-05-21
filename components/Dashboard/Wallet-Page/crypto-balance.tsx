@@ -10,6 +10,7 @@ import { DepositSidebar } from "./deposit-crypto-sidebar";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useRouter } from "next/navigation";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export const CryptoBalance = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ export const CryptoBalance = () => {
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
+  const { validateUser } = useOnboardingGuard();
   const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 
@@ -28,6 +30,9 @@ export const CryptoBalance = () => {
   console.log(hasTransactionPin);
 
   const handleSendCrypto = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;

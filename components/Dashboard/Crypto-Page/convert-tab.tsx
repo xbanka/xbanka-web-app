@@ -19,6 +19,7 @@ import { CryptoGetConversionTypes, CryptoQuoteTypes } from "./crypto-types";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "./confirm-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 type FormValues = {
   amount: string;
@@ -36,6 +37,7 @@ export function ConvertTab() {
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
   const [convertData, setConvertData] =
     useState<CryptoGetConversionTypes | null>();
+  const { validateUser } = useOnboardingGuard();
 
   const { mutate, isPending } = useQuoteConversion();
   const {
@@ -95,6 +97,9 @@ export function ConvertTab() {
   }, [pairMap, sourceCurrency]);
 
   const handleQuoteModal = () => {
+    const isAllowed = validateUser();
+
+    if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
