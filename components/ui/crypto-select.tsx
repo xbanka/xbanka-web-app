@@ -52,7 +52,7 @@ export const CryptoSelectField = ({
           {/* Selected */}
           <button
             onClick={() => setOpen((p) => !p)}
-            className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-border"
+            className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-card-secondary"
           >
             <div className="flex items-center gap-2">
               {selected?.image && (

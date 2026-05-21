@@ -50,22 +50,27 @@ export const ValueBalance = () => {
                 Your balance might have changed
               </div>
             )}
-            {(!fiatIsPending && !cryptoIsPending && !fiatError && !cryptoError) && (
-              <p className="text-3xl sm:text-4xl font-bold text-card-text ">
-                {hidden
-                  ? "₦•••••••"
-                  : totalBalance
-                    ? `₦${totalBalance.toLocaleString()}`
-                    : "₦0"}
-              </p>
-            )}
+            {!fiatIsPending &&
+              !cryptoIsPending &&
+              !fiatError &&
+              !cryptoError && (
+                <p className="text-3xl sm:text-4xl font-bold text-card-text ">
+                  {hidden
+                    ? "₦•••••••"
+                    : totalBalance
+                      ? `₦${totalBalance.toLocaleString()}`
+                      : "₦0"}
+                </p>
+              )}
             {(fiatError || cryptoError) && (
               <ErrorField
                 message={fiatError?.message || cryptoError?.message}
               />
             )}
             <span className="text-text text-xs font-normal leading-4.5">
-              { (!fiatIsPending && !cryptoIsPending) ? `≈ ₦${totalBalance.toLocaleString()} today` : "Calculating..."}
+              {!fiatIsPending && !cryptoIsPending
+                ? `≈ ₦${totalBalance.toLocaleString()} today`
+                : "Calculating..."}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 max-sm:flex-row max-sm:w-full">

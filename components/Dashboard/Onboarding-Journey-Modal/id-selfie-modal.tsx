@@ -11,11 +11,9 @@ import {
 } from "@/components/ui/UploadAttachment";
 import { useState } from "react";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
-import { useUserIdStore } from "@/store/verify-id.store";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorField } from "@/components/ui/field-error";
 import LivenessDetector, { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { ErrorLayout } from "@/components/ui/error-layout";

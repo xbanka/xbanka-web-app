@@ -22,10 +22,12 @@ import PhoneNumberField from "@/components/ui/Phonenumberfield";
 import z from "zod";
 import {
   UseProfileUser,
+  useUpdateAvatar,
   useUpdateProfile,
 } from "@/lib/services/profile.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import Image from "next/image";
 
 interface EditProfileModalProps {
   onClose: () => void;
@@ -65,10 +67,14 @@ export function EditProfileModal({
   avatarUrl,
 }: EditProfileModalProps) {
   const [address, setAddress] = useState("");
+  const [image, setImage] = useState<string | null>(null); // preview
 
   const [country, setCountry] = useState<Country>(COUNTRIES[0]);
   const { data: profileData } = UseProfileUser();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
+  const { mutate: updateAvatarMutate, isPending: updateAvatarPending } =
+    useUpdateAvatar();
+  const avatar = profileData?.data?.avatarUrl;
   const profile = profileData?.data;
 
   const {
@@ -110,6 +116,18 @@ export function EditProfileModal({
     setCountry(matchedCountry);
   }, [profile, reset]);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // preview
+    const preview = URL.createObjectURL(file);
+    setImage(preview);
+
+    // send to backend immediately
+    updateAvatarMutate(file);
+  };
+
   const onSubmit = (values: FormValues) => {
     if (!profile?.userId) return;
 
@@ -137,22 +155,32 @@ export function EditProfileModal({
       {/* Header */}
       <ModalHeader title="Edit Profile" onClose={onClose} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="pt-6 pb-10 px-10 max-h-180 overflow-y-scroll">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="pt-6 pb-10 px-10 max-h-180 overflow-y-scroll"
+      >
         {/* Avatar */}
         <div className="flex flex-col items-center mb-5">
           <div className="relative w-20 h-20">
             <div className="w-20 h-20 rounded-full bg-input overflow-hidden border-2 border-border-active">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
+              {image || avatar ? (
+                <Image
+                  src={image || avatar}
+                  alt="profile"
+                  fill
+                  className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-Green/20 text-Green text-2xl font-bold">
-                  {(watch("firstName") || "U")[0]}
-                </div>
+                `${profile?.firstName?.[0] || ""}${profile?.lastName?.[0] || ""}` ||
+                profile?.email[0]
               )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
             {/* Camera badge */}
             <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-Green border-2 border-card-background flex items-center justify-center hover:bg-Green/90 transition-colors">
@@ -182,14 +210,6 @@ export function EditProfileModal({
               options={genderOptions}
             />
           </div> */}
-          <SelectField
-            id="gender"
-            label="Gender"
-            placeholder="Select gender"
-            options={genderOptions}
-            register={register}
-            error={errors.gender}
-          />
 
           {/* Full Name — locked */}
           <div className="space-y-1 flex items-start gap-4">
@@ -217,6 +237,15 @@ export function EditProfileModal({
               error={errors.lastName}
             />
           </div>
+
+          <SelectField
+            id="gender"
+            label="Gender"
+            placeholder="Select gender"
+            options={genderOptions}
+            register={register}
+            error={errors.gender}
+          />
 
           {/* Phone Number */}
           <PhoneNumberField
@@ -298,7 +327,7 @@ export function EditProfileModal({
         {/* Actions */}
         <div className="flex items-center gap-3 mt-8">
           <Button
-          type="button"
+            type="button"
             variant="outline"
             size="default"
             className="flex-1"
@@ -307,7 +336,7 @@ export function EditProfileModal({
             Cancel
           </Button>
           <Button
-          type="submit"
+            type="submit"
             variant={isPending ? "disabled" : "default"}
             size="default"
             disabled={isPending}

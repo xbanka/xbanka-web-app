@@ -22,7 +22,6 @@ const TIER_COLORS: Record<number, string> = {
 };
 
 export default function UserDropdown({
-  avatarInitials = "CJ",
 }: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -72,7 +71,7 @@ export default function UserDropdown({
       >
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-white text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-foreground text-xs font-bold">
             {avatar ? (
               <Image
                 src={avatar}

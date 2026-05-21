@@ -21,7 +21,6 @@
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
@@ -36,6 +35,13 @@
   --blue-light: #F0F7FF;
   --blue-border: #B7DBFF;
   --blue-text: #004C99;
+  --yellow-warning-light: #FFFAEB;
+  --yellow-warning-dark: #A27D00;
+  --green-success-border: #A6F4C5;
+  --green-success-dark: #039C0A;
+  --green-success-light: #ECFDF3;
+  --input-text: #1B1D20;
+  --card-secondary: #F9F9F9;
 }
 
 @theme inline {
@@ -61,7 +67,6 @@
   --color-error-bg-layout: var(--error-bg-layout);
   --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
-  --color-giftcard-green: var(--giftcard-green);
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple);
@@ -76,6 +81,13 @@
   --color-blue-text: var(--blue-text);
   --color-blue-border: var(--blue-border);
   --color-success-text: var(--success-text);
+  --color-yellow-warning-light: var(--yellow-warning-light);
+  --color-yellow-warning-dark: var(--yellow-warning-dark);
+  --color-green-success-border: var(--green-success-border);
+  --color-green-success-dark: var(--green-success-dark);
+  --color-green-success-light: var(--green-success-light);
+  --color-input-text: var(--input-text);
+  --color-card-secondary: var(--card-secondary);
 }
 
 [data-theme="dark"] {
@@ -99,7 +111,6 @@
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
@@ -114,6 +125,13 @@
   --blue-light: #051D33;
   --blue-border: #004C99;
   --blue-text: #B7DBFF;
+  --yellow-warning-light: #3E2E00;
+  --yellow-warning-dark: #C19700;
+  --green-success-border: #037508;
+  --green-success-dark: #039C0A;
+  --green-success-light: #012E03;
+  --input-text: #F9F9F9;
+  --card-secondary: #25272B;
 }
 
 @theme {

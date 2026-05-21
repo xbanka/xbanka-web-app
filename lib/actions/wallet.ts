@@ -212,12 +212,14 @@ export const ActiveNetworksCrypto = async () => {
 export const getTransactionHistory = async ({
   page = 1,
   limit = 10,
+  category,
 }: {
   page?: number;
   limit?: number;
+  category?: "FIAT" | "CRYPTO" | "GIFTCARD";
 }) => {
   const response = await AxiosInstance.get("/wallet/transactions", {
-    params: { page, limit },
+    params: { page, limit, category },
   });
 
   return {

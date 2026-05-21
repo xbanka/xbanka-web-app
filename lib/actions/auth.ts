@@ -1,80 +1,123 @@
 import { redirect } from "next/dist/server/api-utils";
-import AxiosInstance from "../AxiosInstance/AxiosInstance"
+import AxiosInstance from "../AxiosInstance/AxiosInstance";
 import { VerifyDeviceData } from "../types/auth-types";
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "/";
+const baseUrl = process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "/";
 
-export const signup = async (email: string, password: string, referralCode: string) => {
-    console.log(baseUrl)
-    const response = await AxiosInstance.post("/auth/signup", {
-      email,
-      password,
-      referralCode,
-      redirectUrl: `${window.location.origin}/verify-email`
-    })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+export const signup = async (
+  email: string,
+  password: string,
+  referralCode: string,
+) => {
+  console.log(baseUrl);
+  const response = await AxiosInstance.post("/auth/signup", {
+    email,
+    password,
+    referralCode,
+    redirectUrl: `${window.location.origin}/verify-email`,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
 
 export const resendEmailVerification = async (email: string) => {
-    const response = await AxiosInstance.post("/auth/resend-verification", {
-      email,
-      redirectUrl: `${window.location.origin}/verify-email`
-    })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+  const response = await AxiosInstance.post("/auth/resend-verification", {
+    email,
+    redirectUrl: `${window.location.origin}/verify-email`,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
 
 export const login = async (email: string, password: string) => {
-    const response = await AxiosInstance.post("/auth/login", {
+  const response = await AxiosInstance.post(
+    "/auth/login",
+    {
       email,
       password,
-    }, { withCredentials: true })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+    },
+    { withCredentials: true },
+  );
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const forgotPassword = async (email: string) => {
+  const response = await AxiosInstance.post(
+    "/auth/forgot-password",
+    {
+      email,
+    },
+    { withCredentials: true },
+  );
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const resetPassword = async (email: string, newPassword: string, otp: string) => {
+  const response = await AxiosInstance.post(
+    "/auth/reset-password",
+    {
+      email,
+      newPassword,
+      otp
+    },
+    { withCredentials: true },
+  );
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
 
 export const verifyDevice = async (data: VerifyDeviceData) => {
-    const response = await AxiosInstance.post("/auth/verify-device", {
+  const response = await AxiosInstance.post(
+    "/auth/verify-device",
+    {
       userId: data.userId,
       deviceId: data.deviceId,
-      code: data.code
-    }, { withCredentials: true })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+      code: data.code,
+    },
+    { withCredentials: true },
+  );
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
 
 export const verifyEmail = async (token: string) => {
-    const response = await AxiosInstance.post("/auth/verify-email", {
-      token
-    })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+  const response = await AxiosInstance.post("/auth/verify-email", {
+    token,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
 
 export const googleSignin = async (email: string) => {
-    const response = await AxiosInstance.post("/auth/google", {
-      email
-    })
-    return {
-      success: true,
-      data: response.data,
-      status: response.status,
-    };
-}
+  const response = await AxiosInstance.post("/auth/google", {
+    email,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
