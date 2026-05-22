@@ -122,7 +122,7 @@ export function SelectAssetStep({
                   key={asset.id}
                   onClick={() => onSelect(asset)}
                   className={cn(
-                    "grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_28px] items-center gap-4 rounded-xl border-2 px-5 py-4 text-left transition-colors max-sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_22px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
+                    "grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_28px] items-center gap-4 rounded-xl border-2 p-3 text-left transition-colors max-sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_22px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
                     active
                       ? "border-Green bg-[#06362F]"
                       : "border-input bg-transparent hover:border-border-active",
