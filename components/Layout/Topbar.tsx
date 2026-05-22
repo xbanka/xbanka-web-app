@@ -18,9 +18,7 @@ export function Topbar({
           <Bell className="w-3 h-3" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-Green rounded-full" />
         </button>
-        <UserDropdown
-          avatarInitials="CJ"
-        />
+        <UserDropdown />
       </div>
     </header>
   );

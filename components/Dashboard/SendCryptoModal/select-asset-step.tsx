@@ -36,7 +36,10 @@ export function SelectAssetStep({
 }) {
   const [search, setSearch] = useState("");
   const { data, error, isPending, isError } = UseGetCryptoWallet();
-  const wallets = data?.data?.data || [];
+  const wallets =
+    data?.data?.data?.filter(
+      (wallet: UserWallet) => Number(wallet.balance) > 0,
+    ) || [];
   const filtered = wallets.filter(
     (asset: UserWallet) =>
       asset.currency.toLowerCase().includes(search.toLowerCase()) ||

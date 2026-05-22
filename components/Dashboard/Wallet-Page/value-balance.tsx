@@ -29,7 +29,7 @@ export const ValueBalance = () => {
 
   return (
     <div>
-      <DashboardCard className="border-[#004C99] bg-[#051D33]">
+      <DashboardCard className="border-blue-border bg-blue-light">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-text text-[14px] leading-6 font-normal">
@@ -50,23 +50,36 @@ export const ValueBalance = () => {
                 Your balance might have changed
               </div>
             )}
-            {(!fiatIsPending && !cryptoIsPending && !fiatError && !cryptoError) && (
-              <p className="text-3xl sm:text-4xl font-bold text-card-text ">
-                {hidden
-                  ? "₦•••••••"
-                  : totalBalance
-                    ? `₦${totalBalance.toLocaleString()}`
-                    : "₦0"}
-              </p>
-            )}
+            {!fiatIsPending &&
+              !cryptoIsPending &&
+              !fiatError &&
+              !cryptoError && (
+                <p className="text-3xl sm:text-4xl font-bold text-card-text ">
+                  {hidden
+                    ? "₦•••••••"
+                    : totalBalance
+                      ? `₦${totalBalance.toLocaleString()}`
+                      : "₦0"}
+                </p>
+              )}
             {(fiatError || cryptoError) && (
               <ErrorField
                 message={fiatError?.message || cryptoError?.message}
               />
             )}
-            <span className="text-text text-xs font-normal leading-4.5">
-              { (!fiatIsPending && !cryptoIsPending) ? `≈ ₦${totalBalance.toLocaleString()} today` : "Calculating..."}
-            </span>
+
+            {!fiatIsPending && !cryptoIsPending && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                {hidden
+                  ? "₦•••••••"
+                  : `≈ ₦${totalBalance.toLocaleString()} today`}
+              </span>
+            )}
+            {fiatIsPending && cryptoIsPending && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                Calculating...
+              </span>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-4 max-sm:flex-row max-sm:w-full">
             <div className="border-l-3 border-[#004C99] bg-border px-4 py-3 max-sm:w-full ">

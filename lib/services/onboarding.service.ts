@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   address,
   identity,
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { profilePayload, verifyBvnPayload } from "../types/onboarding-types";
 
 export const useUserProfile = () => {
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationFn: (data: profilePayload) =>
       profile(
@@ -25,6 +26,9 @@ export const useUserProfile = () => {
       ),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({
+        queryKey: ["user-profile"],
+      });
     },
     onError: (err) => {
       handleApiError(err);
@@ -47,10 +51,14 @@ export const useSkipStep = () => {
 };
 
 export const useVerifyBvn = () => {
+  const queryClient = useQueryClient();
+
   const mutate = useMutation({
     mutationFn: (data: verifyBvnPayload) => verifyBvn(data.userId, data.bvn),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
     },
     onError: (err) => {
       handleApiError(err);

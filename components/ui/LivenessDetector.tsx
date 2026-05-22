@@ -22,7 +22,8 @@ import {
 import { useUserIdStore } from "@/store/verify-id.store";
 import { base64ToFile } from "@/lib/base64ToFile";
 import { useRouter } from "next/navigation";
-import { IdSelfieStep } from "../Dashboard/Onboarding-Journey-Modal/id-selfie-modal";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { ErrorLayout } from "./error-layout";
 
 let _faceLandmarker: FaceLandmarker | null = null;
 
@@ -87,8 +88,9 @@ const LivenessDetector = forwardRef<
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const router = useRouter();
-  const userId = useUserIdStore((s) => s.userId);
+  const hasCapturedRef = useRef(false);
+  const { data: profileData } = UseProfileUser();
+  const userId = profileData?.data?.userId;
   const {
     mutate: verifySelfie,
     isPending,
@@ -154,13 +156,23 @@ const LivenessDetector = forwardRef<
   }));
 
   const handleCapture = async (base64Image: string) => {
+    console.log("handleCapture called");
+
     if (!userId) return;
     const formData = new FormData();
 
     formData.append("userId", userId);
+    // const file = base64ToFile(base64Image, "selfie.jpg");
+
+    // console.log("File size MB:", (file.size / 1024 / 1024).toFixed(2));
     formData.append("selfieImage", base64ToFile(base64Image, "selfie.jpg"));
 
-    verifySelfie(formData);
+    console.log("sending request");
+    verifySelfie(formData, {
+      onSuccess: () => {
+        onSuccess();
+      },
+    });
   };
 
   useEffect(() => {
@@ -217,7 +229,12 @@ const LivenessDetector = forwardRef<
         } else if (currentAction === "turnRight") {
           if (dir >= TURN_RIGHT_MIN && dir <= TURN_RIGHT_MAX) {
             setCurrentAction("neutral");
+
+            // stop detection loop
+            active = false;
             setCountdown(3);
+
+            return;
           }
         }
       }
@@ -250,12 +267,59 @@ const LivenessDetector = forwardRef<
       setModelLoading(false);
     });
   }, []);
+  // useEffect(() => {
+  //   let mounted = true;
 
-  const captureImage = () => {
+  //   const init = async () => {
+  //     try {
+  //       // preload mediapipe model
+  //       await loadFaceLandmarker();
+
+  //       if (!mounted) return;
+
+  //       setModelLoading(false);
+
+  //       // auto open camera immediately
+  //       await startCamera();
+  //     } catch (err) {
+  //       console.error(err);
+  //       setError("Failed to initialize camera");
+  //     }
+  //   };
+
+  //   init();
+
+  //   return () => {
+  //     mounted = false;
+
+  //     streamRef.current?.getTracks().forEach((t) => t.stop());
+  //   };
+  // }, [startCamera]);
+
+  const captureImage = async () => {
+    if (hasCapturedRef.current) return;
+
+    hasCapturedRef.current = true;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dataUrl = canvas.toDataURL("image/jpeg");
+    // create compressed canvas
+    const compressedCanvas = document.createElement("canvas");
+
+    // reduce resolution
+    compressedCanvas.width = 480;
+    compressedCanvas.height = 360;
+
+    const ctx = compressedCanvas.getContext("2d");
+
+    if (!ctx) return;
+
+    // draw smaller image
+    ctx.drawImage(canvas, 0, 0, 480, 360);
+
+    // compress jpeg quality (0 - 1)
+    const dataUrl = compressedCanvas.toDataURL("image/jpeg", 0.6);
 
     setCaptured(dataUrl);
 
@@ -263,6 +327,22 @@ const LivenessDetector = forwardRef<
 
     handleCapture(dataUrl);
   };
+  // normal selfie image size 
+  // const captureImage = () => {
+  //   if (hasCapturedRef.current) return;
+
+  //   hasCapturedRef.current = true;
+  //   const canvas = canvasRef.current;
+  //   if (!canvas) return;
+
+  //   const dataUrl = canvas.toDataURL("image/jpeg");
+
+  //   setCaptured(dataUrl);
+
+  //   streamRef.current?.getTracks().forEach((t) => t.stop());
+
+  //   handleCapture(dataUrl);
+  // };
 
   const handleRetry = () => {
     setCaptured(null);
@@ -270,6 +350,8 @@ const LivenessDetector = forwardRef<
     setCountdown(null);
     setError(null);
     startCamera();
+    setCameraStarted(false);
+    setIsReady(false);
   };
 
   const instruction = () => {
@@ -345,8 +427,8 @@ const LivenessDetector = forwardRef<
 
       {!cameraStarted && !captured && (
         <div className="space-y-4 ">
-        <div className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent">
-          {/* {!streaming && !taken && (
+          <div className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent">
+            {/* {!streaming && !taken && (
             <div className="flex flex-col items-center gap-3 text-placeholder">
               <Camera />
               <span className="text-sm">Camera preview will appear here</span>
@@ -366,7 +448,7 @@ const LivenessDetector = forwardRef<
             height={480}
             className={taken ? "rounded-2xl block w-full" : "hidden"}
           /> */}
-        </div>
+          </div>
           <p className="text-xs font-normal leading-4.5 text-text text-center">
             Good lighting. Neutral background. No hats or glasses.
           </p>
@@ -374,12 +456,7 @@ const LivenessDetector = forwardRef<
       )}
       {(selfieError || skipError) && (
         <div className="space-y-4">
-          <p className="bg-error-text">
-          {selfieError?.message || skipError?.message}
-        </p>
-          <p className="text-xs font-normal leading-4.5 text-text text-center">
-            Good lighting. Neutral background. No hats or glasses.
-          </p>
+          <ErrorLayout message={selfieError?.message || skipError?.message} />
         </div>
       )}
 
@@ -415,7 +492,7 @@ const LivenessDetector = forwardRef<
           )}
 
           {captured && (
-            <Button size="lg" className="flex-3" onClick={() => onSuccess()}>
+            <Button size="lg" className="flex-3" disabled={isPending}>
               {isPending ? "Verifying..." : "Next"}
             </Button>
           )}

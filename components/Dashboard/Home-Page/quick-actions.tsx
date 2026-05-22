@@ -7,8 +7,9 @@ export function QuickActions() {
     {
       title: "Buy/Sell Crypto",
       sub: "BTC, ETH, USDT, USDC",
-      gradient: "bg-[#042F2E]",
-      iconColor: "bg-[#0F766E]",
+      gradient: "bg-teal-light",
+      iconColor: "bg-teal-border",
+      iconTextColor: "text-teal-text",
       page: "crypto",
       icon: BlocksIcon,
       disabled: false,
@@ -16,8 +17,9 @@ export function QuickActions() {
     {
       title: "Buy/Sell Gift Cards",
       sub: "Amazon, Visa, Starbucks + more",
-      gradient: "bg-[#36002E]",
-      iconColor: "bg-[#9A0283]",
+      gradient: "bg-coral-light",
+      iconColor: "bg-coral-border",
+      iconTextColor: "text-coral-text",
       page: "gift-cards",
       icon: LucideGift,
       disabled: true,
@@ -25,8 +27,9 @@ export function QuickActions() {
     {
       title: "Bill Payments",
       sub: "Airtime, Data, Electricity + more",
-      gradient: "bg-[#051D33]",
-      iconColor: "bg-[#004C99]",
+      gradient: "bg-blue-light",
+      iconColor: "bg-blue-border",
+      iconTextColor: "text-blue-text",
       page: "bills",
       icon: BlocksIcon,
       disabled: true,
@@ -55,10 +58,10 @@ export function QuickActions() {
                 </span>
               )}
               <div className={`${a.iconColor} p-2.5 rounded-lg max-sm:p-4`}>
-                <a.icon className="w-4 h-4 max-sm:h-[20px] max-sm:w-[20px]" />
+                <a.icon className={`w-4 h-4 ${a.iconTextColor} max-sm:h-5 max-sm:w-5`} />
               </div>
               <div>
-                <p className="font-medium text-sm text-card-text leading-5 max-sm:text-[14px] max-sm:leading-[20px]">
+                <p className="font-medium text-sm text-card-text leading-5 max-sm:text-[14px] max-sm:leading-5">
                   {a.title}
                 </p>
                 <p className="font-medium text-[12px] text-text leading-5 max-sm:text-[12px] max-sm:leading-6">

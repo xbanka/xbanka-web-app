@@ -3,6 +3,7 @@ import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
+import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,8 +20,35 @@ export default function RootLayout({
       <Providers>
         <html lang="en" data-theme="light">
           <body>
+            <head>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
+              (function() {
+                try {
+                  const storedTheme = localStorage.getItem("theme-preference");
+                  
+                  let theme = "dark";
+
+                  if (storedTheme) {
+                    const parsed = JSON.parse(storedTheme);
+                    theme = parsed.state?.theme || "dark";
+                  }
+
+                  document.documentElement.setAttribute(
+                    "data-theme",
+                    theme
+                  );
+                } catch (e) {}
+              })();
+            `,
+                }}
+              />
+            </head>
+
             {children}
             <GlobalLogout />
+            <OnboardingModalProvider />
           </body>
         </html>
       </Providers>

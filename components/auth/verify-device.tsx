@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OtpInput } from "../ui/otp-input";
 import { Button } from "../ui/button";
 import { useVerifyDevice } from "@/lib/services/auth.service";
@@ -42,6 +42,10 @@ export default function VerifyDevice() {
     setCode(otp);
     console.log("otp", otp);
   };
+
+  // useEffect(() => {
+  //   sendOtp();
+  // }, []);
 
   return (
     <Card className="max-sm:justify-center max-sm:text-center">

@@ -42,7 +42,11 @@ export const Enable2faModal = ({
   return (
     <Modal className="p-0" onClose={onClose}>
       <div>
-        <ModalHeader className="px-10 py-6" title="Enable 2fa" onClose={onClose} />
+        <ModalHeader
+          className="px-10 py-6"
+          title="Enable 2fa"
+          onClose={onClose}
+        />
         {/* Loading */}
         {isGenerating && (
           <div className="w-full">
@@ -104,13 +108,7 @@ export const Enable2faModal = ({
                 {/* Enable button */}
                 <div className="flex gap-4">
                   <Button
-                    onClick={() =>
-                      enable2FA(token, {
-                        onSuccess: () => {
-                          onClose();
-                        },
-                      })
-                    }
+                    onClick={onClose}
                     variant={"outline"}
                     type="button"
                     disabled={isEnabling || token.length !== 6}

@@ -15,19 +15,35 @@
   --input-background: #F9F9F9;
   --placeholder: #4b5563;
   --text: #4b5563;
-  --error-text: #FF8882;
+  --error-text: #E50500;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
   --badge-border-green: #012E03;
   --font-geist-sans: Arial, Helvetica, sans-serif;
   --font-geist-mono: "Courier New", Courier, monospace;
+  --teal-light: #F0FDFA;
+  --teal-border: #99F6E4;
+  --teal-text: #0F766E;
+  --success-text: #037508;
+  --coral-text: #9A0283;
+  --coral-border: #FFADE8;
+  --coral-light: #FFF0FB;
+  --blue-light: #F0F7FF;
+  --blue-border: #B7DBFF;
+  --blue-text: #004C99;
+  --yellow-warning-light: #FFFAEB;
+  --yellow-warning-dark: #A27D00;
+  --green-success-border: #A6F4C5;
+  --green-success-dark: #039C0A;
+  --green-success-light: #ECFDF3;
+  --input-text: #1B1D20;
+  --card-secondary: #F9F9F9;
 }
 
 @theme inline {
@@ -53,11 +69,27 @@
   --color-error-bg-layout: var(--error-bg-layout);
   --color-input-border-error: var(--input-border-error);
   --color-giftcard-blue: var(--giftcard-blue);
-  --color-giftcard-green: var(--giftcard-green);
   --color-giftcard-yellow: var(--giftcard-yellow);
   --color-giftcard-pink: var(--giftcard-pink);
   --color-giftcard-purple: var(--giftcard-purple);
-  --color-badge-border-green: var(--badge-border-green)
+  --color-badge-border-green: var(--badge-border-green);
+  --color-teal-light: var(--teal-light);
+  --color-teal-text: var(--teal-text);
+  --color-teal-border: var(--teal-border);
+  --color-coral-light: var(--coral-light);
+  --color-coral-text: var(--coral-text);
+  --color-coral-border: var(--coral-border);
+  --color-blue-light: var(--blue-light);
+  --color-blue-text: var(--blue-text);
+  --color-blue-border: var(--blue-border);
+  --color-success-text: var(--success-text);
+  --color-yellow-warning-light: var(--yellow-warning-light);
+  --color-yellow-warning-dark: var(--yellow-warning-dark);
+  --color-green-success-border: var(--green-success-border);
+  --color-green-success-dark: var(--green-success-dark);
+  --color-green-success-light: var(--green-success-light);
+  --color-input-text: var(--input-text);
+  --color-card-secondary: var(--card-secondary);
 }
 
 [data-theme="dark"] {
@@ -81,11 +113,27 @@
   --error-bg-layout: #390201;
   --input-border-error: #FF5F58;
   --giftcard-blue: #0066CC;
-  --giftcard-green: #039C0A;
   --giftcard-yellow: #C19700;
   --giftcard-pink: #C003A2;
   --giftcard-purple: #4F46E5;
   --badge-border-green: #012E03;
+  --teal-light: #042F2E;
+  --teal-border: #0F766E;
+  --teal-text: #5EEAD4;
+  --success-text: #A6F4C5;
+  --coral-text: #FFD6F3;
+  --coral-border: #9A0283;
+  --coral-light: #36002E;
+  --blue-light: #051D33;
+  --blue-border: #004C99;
+  --blue-text: #B7DBFF;
+  --yellow-warning-light: #3E2E00;
+  --yellow-warning-dark: #C19700;
+  --green-success-border: #037508;
+  --green-success-dark: #039C0A;
+  --green-success-light: #012E03;
+  --input-text: #F9F9F9;
+  --card-secondary: #25272B;
 }
 
 @theme {
