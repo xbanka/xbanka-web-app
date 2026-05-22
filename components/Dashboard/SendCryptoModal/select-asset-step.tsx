@@ -174,7 +174,7 @@ export function SelectAssetStep({
             type="button"
             variant="outline"
             size="lg"
-            className="h-14 rounded-xl border-2 border-input bg-transparent text-[16px] font-semibold text-card-text hover:bg-border/50 max-sm:h-11 max-sm:text-[14px]"
+            className="max-sm:h-11 max-sm:text-[14px]"
             onClick={onClose}
           >
             Back
@@ -183,7 +183,7 @@ export function SelectAssetStep({
             disabled={!selectedId}
             variant={selectedId ? "default" : "disabled"}
             size="lg"
-            className="h-14 rounded-xl border-2 border-abstract-green bg-Green text-[16px] font-semibold text-white hover:bg-Green/90 disabled:border-border max-sm:h-11 max-sm:text-[14px]"
+            className="disabled:border-border max-sm:h-11 max-sm:text-[14px]"
             onClick={onNext}
           >
             Continue
