@@ -145,6 +145,8 @@ export function SendCryptoModal({
         network={selectedNetworkId}
         recipientAddress={recipientAddress}
         recipientName={recipientName}
+        recipientType={recipientType}
+        xbankaRecipient={xbankaRecipient}
         onBack={() => setStep("enter_amount")}
         onClose={handleClose}
         onNext={() => setStep("enter_pin")}
@@ -166,7 +168,33 @@ export function SendCryptoModal({
         <ProcessingXbankaStep
           amount={amount}
           recipient={xbankaRecipient}
-          onConfirm={() => setStep("success")}
+          onConfirm={(response) => {
+            const senderTx = response?.data?.transactions?.find(
+              (tx: any) => tx.amount < 0,
+            );
+
+            setSuccessDetails({
+              ...senderTx,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+
+              // fallbacks for required fields
+              id: senderTx?.reference || crypto.randomUUID(),
+              walletId: "",
+              network: "-",
+              provider: "XBANKA",
+              providerRef: senderTx?.reference || "",
+              accountName: null,
+              address: null,
+              bankCode: null,
+              bankName: null,
+              memo: null,
+              note: null,
+              userId: "",
+            });
+
+            setStep("success");
+          }}
           onError={(error) => {
             setProcessingError(error.message);
             setStep("failed");
@@ -232,7 +260,7 @@ export function SendCryptoModal({
   if (step === "failed") {
     return (
       <FailedStep
-        onClose={() => reset()}
+        onClose={handleClose}
         onRetry={() => setStep("processing")}
         errorMessage={processingError ? `${processingError}` : ""}
       />

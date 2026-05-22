@@ -17,7 +17,7 @@ export function SuccessStepXbanka({
   txHash,
   onDone,
   onViewHistory,
-  successDetails
+  successDetails,
 }: {
   amount: string;
   asset?: UserWallet | null;
@@ -25,12 +25,16 @@ export function SuccessStepXbanka({
   txHash: string;
   onDone: () => void;
   onViewHistory: () => void;
-  successDetails: WalletSuccessState | null
+  successDetails: WalletSuccessState | null;
 }) {
   const [copied, setCopied] = useState(false);
   // const fee = parseFloat(network.fee);
-  const total = (parseFloat(amount)).toFixed(2);
-  const nairaTotal = (parseFloat(total) * 1600).toLocaleString();
+  const parsedAmount = parseFloat(amount || "0");
+  console.log(successDetails)
+
+  const rate = asset?.fiatEquivalent?.rate ?? 0;
+
+  const nairaEquivalent = (parsedAmount * rate).toLocaleString();
 
   const copy = () => {
     navigator.clipboard.writeText(txHash).catch(() => {});
@@ -65,14 +69,14 @@ export function SuccessStepXbanka({
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Amount</span>
             <span className="font-semibold text-card-text">
-              {amount}.00 {successDetails?.provider}
+              {amount} {asset?.currency}
             </span>
           </div>
           {/* Network fee */}
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Network</span>
             <span className="font-medium text-card-text">
-              {successDetails?.currency}
+              {asset?.currency}
             </span>
           </div>
           {/* Network label with info */}
@@ -89,7 +93,8 @@ export function SuccessStepXbanka({
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Date & Time</span>
             <span className="font-medium text-card-text">
-              {formatDate(successDetails?.createdAt ?? "")} • {formatTo12Hour(successDetails?.createdAt || "")}
+              {formatDate(successDetails?.createdAt ?? "")} •{" "}
+              {formatTo12Hour(successDetails?.createdAt || "")}
             </span>
           </div>
           {/* Transaction ID */}
@@ -109,12 +114,17 @@ export function SuccessStepXbanka({
           </div>
           {/* Total Deducted — highlighted row */}
           <div className="px-2 py-2.5 bg-background flex justify-between rounded-lg">
-              <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>
-              <div className="space-y-1">
-                <p className="font-medium text-[14px] leading-5 text-Green"></p>
-                <h2 className="font-normal text-xs leading-4.5 text-text">{successDetails?.amount?.toFixed(2)} {successDetails?.currency}</h2>
-              </div>
+            <h1 className="font-normal text-xs leading-5.5 text-text">
+              Total Deducted
+            </h1>
+            <div className="space-y-1">
+              <p className="font-medium text-[14px] leading-5 text-Green"></p>
+              <h2 className="font-normal text-xs leading-4.5 text-text">
+                {Math.abs(successDetails?.amount || 0).toFixed(2)}{" "}
+                {successDetails?.currency}
+              </h2>
             </div>
+          </div>
         </div>
 
         {/* Actions */}
