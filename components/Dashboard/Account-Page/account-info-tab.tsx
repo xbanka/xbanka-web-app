@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
 import {
+  UseProfileUser,
   useUpdateAvatar,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
@@ -18,13 +19,17 @@ import { UseGetBankAcounts } from "@/lib/services/wallet.service";
 import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
+import { EditProfileModal } from "../Edit-Profile-Modal/edit-modal-profile";
 
 export function AccountInfoTab() {
-  const [showNumber, setShowNumber] = useState(false);
   const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
   const [openAccountModal, setOpenAccountModal] = useState(false);
+  const [editProfileModal, setEditProfileModal] = useState(false);
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
+  const { data: profileData } = UseProfileUser();
+  const avatar = profileData?.data?.avatarUrl;
+
   const {
     data: getBankAccounts,
     isPending: getBankAccountsPending,
@@ -56,6 +61,10 @@ export function AccountInfoTab() {
     setOpenAccountModal(true);
   };
 
+  const handleEditModal = () => {
+    setEditProfileModal(true);
+  };
+
   return (
     <div className="space-y-4">
       {/* Profile header */}
@@ -63,15 +72,15 @@ export function AccountInfoTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
-              {image ? (
+              {(image || avatar) ? (
                 <Image
-                  src={image ?? ""}
+                  src={image || avatar}
                   alt="profile"
                   fill
                   className="object-cover"
                 />
               ) : (
-                "CJ"
+                `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` || userData?.email[0]
               )}
 
               <input
@@ -119,6 +128,7 @@ export function AccountInfoTab() {
           <Button
             variant={"outline"}
             size={"sm"}
+            onClick={handleEditModal}
             className="gap-2 text-Green border border-input transition-colors"
           >
             Edit Profile
@@ -155,7 +165,7 @@ export function AccountInfoTab() {
 
         {!getBankAccountsPending &&
           !getBankAccountsError &&
-          getBankAccounts?.data?.length === 0 && (
+          getBankAccounts?.data?.data?.length === 0 && (
             <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
               <Image
                 className="mx-auto mb-1"
@@ -204,7 +214,10 @@ export function AccountInfoTab() {
               Last updated: {formatDate(userData?.createdAt ?? "")}
             </p>
           </div>
-          <button className="flex items-center gap-1.5 text-xs text-Green hover:underline">
+          <button
+            onClick={handleEditModal}
+            className="flex items-center gap-1.5 text-xs text-Green hover:underline"
+          >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
@@ -214,46 +227,33 @@ export function AccountInfoTab() {
           <PersonalInfoTab
             label="First Name"
             value={userData?.firstName || ""}
-            onSave={(val) => handleUpdate("firstName", val)}
           />
 
           {/* ✅ Last Name */}
-          <PersonalInfoTab
-            label="Last Name"
-            value={userData?.lastName || ""}
-            onSave={(val) => handleUpdate("lastName", val)}
-          />
+          <PersonalInfoTab label="Last Name" value={userData?.lastName || ""} />
 
           {/* ✅ Email */}
           <PersonalInfoTab
             label="Email Address"
             value={userData?.email || ""}
-            onSave={(val) => handleUpdate("email", val)}
           />
           <PersonalInfoTab
             label="Phone Number"
             value={userData?.phoneNumber || ""}
-            onSave={(val) => handleUpdate("email", val)}
           />
 
           {/* ✅ Date Picker */}
           <PersonalInfoTab
             label="Date of Birth"
             value={formatDate(userData?.dateOfBirth ?? "")}
-            onSave={(val) => handleUpdate("dateOfBirth", val)}
             renderInput={(value, onChange) => (
               <DatePicker value={value} onChange={onChange} />
             )}
           />
-          <PersonalInfoTab
-            label="Gender"
-            value={userData?.gender || ""}
-            onSave={(val) => handleUpdate("gender", val)}
-          />
+          <PersonalInfoTab label="Gender" value={userData?.gender || ""} />
           <PersonalInfoTab
             label="Nationality"
             value={userData?.country || ""}
-            onSave={(val) => handleUpdate("country", val)}
           />
         </div>
 
@@ -262,6 +262,10 @@ export function AccountInfoTab() {
             onClose={() => setOpenAccountModal(false)}
             open={openAccountModal}
           />
+        )}
+
+        {editProfileModal && (
+          <EditProfileModal onClose={() => setEditProfileModal(false)} />
         )}
       </DashboardCard>
     </div>

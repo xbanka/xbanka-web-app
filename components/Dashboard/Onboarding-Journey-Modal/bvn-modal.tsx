@@ -19,12 +19,7 @@ export function BvnModal({
   onClose: () => void;
   onCompleted: () => void;
 }) {
-  const [bvn, setBvn] = useState("");
-  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "success">("form");
-  const [successType, setSuccessType] = useState<"verified" | "review">(
-    "verified",
-  );
 
   const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
   const { data: profileData } = UseProfileUser();
@@ -121,18 +116,13 @@ export function BvnModal({
 
       {step === "success" && (
         <SuccessState
-          title={
-            successType === "verified" ? "BVN Verified! ✅" : "BVN Under Review"
-          }
+          title={"BVN Verified Successfully"}
           subtitle={
-            successType === "verified"
-              ? "Your BVN has been successfully verified. You can now proceed to the next step."
-              : "We're reviewing your BVN. This usually takes a few minutes. You'll be notified once done."
+            "Your BVN has been successfully verified. You can now proceed to the next step."
           }
-          badge={successType}
+          badge={"verified"}
           ctaLabel="Move to ID & Selfie"
           onCta={() => {
-            onClose();
             onCompleted();
           }}
           onClose={onClose}

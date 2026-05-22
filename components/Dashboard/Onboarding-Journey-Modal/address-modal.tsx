@@ -18,6 +18,7 @@ import { step5FormValues, step5Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { ErrorLayout } from "@/components/ui/error-layout";
+import { COUNTRY_STATES } from "@/lib/types/countries";
 
 export function AddressModal({
   onClose,
@@ -28,22 +29,27 @@ export function AddressModal({
 }) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [step, setStep] = useState<"form" | "success">("form");
-  const [showSuccess, setShowSuccess] = useState(false);
   const clearUserId = useUserIdStore((s) => s.clearUserId);
   const { mutate, isPending, data, isSuccess, error } = useAddressProof();
   const router = useRouter();
   const { data: profileData } = UseProfileUser();
-    const userId = profileData?.data?.userId;
+  const userId = profileData?.data?.userId;
 
   const {
     register,
     reset,
+    watch,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<step5FormValues>({
     resolver: zodResolver(step5Schema),
     mode: "onTouched",
   });
+
+  const selectedCountry = watch("country");
+
+  const stateOptions =
+    COUNTRY_STATES[selectedCountry as keyof typeof COUNTRY_STATES] || [];
 
   const onSubmit = (data: step5FormValues) => {
     const formData = new FormData();
@@ -62,7 +68,7 @@ export function AddressModal({
     mutate(formData, {
       onSuccess: () => {
         reset();
-        setShowSuccess(true);
+        setStep("success");
         setAttachments([]);
         clearUserId();
       },
@@ -103,8 +109,8 @@ export function AddressModal({
                   placeholder="Country of Residence"
                   error={errors.country}
                   options={[
-                    { value: "ng", label: "Nigeria" },
-                    { value: "gh", label: "Ghana" },
+                    { value: "nigeria", label: "Nigeria" },
+                    { value: "ghana", label: "Ghana" },
                   ]}
                   register={register}
                 />
@@ -112,12 +118,11 @@ export function AddressModal({
                   id="state"
                   placeholder="State"
                   error={errors.state}
-                  options={[
-                    { value: "lag", label: "Lagos" },
-                    { value: "abj", label: "Abuja" },
-                    { value: "ph", label: "Port Harcourt" },
-                    { value: "kno", label: "Kano" },
-                  ]}
+                  disabled={!selectedCountry}
+                  options={stateOptions.map((state) => ({
+                    value: state,
+                    label: state,
+                  }))}
                   register={register}
                 />
               </div>
@@ -173,7 +178,7 @@ export function AddressModal({
 
       {step === "success" && (
         <SuccessState
-          title="You're all set! 🎉"
+          title="You're all set!"
           subtitle="Your address has been submitted. Your account is now fully set up and ready to use."
           badge="verified"
           ctaLabel="Go to Dashboard"

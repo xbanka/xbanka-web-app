@@ -1,6 +1,6 @@
 import { OnboardingCardProps } from "@/lib/types/card-types";
 import { cn } from "@/lib/utils";
-import { CheckCircle } from "lucide-react";
+import { Check } from "lucide-react";
 
 export const OnboardingJourneyCard = ({
   className,
@@ -20,50 +20,35 @@ export const OnboardingJourneyCard = ({
     >
       <div>
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-medium leading-5 text-[#A6F4C5] uppercase tracking-wide max-sm:text-[12px] max-sm:leading-6">
+          <span className="text-[12px] font-medium leading-5 text-success-text uppercase tracking-wide max-sm:text-[12px] max-sm:leading-6">
             {step}
           </span>
           {status === "done" && (
-            <div className="bg-[#37703F1A]/10">
-              <CheckCircle className="w-4 h-4 text-white max-sm:h-6 max-sm:w-6" />
+            <div className="bg-green-success-dark border-2 border-green-success-border rounded-full p-0.75">
+              <Check className="w-4 h-4 text-input-text max-sm:h-6 max-sm:w-6" />
             </div>
           )}
           {status === "active" && (
-            <span className="w-6 h-6 rounded-full bg-[#37703F1A]/80 animate-pulse" />
+            <span className="w-6 h-6 rounded-full bg-yellow-warning-dark border-2 border-yellow-warning-light p-0.75 animate-pulse" />
           )}
         </div>
-        <p className="text-sm font-semibold text-card-text max-sm:text-[14px] max-sm:leading-[20px] tracking-[-3%]">
+        <p className="text-sm font-semibold text-card-text max-sm:text-[14px] max-sm:leading-5 tracking-[-3%]">
           {title}
         </p>
         {status === "active" && (
-          <p className="text-xs text-text leading-5 font-medium max-sm:text-[12px] max-sm:leading-[20px] line-clamp-2">
+          <p className="text-xs text-text leading-5 font-medium max-sm:text-[12px] max-sm:leading-5 line-clamp-2">
             {desc}
           </p>
         )}
-        {label && (
-          <p className="text-xs leading-5 text-text max-sm:text-[12px]  font-medium">
-            {label}
-          </p>
-        )}
       </div>
-      {/* {status === "done" ? (
-        <p className="text-xs text-[#A6F4C5] font-medium max-sm:text-[14px] max-sm:leading-6">
-          Account created
-        </p>
-      ) : status === "active" ? (
-        <div className="space-y-5">
-          <button onClick={onClick} className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]">
-            Continue
-          </button>
-        </div>
-      ) : (
-        <p className="text-xs leading-5 text-text font-medium max-sm:text-[16px] max-sm:leading-6 line-clamp-2">
-          {desc}
-        </p>
-      )} */}
       {status === "done" && (
-        <p className="text-xs text-[#A6F4C5] font-medium max-sm:text-[14px] max-sm:leading-6">
-          Account created
+        <p className="text-xs text-success-text font-medium max-sm:text-[14px] max-sm:leading-6">
+          {label}
+        </p>
+      )}
+      {status === "pending" && (
+        <p className="text-xs text-text font-medium max-sm:text-[14px] max-sm:leading-6">
+          {desc}
         </p>
       )}
       {status === "active" && (

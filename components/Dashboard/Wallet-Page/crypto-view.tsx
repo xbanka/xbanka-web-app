@@ -8,7 +8,11 @@ import Image from "next/image";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
-  const wallets = data?.data?.data || [];
+  // const wallets = data?.data?.data || [];
+  const wallets =
+    data?.data?.data?.filter(
+      (wallet: UserWallet) => Number(wallet.balance) > 0,
+    ) || [];
 
   const columns = [
     {

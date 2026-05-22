@@ -28,6 +28,7 @@ export interface SelectFieldProps {
   error?: FieldError;
   register?: UseFormRegister<any>;
   label?: string;
+  disabled?: boolean
 }
 
 export interface CryptoOptionProps {

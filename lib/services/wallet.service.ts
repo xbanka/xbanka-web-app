@@ -32,7 +32,15 @@ import {
   QuoteExecutePayload,
 } from "../types/crypto-types";
 import { toast } from "sonner";
-import { AddBankAccountPayload, fundWalletBankPayload, fundWalletBankSavedCardPayload, fundWalletPayload, fundWalletSavedCardPayload, sendWalletPayload, WithdrawCryptoPayload } from "../types/wallet-types";
+import {
+  AddBankAccountPayload,
+  fundWalletBankPayload,
+  fundWalletBankSavedCardPayload,
+  fundWalletPayload,
+  fundWalletSavedCardPayload,
+  sendWalletPayload,
+  WithdrawCryptoPayload,
+} from "../types/wallet-types";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -101,12 +109,17 @@ export const UseWithdrawCrypto = () => {
 //   });
 // };
 
-export const useGenerateAddress = (
-) => {
+export const useGenerateAddress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ currency, network }: { currency: string; network: string }) => {
+    mutationFn: async ({
+      currency,
+      network,
+    }: {
+      currency: string;
+      network: string;
+    }) => {
       const res = await generateDepositAddress({ currency, network });
       return res;
     },
@@ -118,7 +131,6 @@ export const useGenerateAddress = (
     },
     gcTime: 1000 * 60 * 30, // keep in cache 30 mins
   });
-
 };
 
 export const UseGetFiatWallet = () => {
@@ -153,7 +165,8 @@ export const UseGetFiatWalletSavedCards = () => {
 
 export const UseFundFiatWalletSavedCard = () => {
   return useMutation({
-    mutationFn: (data: fundWalletSavedCardPayload) => fundFiatWalletSavedCard(data),
+    mutationFn: (data: fundWalletSavedCardPayload) =>
+      fundFiatWalletSavedCard(data),
     onSuccess: (result) => {
       toast.success("Funded Successfully");
     },
@@ -301,7 +314,7 @@ export const UseGetBankAcounts = () => {
       }
     },
     staleTime: 1000 * 60 * 10, // ✅ 10 mins
-    gcTime: 1000 * 60 * 30,    // keep in cache for 30 mins
+    gcTime: 1000 * 60 * 30, // keep in cache for 30 mins
   });
 };
 
@@ -332,12 +345,21 @@ export const UseFundBankAcounts = () => {
   });
 };
 
-export const UseGetTransactionHistory = (page = 1, limit = 10) => {
+export const UseGetTransactionHistory = (
+  page = 1,
+  limit = 10,
+  category?: "FIAT" | "CRYPTO" | "GIFTCARD",
+) => {
   return useQuery({
-    queryKey: ["transaction-history", page, limit],
+    queryKey: ["transaction-history", page, limit, category],
     queryFn: async () => {
       try {
-        const response = await getTransactionHistory({ page, limit });
+        const response = await getTransactionHistory({
+          page,
+          limit,
+          category,
+        });
+
         return response;
       } catch (err) {
         handleApiError(err);
@@ -425,6 +447,6 @@ export const useGetMarketPrices = (page = 1, limit = 10) => {
         handleApiError(err);
       }
     },
-    staleTime: Infinity
+    staleTime: Infinity,
   });
 };

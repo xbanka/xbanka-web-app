@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
-import { ArrowRight, CheckCircle, Clock, Shield } from "lucide-react";
+import { ArrowRight, Clock, Shield } from "lucide-react";
 import Image from "next/image";
 
 export function SuccessState({
@@ -30,18 +30,18 @@ export function SuccessState({
               "w-20 h-20 mx-auto rounded-full flex items-center justify-center",
               badge === "review"
                 ? "bg-amber-500/15 border border-amber-500/30"
-                : "bg-none border-none border-none",
+                : "bg-none border-none",
             )}
           >
             {badge === "review" ? (
               <Clock className="w-9 h-9 text-amber-400 text-center" />
             ) : (
-             <Image
-                    src="/badge 2.svg"
-                    alt="done badge"
-                    width={60}
-                    height={60}
-                  />
+              <Image
+                src="/badge 2.svg"
+                alt="done badge"
+                width={60}
+                height={60}
+              />
             )}
           </div>
 
@@ -52,28 +52,6 @@ export function SuccessState({
               {subtitle}
             </p>
           </div>
-
-          {/* Badge pill */}
-          {badge && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
-                badge === "review"
-                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                  : "bg-[#36b6ab]/10 text-[#36b6ab] border border-[#36b6ab]/20",
-              )}
-            >
-              {badge === "review" ? (
-                <>
-                  <Clock className="w-3 h-3" /> Under Review
-                </>
-              ) : (
-                <>
-                  <Shield className="w-3 h-3" /> Verified
-                </>
-              )}
-            </span>
-          )}
         </div>
 
         {/* Buttons */}

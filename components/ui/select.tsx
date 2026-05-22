@@ -11,6 +11,7 @@ export const SelectField = ({
   error,
   register,
   label,
+  disabled,
 }: SelectFieldProps) => (
   <div className="space-y-1">
     {label && <Label label={label} />}
@@ -34,9 +35,11 @@ export const SelectField = ({
           </option>
         ))}
       </select>
-      <span className="absolute right-3 text-placeholder pointer-events-none flex items-center">
-        <ChevronDown />
-      </span>
+      {!disabled && (
+        <span className="absolute right-3 text-placeholder pointer-events-none flex items-center">
+          <ChevronDown />
+        </span>
+      )}
     </div>
     <ErrorField message={error?.message} />
   </div>

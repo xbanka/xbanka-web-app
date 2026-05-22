@@ -101,6 +101,7 @@ const SignIn = () => {
           />
           <ErrorLayout message={error?.message} />
         </div>
+        <Link href="/forgot-password" className="text-Green text-sm w-fit flex justify-start">Forgot Password?</Link>
         <Button
           type="submit"
           size={"lg"}

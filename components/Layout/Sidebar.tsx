@@ -60,8 +60,8 @@ export function Sidebar({
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
-          <span className="text-xl font-bold tracking-tight text-white">
-            xbanka
+          <span className="text-base leading-6 font-medium tracking-tight text-foreground">
+            <span className="text-Green">X</span>banka
           </span>
         )}
         <button
