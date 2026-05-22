@@ -49,6 +49,10 @@ export const UseVerificationStatus = () => {
         handleApiError(err);
       }
     },
+    staleTime: 1000 * 60 * 5, // 5 mins
+    gcTime: 1000 * 60 * 30, // 30 mins
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
   return mutate;
 };

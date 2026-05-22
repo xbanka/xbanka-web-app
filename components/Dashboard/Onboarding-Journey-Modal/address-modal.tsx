@@ -29,7 +29,6 @@ export function AddressModal({
 }) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [step, setStep] = useState<"form" | "success">("form");
-  const [showSuccess, setShowSuccess] = useState(false);
   const clearUserId = useUserIdStore((s) => s.clearUserId);
   const { mutate, isPending, data, isSuccess, error } = useAddressProof();
   const router = useRouter();
@@ -69,7 +68,7 @@ export function AddressModal({
     mutate(formData, {
       onSuccess: () => {
         reset();
-        setShowSuccess(true);
+        setStep("success");
         setAttachments([]);
         clearUserId();
       },

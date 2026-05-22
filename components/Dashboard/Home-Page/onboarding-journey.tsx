@@ -4,7 +4,7 @@ import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
 import { ErrorField } from "@/components/ui/field-error";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
-import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
+import { IdSelfieModal, IdSelfieStep } from "../Onboarding-Journey-Modal/id-selfie-modal";
 import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
 import { useState } from "react";
 import { ModalType, stepsConfig } from "./types";
@@ -16,17 +16,11 @@ export function OnboardingJourney() {
     isPending,
     error,
   } = UseVerificationStatus();
-  const [completedSteps, setCompletedSteps] = useState<number[]>([1]); // step 1 (email) pre-completed
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const progress = ONBOARDING_STEPS(verificationStatus?.data);
   const completedCount = progress.filter(
     (step) => step.status === "done",
   ).length;
-
-  const markDone = (stepId: number) =>
-    setCompletedSteps((prev) =>
-      prev.includes(stepId) ? prev : [...prev, stepId],
-    );
 
   const totalSteps = progress.length;
   if (isPending) {
@@ -100,9 +94,10 @@ export function OnboardingJourney() {
             step={s.step}
             title={s.title}
             desc={s.desc}
+            label={s.label}
             onClick={() => {
               if (s.modalKey) {
-                setOpenModal(s.modalKey as ModalType); // ✅ safe now
+                setOpenModal(s.modalKey as ModalType);
               }
             }}
           />
@@ -112,8 +107,7 @@ export function OnboardingJourney() {
         <BvnModal
           onClose={() => setOpenModal(null)}
           onCompleted={() => {
-            markDone(2);
-            setOpenModal(null);
+            setOpenModal("id-selfie");
           }}
         />
       )}
@@ -121,8 +115,7 @@ export function OnboardingJourney() {
         <IdSelfieModal
           onClose={() => setOpenModal(null)}
           onCompleted={() => {
-            markDone(3);
-            setOpenModal(null);
+            setOpenModal("address");
           }}
         />
       )}
@@ -130,7 +123,6 @@ export function OnboardingJourney() {
         <AddressModal
           onClose={() => setOpenModal(null)}
           onCompleted={() => {
-            markDone(4);
             setOpenModal(null);
           }}
         />
