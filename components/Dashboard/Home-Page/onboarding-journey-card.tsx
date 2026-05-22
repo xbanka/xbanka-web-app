@@ -40,30 +40,15 @@ export const OnboardingJourneyCard = ({
             {desc}
           </p>
         )}
-        {label && (
-          <p className="text-xs leading-5 text-text max-sm:text-[12px]  font-medium">
-            {label}
-          </p>
-        )}
       </div>
-      {/* {status === "done" ? (
-        <p className="text-xs text-[#A6F4C5] font-medium max-sm:text-[14px] max-sm:leading-6">
-          Account created
-        </p>
-      ) : status === "active" ? (
-        <div className="space-y-5">
-          <button onClick={onClick} className="w-full bg-Green text-white text-xs font-semibold py-1.5 rounded-lg hover:opacity-90 transition-opacity max-sm:h-12 max-sm:text-[16px]">
-            Continue
-          </button>
-        </div>
-      ) : (
-        <p className="text-xs leading-5 text-text font-medium max-sm:text-[16px] max-sm:leading-6 line-clamp-2">
-          {desc}
-        </p>
-      )} */}
       {status === "done" && (
         <p className="text-xs text-success-text font-medium max-sm:text-[14px] max-sm:leading-6">
-          Account created
+          {label}
+        </p>
+      )}
+      {status === "pending" && (
+        <p className="text-xs text-text font-medium max-sm:text-[14px] max-sm:leading-6">
+          {desc}
         </p>
       )}
       {status === "active" && (
