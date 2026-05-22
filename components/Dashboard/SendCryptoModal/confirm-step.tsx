@@ -30,15 +30,18 @@ export function ConfirmStep({
   recipientType?: "wallet" | "xbanka-user";
   xbankaRecipient?: RecipientXbankaUsersTypes | null;
 }) {
-  // const fee = parseFloat(network.fee);
-  const total = parseFloat(amount).toFixed(2);
+  const parsedAmount = parseFloat(amount || "0");
+
   const rate = asset?.fiatEquivalent?.rate ?? 0;
 
-  const nairaTotal = (parseFloat(total) * rate).toLocaleString();
+  const nairaEquivalent = (parsedAmount * rate).toLocaleString();
+
   const shortAddr =
     recipientAddress.length > 12
-      ? `${recipientAddress.slice(0, 4)}...${recipientAddress.slice(-4)}`
+      ? `${recipientAddress.slice(0, 6)}...${recipientAddress.slice(-4)}`
       : recipientAddress;
+
+  const xbankaName = xbankaRecipient?.name || "XBanka User";
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -49,60 +52,64 @@ export function ConfirmStep({
         onBack={onBack}
         onClose={onClose}
       />
+
       <div className="px-8 pb-3">
         <ProgressBar step="confirm" />
       </div>
 
       <div className="px-8 pt-4 pb-8 space-y-8">
         <div className="space-y-4">
+
           {/* Amount summary */}
           <div className="border border-input bg-border rounded-[20px] p-5 text-center space-y-2">
             <p className="text-sm font-normal leading-6 text-text">
               You are sending
             </p>
+
             <p className="text-4xl font-bold text-card-text flex items-center justify-center gap-3">
-              {amount}{" "}
+              {amount}
+
               <span className="text-[24px] font-semibold text-text">
                 {asset?.currency}
               </span>
             </p>
+
             <p className="text-xs font-normal leading-4.5 text-text px-2 py-2.5 bg-input-background rounded-lg w-fit mx-auto">
-              ≈ ₦{(parseFloat(amount) * 1600).toLocaleString()}
+              ≈ ₦{nairaEquivalent}
             </p>
           </div>
 
           {/* Breakdown */}
           <div className="border border-input bg-border rounded-[20px] p-5 divide-y divide-input">
+
             <SendCryptoConfirmList
               title="Asset"
               value={asset?.currency ?? ""}
             />
+
             {recipientType === "wallet" ? (
               <SendCryptoConfirmList
-                title="Receipt"
-                value={recipientName || "Wallet Address"}
-                subValue={shortAddr}
+                title="Wallet Address"
+                value={shortAddr}
               />
             ) : (
               <SendCryptoConfirmList
                 title="XBanka User"
-                value={xbankaRecipient?.name || ""}
+                value={xbankaName}
                 subValue={xbankaRecipient?.uid || ""}
               />
             )}
-            <SendCryptoConfirmList title="Network" value={network || ""} />
-            {/* <div className="px-2 py-2.5 bg-background flex justify-between rounded-lg">
-              <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>
-              <div className="space-y-1">
-                <p className="font-medium text-[14px] leading-5 text-Green"></p>
-                <h2 className="font-normal text-xs leading-4.5 text-text">₦32,400.00</h2>
-              </div>
-            </div> */}
+
+            <SendCryptoConfirmList
+              title="Network"
+              value={recipientType === "wallet" ? network || "" : "-"}
+            />
           </div>
 
           {/* Warning */}
           <div className="flex items-center gap-2.5 bg-[#012E03] border border-[#037508] rounded-lg px-4 py-3">
             <AlertTriangle className="w-4 h-4 text-[#A6F4C5] shrink-0 mt-0.5" />
+
             <p className="text-xs font-normal leading-4.5 text-[#A6F4C5]">
               Please verify the recipient address and network carefully.
               Transactions cannot be reversed once confirmed on the blockchain.
@@ -120,7 +127,12 @@ export function ConfirmStep({
           >
             Back
           </Button>
-          <Button size="lg" className="flex-3" onClick={onNext}>
+
+          <Button
+            size="lg"
+            className="flex-3"
+            onClick={onNext}
+          >
             Confirm & Send
           </Button>
         </div>
