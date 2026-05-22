@@ -21,7 +21,7 @@ export const Logout = ({ onClose }: LogoutProps) => {
   return (
     <Modal className="" onClose={onClose}>
       <FormHeader
-        className="space-y-2 py-12"
+        className="space-y-2 py-12 max-sm:text-[28px] max-sm:leading-[36px] tracking-[-4%]"
         title="Are you sure you want to logout?"
         subtitle="You will be logged out of your account"
       />
