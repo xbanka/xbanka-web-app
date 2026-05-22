@@ -33,7 +33,7 @@ export function MarketHighlight() {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      "https://backend.xbankang.com/wallets/market-stream",
+      "https://backend.xbankang.com/wallets/market-stream ",
     );
 
     eventSource.onopen = () => {
@@ -112,7 +112,13 @@ export function MarketHighlight() {
             className={`flex items-center gap-1 font-medium ${isNegative ? "text-red-500" : "text-Green"}`}
           >
             {/* Down arrow for negative, Up arrow for positive */}
-            <span>{isNegative ? <ArrowDownRight size={20}/> : <ArrowUpRight size={20} />}</span>
+            <span>
+              {isNegative ? (
+                <ArrowDownRight size={20} />
+              ) : (
+                <ArrowUpRight size={20} />
+              )}
+            </span>
             <span>{formatToTwoDecimals(item.changePercent24h)}%</span>
           </div>
         );
@@ -160,20 +166,20 @@ export function MarketHighlight() {
         </div>
       </div>
       <div className="overflow-x-auto">
-                <DataTableLayout
-                  data={marketPrices?.data.items || []}
-                  columns={columns}
-                  isError={marketPricesIsError}
-                  isLoading={marketPricesPending}
-                  errorMessage={marketPricesError?.message}
-                  rowKey={(item) => item.id}
-                  itemsPerPage={5}
-                  pageTotal={marketPrices?.data?.meta.totalPages}
-                  currentPage={page}
-                  onPageChange={() => setPage(page)}
-                  emptyMessage="No transaction history available."
-                />
-              </div>
+        <DataTableLayout
+          data={marketPrices?.data.items || []}
+          columns={columns}
+          isError={marketPricesIsError}
+          isLoading={marketPricesPending}
+          errorMessage={marketPricesError?.message}
+          rowKey={(item) => item.id}
+          itemsPerPage={5}
+          pageTotal={marketPrices?.data?.meta.totalPages}
+          currentPage={page}
+          onPageChange={() => setPage(page)}
+          emptyMessage="No transaction history available."
+        />
+      </div>
       {/* <div className="space-y-0">
         <div className="grid grid-cols-3 text-[10px] text-text pb-1.5 border-b border-border mb-1">
           <span>Assets</span>

@@ -43,7 +43,7 @@ export function EnterAmountStep({
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
-        className="px-8"
+        className="px-8 "
         title="Send Crypto"
         subtitle="Transfer assets to external wallets or XBanka users."
         onBack={onBack}

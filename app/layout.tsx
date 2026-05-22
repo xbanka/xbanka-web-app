@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
-import Script from "next/script";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
 import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,11 +18,12 @@ export default function RootLayout({
   return (
     <QueryProvider>
       <Providers>
-        <html lang="en" data-theme="dark">
-          <head>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
+        <html lang="en" data-theme="light">
+          <body>
+            <head>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
               (function() {
                 try {
                   const storedTheme = localStorage.getItem("theme-preference");
@@ -53,12 +42,10 @@ export default function RootLayout({
                 } catch (e) {}
               })();
             `,
-              }}
-            />
-          </head>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
+                }}
+              />
+            </head>
+
             {children}
             <GlobalLogout />
             <OnboardingModalProvider />

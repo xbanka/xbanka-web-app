@@ -3,8 +3,8 @@ import { HOW_TO_STEPS } from "@/lib/MockData";
 
 export function HowTo({ action = "buy" }: { action?: string }) {
   return (
-    <DashboardCard className="">
-      <h3 className="text-[16px] font-medium leading-6 text-card-text text-center">
+    <DashboardCard className="max-sm:p-4">
+      <h3 className="text-[16px] font-medium leading-6 text-card-text text-center max-sm:text-[14px] max-sm:leading-5">
         How to {action} crypto on Xbanka
       </h3>
       <div className="bg-border grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg">
@@ -13,9 +13,13 @@ export function HowTo({ action = "buy" }: { action?: string }) {
             <div className="w-10 h-10 rounded-[36px] p-1 bg-green-success-light text-input-text flex items-center justify-center text-xs font-bold shrink-0">
               {s.n}
             </div>
-            <div>
-              <p className="text-[14px] font-medium leading-5 text-card-text">{s.title}</p>
-              <p className="text-[12px] font-normal text-text leading-5.5">{s.desc}</p>
+            <div className="min-w-0">
+              <p className="text-[14px] font-medium leading-5 text-card-text max-sm:text-[12px] max-sm:leading-4">
+                {s.title}
+              </p>
+              <p className="text-[12px] font-normal text-text leading-5.5 max-sm:text-[11px] max-sm:leading-5">
+                {s.desc}
+              </p>
             </div>
           </div>
         ))}

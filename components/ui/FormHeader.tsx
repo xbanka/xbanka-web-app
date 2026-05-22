@@ -10,11 +10,11 @@ export function FormHeader({
   return (
     <div className={cn("space-y-4 text-center", className)}>
       {icon && <div className="flex justify-center mb-2">{icon}</div>}
-      <h1 className="font-bold text-[36px] max-sm:text-[40px] text-forground leading-11 max-sm:leading-[48px]">
+      <h1 className="font-bold text-[36px] max-sm:text-[28px] text-forground leading-11 max-sm:leading-[30px]">
         {title}
       </h1>
       {subtitle && (
-        <p className="text-text text-[16px] max-sm:text-[20px] max-sm:leading-[28px] leading-6">
+        <p className="text-text text-[16px] max-sm:text-[14px] max-sm:leading-[28px] leading-6">
           {subtitle}
         </p>
       )}
