@@ -67,11 +67,19 @@ export const ValueBalance = () => {
                 message={fiatError?.message || cryptoError?.message}
               />
             )}
-            <span className="text-text text-xs font-normal leading-4.5">
-              {!fiatIsPending && !cryptoIsPending
-                ? `≈ ₦${totalBalance.toLocaleString()} today`
-                : "Calculating..."}
-            </span>
+
+            {!fiatIsPending && !cryptoIsPending && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                {hidden
+                  ? "₦•••••••"
+                  : `≈ ₦${totalBalance.toLocaleString()} today`}
+              </span>
+            )}
+            {fiatIsPending && cryptoIsPending && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                Calculating...
+              </span>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-4 max-sm:flex-row max-sm:w-full">
             <div className="border-l-3 border-[#004C99] bg-border px-4 py-3 max-sm:w-full ">
