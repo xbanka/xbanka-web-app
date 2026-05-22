@@ -29,6 +29,7 @@ export function AssetValueCard() {
   } = UseGetCryptoWallet();
   const cryptoWallets = cryptoData?.data?.data || [];
   const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
+  const cryptoEquivalent = sumFiatBalances(cryptoWallets);
   const totalBalance = fiatBalance + cryptoBalance;
   return (
     <DashboardCard className="border border-teal-border bg-teal-light">
@@ -53,7 +54,7 @@ export function AssetValueCard() {
                 Your balance might have changed
               </div>
             )}
-            {(!fiatIsPending && !cryptoIsPending) && (
+            {!fiatIsPending && !cryptoIsPending && (
               <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
                 {hidden
                   ? "•••••••"
@@ -77,7 +78,7 @@ export function AssetValueCard() {
             </select>
           </div>
           <p className="text-text text-xs font-normal leading-4.5">
-            ≈ $0.00 USD
+            {hidden ? "≈ ••••••" : `≈ $${cryptoEquivalent.toLocaleString()} USD`}
           </p>
         </div>
         <div className="flex items-center gap-2">

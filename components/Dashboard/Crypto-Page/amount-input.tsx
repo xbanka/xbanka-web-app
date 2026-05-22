@@ -32,8 +32,19 @@ export function AmountRow({
   onCurrencyChange,
   error,
   readOnly,
-  dropDownLoading
+  dropDownLoading,
 }: AmountRowProps) {
+  const formatNumber = (value: string | number) => {
+  if (!value) return "";
+
+  const [whole, decimal] = String(value).split(".");
+
+  const formattedWhole = Number(whole).toLocaleString();
+
+  return decimal !== undefined
+    ? `${formattedWhole}.${decimal}`
+    : formattedWhole;
+};
   return (
     <div>
       <div className="bg-card-secondary flex w-full rounded-xl py-3.25 px-5 gap-6">
@@ -42,11 +53,10 @@ export function AmountRow({
             <span className="font-normal text-[12px] leading-4.5 text-text">
               {label}
             </span>
-            {
-              availableBalanceLoading && (
-                <div className="h-8 w-8 rounded-full bg-border" />)
-            }
-            {(!availableBalanceLoading && available) && (
+            {availableBalanceLoading && (
+              <div className="h-8 w-8 rounded-full bg-border" />
+            )}
+            {!availableBalanceLoading && available && (
               <span className="font-normal text-[12px] leading-4.5 text-text">
                 Available:{" "}
                 <span className="text-Green font-normal">{available}</span>
@@ -55,9 +65,20 @@ export function AmountRow({
           </div>
           <div className="flex items-end w-full gap-2">
             <input
-              type="number"
-              value={value}
-              onChange={onChange}
+              type="text"
+              inputMode="decimal"
+              value={formatNumber(value)}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, "");
+
+                onChange?.({
+                  ...e,
+                  target: {
+                    ...e.target,
+                    value: rawValue,
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
               readOnly={readOnly}
               placeholder="0.00"
               className="flex-1 w-[10%] bg-transparent text-lg font-bold text-card-text outline-none placeholder:text-text/40"
@@ -72,7 +93,7 @@ export function AmountRow({
         </div>
         <div className="flex flex-1 items-center gap-1.5 bg-card-secondary hover:bg-card-secondary/80 transition-colors py-4 pl-4 border-l border-disabled-background shrink-0">
           <CryptoSelectField
-          loading={dropDownLoading}
+            loading={dropDownLoading}
             currencyId={currencyId}
             value={selectedCurrency}
             options={OPTIONS}
@@ -80,9 +101,7 @@ export function AmountRow({
           />
         </div>
       </div>
-      {error && (
-    <p className="text-red-500 text-xs px-1">{error}</p>
-  )}
+      {error && <p className="text-red-500 text-xs px-1">{error}</p>}
     </div>
   );
 }

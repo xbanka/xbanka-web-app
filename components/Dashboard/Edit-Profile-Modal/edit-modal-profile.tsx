@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   X,
   Camera,
@@ -66,6 +66,7 @@ export function EditProfileModal({
   onClose,
   avatarUrl,
 }: EditProfileModalProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [address, setAddress] = useState("");
   const [image, setImage] = useState<string | null>(null); // preview
 
@@ -150,6 +151,12 @@ export function EditProfileModal({
     );
   };
 
+  useEffect(() => {
+    return () => {
+      if (image) URL.revokeObjectURL(image);
+    };
+  }, [image]);
+
   return (
     <SidebarWrapper onClose={onClose} open={true}>
       {/* Header */}
@@ -168,7 +175,7 @@ export function EditProfileModal({
                   src={image || avatar}
                   alt="profile"
                   fill
-                  className="object-cover"
+                  className="object-cover rounded-full"
                 />
               ) : (
                 `${profile?.firstName?.[0] || ""}${profile?.lastName?.[0] || ""}` ||
@@ -176,6 +183,7 @@ export function EditProfileModal({
               )}
 
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
@@ -183,13 +191,21 @@ export function EditProfileModal({
               />
             </div>
             {/* Camera badge */}
-            <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-Green border-2 border-card-background flex items-center justify-center hover:bg-Green/90 transition-colors">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-Green border-2 border-card-background flex items-center justify-center hover:bg-Green/90 transition-colors"
+            >
               <Camera className="w-3.5 h-3.5 text-white" />
             </button>
           </div>
-          <span className="mt-2.5 text-[12px] text-Green font-medium cursor-pointer hover:text-Green/80 transition-colors">
-            Change photo
-          </span>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="mt-2.5 text-[12px] text-Green font-medium cursor-pointer hover:text-Green/80 transition-colors"
+          >
+            {updateAvatarPending ? "Uploading..." : "Change photo"}
+          </button>
         </div>
 
         {/* Form */}

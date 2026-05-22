@@ -6,8 +6,10 @@ import { Card } from "../ui/FormCard";
 import Image from "next/image";
 import { useVerifyMail } from "@/lib/services/auth.service";
 import { useUserIdStore } from "@/store/verify-id.store";
+import { useRouter } from "next/navigation";
 
 const VerifyPage = ({ token }: { token?: string }) => {
+  const router = useRouter();
   const { data, mutate, isSuccess, isPending, error, isError } =
     useVerifyMail();
 
@@ -28,6 +30,16 @@ const VerifyPage = ({ token }: { token?: string }) => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (isSuccess && data?.success) {
+      const timer = setTimeout(() => {
+        router.push("/welcome");
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, data, router]);
+
   if (isSuccess && data?.success) {
     return (
       <Card className="text-center">
@@ -36,17 +48,17 @@ const VerifyPage = ({ token }: { token?: string }) => {
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] leading-11 font-bold text-card-text">
-            Let’s Get Started
+            Email Verified Successfully
           </h2>
           <p className="font-normal leading-6 text-[16px] text-text px-7">
-            Your email has been verified successfully
+            Redirecting you to your dashboard...
           </p>
         </div>
-        <Link href="/welcome">
+        {/* <Link href="/welcome">
           <Button type="submit" className="w-full p-2.5">
             Continue
           </Button>
-        </Link>
+        </Link> */}
       </Card>
     );
   }

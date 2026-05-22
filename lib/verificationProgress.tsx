@@ -22,26 +22,35 @@ const getStepDescription = (id: string) => {
 export const ONBOARDING_STEPS = (data: any) => {
   if (!data?.progress) return [];
 
-  // ❌ Remove SIGNUP
-  const filtered = data.progress.filter((step: any) => step.id !== "SIGNUP");
+  const progressMap = Object.fromEntries(
+    data.progress.map((step: any) => [
+      step.id,
+      {
+        ...step,
+        isCompleted:
+          step.id === "EMAIL_VERIFIED"
+            ? data.emailVerified
+            : step.isCompleted,
+      },
+    ]),
+  );
 
-  // ✅ Group into 4 steps
   const stepGroups = [
     {
       key: "EMAIL",
       modalKey: null,
       title: "Email Verification",
       ids: ["EMAIL_VERIFIED"],
-      desc: "Unlocks basic account features",
-      label: "Account created & verified",
+      desc: "Basic account features unlocked",
+      label: "Account created",
     },
     {
       key: "BVN",
       modalKey: "bvn",
       title: "Verify BVN",
       ids: ["BVN"],
-      desc: "Unlocks git card & bill payments",
-      label: "Unlocked: Gift Cards • Bill Payments • ₦50k limit",
+      desc: "Unlocks gift cards & bill payments",
+      label: "Gift cards & bill payments unlocked",
     },
     {
       key: "IDENTITY",
@@ -49,7 +58,7 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "ID & Selfie",
       ids: ["IDENTITY", "SELFIE"],
       desc: "Unlocks crypto & withdrawals",
-      label: "Unlocked: Crypto • Withdrawals • ₦500k limit",
+      label: "Crypto & withdrawals unlocked",
     },
     {
       key: "ADDRESS",
@@ -57,38 +66,26 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: "Proof of Address",
       ids: ["ADDRESS"],
       desc: "Unlocks full platform access",
-      label: "Unlocked: Full access • ₦2M limit",
+      label: "Full platform access unlocked",
     },
   ];
 
+  let activeStepFound = false;
+
   return stepGroups.map((group, index) => {
-    //
-    const steps = filtered
-      .filter((s: any) => group.ids.includes(s.id))
-      .map((step: any) => {
-        // ✅ Fix inconsistent backend response
-        if (step.id === "EMAIL_VERIFIED") {
-          return {
-            ...step,
-            isCompleted: data.emailVerified,
-          };
-        }
+    const groupSteps = group.ids.map((id) => progressMap[id]);
 
-        return step;
-      });
-
-    // ✅ ALL completed
-    const isCompleted = steps.every((s: any) => s.isCompleted);
-
-    // ✅ ANY incomplete
-    const hasIncomplete = steps.some((s: any) => !s.isCompleted);
+    const isCompleted = groupSteps.every(
+      (step) => step?.isCompleted,
+    );
 
     let status: "done" | "active" | "pending" = "pending";
 
     if (isCompleted) {
       status = "done";
-    } else if (hasIncomplete) {
+    } else if (!activeStepFound) {
       status = "active";
+      activeStepFound = true;
     }
 
     return {
@@ -96,8 +93,11 @@ export const ONBOARDING_STEPS = (data: any) => {
       title: group.title,
       desc: group.desc,
       status,
-      label: group.label,
       modalKey: group.modalKey,
+      label: group.label,
+
+      // IMPORTANT
+      steps: groupSteps,
     };
   });
 };

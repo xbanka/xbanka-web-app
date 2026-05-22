@@ -31,6 +31,13 @@ export function ConfirmStep({
     receiveAmount &&
     String(receiveAmount).trim().toLowerCase() !== "undefined" &&
     String(receiveAmount).trim() !== "";
+
+  const formatAmount = (amount: string | number) => {
+    if (!amount) return "0";
+
+    return Number(amount).toLocaleString();
+  };
+
   return (
     <Modal onClose={onCancel} className="p-0">
       {/* Header */}
@@ -51,12 +58,14 @@ export function ConfirmStep({
                   {mode === "BUY" ? "You Pay" : "You Sell"}
                 </p>
                 <p className="text-base font-normal leading-6 text-card-text">
-                  {payAmount}
+                  {formatAmount(payAmount)}
                 </p>
                 {/* <p className="text-xs text-text mt-0.5">{paySymbol}</p> */}
               </div>
               <div className="bg-background border border-border rounded-xl py-4 px-5">
-                <p className="text-xs text-text mb-1">{mode === "BUY" ? "You Receive" : "You Receive"}</p>
+                <p className="text-xs text-text mb-1">
+                  {mode === "BUY" ? "You Receive" : "You Receive"}
+                </p>
                 {isValidAmount ? (
                   <p className="text-base font-bold text-Green">
                     {receiveAmount}
@@ -99,10 +108,7 @@ export function ConfirmStep({
           >
             Cancel
           </Button>
-          <Button
-            onClick={onConfirm}
-            className="flex-3 p-2.5"
-          >
+          <Button onClick={onConfirm} className="flex-3 p-2.5">
             Confirm {mode === "BUY" ? "Purchase" : "Sale"}
           </Button>
         </div>

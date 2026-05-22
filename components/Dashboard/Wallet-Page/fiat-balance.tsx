@@ -86,11 +86,16 @@ export const FiatBalance = () => {
               </p>
             )}
             {(error || !isPending) && <ErrorField message={error?.message} />}
-            <span className="text-text text-xs font-normal leading-4.5">
-              {isPending
-                ? "Calculating..."
-                : `≈ ₦${latestWallet?.balance ?? 0} today`}
-            </span>
+            {!isPending && !error && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                {hidden ? "₦•••••••" : `≈ ₦${latestWallet?.balance ?? 0} today`}
+              </span>
+            )}
+            {isPending && (
+              <span className="text-text text-xs font-normal leading-4.5">
+                "Calculating..."
+              </span>
+            )}
           </div>
           <div className="flex items-start gap-4">
             <div className="">

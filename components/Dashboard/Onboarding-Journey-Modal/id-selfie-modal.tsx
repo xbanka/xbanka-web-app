@@ -9,13 +9,18 @@ import {
   AttachmentFile,
   AttachmentUpload,
 } from "@/components/ui/UploadAttachment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import LivenessDetector, { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
-import { UseProfileUser } from "@/lib/services/profile.service";
+import LivenessDetector, {
+  loadFaceLandmarker,
+} from "@/components/ui/LivenessDetector";
+import {
+  UseProfileUser,
+  UseVerificationStatus,
+} from "@/lib/services/profile.service";
 import { ErrorLayout } from "@/components/ui/error-layout";
 
 export type IdSelfieStep =
@@ -31,7 +36,29 @@ export function IdSelfieModal({
   onClose: () => void;
   onCompleted: () => void;
 }) {
+  const { data: verificationStatus } = UseVerificationStatus();
+
   const [step, setStep] = useState<IdSelfieStep>("id-form");
+
+  const verification = verificationStatus?.data;
+
+  const identityCompleted = verification?.progress?.find(
+    (s: any) => s.id === "IDENTITY",
+  )?.isCompleted;
+
+  const selfieCompleted = verification?.progress?.find(
+    (s: any) => s.id === "SELFIE",
+  )?.isCompleted;
+
+  useEffect(() => {
+    if (identityCompleted && !selfieCompleted) {
+      setStep("selfie");
+    }
+
+    if (identityCompleted && selfieCompleted) {
+      setStep("selfie-success");
+    }
+  }, [identityCompleted, selfieCompleted]);
 
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending, error } = useIdentity();
@@ -41,7 +68,7 @@ export function IdSelfieModal({
     mutate: skipMutate,
   } = useSkipStep();
   const { data: profileData } = UseProfileUser();
-    const userId = profileData?.data?.userId;
+  const userId = profileData?.data?.userId;
 
   const {
     register,
@@ -74,7 +101,7 @@ export function IdSelfieModal({
   };
 
   const handleIdSuccess = () => {
-    setStep("selfie")
+    setStep("selfie");
     loadFaceLandmarker();
   };
 
@@ -201,7 +228,6 @@ export function IdSelfieModal({
           badge="verified"
           ctaLabel="Move to Proof of Address"
           onCta={() => {
-            onClose();
             onCompleted();
           }}
           onClose={onClose}
