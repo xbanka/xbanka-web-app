@@ -123,7 +123,6 @@ export function BvnModal({
           badge={"verified"}
           ctaLabel="Move to ID & Selfie"
           onCta={() => {
-            onClose();
             onCompleted();
           }}
           onClose={onClose}

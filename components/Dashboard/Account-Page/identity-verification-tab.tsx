@@ -11,8 +11,16 @@ import {
 import { OnboardingJourneyCard } from "../Home-Page/onboarding-journey-card";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
+import { ModalType } from "../Home-Page/types";
+import { useState } from "react";
+import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
+import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
+import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorLayout } from "@/components/ui/error-layout";
 
 export function IdentityVerificationTab() {
+  const [openModal, setOpenModal] = useState<ModalType>(null);
   const tiers = [
     {
       tier: "TIER 0",
@@ -51,6 +59,7 @@ export function IdentityVerificationTab() {
   } = UseVerificationStatus();
   console.log("verificationStatus:", verificationStatus);
   const progress = ONBOARDING_STEPS(verificationStatus?.data);
+  console.log("progress", progress)
   const completedCount = progress.filter(
     (step) => step.status === "done",
   ).length;
@@ -107,17 +116,68 @@ export function IdentityVerificationTab() {
 
           {/* Verification Status */}
           <div>
+            {isPending && !error && (
+              <DashboardCard className="space-y-4 animate-pulse">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-border rounded" />
+                    <div className="h-3 w-32 bg-border rounded" />
+                  </div>
+                  <div className="h-3 w-20 bg-border rounded" />
+                </div>
+
+                {/* Grid skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="p-4 rounded-lg border border-border space-y-3"
+                    >
+                      {/* Icon / badge */}
+                      <Skeleton className="h-8 w-8 rounded-full bg-border" />
+
+                      {/* Title */}
+                      <Skeleton className="h-4 w-3/4 bg-border rounded" />
+
+                      {/* Description */}
+                      <div className="space-y-2">
+                        <Skeleton className="h-3 w-full bg-border rounded" />
+                        <Skeleton className="h-3 w-5/6 bg-border rounded" />
+                      </div>
+
+                      {/* Status badge */}
+                      <Skeleton className="h-5 w-16 bg-border rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              </DashboardCard>
+            )}
+
+            {error && !isPending && (
+              <DashboardCard>
+                <ErrorLayout message={error?.message} />
+              </DashboardCard>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {progress.map((s, i) => (
-                <OnboardingJourneyCard
-                className="min-h-47"
-                  key={i}
-                  status={s.status}
-                  step={s.step}
-                  title={s.title}
-                  label={s.label}
-                />
-              ))}
+              {!isPending &&
+                !error &&
+                progress.map((s, i) => (
+                  <OnboardingJourneyCard
+                    className="min-h-47"
+                    key={i}
+                    status={s.status}
+                    step={s.step}
+                    title={s.title}
+                    label={s.label}
+                    desc={s.desc}
+                    onClick={() => {
+                      if (s.modalKey) {
+                        setOpenModal(s.modalKey as ModalType);
+                      }
+                    }}
+                  />
+                ))}
             </div>
           </div>
         </DashboardCard>
@@ -194,6 +254,30 @@ export function IdentityVerificationTab() {
             </div>
           </div>
         </DashboardCard>
+        {openModal === "bvn" && (
+          <BvnModal
+            onClose={() => setOpenModal(null)}
+            onCompleted={() => {
+              setOpenModal("id-selfie");
+            }}
+          />
+        )}
+        {openModal === "id-selfie" && (
+          <IdSelfieModal
+            onClose={() => setOpenModal(null)}
+            onCompleted={() => {
+              setOpenModal("address");
+            }}
+          />
+        )}
+        {openModal === "address" && (
+          <AddressModal
+            onClose={() => setOpenModal(null)}
+            onCompleted={() => {
+              setOpenModal(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
