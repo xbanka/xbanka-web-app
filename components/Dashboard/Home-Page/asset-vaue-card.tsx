@@ -71,7 +71,7 @@ export function AssetValueCard() {
             <select
               value={view}
               onChange={(e) => setView(e.target.value as "NGN" | "CRYPTO")}
-              className="bg-transparent text-white/60 text-xs outline-none"
+              className="bg-transparent text-card-text/60 text-xs outline-none"
             >
               <option value="NGN">NGN</option>
               <option value="CRYPTO">USDT</option>
