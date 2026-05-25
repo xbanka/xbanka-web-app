@@ -37,13 +37,14 @@ export function ConfirmModal({
 }) {
   const [step, setStep] = useState<CryptoStep>("confirm");
   const [result, setResult] = useState<ConversionResult | null>(null);
-  const [ processingError, setProcessingError] = useState<string | null>(null);
- 
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [isExpiredQuoteError, setIsExpiredQuoteError] = useState(false);
+
   // Reset internal step every time the modal is opened/closed
   useEffect(() => {
     if (open) setStep("confirm");
   }, [open]);
- 
+
   // Keyboard Escape → close (only on confirm step; other steps handle it)
   useEffect(() => {
     if (!open || step !== "confirm") return;
@@ -55,11 +56,11 @@ export function ConfirmModal({
       document.body.style.overflow = "";
     };
   }, [open, handleReset, step]);
- 
+
   if (!open) return null;
- 
+
   // ── step renderers ─────────────────────────────────────────
- 
+
   if (step === "confirm") {
     return (
       <ConfirmStep
@@ -76,7 +77,7 @@ export function ConfirmModal({
       />
     );
   }
- 
+
   if (step === "pin") {
     return (
       <PinStep
@@ -87,7 +88,7 @@ export function ConfirmModal({
       />
     );
   }
- 
+
   if (step === "processing") {
     return (
       <ProcessingStep
@@ -104,13 +105,24 @@ export function ConfirmModal({
           setStep("success");
         }}
         onError={(error) => {
-          setProcessingError(error.raw.response.data.details.errors[0].message || error.message);
+          const message =
+            error?.raw?.response?.data?.details?.errors?.[0]?.message ||
+            error?.message ||
+            "";
+
+          const isExpiredQuote =
+            message.toLowerCase().includes("quote") &&
+            message.toLowerCase().includes("expired");
+
+          setProcessingError(message);
+          setIsExpiredQuoteError(isExpiredQuote);
+
           setStep("failed");
         }}
       />
     );
   }
- 
+
   if (step === "success") {
     return (
       <SuccessStep
@@ -130,7 +142,7 @@ export function ConfirmModal({
       />
     );
   }
- 
+
   if (step === "failed") {
     return (
       <FailedStep
@@ -138,9 +150,14 @@ export function ConfirmModal({
         onClose={handleReset}
         onRetry={() => setStep("processing")}
         errorMessage={processingError ? `${processingError}` : ""}
+        isExpiredQuote={isExpiredQuoteError}
+        onGetNewQuote={() => {
+          onRefreshQuote?.();
+          setStep("confirm");
+        }}
       />
     );
   }
- 
+
   return null;
 }
