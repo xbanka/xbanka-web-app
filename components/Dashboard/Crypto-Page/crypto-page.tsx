@@ -24,8 +24,7 @@ export function CryptoPage() {
 
   const currentTab = (searchParams.get("tab") as CryptoTab) || "buy";
 
-  const tradeMode =
-  (searchParams.get("mode") as "buy" | "sell") || "buy";
+  const tradeMode = (searchParams.get("mode") as "buy" | "sell") || "buy";
 
   const handleModeChange = (mode: "buy" | "sell") => () => {
     router.push(`/crypto?tab=buy&mode=${mode}`);
