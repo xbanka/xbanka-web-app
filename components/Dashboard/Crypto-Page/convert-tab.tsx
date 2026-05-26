@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "./confirm-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { getCoinImage } from "@/lib/coin-images";
 
 type FormValues = {
   amount: string;
@@ -75,6 +76,7 @@ export function ConvertTab() {
     return currencies.map((item: any) => ({
       label: item.code,
       value: item.code,
+      image: item.code === "NGNX" ? null : getCoinImage(item.code),
     }));
   }, [currencies]);
 
@@ -93,6 +95,7 @@ export function ConvertTab() {
     return pairs.map((p: any) => ({
       label: p.code,
       value: p.code,
+      image: p.code === "NGNX" ? null : getCoinImage(p.code),
     }));
   }, [pairMap, sourceCurrency]);
 
