@@ -7,8 +7,6 @@ import { BuyTab } from "./buy-tab";
 import { HowTo } from "./steps";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { P2PPage } from "./p2p-tab";
-import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type CryptoTab = "buy" | "sell" | "convert" | "p2p";
