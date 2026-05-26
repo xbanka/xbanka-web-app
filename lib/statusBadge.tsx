@@ -12,6 +12,20 @@ export function StatusBadge({ status }: { status: string }) {
   );
 }
 
+export function CryptoHistoryStatusBadge({ status }: { status: string }) {
+  const normalizedStatus = status?.toLowerCase();
+  const map: Record<string, string> = {
+    completed: "bg-green-success-light text-green-success-text",
+    pending: "bg-yellow-warning-light text-yellow-warning-text",
+    failed: "bg-red-500/10 text-red-500",
+  };
+  return (
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 rounded-sm text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
+      {status}
+    </span>
+  );
+}
+
 export function TransactionHistoryStatusBadge({ status }: { status: string }) {
   const normalizedStatus = status?.toLowerCase();
   const map: Record<string, string> = {

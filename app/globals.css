@@ -15,6 +15,7 @@
   --input-background: #F9F9F9;
   --placeholder: #4b5563;
   --text: #4b5563;
+  --red-error-light: #FFF4F3;
   --error-text: #E50500;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
@@ -30,7 +31,7 @@
   --teal-light: #F0FDFA;
   --teal-border: #99F6E4;
   --teal-text: #0F766E;
-  --success-text: #037508;
+  --green-success-text: #037508;
   --coral-text: #9A0283;
   --coral-border: #FFADE8;
   --coral-light: #FFF0FB;
@@ -65,6 +66,7 @@
   --color-card-text: var(--card-text);
   --color-placeholder: var(--placeholder);
   --color-text: var(--text);
+  --color-red-error-light: var(--red-error-light);
   --color-error-text: var(--error-text);
   --color-error-bg-button: var(--error-bg-button);
   --color-error-border-button: var(--error-border-button);
@@ -84,7 +86,7 @@
   --color-blue-light: var(--blue-light);
   --color-blue-text: var(--blue-text);
   --color-blue-border: var(--blue-border);
-  --color-success-text: var(--success-text);
+  --color-green-success-text: var(--green-success-text);
   --color-yellow-warning-light: var(--yellow-warning-light);
   --color-yellow-warning-text: var(--yellow-warning-text);
   --color-yellow-warning-border: var(--yellow-warning-border);
@@ -111,6 +113,7 @@
   --input-background: #202225;
   --placeholder: #9ca3af;
   --text: #a4aab4;
+  --red-error-light: #390201;
   --error-text: #FF8882;
   --error-bg-button: #9B0300;
   --error-border-button: #780200;
@@ -124,7 +127,7 @@
   --teal-light: #042F2E;
   --teal-border: #0F766E;
   --teal-text: #5EEAD4;
-  --success-text: #A6F4C5;
+  --green-success-text: #A6F4C5;
   --coral-text: #FFD6F3;
   --coral-border: #9A0283;
   --coral-light: #36002E;
