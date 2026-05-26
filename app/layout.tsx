@@ -4,6 +4,7 @@ import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
 import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -47,6 +48,7 @@ export default function RootLayout({
             </head>
 
             {children}
+            <Toaster richColors position="top-right" />
             <GlobalLogout />
             <OnboardingModalProvider />
           </body>
