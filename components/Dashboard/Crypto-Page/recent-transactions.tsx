@@ -3,7 +3,7 @@ import { ErrorField } from "@/components/ui/field-error";
 import { TimeAgoComponent } from "@/components/ui/timeAgo";
 import { timeAgo } from "@/lib/formatDate";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
-import { StatusBadge } from "@/lib/statusBadge";
+import { CryptoHistoryStatusBadge, StatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import Image from "next/image";
@@ -33,12 +33,12 @@ export function RecentTransactions() {
   };
   const getBadge = (status: string) => {
     if (status === "COMPLETED") {
-      return "w-6 h-6 text-[#6CE9A6] bg-[#012E03]";
+      return "w-6 h-6 bg-green-success-light text-green-success-text";
     }
     if (status === "PENDING") {
-      return "w-6 h-6 text-[#FEC84B] bg-[#3E2E00]";
+      return "w-6 h-6 bg-yellow-warning-light text-yellow-warning-text";
     }
-    return "w-6 h-6 text-[#FF8882] bg-[#390201]";
+    return "w-6 h-6 text-red-error-light bg-error-text";
   };
   return (
     <DashboardCard>
@@ -127,7 +127,7 @@ export function RecentTransactions() {
                 >
                   {tx.amount} {tx.currency}
                 </p>
-                <StatusBadge status={tx.status} />
+                <CryptoHistoryStatusBadge status={tx.status} />
               </div>
             </div>
           ))}
