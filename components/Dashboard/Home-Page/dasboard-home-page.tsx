@@ -34,7 +34,7 @@ export default function DashboardPage() {
         <MarketOverview />
         <TopGiftCards />
       </div> */}
-        <MarketOverview />
+      <MarketOverview />
 
     </div>
   );
