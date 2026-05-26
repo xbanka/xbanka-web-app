@@ -20,7 +20,7 @@ export const OnboardingJourneyCard = ({
     >
       <div>
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-medium leading-5 text-success-text uppercase tracking-wide max-sm:text-[12px] max-sm:leading-6">
+          <span className="text-[12px] font-medium leading-5 text-green-success-text uppercase tracking-wide max-sm:text-[12px] max-sm:leading-6">
             {step}
           </span>
           {status === "done" && (
@@ -42,7 +42,7 @@ export const OnboardingJourneyCard = ({
         )}
       </div>
       {status === "done" && (
-        <p className="text-xs text-success-text font-medium max-sm:text-[14px] max-sm:leading-6">
+        <p className="text-xs text-green-success-text font-medium max-sm:text-[14px] max-sm:leading-6">
           {label}
         </p>
       )}
