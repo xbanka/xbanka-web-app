@@ -356,12 +356,12 @@ export const DepositSidebar = ({
               <div className="w-25 h-25 bg-border animate-pulse rounded" />
             )}
           </div>
-          <div className="flex-1 min-w-0 space-y-1">
+          <div className="w-full flex-1 min-w-0 space-y-1">
             <p className="font-medium text-[12px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
               Wallet address
             </p>
             <div className="flex items-center gap-2 text-ellipsis max-sm:gap-3">
-              <div className="w-full flex min-w-0 items-center h-10 truncate text-ellipsis py-2.5 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
+              <div className="w-full min-w-0 truncate text-ellipsis py-2 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
                 {isLoading
                   ? "Generating address..."
                   : addressData?.data?.address || "No address available"}

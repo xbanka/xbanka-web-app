@@ -51,9 +51,9 @@ export function QuickActions() {
               className={`relative cursor-pointer flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}
             >
               {!a.disabled ? (
-                <ArrowUpRight className="absolute top-3 right-3 w-4 h-4 opacity-60" />
+                <ArrowUpRight className="text-card-text/60 absolute top-3 right-3 w-4 h-4" />
               ) : (
-                <span className="absolute top-3 right-3 bg-white/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/80 border border-white/10">
+                <span className="absolute top-3 right-3 bg-black/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-card-text border border-white/10">
                   Soon
                 </span>
               )}
