@@ -368,9 +368,9 @@ export const DepositSidebar = ({
               </div>
               <button
                 onClick={handleCopy}
-                className="flex h-10 shrink-0 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-Green rounded-lg max-sm:h-14 max-sm:w-16 max-sm:justify-center"
+                className="flex h-10 shrink-0 items-center gap-1 px-4 py-2.5 bg-[#0F766E] border border-Green rounded-lg max-sm:h-14 max-sm:w-16 max-sm:justify-center cursor-pointer"
               >
-                <Copy className="w-4 h-4 text-Green max-sm:h-6 max-sm:w-6" />
+                <Copy className="w-4 h-4 text-white max-sm:h-6 max-sm:w-6" />
               </button>
             </div>
           </div>
