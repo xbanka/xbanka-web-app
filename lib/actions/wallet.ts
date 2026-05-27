@@ -1,3 +1,4 @@
+import { ExecuteConversionResponse } from "@/components/Dashboard/Crypto-Page/types";
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
 import { sumWallets } from "../sumBalances";
 import {
@@ -244,7 +245,9 @@ export const quoteConversion = async (data: QuoteExecutePayload) => {
   return response.data;
 };
 
-export const executeConversion = async (data: ConvertExecutePayload) => {
+export const executeConversion = async (
+  data: ConvertExecutePayload,
+): Promise<ExecuteConversionResponse> => {
   const response = await AxiosInstance.post("/wallets/convert/accept", data);
 
   return response.data;

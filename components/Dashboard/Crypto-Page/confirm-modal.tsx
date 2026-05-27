@@ -93,13 +93,7 @@ export function ConfirmModal({
     return (
       <ProcessingStep
         mode={mode}
-        payAmount={String(payAmount)}
-        paySymbol={paySymbol}
-        receiveAmount={receiveAmount}
-        receiveSymbol={receiveSymbol}
         quoteId={quoteId}
-        sourceCurrency={sourceCurrency}
-        targetCurrency={targetCurrency}
         onSuccess={(data) => {
           setResult(data);
           setStep("success");
@@ -127,14 +121,8 @@ export function ConfirmModal({
     return (
       <SuccessStep
         mode={mode}
-        payAmount={String(result?.youPaid ?? payAmount)}
-        paySymbol={paySymbol}
-        receiveAmount={result?.youReceived ?? receiveAmount}
-        receiveSymbol={receiveSymbol}
-        rate={result?.rate || "N0.00"}
-        fee={fee}
+        result={result}
         dateTime={result?.dateTime}
-        reference={result?.transactionId || "—"}
         onDone={handleReset}
         onRepeat={() => {
           handleReset();
