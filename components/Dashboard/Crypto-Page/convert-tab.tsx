@@ -267,8 +267,6 @@ export function ConvertTab() {
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
           onRefreshQuote={refetchQuote}
           quoteId={quoteData?.quoteId || ""}
-          sourceCurrency={sourceCurrency}
-          targetCurrency={targetCurrency}
         />
       )}
     </div>

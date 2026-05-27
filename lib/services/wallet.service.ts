@@ -81,7 +81,6 @@ export const UseGetCryptoWallet = () => {
         handleApiError(err);
       }
     },
-    staleTime: 10 * 1000, // 10 seconds (tune this)
   });
 };
 
@@ -211,6 +210,7 @@ export const UseVerifyFund = () => {
 
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
     onError: (err) => {

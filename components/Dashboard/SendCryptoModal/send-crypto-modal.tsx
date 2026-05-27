@@ -72,12 +72,6 @@ export function SendCryptoModal({
     onClose();
   };
 
-  // const startProcessing = async () => {
-  //   setStep("processing");
-  //   await new Promise((r) => setTimeout(r, 2500));
-  //   setStep("success");
-  // };
-
   if (step === "select_asset")
     return (
       <SelectAssetStep

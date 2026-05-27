@@ -37,9 +37,17 @@ export function SelectAssetStep({
   const [search, setSearch] = useState("");
   const { data, error, isPending, isError } = UseGetCryptoWallet();
   const wallets =
-    data?.data?.data?.filter(
-      (wallet: UserWallet) => Number(wallet.balance) > 0,
-    ) || [];
+    data?.data?.data?.slice()?.sort((a: UserWallet, b: UserWallet) => {
+      const aBalance = Number(a.balance);
+      const bBalance = Number(b.balance);
+
+      // Wallets with balance > 0 come first
+      if (aBalance > 0 && bBalance === 0) return -1;
+      if (aBalance === 0 && bBalance > 0) return 1;
+
+      // Optional: sort non-zero balances descending
+      return bBalance - aBalance;
+    }) || [];
   const filtered = wallets.filter(
     (asset: UserWallet) =>
       asset.currency.toLowerCase().includes(search.toLowerCase()) ||
