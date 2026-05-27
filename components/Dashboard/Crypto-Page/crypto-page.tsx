@@ -37,7 +37,7 @@ export function CryptoPage() {
             key={t.id}
             onClick={() => router.push(`/crypto?tab=${t.id}`)}
             className={`pb-2.5 px-4 text-sm font-medium border-b-4 transition-colors -mb-px
-              ${currentTab === t.id ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}
+              ${currentTab === t.id ? "border-Green text-foreground" : "border-transparent text-text hover:text-card-text"}`}
           >
             {t.label}
           </button>
@@ -56,7 +56,7 @@ export function CryptoPage() {
                       variant={tradeMode === m ? "default" : "outline"}
                       key={m}
                       onClick={handleModeChange(m)}
-                      className={`flex-1 py-2 px-3 rounded-lg border-none text-sm font-semibold capitalize transition-colors
+                      className={`flex-1 py-2 px-3 rounded-lg border-none text-base leading-6 font-medium capitalize transition-colors
                   ${tradeMode === m ? "bg-[#042F2E] text-white" : "text-text hover:text-card-text"}`}
                     >
                       {m}
