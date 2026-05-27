@@ -36,6 +36,7 @@ export function IdSelfieModal({
   onClose: () => void;
   onCompleted: () => void;
 }) {
+  const [isMobileDevice, setIsMobileDevice] = useState(true);
   const { data: verificationStatus } = UseVerificationStatus();
 
   const [step, setStep] = useState<IdSelfieStep>("id-form");
@@ -59,6 +60,31 @@ export function IdSelfieModal({
       setStep("selfie-success");
     }
   }, [identityCompleted, selfieCompleted]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent =
+        typeof navigator === "undefined" ? "" : navigator.userAgent;
+
+      const mobile =
+        /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+          userAgent,
+        );
+
+      // optional width fallback
+      const smallScreen = window.innerWidth < 1024;
+
+      setIsMobileDevice(mobile);
+    };
+
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending, error } = useIdentity();
@@ -105,12 +131,41 @@ export function IdSelfieModal({
     loadFaceLandmarker();
   };
 
-  const stepTitles: Record<IdSelfieStep, string> = {
-    "id-form": "Select Your Preferred ID",
-    "id-success": "ID Submitted",
-    selfie: "Take a Selfie",
-    "selfie-success": "Selfie Captured",
-  };
+  if (!isMobileDevice) {
+    return (
+      <Modal className="p-0" onClose={onClose}>
+        <div className="space-y-6 text-center py-8 px-8">
+          <div className="border border-border rounded-2xl p-6 bg-card-background">
+            <div className="space-y-3">
+              <Camera className="mx-auto h-10 w-10 text-text" />
+
+              <h2 className="text-lg font-semibold text-card-text">
+                Mobile Device Required
+              </h2>
+
+              <p className="text-sm text-text">
+                Selfie verification can only be completed on a mobile device
+                with a front-facing camera.
+              </p>
+
+              <p className="text-xs text-text">
+                Please open your account on your phone to continue.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full"
+            onClick={onClose}
+          >
+            Back
+          </Button>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal className="p-0" onClose={onClose}>
