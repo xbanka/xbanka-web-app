@@ -37,13 +37,13 @@ export function ConfirmCryptoModal({
 }) {
   const [step, setStep] = useState<CryptoStep>("confirm");
   const [result, setResult] = useState<ConversionResult | null>(null);
-  const [ processingError, setProcessingError] = useState<string | null>(null);
- 
+  const [processingError, setProcessingError] = useState<string | null>(null);
+
   // Reset internal step every time the modal is opened/closed
   useEffect(() => {
     if (open) setStep("confirm");
   }, [open]);
- 
+
   // Keyboard Escape → close (only on confirm step; other steps handle it)
   useEffect(() => {
     if (!open || step !== "confirm") return;
@@ -55,11 +55,9 @@ export function ConfirmCryptoModal({
       document.body.style.overflow = "";
     };
   }, [open, handleReset, step]);
- 
+
   if (!open) return null;
- 
-  // ── step renderers ─────────────────────────────────────────
- 
+
   if (step === "confirm") {
     return (
       <ConfirmStep
@@ -76,7 +74,7 @@ export function ConfirmCryptoModal({
       />
     );
   }
- 
+
   if (step === "pin") {
     return (
       <PinStep
@@ -87,18 +85,12 @@ export function ConfirmCryptoModal({
       />
     );
   }
- 
+
   if (step === "processing") {
     return (
       <ProcessingStep
         mode={mode}
-        payAmount={String(payAmount)}
-        paySymbol={paySymbol}
-        receiveAmount={receiveAmount}
-        receiveSymbol={receiveSymbol}
         quoteId={quoteId}
-        sourceCurrency={sourceCurrency}
-        targetCurrency={targetCurrency}
         onSuccess={(data) => {
           setResult(data);
           setStep("success");
@@ -110,19 +102,13 @@ export function ConfirmCryptoModal({
       />
     );
   }
- 
+
   if (step === "success") {
     return (
       <SuccessStep
         mode={mode}
-        payAmount={String(result?.youPaid ?? payAmount)}
-        paySymbol={paySymbol}
-        receiveAmount={result?.youReceived ?? receiveAmount}
-        receiveSymbol={receiveSymbol}
-        rate={result?.rate || "N0.00"}
-        fee={fee}
+        result={result}
         dateTime={result?.dateTime}
-        reference={result?.transactionId || "—"}
         onDone={handleReset}
         onRepeat={() => {
           handleReset();
@@ -130,7 +116,7 @@ export function ConfirmCryptoModal({
       />
     );
   }
- 
+
   if (step === "failed") {
     return (
       <FailedStep
@@ -141,6 +127,6 @@ export function ConfirmCryptoModal({
       />
     );
   }
- 
+
   return null;
 }
