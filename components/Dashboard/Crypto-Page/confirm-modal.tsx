@@ -18,8 +18,6 @@ export function ConfirmModal({
   fee,
   onRefreshQuote,
   quoteId,
-  sourceCurrency,
-  targetCurrency,
 }: {
   open: boolean;
   handleReset: () => void;
@@ -32,8 +30,6 @@ export function ConfirmModal({
   fee: string;
   onRefreshQuote?: () => void;
   quoteId: string;
-  sourceCurrency: string;
-  targetCurrency: string;
 }) {
   const [step, setStep] = useState<CryptoStep>("confirm");
   const [result, setResult] = useState<ConversionResult | null>(null);
