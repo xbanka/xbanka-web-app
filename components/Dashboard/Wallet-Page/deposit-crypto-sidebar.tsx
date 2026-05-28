@@ -361,10 +361,12 @@ export const DepositSidebar = ({
               Wallet address
             </p>
             <div className="flex items-center gap-2 text-ellipsis max-sm:gap-3">
-              <div className="w-full min-w-0 truncate text-ellipsis py-2 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
-                {isLoading
-                  ? "Generating address..."
-                  : addressData?.data?.address || "No address available"}
+              <div className="flex items-center w-full min-w-0 py-2 px-4 bg-input-background border border-input rounded-lg text-[14px] font-normal leading-6 text-text max-sm:h-14 max-sm:text-[16px]">
+                <span className="truncate">
+                  {isLoading
+                    ? "Generating address..."
+                    : addressData?.data?.address || "No address available"}
+                </span>
               </div>
               <button
                 onClick={handleCopy}
