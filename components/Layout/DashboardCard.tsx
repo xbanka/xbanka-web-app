@@ -5,7 +5,7 @@ export const DashboardCard = ({ children, className }: cardProps) => {
   return (
     <div
       className={cn(
-        "bg-card-background border border-border rounded-xl p-5 space-y-4",
+        "bg-card-background border border-border rounded-xl p-5 max-sm:p-3.5 space-y-4",
         className,
       )}
     >
