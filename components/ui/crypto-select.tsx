@@ -52,25 +52,25 @@ export const CryptoSelectField = ({
           {/* Selected */}
           <button
             onClick={() => setOpen((p) => !p)}
-            className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-card-secondary"
+            className="flex items-center justify-between w-full gap-1.5 px-3 py-2 max-sm:px-2 max-sm:py-1.5 rounded-lg bg-card-secondary"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 max-sm:gap-1.5 min-w-0">
               {selected?.image && (
                 <Image
                   src={selected.image}
                   className={
                     selected.value === "NGN"
-                      ? "bg-Green border border-abstract-green text-foreground rounded-[9999px]"
-                      : ""
+                      ? "bg-Green border border-abstract-green text-foreground rounded-[9999px] shrink-0"
+                      : "shrink-0"
                   }
                   alt=""
                   width={24}
                   height={24}
                 />
               )}
-              <span>{selected?.label || "Select"}</span>
+              <span className="text-sm max-sm:text-xs truncate">{selected?.label || "Select"}</span>
             </div>
-            {currencyId && <ChevronDown className="w-4 h-4" />}
+            {currencyId && <ChevronDown className="w-4 h-4 shrink-0" />}
           </button>
 
           {/* Dropdown */}

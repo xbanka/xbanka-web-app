@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
-import { AlertTriangle, CheckCircle, Copy, Receipt, RefreshCcw } from "lucide-react";
+import { CheckCircle, Copy, Receipt, RefreshCcw } from "lucide-react";
 import { useState } from "react";
-import { ConversionResult } from "./types";
 import Image from "next/image";
 
 export function SuccessStep({
@@ -44,12 +43,12 @@ export function SuccessStep({
 
   const rows = [
     {
-      label: mode === "BUY" ? "You Paid" : "Asset Sold",
+      label: mode === "BUY" ? "You paid" : "Asset Sold",
       value: `${payAmount} ${paySymbol}`,
       valueClass: "text-card-text",
     },
     {
-      label: "You Received",
+      label: "You received",
       value: receiveAmount,
       valueClass: "text-Green",
     },
@@ -63,31 +62,13 @@ export function SuccessStep({
       value: fee === "0 Fee" || fee === "O Fee" ? "₦0.00" : fee,
       valueClass: "text-card-text",
     },
-    ...(dateTime
-      ? [
-          {
-            label: "Date & Time",
-            value: dateTime,
-            valueClass: "text-card-text",
-          },
-        ]
-      : []),
   ];
 
-  // const secondRows = [
-  //   {
-  //     label: "Date & Time",
-  //     value: dateTime,
-  //     valueClass: "text-card-text",
-  //   },
-  //   {
-  //     label: "You Received",
-  //     value: receiveAmount,
-  //     valueClass: "text-Green",
-  //   },
-  // ];
   return (
-    <Modal className="pb-10 px-10 pt-6" onClose={onDone}>
+    <Modal
+      className="pb-10 px-10 pt-6 max-sm:pb-6 max-sm:px-5 max-sm:pt-4"
+      onClose={onDone}
+    >
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
       </div>
@@ -125,16 +106,12 @@ export function SuccessStep({
             </div>
           ))}
 
-          {/* Transaction ID row with copy */}
           {dateTime && (
             <div className="flex items-center justify-between pt-3 border-t border-input text-xs">
               <span className="text-text">Date & Time</span>
-              <button
-                onClick={copy}
-                className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
-              >
-                <span className="truncate max-w-[120px]">{dateTime}</span>
-              </button>
+              <span className="font-normal text-sm leading-6 text-card-text truncate max-w-30">
+                {dateTime}
+              </span>
             </div>
           )}
           {reference && (
@@ -144,11 +121,11 @@ export function SuccessStep({
                 onClick={copy}
                 className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
               >
-                <span className="truncate max-w-[120px]">{reference}</span>
+                <span className="truncate max-w-30">{reference}</span>
                 {copied ? (
-                  <CheckCircle className="w-3.5 h-3.5 text-Green flex-shrink-0" />
+                  <CheckCircle className="w-3.5 h-3.5 text-Green shrink-0" />
                 ) : (
-                  <Copy className="w-3.5 h-3.5 text-text flex-shrink-0" />
+                  <Copy className="w-3.5 h-3.5 text-text shrink-0" />
                 )}
               </button>
             </div>

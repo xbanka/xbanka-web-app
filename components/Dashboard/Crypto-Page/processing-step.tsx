@@ -60,17 +60,20 @@ export function ProcessingStep({
   }, [quoteId]);
 
   return (
-    <Modal className="space-y-6 text-center p-10" onClose={() => {}}>
+    <Modal
+      className="space-y-6 text-center p-10 max-sm:p-6"
+      onClose={() => {}}
+    >
       <div className="flex justify-center">
         <Spinner icon={LucideArrowLeftRight} size={80} />
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-2xl font-semibold leading-8 text-card-text">
-          Processing your {mode === "BUY" ? "purchase" : "sale"}…
+        <h3 className="text-2xl font-semibold leading-8 text-card-text max-sm:text-xl max-sm:leading-7">
+          Processing your request…
         </h3>
-        <p className="text-base font-normal leading-6 text-text">
-          We are completing your order. Please don't close this window.
+        <p className="text-base font-normal leading-6 text-text max-sm:text-sm">
+          This usually takes a few seconds. Please don't close this window.
         </p>
       </div>
     </Modal>

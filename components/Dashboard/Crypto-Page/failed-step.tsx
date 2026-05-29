@@ -15,7 +15,7 @@ export function FailedStep({
   errorMessage?: string;
 }) {
   return (
-    <Modal className="p-10 space-y-0" onClose={onClose}>
+    <Modal className="p-10 space-y-0 max-sm:p-6" onClose={onClose}>
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onClose} />
       </div>
