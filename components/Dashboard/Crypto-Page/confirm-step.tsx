@@ -64,14 +64,14 @@ export function ConfirmStep({
     <Modal onClose={onCancel} className="p-0">
       {/* Header */}
       <ModalHeader
-        className="px-10 py-6 max-sm:px-5 max-sm:py-4"
+        className="px-10 py-6"
         title={mode === "BUY" ? "Confirm Purchase" : "Confirm Sale"}
         onClose={onCancel}
       />
 
       {/* Body */}
-      <div className="px-10 pb-10 pt-6 space-y-8 max-sm:px-5 max-sm:pb-6 max-sm:pt-4 max-sm:space-y-6">
-        <div className="space-y-6 max-sm:space-y-5">
+      <div className="px-10 pb-10 pt-6 space-y-8">
+        <div className="space-y-5">
           <RateLocked key={rate} seconds={30} onExpire={onRefreshQuote} />
 
           {showUpdatedBanner && (
@@ -87,14 +87,14 @@ export function ConfirmStep({
                 <p className="text-xs font-normal leading-4.5 text-text mb-2">
                   {mode === "BUY" ? "You Pay" : "You Sell"}
                 </p>
-                <p className="text-2xl font-bold max-sm:font-medium max-sm:text-[16px] max-sm:leading-[24px] leading-7 text-card-text wrap-break-word max-sm:text-xl">
-                  {paySymbol ? `${paySymbol} ` : ""}
+                <p className="text-base font-normal leading-6 text-card-text">
                   {formatAmount(payAmount)}
                 </p>
+                {/* <p className="text-xs text-text mt-0.5">{paySymbol}</p> */}
               </div>
-              <div className="bg-[#25272B] border border-[#374151] rounded-xl py-5 px-5 max-sm:py-4 max-sm:px-3.5">
-                <p className="text-sm font-normal leading-5 text-text mb-3 max-sm:text-xs max-sm:mb-2">
-                  You Receive
+              <div className="bg-background border border-border rounded-xl py-4 px-5">
+                <p className="text-xs text-text mb-1">
+                  {mode === "BUY" ? "You Receive" : "You Receive"}
                 </p>
                 {isValidAmount ? (
                   <div>
@@ -110,24 +110,25 @@ export function ConfirmStep({
                       )}
                   </div>
                 ) : (
-                  <div className="h-6 w-[60%] bg-border rounded animate-pulse" />
+                  <div className="h-3 w-[25%] bg-border rounded" />
                 )}
+                {/* <p className="text-xs text-text mt-0.5">{receiveSymbol}</p> */}
               </div>
             </div>
 
-            <div className="space-y-2 text-sm max-sm:text-xs">
-              <div className="flex justify-between items-center">
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between text-text">
                 <span className="text-text">Exchange Rate</span>
-                <span className="text-card-text font-medium">
+                <span>
                   {rate.split("=")[0].trim()} = {rate.split("=")[1]?.trim()}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between">
                 <span className="text-text">Transaction Fee</span>
                 <span
                   className={
                     fee === "0 Fee" || fee === "O Fee"
-                      ? "text-Green font-medium"
+                      ? "text-green-500 font-medium"
                       : "text-card-text font-medium"
                   }
                 >
@@ -138,15 +139,15 @@ export function ConfirmStep({
           </div>
         </div>
         {/* Footer */}
-        <div className="flex gap-4 max-sm:gap-3">
+        <div className="flex gap-4">
           <Button
             onClick={onCancel}
             variant="outline"
-            className="flex-1 py-3 border-input"
+            className="flex-1 p-2.5 border-input"
           >
             Cancel
           </Button>
-          <Button onClick={onConfirm} className="flex-2 py-3 font-semibold">
+          <Button onClick={onConfirm} className="flex-3 p-2.5">
             Confirm {mode === "BUY" ? "Purchase" : "Sale"}
           </Button>
         </div>

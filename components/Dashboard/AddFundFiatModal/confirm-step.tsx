@@ -28,29 +28,29 @@ export function ConfirmStep({
 
   return (
     <Modal
-      className="px-12 pt-8 pb-8 space-y-6 max-sm:px-6 max-sm:pb-6 max-sm:pt-6 max-sm:space-y-5"
+      className="pt-6 space-y-8 max-sm:px-5 max-sm:pb-6 max-sm:pt-5 max-sm:space-y-6"
       onClose={onClose}
     >
-      <div className="space-y-5 max-sm:space-y-4">
+      <div className="space-y-6 max-sm:space-y-4">
         {/* Icon */}
-        <div className="flex justify-center mb-3 max-sm:mb-1">
-          <div className="w-15 h-15 max-sm:w-12 max-sm:h-12 rounded-full border p-2 bg-[#042F2E] border-[#0F766E] flex items-center justify-center">
-            <ArrowLeftRight className="w-8 h-8 text-Green max-sm:w-6 max-sm:h-6" />
+        <div className="flex justify-center mb-4 max-sm:mb-2">
+          <div className="w-15 h-15 max-sm:w-14 max-sm:h-14 rounded-[36px] border p-2 bg-[#042F2E] border-[#0F766E] flex items-center justify-center">
+            <ArrowLeftRight className="w-8 h-8 text-Green max-sm:w-7 max-sm:h-7" />
           </div>
         </div>
-        <div className="font-semibold text-center text-2xl leading-8 text-card-text max-sm:text-xl max-sm:leading-7">
+        <div className="font-semibold text-center text-2xl leading-8 text-card-text max-sm:text-[22px] max-sm:leading-7">
           Confirm Transaction
         </div>
       </div>
 
       <div className="space-y-4 max-sm:space-y-3">
-        <div className="rounded-[20px] bg-border p-4 space-y-3 max-sm:p-3">
-          <div className="pb-3 space-y-1.5">
+        <div className="rounded-[20px] bg-border p-4 space-y-3 max-sm:p-3.5">
+          <div className="pb-3 space-y-2">
             {/* Amount */}
             <p className="text-base font-normal leading-6 text-text text-center max-sm:text-sm">
               Amount to Fund
             </p>
-            <p className="text-2xl font-semibold leading-8 text-card-text text-center max-sm:text-xl max-sm:leading-7">
+            <p className="text-2xl font-semibold leading-8 text-card-text text-center max-sm:text-[22px] max-sm:leading-7">
               ₦{amount}
             </p>
           </div>
@@ -105,15 +105,15 @@ export function ConfirmStep({
           </div>
         </div>
 
-        <div className="flex items-start gap-3 text-xs text-text max-sm:gap-2">
-          <AlertTriangle className="w-3.5 h-3.5 text-Green shrink-0 mt-0.5" />
-          <span className="font-normal leading-4.6 max-sm:text-[11px] max-sm:leading-4">
+        <div className="flex items-center gap-4 text-xs text-text max-sm:gap-3">
+          <AlertTriangle className="w-3 h-3 text-Green shrink-0" />
+          <span className="font-normal leading-4.6 max-sm:text-[11px]">
             Funds will be debited directly from your selected bank account.
           </span>
         </div>
       </div>
 
-      <div className="flex gap-3 max-sm:gap-2">
+      <div className="flex gap-4 max-sm:gap-3">
         <Button
           type="button"
           variant="outline"
@@ -123,7 +123,7 @@ export function ConfirmStep({
         >
           Back
         </Button>
-        <Button size="lg" className="flex-2" onClick={onConfirm}>
+        <Button size="lg" className="flex-3" onClick={onConfirm}>
           Confirm Funding
         </Button>
       </div>

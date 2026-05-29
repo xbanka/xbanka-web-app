@@ -34,14 +34,14 @@ export function PinStep({
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
-        className="px-10 py-6 max-sm:px-5 max-sm:py-4"
+        className="px-10 py-6"
         title="Enter PIN"
         subtitle={`Enter your 4-digit transaction PIN to confirm this ${mode === "BUY" ? "purchase" : "sale"}.`}
         onBack={onBack}
         onClose={onClose}
       />
-
-      <div className="pt-6 px-10 pb-10 max-sm:pt-4 max-sm:px-5 max-sm:pb-6">
+ 
+      <div className="pt-6 px-10 pb-10">
         <div className="py-4 space-y-5">
           <OtpInput length={4} onChange={setPin} />
           <div className="text-center flex justify-center">
@@ -53,7 +53,7 @@ export function PinStep({
             </button>
           </div>
         </div>
-
+ 
         <div className="flex gap-4 mt-4">
           <Button
             type="button"
@@ -71,7 +71,7 @@ export function PinStep({
             variant={pin.length >= 4 && !isPending ? "default" : "disabled"}
             onClick={handleConfirm}
           >
-            {isPending ? "Verifying..." : "Confirm Transaction"}
+            {isPending ? "Verifying..." : "Confirm"}
           </Button>
         </div>
       </div>
