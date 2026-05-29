@@ -56,13 +56,13 @@ export const PersonalInfoModal = ({ onClose }: { onClose: () => void }) => {
     {step === "form" && (
       <>
         <ModalHeader
-          className="px-10 py-6 max-sm:px-5 max-sm:py-4"
+          className="px-10 py-6"
           title="Lets's get to know you better"
           subtitle={`Provide a few details to set up your xbanka account`}
           onClose={onClose}
         />
 
-        <div className="pt-6 px-10 pb-10 max-sm:pt-4 max-sm:px-5 max-sm:pb-6">
+        <div className="pt-6 px-10 pb-10">
           <form onSubmit={handleSubmit(onsubmit)} className="space-y-4">
             <FormField
               id="firstName"

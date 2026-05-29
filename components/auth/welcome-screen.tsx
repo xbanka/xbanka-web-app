@@ -9,58 +9,58 @@ export function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4 py-6 sm:min-h-screen">
-      <Card className="w-full max-w-150 space-y-5 overflow-hidden sm:space-y-6 max-sm:min-h-[calc(100dvh-48px)] max-sm:justify-center max-sm:px-5 max-sm:py-6">
+    <div className="min-h-screen flex items-center justify-center ">
+      <Card className="w-150 space-y-6">
         {/* Logo */}
         <span className="text-[13px] font-bold tracking-wide text-card-text">
           <span className="text-Green">x</span>banka
         </span>
 
         {/* Card */}
-        <div className="w-full rounded-2xl bg-card-background px-0 sm:px-[33.5px]">
+        <div className="w-full bg-card-background rounded-2xl px-[33.5px]">
           {/* Illustration area */}
           {/* <Image src={"/Content.svg"} alt="content" width={400} height={260} /> */}
-          <div className="mx-auto h-44 w-full max-w-100 rounded-tl-[20px] rounded-tr-[20px] border-x-6 border-t-6 border-input sm:h-65"></div>
+          <div className="h-65 w-100 mx-auto border-t-6 border-x-6 border-input rounded-tl-[20px] rounded-tr-[20px]"></div>
 
           {/* Avatars */}
-          <div className="relative flex h-14 w-full items-center justify-center min-[375px]:h-16 sm:h-18">
+          <div className="relative flex items-center justify-center h-18 w-full">
             <Image
-              className="z-10 -mr-2.5 h-10 w-10 min-[375px]:-mr-3 min-[375px]:h-12 min-[375px]:w-12 sm:-mr-4 sm:h-16 sm:w-16"
+              className="z-10 -mr-4"
               alt=""
               src="/Rectangle3.svg"
               width={64}
               height={64}
             />
             <Image
-              className="z-20 -mr-2.5 h-12 w-12 min-[375px]:-mr-3 min-[375px]:h-14 min-[375px]:w-14 sm:-mr-4 sm:h-20 sm:w-20"
+              className="z-20 -mr-4"
               alt=""
               src="/Rectangle2.svg"
               width={80}
               height={80}
             />
             <Image
-              className="z-30 -mr-2.5 h-14 w-14 min-[375px]:-mr-3 min-[375px]:h-16 min-[375px]:w-16 sm:-mr-4 sm:h-[100px] sm:w-[100px]"
+              className="z-30 -mr-4"
               alt=""
               src="/Rectangle1.svg"
               width={100}
               height={100}
             />
             <Image
-              className="z-40 -mr-2.5 h-14 w-14 min-[375px]:-mr-3 min-[375px]:h-16 min-[375px]:w-16 sm:-mr-4 sm:h-[100px] sm:w-[100px]"
+              className="z-40 -mr-4"
               alt=""
               src="/Rectangle.svg"
               width={100}
               height={100}
             />
             <Image
-              className="z-50 -mr-2.5 h-12 w-12 min-[375px]:-mr-3 min-[375px]:h-14 min-[375px]:w-14 sm:-mr-4 sm:h-20 sm:w-20"
+              className="z-50 -mr-4"
               alt=""
               src="/Rectangle5.svg"
               width={80}
               height={80}
             />
             <Image
-              className="z-60 h-10 w-10 rounded-full min-[375px]:h-12 min-[375px]:w-12 sm:h-16 sm:w-16"
+              className="rounded-full z-60"
               alt=""
               src="/Rectangle4.svg"
               width={64}
@@ -71,15 +71,15 @@ export function WelcomeScreen() {
 
         {/* Headline */}
         <div className="flex flex-col items-center gap-2.5 text-center">
-          <h1 className="text-[26px] font-bold leading-8 text-card-text min-[375px]:text-[30px] min-[375px]:leading-9 sm:text-[36px] sm:leading-11">
+          <h1 className="text-[36px] font-bold text-card-text leading-11 tracking-tight">
             Your financial future
             <br />
             starts here
           </h1>
-          <p className="text-[15px] font-normal leading-6 text-text sm:text-[16px]">
+          <p className="text-[16px] font-normal leading-6 text-text">
             Your fiat and crypto wallet is ready.
             <br />
-            Let&apos;s get started.
+            Let's get started.
           </p>
         </div>
 

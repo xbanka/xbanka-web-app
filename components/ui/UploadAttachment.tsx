@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { Upload, Trash2, FileText } from "lucide-react";
+import { useRef, useState } from "react";
+import { Upload, Trash2, FileText, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AttachmentFile {
@@ -64,13 +64,13 @@ export function AttachmentUpload({
       {/* Upload box */}
       <div
         onClick={() => inputRef.current?.click()}
-        className="border border-input rounded-lg py-4 px-12 bg-input-background text-center cursor-pointer hover:bg-input-background/80 transition max-sm:px-4 max-sm:py-5"
+        className="border border-input rounded-lg py-4 px-12 bg-input-background text-center cursor-pointer hover:bg-input-background/80 transition"
       >
-        <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2 max-sm:mb-3" />
-        <p className="text-[12px] font-normal leading-4 text-gray-600 max-sm:text-[16px] max-sm:font-medium max-sm:leading-6 max-sm:text-card-text">
+        <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+        <p className="text-[12px] font-normal leading-4 text-gray-600">
           Upload screenshot, receipt, or proof document
         </p>
-        <p className="text-xs text-gray-400 mt-1 max-sm:text-[13px] max-sm:leading-5">
+        <p className="text-xs text-gray-400 mt-1">
           JPG, PNG, OR PDF • Max {maxSizeMB}MB
         </p>
 
@@ -89,7 +89,7 @@ export function AttachmentUpload({
           {value.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between border rounded-md py-2 px-4 border-input bg-input-background max-sm:rounded-lg max-sm:bg-disabled-background max-sm:py-3"
+              className="flex items-center justify-between border rounded-md py-2 px-4 border-input bg-input-background"
             >
               <div className="flex items-center gap-3">
                 {item.previewUrl ? (
@@ -103,10 +103,10 @@ export function AttachmentUpload({
                 )}
 
                 <div className="text-sm">
-                  <p className="font-medium text-[14px] leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
+                  <p className="font-medium text-[14px] leading-5">
                     {item.file.name}
                   </p>
-                  <p className="text-xs text-[#585859] font-medium leading-4 max-sm:text-text">
+                  <p className="text-xs text-[#585859] font-medium leading-4">
                     {(item.file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
