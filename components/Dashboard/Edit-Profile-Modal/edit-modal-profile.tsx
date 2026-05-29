@@ -77,13 +77,12 @@ export function EditProfileModal({
     useUpdateAvatar();
   const avatar = profileData?.data?.avatarUrl;
   const profile = profileData?.data;
+  const bvnVerified = profile?.kycStatus?.bvnVerified;
 
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
-    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -228,30 +227,34 @@ export function EditProfileModal({
           </div> */}
 
           {/* Full Name — locked */}
-          <div className="space-y-1 flex items-start gap-4">
-            {/* <div className="flex items-center justify-between">
-              <Label label="Full Name" />
-              <span className="flex items-center gap-1 text-[11px] text-disabled-text">
-                <Lock className="w-3 h-3" />
-                Cannot be changed
-              </span>
-            </div> */}
-            <FormField
-              id="firstName"
-              label="First Name"
-              placeholder="First Name"
-              className="w-full"
-              register={register}
-              error={errors.firstName}
-            />
-            <FormField
-              id="lastName"
-              label="Last Name"
-              placeholder="Last Name"
-              className="w-full"
-              register={register}
-              error={errors.lastName}
-            />
+          <div className="space-y-2">
+            {bvnVerified && (
+              <div className="flex items-center justify-end">
+                <span className="flex items-center gap-1 text-[11px] text-disabled-text">
+                  <Lock className="w-3 h-3" />
+                  Locked after BVN verification
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-start gap-4">
+              <FormField
+                id="firstName"
+                label="First Name"
+                placeholder="First Name"
+                className="w-full"
+                register={register}
+                error={errors.firstName}
+              />
+              <FormField
+                id="lastName"
+                label="Last Name"
+                placeholder="Last Name"
+                className="w-full"
+                register={register}
+                error={errors.lastName}
+              />
+            </div>
           </div>
 
           <SelectField

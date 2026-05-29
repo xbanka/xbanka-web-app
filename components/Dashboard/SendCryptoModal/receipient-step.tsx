@@ -48,17 +48,17 @@ export function RecipientStep({
   const search = watch("address") || "";
 
   const filteredUsers = users.filter((user: XbankaUser) => {
-  const value = search.toLowerCase().trim();
+    const value = search.toLowerCase().trim();
 
-  if (!value) return false;
+    if (!value) return false;
 
-  return (
-    user.id?.toLowerCase()?.includes(value) ||
-    user.profile?.firstName?.toLowerCase()?.includes(value) ||
-    user.profile?.lastName?.toLowerCase()?.includes(value) ||
-    user.email?.toLowerCase()?.includes(value)
-  );
-});
+    return (
+      user.id?.toLowerCase()?.includes(value) ||
+      user.profile?.firstName?.toLowerCase()?.includes(value) ||
+      user.profile?.lastName?.toLowerCase()?.includes(value) ||
+      user.email?.toLowerCase()?.includes(value)
+    );
+  });
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -78,8 +78,8 @@ export function RecipientStep({
           onNext({
             type: "wallet",
             address: d.address,
-          })},
-        )}
+          });
+        })}
         className="px-8 pt-4 pb-8 space-y-8"
       >
         <div className="space-y-4">

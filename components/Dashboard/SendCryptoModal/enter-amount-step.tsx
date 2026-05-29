@@ -13,9 +13,7 @@ export function EnterAmountStep({
   setAmount,
   onBack,
   onClose,
-  onNext,
-  recipientType,
-  xbankaRecipient,
+  onNext
 }: {
   asset?: UserWallet | null;
   network: string | null;
@@ -24,8 +22,6 @@ export function EnterAmountStep({
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
-  recipientType?: "wallet" | "xbanka-user";
-  xbankaRecipient?: RecipientXbankaUsersTypes | null;
 }) {
   const numericBalance = asset?.balance ?? 0;
   console.log("Numeric balance:", numericBalance);

@@ -7,8 +7,6 @@ import { BuyTab } from "./buy-tab";
 import { HowTo } from "./steps";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { P2PPage } from "./p2p-tab";
-import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type CryptoTab = "buy" | "sell" | "convert" | "p2p";
@@ -24,8 +22,7 @@ export function CryptoPage() {
 
   const currentTab = (searchParams.get("tab") as CryptoTab) || "buy";
 
-  const tradeMode =
-  (searchParams.get("mode") as "buy" | "sell") || "buy";
+  const tradeMode = (searchParams.get("mode") as "buy" | "sell") || "buy";
 
   const handleModeChange = (mode: "buy" | "sell") => () => {
     router.push(`/crypto?tab=buy&mode=${mode}`);

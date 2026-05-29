@@ -1,30 +1,18 @@
 import { useExecuteConversion } from "@/lib/services/wallet.service";
 import { useEffect } from "react";
-import { ConversionResult } from "./types";
+import { ConversionResult, ExecuteConversionResponse } from "./types";
 import { Spinner } from "@/components/ui/spinner";
 import { LucideArrowLeftRight } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 
 export function ProcessingStep({
   mode,
-  payAmount,
-  paySymbol,
-  receiveAmount,
-  receiveSymbol,
   quoteId,
-  sourceCurrency,
-  targetCurrency,
   onSuccess,
   onError,
 }: {
   mode: "BUY" | "SELL";
-  payAmount: string;
-  paySymbol: string;
-  receiveAmount: string;
-  receiveSymbol: string;
   quoteId: string;
-  sourceCurrency: string;
-  targetCurrency: string;
   onSuccess: (data: ConversionResult) => void;
   onError: (error: any) => void;
 }) {
@@ -35,20 +23,20 @@ export function ProcessingStep({
     mutate(
       {
         quoteId,
-        // sourceCurrency,
-        // targetCurrency,
-        // amount: Number(payAmount),
       },
       {
-        onSuccess: (res: any) => {
-          // Map API response fields — adjust to your actual shape
+        onSuccess: (res: ExecuteConversionResponse) => {
+          const debit = res.data.debit;
+          const credit = res.data.credit;
           onSuccess({
-            youPaid: payAmount,
-            youReceived: receiveAmount,
-            rate: res?.data?.rate ?? "N0.00",
-            fee: res?.data?.fee ?? "₦0.00",
-            dateTime: res?.data?.createdAt,
-            transactionId: res?.data?.reference,
+            debitAmount: debit.amount,
+            debitCurrency: debit.currency,
+
+            creditAmount: credit.amount,
+            creditCurrency: credit.currency,
+
+            dateTime: credit.createdAt,
+            transactionId: credit.reference,
           });
         },
         onError: (error) => {
@@ -56,7 +44,6 @@ export function ProcessingStep({
         },
       },
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteId]);
 
   return (

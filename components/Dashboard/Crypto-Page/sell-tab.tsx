@@ -21,6 +21,7 @@ import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { getCoinImage } from "@/lib/coin-images";
 
 type FormValues = {
   amount: string;
@@ -94,6 +95,7 @@ export function SellTab() {
       .map((item: any) => ({
         label: item.code,
         value: item.code,
+        image: item.code === "NGNX" ? null : getCoinImage(item.code),
       }));
   }, [pairMap]);
 
@@ -292,8 +294,6 @@ export function SellTab() {
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
           onRefreshQuote={refetchQuote}
           quoteId={quoteData?.quoteId || ""}
-          sourceCurrency={sourceCurrency}
-          targetCurrency={targetCurrency}
         />
       )}
 
