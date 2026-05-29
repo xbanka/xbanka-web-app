@@ -13,6 +13,7 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   error?: FieldError;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  readOnly?: boolean
 }
 
 export interface OptionProps {

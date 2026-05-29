@@ -245,6 +245,8 @@ export function EditProfileModal({
                 className="w-full"
                 register={register}
                 error={errors.firstName}
+                readOnly={bvnVerified}
+                disabled={bvnVerified}
               />
               <FormField
                 id="lastName"
@@ -253,6 +255,8 @@ export function EditProfileModal({
                 className="w-full"
                 register={register}
                 error={errors.lastName}
+                readOnly={bvnVerified}
+                disabled={bvnVerified}
               />
             </div>
           </div>
