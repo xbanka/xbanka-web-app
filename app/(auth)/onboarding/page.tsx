@@ -2,10 +2,10 @@ import OnboardingForm from "@/components/auth/onboarding/OnboardingForm";
 
 const page = () => {
   return (
-    <div className="min-h-screen grid place-items-center">
+    <div className="min-h-dvh sm:grid sm:place-items-center">
       <OnboardingForm />
     </div>
   );
 };
 
-export default page
+export default page;
