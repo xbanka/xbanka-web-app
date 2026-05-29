@@ -25,10 +25,10 @@ export default function OnboardingForm() {
   const StepComp = StepComponents[step];
 
   return (
-    <div className="">
+    <div className="w-full max-sm:flex max-sm:min-h-dvh max-sm:flex-col max-sm:bg-background">
       {/* Progress */}
-      <div className="w-full mx-auto max-w-175 mb-8 space-y-2">
-        <div className="w-full h-4 bg-border rounded-full overflow-hidden mb-2.5">
+      <div className="w-full mx-auto max-w-175 mb-8 space-y-2 max-sm:mb-0 max-sm:px-5 max-sm:pt-10 max-sm:pb-8 max-sm:space-y-4">
+        <div className="w-full h-4 bg-border rounded-full overflow-hidden mb-2.5 max-sm:mb-0 max-sm:h-5">
           <div
             className="h-full bg-Green rounded-full transition-all duration-500 ease-in-out"
             style={{ width: `${progress}%` }}
@@ -45,7 +45,9 @@ export default function OnboardingForm() {
       </div>
 
       {/* Card */}
-      <Card>{StepComp && <StepComp step={step} setStep={setStep} />}</Card>
+      <Card className="max-sm:min-h-0 max-sm:flex-1 max-sm:justify-start max-sm:space-y-0 max-sm:border-0 max-sm:bg-background max-sm:px-5 max-sm:py-0">
+        {StepComp && <StepComp step={step} setStep={setStep} />}
+      </Card>
     </div>
   );
 }
