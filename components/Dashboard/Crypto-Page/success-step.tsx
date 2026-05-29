@@ -1,33 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
-import { CheckCircle, Copy, Receipt, RefreshCcw } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  Copy,
+  Receipt,
+  RefreshCcw,
+} from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
+import { DetailBox } from "./detail-box";
 
 export function SuccessStep({
   mode,
-  payAmount,
-  paySymbol,
-  receiveAmount,
-  receiveSymbol,
   dateTime = "Apr 24, 2023, 7:18 PM",
-  reference = "REF123456789",
-  rate,
-  fee,
-  // result,
+  result,
   onDone,
   onRepeat,
 }: {
   mode: "BUY" | "SELL";
-  payAmount: string;
-  paySymbol: string;
-  receiveAmount: string | number;
-  receiveSymbol: string;
-  rate: string;
-  fee: string;
-  // result: ConversionResult | null;
-  reference: string;
+  result: ConversionResult | null;
   dateTime?: string;
   onDone: () => void;
   onRepeat: () => void;
@@ -35,8 +29,8 @@ export function SuccessStep({
   const [copied, setCopied] = useState(false);
 
   const copy = () => {
-    if (!reference) return;
-    navigator.clipboard.writeText(reference).catch(() => {});
+    if (!result?.transactionId) return;
+    navigator.clipboard.writeText(result.transactionId).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -81,12 +75,12 @@ export function SuccessStep({
 
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text">
-            {mode === "BUY" ? "Purchase" : "Sale"} successful!
+            {mode === "BUY" ? "Sale" : "Purchase"} successful!
           </h3>
           <p className="text-sm font-normal leading-6 text-text">
             {mode === "BUY"
-              ? `${receiveAmount} has been credited to your wallet`
-              : `${receiveAmount} has been added to your Xbanka wallet`}
+              ? `You sold ${result?.debitAmount} ${result?.debitCurrency} and received ${result?.creditAmount} ${result?.creditCurrency}`
+              : `${result?.creditAmount} ${result?.creditCurrency} has been credited to your wallet`}
           </p>
         </div>
 
@@ -130,34 +124,84 @@ export function SuccessStep({
               </button>
             </div>
           )}
+          {!nairaAsset && (
+            <DetailBox
+              label="NGN received"
+              value={`${result?.creditAmount ?? ""} ${result?.creditCurrency ?? ""}`}
+            />
+          )}
+          {nairaAsset && (
+            <DetailBox
+              label="You paid"
+              value={`${result?.debitAmount ?? ""} ${result?.debitCurrency ?? ""}`}
+            />
+          )} 
+          {nairaAsset && (
+            <DetailBox
+              label="You received"
+              value={`${result?.creditAmount ?? ""} ${result?.creditCurrency ?? ""}`}
+            />
+          )} 
         </div>
 
-        {/* Actions */}
-        <div className="w-full space-y-6">
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1 text-card-text"
-              // onClick={onRepeat}
+        {/* Transaction ID row with copy */}
+        {dateTime && (
+          <div className="flex items-center justify-between pt-3 border-t border-input text-xs">
+            <span className="text-text">Date & Time</span>
+            <button
+              onClick={copy}
+              className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
             >
-              <Receipt className="w-4 h-4 text-text" />
-              View Receipt
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1 bg-[#042F2E] border-[#0F766E] text-Green"
-              onClick={onRepeat}
-            >
-              <RefreshCcw className="w-4 h-4" />
-              {mode === "BUY" ? "Buy again" : "Sell again"}
-            </Button>
+              <span className="truncate max-w-30">{dateTime}</span>
+            </button>
           </div>
-          <Button size="lg" className="w-full" onClick={onDone}>
-            Done
+        )}
+
+        {result?.transactionId && (
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-text">Transaction ID</span>
+            <button
+              onClick={copy}
+              className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
+            >
+              <span className="truncate max-w-30">
+                {result.transactionId}
+              </span>
+              {copied ? (
+                <CheckCircle className="w-3.5 h-3.5 text-Green flex-shrink-0" />
+              ) : (
+                <Copy className="w-3.5 h-3.5 text-text flex-shrink-0" />
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="w-full space-y-6">
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            size="lg"
+            className="flex-1 text-card-text"
+            // onClick={onRepeat}
+          >
+            <Receipt className="w-4 h-4 text-text" />
+            View Receipt
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="flex-1 bg-[#042F2E] border-[#0F766E] text-Green"
+            onClick={onRepeat}
+          >
+            <RefreshCcw className="w-4 h-4" />
+            {mode === "BUY" ? "Buy again" : "Sell again"}
           </Button>
         </div>
+        <Button size="lg" className="w-full" onClick={onDone}>
+          Done
+        </Button>
       </div>
     </Modal>
   );

@@ -19,6 +19,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { getCoinImage } from "@/lib/coin-images";
 
 export function BuyTab() {
   const [amount, setAmount] = useState("");
@@ -80,11 +81,13 @@ export function BuyTab() {
   const SOURCE_OPTIONS = validSources.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
+    image: pair.code === "NGNX" ? null : getCoinImage(pair.code),
   }));
 
   const TARGET_OPTIONS = validTargets.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
+    image: pair.code === "NGNX" ? null : getCoinImage(pair.code),
   }));
   const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);
@@ -271,8 +274,6 @@ export function BuyTab() {
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
           onRefreshQuote={refetchQuote}
           quoteId={quoteData?.quoteId || ""}
-          sourceCurrency={sourceCurrency}
-          targetCurrency={targetCurrency}
         />
       )}
       {openCreatePin && (

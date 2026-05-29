@@ -85,9 +85,27 @@ export const CryptoSelectField = ({
                   }}
                   className="flex items-center gap-2 px-3 py-2 hover:bg-border cursor-pointer"
                 >
-                  {o.image && (
-                    <Image src={o.image} alt="" width={20} height={20} />
-                  )}
+                  <div className="h-5 w-5 flex items-center justify-center rounded-full overflow-hidden">
+                    {o.image ? (
+                      <Image
+                        src={o.image}
+                        alt={o.label}
+                        width={20}
+                        height={20}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <div
+                        className={cn(
+                          "h-5 w-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold",
+                          o.value === "NGNX" &&
+                            "bg-Green border border-[#5EEAD4]",
+                        )}
+                      >
+                        ₦
+                      </div>
+                    )}
+                  </div>
                   <span>{o.label}</span>
                 </div>
               ))}

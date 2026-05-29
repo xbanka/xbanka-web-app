@@ -80,7 +80,7 @@ export const CryptoBalance = () => {
                 ≈ ${latestWallet?.balance ?? 0}
               </span>
               <span className="bg-text h-1.5 w-1.5 rounded-full"></span>
-              <span className="text-[#A6F4C5] text-xs font-medium leading-5">
+              <span className="text-Green text-xs font-medium leading-5">
                 + ₦{latestWallet?.fiatEquivalent?.amount ?? 0} today
               </span>
             </div>

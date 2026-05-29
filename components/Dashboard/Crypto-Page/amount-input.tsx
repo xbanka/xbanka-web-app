@@ -54,7 +54,7 @@ export function AmountRow({
               {label}
             </span>
             {availableBalanceLoading && (
-              <div className="h-8 w-8 rounded-full bg-border" />
+              <div className="h-1.5 w-14 rounded-md bg-input animate-pulse" />
             )}
             {!availableBalanceLoading && available && (
               <span className="font-normal text-[12px] max-sm:text-[11px] leading-4.5 text-text truncate">

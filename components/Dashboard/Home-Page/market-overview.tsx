@@ -114,7 +114,7 @@ export function MarketOverview() {
         const isNegative = changeValue < 0;
         return (
           <div
-            className={`flex items-center gap-1 font-medium ${isNegative ? "text-red-500" : "text-Green"}`}
+            className={`flex items-center gap-1 font-medium ${isNegative ? "text-error-text" : "text-Green"}`}
           >
             <span>
               {isNegative ? (
@@ -199,7 +199,7 @@ export function MarketOverview() {
       </div>
       <div className="rounded-2xl bg-border p-4 md:hidden">
         <div className="mb-3 flex rounded-2xl bg-card-background/40 p-1 text-[16px] max-sm:text-[12px] font-medium leading-6 text-text">
-          <button className="rounded-xl bg-[#1B1D20] px-4 py-3 text-card-text">
+          <button className="rounded-xl bg-card-background px-4 py-3 text-card-text">
             Spot
           </button>
           <button className="px-4 py-3">Futures</button>
@@ -254,7 +254,7 @@ export function MarketOverview() {
                       ${formatPrice(item.priceUsd)}
                     </p>
                     <div
-                      className={`flex items-center gap-1 text-[16px] max-sm:text-[12px] font-medium leading-6 ${isNegative ? "text-error-text" : "text-[#A6F4C5]  max-sm:text-[12px]"}`}
+                      className={`flex items-center gap-1 text-[16px] max-sm:text-[12px] font-medium leading-6 ${isNegative ? "text-error-text" : "text-Green  max-sm:text-[12px]"}`}
                     >
                       {isNegative ? (
                         <ArrowDownRight className="h-5 w-5" />
