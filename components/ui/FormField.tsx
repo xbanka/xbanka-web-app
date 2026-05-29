@@ -16,6 +16,7 @@ export function FormField({
   value,
   onChange,
   className,
+  readOnly
 }: FormFieldProps) {
   return (
     <div className={cn("space-y-1", className)}>
@@ -38,6 +39,7 @@ export function FormField({
           value={value}
           onChange={onChange}
           {...(register ? register(id) : {})}
+          readOnly={readOnly}
         />
       </div>
       {error && <ErrorField message={error.message} />}
