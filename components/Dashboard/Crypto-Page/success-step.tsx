@@ -9,6 +9,7 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { useState } from "react";
+import { ConversionResult } from "./types";
 import Image from "next/image";
 import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { DetailBox } from "./detail-box";
@@ -35,25 +36,39 @@ export function SuccessStep({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const nairaAsset = result?.debitCurrency === "NGN";
+  const paidValue = result
+    ? formatCurrencyAmount(result.debitAmount, result.debitCurrency)
+    : "—";
+  const receivedValue = result
+    ? formatCurrencyAmount(result.creditAmount, result.creditCurrency)
+    : "—";
+  const rate = result?.rate ?? "—";
+  const fee =
+    result?.fee && result.fee !== "0 Fee" && result.fee !== "O Fee"
+      ? result.fee
+      : "₦0.00";
+  const reference = result?.transactionId;
+
   const rows = [
     {
       label: mode === "BUY" ? "You paid" : "Asset Sold",
-      value: `${payAmount} ${paySymbol}`,
+      value: paidValue,
       valueClass: "text-card-text",
     },
     {
       label: "You received",
-      value: receiveAmount,
+      value: receivedValue,
       valueClass: "text-Green",
     },
     {
       label: "Rate",
-      value: rate || "—",
+      value: rate,
       valueClass: "text-card-text",
     },
     {
       label: "Fee",
-      value: fee === "0 Fee" || fee === "O Fee" ? "₦0.00" : fee,
+      value: fee,
       valueClass: "text-card-text",
     },
   ];
