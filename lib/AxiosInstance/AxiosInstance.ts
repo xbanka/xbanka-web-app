@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getDeviceId, getDeviceInfo } from "../device";
 import { tokenStore } from "@/store/token.store";
+import { authTokens } from "../authToken";
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -20,7 +21,7 @@ AxiosInstance.interceptors.request.use(
       });
     }
     // const token = tokenStore.get();
-    const token = localStorage.getItem("accessToken")
+    const token = localStorage.getItem("accessToken");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -50,19 +51,20 @@ AxiosInstance.interceptors.response.use(
       !originalRequest.url.includes("/auth/verify-email")
     ) {
       originalRequest._retry = true;
-
       try {
-        const refreshResponse = await AxiosInstance.post(
-          "/auth/refresh",
-          {},
-          { withCredentials: true },
-        );
+        const refreshToken = authTokens.getRefreshToken();
+        const refreshResponse = await AxiosInstance.post("/auth/refresh", {
+          refresh_token: refreshToken,
+        });
 
         const newAccessToken = refreshResponse.data?.access_token;
-        if (newAccessToken) {
+        const newRefreshToken = refreshResponse.data?.refresh_token;
+
+        if (newAccessToken && newRefreshToken) {
+          authTokens.setTokens(newAccessToken, newRefreshToken);
+
           tokenStore.set(newAccessToken);
-          localStorage.setItem("accessToken", newAccessToken);
-          // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
           originalRequest.headers = {
             ...(originalRequest.headers || {}),
             Authorization: `Bearer ${newAccessToken}`,
@@ -71,6 +73,7 @@ AxiosInstance.interceptors.response.use(
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
         tokenStore.clear();
+        authTokens.clear();
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
           window.location.href = "/sign-in";

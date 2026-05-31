@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FormHeader } from "@/components/ui/FormHeader";
 import { Modal } from "@/components/ui/Modal";
+import { authTokens } from "@/lib/authToken";
 import { tokenStore } from "@/store/token.store";
 import { useRouter } from "next/navigation";
 
@@ -13,7 +14,7 @@ export const Logout = ({ onClose }: LogoutProps) => {
 
   const handleLogout = () => {
     tokenStore.clear();
-    localStorage.removeItem("accessToken");
+    authTokens.clear();
 
     onClose();
     router.push("/sign-in");
