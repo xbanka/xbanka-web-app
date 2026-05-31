@@ -216,6 +216,7 @@ export function SellTab() {
             selectedCurrency={sourceCurrency}
             onCurrencyChange={setSourceCurrency}
           />
+          
           <AmountRow
             label="You Receive"
             dropDownLoading={groupedPairPending}
