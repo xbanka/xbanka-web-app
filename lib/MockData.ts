@@ -1,37 +1,38 @@
-import { AppleIcon, BarChart2, Bell, Clock, Repeat } from "lucide-react";
+import { AppleIcon, ArrowDownCircle, ArrowLeftRight, ArrowUpCircle, BadgeCheck, BarChart2, Bell, Bitcoin, Clock, IdCard, Laptop, Repeat, ShieldCheck } from "lucide-react";
+import { NotifGroup, Tab } from "./types/notification-types";
 
-export const MARKET = [
-  { name: "Bitcoin", symbol: "BTC", price: "92,300", change: "3.21", up: true },
-  {
-    name: "Ethereum",
-    symbol: "ETH",
-    price: "87,500",
-    change: "4.15",
-    up: true,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  { name: "Ripple", symbol: "XRP", price: "85,400", change: "4.98", up: true },
-];
+// export const MARKET = [
+//   { name: "Bitcoin", symbol: "BTC", price: "92,300", change: "3.21", up: true },
+//   {
+//     name: "Ethereum",
+//     symbol: "ETH",
+//     price: "87,500",
+//     change: "4.15",
+//     up: true,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   { name: "Ripple", symbol: "XRP", price: "85,400", change: "4.98", up: true },
+// ];
 
 export const GIFT_CARDS = [
   { name: "Apple", bg: "#6C47FF", rate: "₦100 per $1", icon: AppleIcon },
@@ -252,3 +253,171 @@ export const P2P_LISTINGS = Array(7).fill(null).map((_, i) => ({
   limit: "₦40,000 - ₦600,000",
   method: "Bank Transfer",
 }));
+
+exportconst ALL_GROUPS: NotifGroup[] = [
+  {
+    label: "Today",
+    items: [
+      {
+        id: "a1",
+        icon: ArrowDownCircle,
+        type: "green",
+        title: "Deposit Successful",
+        desc: "You have successfully deposited ₦500.00 into your main account.",
+        time: "2 mins ago",
+        unread: true,
+      },
+      {
+        id: "a2",
+        icon: ArrowUpCircle,
+        type: "red",
+        title: "Payment Sent",
+        desc: "Your transfer of ₦120.00 to Netflix Inc. was successful.",
+        time: "1h ago",
+        unread: true,
+      },
+      {
+        id: "a3",
+        icon: ShieldCheck,
+        type: "gray",
+        title: "Security Update",
+        desc: "New login detected on Chrome on Mac OS. If this wasn't you, please secure your account.",
+        time: "3h ago",
+      },
+    ],
+  },
+  {
+    label: "Yesterday",
+    items: [
+      {
+        id: "a4",
+        icon: ArrowDownCircle,
+        type: "green",
+        title: "Deposit Successful",
+        desc: "You have successfully deposited ₦500.00 into your main account.",
+        time: "Yesterday",
+      },
+      {
+        id: "a5",
+        icon: ArrowUpCircle,
+        type: "red",
+        title: "Payment Sent",
+        desc: "Your transfer of ₦120.00 to Netflix Inc. was successful.",
+        time: "Yesterday",
+      },
+      {
+        id: "a6",
+        icon: ShieldCheck,
+        type: "gray",
+        title: "Security Update",
+        desc: "New login detected on Chrome on Mac OS. If this wasn't you, please secure your account.",
+        time: "Yesterday",
+      },
+    ],
+  },
+];
+ 
+exportconst TXN_GROUPS: NotifGroup[] = [
+  {
+    label: "Today",
+    items: [
+      {
+        id: "t1",
+        icon: ArrowDownCircle,
+        type: "amber",
+        title: "Crypto Sold",
+        desc: "You sold 0.023 ETH for ₦54,750.",
+        time: "2 mins ago",
+        unread: true,
+      },
+      {
+        id: "t2",
+        icon: ArrowDownCircle,
+        type: "green",
+        title: "Funds Received",
+        desc: "You have successfully deposited ₦50,000.00 into your wallet.",
+        time: "2 mins ago",
+        unread: true,
+      },
+      {
+        id: "t3",
+        icon: ArrowDownCircle,
+        type: "green",
+        title: "Funds Received",
+        desc: "You received ₦45,000.00 from Adewale Okonkwo.",
+        time: "3h ago",
+      },
+      {
+        id: "t4",
+        icon: ArrowUpCircle,
+        type: "red",
+        title: "Funds Sent",
+        desc: "You sent ₦10,000 to GTBank — 0123456789.",
+        time: "3h ago",
+      },
+    ],
+  },
+  {
+    label: "Yesterday",
+    items: [
+      {
+        id: "t5",
+        icon: Bitcoin,
+        type: "amber",
+        title: "Crypto Sold",
+        desc: "You bought 0.05 BTC via Card ending in 4452.",
+        time: "Yesterday",
+      },
+      {
+        id: "t6",
+        icon: ArrowLeftRight,
+        type: "blue",
+        title: "Crypto Converted",
+        desc: "You converted 100 USDT to ₦15,000.",
+        time: "Yesterday",
+      },
+    ],
+  },
+];
+ 
+exportconst ACT_GROUPS: NotifGroup[] = [
+  {
+    label: "Today",
+    items: [
+      {
+        id: "ac1",
+        icon: IdCard,
+        type: "red",
+        title: "ID Verification Rejected",
+        desc: "Your ID document was rejected. Please re-upload a clear, valid document.",
+        time: "2 mins ago",
+        unread: true,
+        actionLabel: "Re-upload",
+      },
+      {
+        id: "ac2",
+        icon: BadgeCheck,
+        type: "green",
+        title: "BVN Verified Successfully",
+        desc: "Your BVN has been verified. You can now send money and add funds above ₦150,000.",
+        time: "1h ago",
+      },
+      {
+        id: "ac3",
+        icon: Laptop,
+        type: "amber",
+        title: "New Device Login Detected",
+        desc: "A new login was detected on Chrome, Windows. If this wasn't you, secure your account immediately.",
+        time: "3h ago",
+        unread: true,
+        actionLabel: "Review",
+      },
+    ],
+  },
+];
+ 
+exportconst TABS: { key: Tab; label: string; groups: NotifGroup[] }[] = [
+  { key: "all",          label: "All",          groups: ALL_GROUPS },
+  { key: "transactions", label: "Transactions", groups: TXN_GROUPS },
+  { key: "activities",   label: "Activities",   groups: ACT_GROUPS },
+];
