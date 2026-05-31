@@ -254,7 +254,7 @@ export const P2P_LISTINGS = Array(7).fill(null).map((_, i) => ({
   method: "Bank Transfer",
 }));
 
-exportconst ALL_GROUPS: NotifGroup[] = [
+export const ALL_GROUPS: NotifGroup[] = [
   {
     label: "Today",
     items: [
@@ -317,7 +317,7 @@ exportconst ALL_GROUPS: NotifGroup[] = [
   },
 ];
  
-exportconst TXN_GROUPS: NotifGroup[] = [
+export const TXN_GROUPS: NotifGroup[] = [
   {
     label: "Today",
     items: [
@@ -380,7 +380,7 @@ exportconst TXN_GROUPS: NotifGroup[] = [
   },
 ];
  
-exportconst ACT_GROUPS: NotifGroup[] = [
+export const ACT_GROUPS: NotifGroup[] = [
   {
     label: "Today",
     items: [
@@ -416,7 +416,7 @@ exportconst ACT_GROUPS: NotifGroup[] = [
   },
 ];
  
-exportconst TABS: { key: Tab; label: string; groups: NotifGroup[] }[] = [
+export const TABS: { key: Tab; label: string; groups: NotifGroup[] }[] = [
   { key: "all",          label: "All",          groups: ALL_GROUPS },
   { key: "transactions", label: "Transactions", groups: TXN_GROUPS },
   { key: "activities",   label: "Activities",   groups: ACT_GROUPS },
