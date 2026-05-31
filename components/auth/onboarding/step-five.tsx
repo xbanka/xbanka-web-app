@@ -20,6 +20,15 @@ interface Step5Props {
   step: number;
 }
 
+const mobileFieldClass =
+  "max-sm:[&_input]:h-[50px] max-sm:[&_input]:rounded-lg max-sm:[&_input]:pl-14 max-sm:[&_input]:text-[18px] max-sm:[&_input]:leading-7 max-sm:[&_input]:shadow-none max-sm:[&_svg]:left-5 max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+
+const mobileSelectClass =
+  "max-sm:[&_select]:h-[50px] max-sm:[&_select]:rounded-lg max-sm:[&_select]:pl-5 max-sm:[&_select]:text-[18px] max-sm:[&_select]:leading-7 max-sm:[&_select]:shadow-none max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+
+const mobileIconSelectClass =
+  "max-sm:[&_select]:h-[50px] max-sm:[&_select]:rounded-lg max-sm:[&_select]:pl-14 max-sm:[&_select]:text-[18px] max-sm:[&_select]:leading-7 max-sm:[&_select]:shadow-none max-sm:[&_svg]:left-5 max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+
 function Step5({ setStep }: Step5Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -94,9 +103,7 @@ function Step5({ setStep }: Step5Props) {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-card-text">
-          You're all set! 🎉
-        </h2>
+        <h2 className="text-2xl font-bold text-card-text">You&apos;re all set! 🎉</h2>
         <p className="text-sm text-text leading-relaxed">
           Your are done with your XBanka account onboarding.
         </p>
@@ -114,75 +121,96 @@ function Step5({ setStep }: Step5Props) {
   }
 
   return (
-    <>
-      <div className="text-center space-y-2">
-        <h1 className="text-[26px] font-bold text-card-text">
+    <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
+      <div className="text-center space-y-2 max-sm:mb-6 max-sm:text-left">
+        <h1 className="text-[26px] font-bold text-card-text max-sm:text-[34px] max-sm:leading-10">
           Proof of Address
         </h1>
-        <p className="text-sm text-text leading-relaxed">
+        <p className="text-sm text-text leading-relaxed max-sm:text-[18px] max-sm:leading-7">
           Please provide the address exactly as it appears on your document
         </p>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-        <FormField
-          id="address"
-          icon={MapPin}
-          placeholder="Enter Address"
-          error={errors.address}
-          register={register}
-        />
-        <FormField
-          id="landmark"
-          icon={MapPin}
-          placeholder="Popular Landmark (optional)"
-          register={register}
-        />
-        <div className="grid grid-cols-2 gap-3">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-3 max-sm:min-h-0 max-sm:flex-1 max-sm:gap-0"
+      >
+        <div className="space-y-4 max-sm:space-y-5">
+          <FormField
+            id="address"
+            icon={MapPin}
+            placeholder="Enter Address"
+            error={errors.address}
+            register={register}
+            className={mobileFieldClass}
+          />
+          <FormField
+            id="landmark"
+            icon={MapPin}
+            placeholder="Popular Landmark"
+            register={register}
+            className={mobileFieldClass}
+          />
+          <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1 max-sm:gap-5">
+            <SelectField
+              id="country"
+              placeholder="Country of Residence"
+              error={errors.country}
+              options={[
+                { value: "ng", label: "Nigeria" },
+                { value: "gh", label: "Ghana" },
+              ]}
+              register={register}
+              className={mobileSelectClass}
+            />
+            <SelectField
+              id="state"
+              placeholder="State"
+              error={errors.state}
+              options={[
+                { value: "lag", label: "Lagos" },
+                { value: "abj", label: "Abuja" },
+                { value: "ph", label: "Port Harcourt" },
+                { value: "kno", label: "Kano" },
+              ]}
+              register={register}
+              className={mobileSelectClass}
+            />
+          </div>
           <SelectField
-            id="country"
-            placeholder="Country of Residence"
-            error={errors.country}
+            id="residenceDocumentType"
+            icon={IdCard}
+            placeholder="Select document of choice"
+            error={errors.residenceDocumentType}
             options={[
-              { value: "ng", label: "Nigeria" },
-              { value: "gh", label: "Ghana" },
+              { value: "utility_bill", label: "Utility Bill" },
+              { value: "bank_statement", label: "Bank Statement" },
+              { value: "tenancy_agreement", label: "Tenancy Agreement" },
             ]}
             register={register}
+            className={mobileIconSelectClass}
           />
-          <SelectField
-            id="state"
-            placeholder="State"
-            error={errors.state}
-            options={[
-              { value: "lag", label: "Lagos" },
-              { value: "abj", label: "Abuja" },
-              { value: "ph", label: "Port Harcourt" },
-              { value: "kno", label: "Kano" },
-            ]}
-            register={register}
-          />
+          <div className="space-y-2">
+            <h1 className="font-medium text-sm leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
+              Upload ID
+            </h1>
+            <AttachmentUpload value={attachments} onChange={setAttachments} />
+          </div>
+          <ErrorField message={error?.message || skipError?.message} />
         </div>
-        <SelectField
-          id="residenceDocumentType"
-          icon={IdCard}
-          placeholder="Select document of choice"
-          error={errors.residenceDocumentType}
-          options={[
-            { value: "utility_bill", label: "Utility Bill" },
-            { value: "bank_statement", label: "Bank Statement" },
-            { value: "tenancy_agreement", label: "Tenancy Agreement" },
-          ]}
-          register={register}
-        />
-        <AttachmentUpload value={attachments} onChange={setAttachments} />
-        <ErrorField message={error?.message || skipError?.message} />
-        <div className="space-y-3.25">
-          <div className="flex flex-col md:flex-row gap-4 mt-1">
-            <Button onClick={()=> setStep(3)} variant="outline" size="lg" className="flex-1">
+        <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
+          <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
+            <Button
+              type="button"
+              onClick={() => setStep(3)}
+              variant="outline"
+              size="lg"
+              className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
+            >
               Back
             </Button>
             <Button
               size="lg"
-              className="flex-3"
+              className="hidden flex-3 sm:inline-flex"
               disabled={!isValid || isPending || attachments.length === 0}
               variant={
                 isPending || !isValid || attachments.length === 0
@@ -193,16 +221,25 @@ function Step5({ setStep }: Step5Props) {
             >
               Submit
             </Button>
+            <Button
+              size="lg"
+              className="h-[50px] text-[16px] sm:hidden"
+              disabled={isPending}
+              variant={isPending ? "disabled" : "default"}
+              type="submit"
+            >
+              {isPending ? "Submitting..." : "Continue"}
+            </Button>
           </div>
           <h1
             onClick={handleSkip}
-            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
+            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
           >
             {skipPending ? "Skipping..." : "Skip for later"}
           </h1>
         </div>
       </form>
-    </>
+    </div>
   );
 }
 

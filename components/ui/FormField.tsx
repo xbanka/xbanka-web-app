@@ -16,8 +16,10 @@ export function FormField({
   value,
   onChange,
   className,
-  readOnly
+  readOnly,
 }: FormFieldProps) {
+  const registration = register ? register(id) : {};
+
   return (
     <div className={cn("space-y-1", className)}>
       {label && <Label label={label} />}
@@ -37,8 +39,8 @@ export function FormField({
               "[&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
           )}
           value={value}
-          onChange={onChange}
-          {...(register ? register(id) : {})}
+          {...registration}
+          onChange={onChange ?? registration.onChange}
           readOnly={readOnly}
         />
       </div>
