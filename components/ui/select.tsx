@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { ErrorField } from "./field-error";
 import { SelectFieldProps } from "@/lib/types/form-types";
 import { Label } from "./label";
+import { cn } from "@/lib/utils";
 
 export const SelectField = ({
   id,
@@ -12,8 +13,9 @@ export const SelectField = ({
   register,
   label,
   disabled,
+  className,
 }: SelectFieldProps) => (
-  <div className="space-y-1">
+  <div className={cn("space-y-1", className)}>
     {label && <Label label={label} />}
     <div className="relative flex items-center">
       {Icon && (

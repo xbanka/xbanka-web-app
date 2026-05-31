@@ -9,28 +9,25 @@ interface Step4Props {
 
 function Step4({ setStep }: Step4Props) {
   return (
-    <>
-      <div className="text-center space-y-2">
-        <h1 className="text-[26px] font-bold text-card-text leading-tight">
+    <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
+      <div className="text-center space-y-2 max-sm:mb-6 max-sm:text-left">
+        <h1 className="text-[26px] font-bold text-card-text leading-tight max-sm:text-[34px] max-sm:leading-10">
           Almost Done!
           <br />
-          Let's take a Selfie
+          Let&apos;s take a Selfie
         </h1>
-        <p className="text-sm text-text leading-relaxed">
-          We'll match your photo with your ID to confirm it's really you.
+        <p className="text-sm text-text leading-relaxed max-sm:text-[18px] max-sm:leading-7">
+          We&apos;ll match your photo with your ID to confirm it&apos;s really you.
         </p>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
           onBack={() => setStep(2)}
           onSuccess={() => setStep(4)}
           brandColor="#36b6ab"
         />
-        <p className="text-xs text-text text-center">
-          Good lighting. Neutral background. No hats or glasses.
-        </p>
       </div>
-    </>
+    </div>
   );
 }
 

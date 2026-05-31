@@ -9,7 +9,6 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { useState } from "react";
-import { ConversionResult } from "./types";
 import Image from "next/image";
 import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { DetailBox } from "./detail-box";
@@ -36,21 +35,34 @@ export function SuccessStep({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const paidLabel = result?.debitCurrency === "NGN" ? "You Paid" : "Asset Sold";
-  const nairaAsset = result?.debitCurrency === "NGN";
-
-  const paidValue = formatCurrencyAmount(
-    result?.debitAmount ?? 0,
-    result?.debitCurrency ?? "",
-  );
-
-  const receivedValue = formatCurrencyAmount(
-    result?.creditAmount ?? 0,
-    result?.creditCurrency ?? "",
-  );
+  const rows = [
+    {
+      label: mode === "BUY" ? "You paid" : "Asset Sold",
+      value: `${payAmount} ${paySymbol}`,
+      valueClass: "text-card-text",
+    },
+    {
+      label: "You received",
+      value: receiveAmount,
+      valueClass: "text-Green",
+    },
+    {
+      label: "Rate",
+      value: rate || "—",
+      valueClass: "text-card-text",
+    },
+    {
+      label: "Fee",
+      value: fee === "0 Fee" || fee === "O Fee" ? "₦0.00" : fee,
+      valueClass: "text-card-text",
+    },
+  ];
 
   return (
-    <Modal className="pb-10 px-10 pt-6" onClose={onDone}>
+    <Modal
+      className="pb-10 px-10 pt-6 max-sm:pb-6 max-sm:px-5 max-sm:pt-4"
+      onClose={onDone}
+    >
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
       </div>
@@ -74,14 +86,43 @@ export function SuccessStep({
 
         {/* Receipt */}
         <div className="w-full bg-border rounded-[20px] space-y-3 p-4 text-left">
-          {!nairaAsset && (
-            <DetailBox label="Asset sold" value={result?.debitCurrency ?? ""} />
+          {rows.map((r) => (
+            <div
+              key={r.label}
+              className="flex items-center justify-between text-xs"
+            >
+              <span className="text-text font-medium text-xs leading-5">
+                {r.label}
+              </span>
+              <span className={`font-normal text-sm leading-6 ${r.valueClass}`}>
+                {r.value}
+              </span>
+            </div>
+          ))}
+
+          {dateTime && (
+            <div className="flex items-center justify-between pt-3 border-t border-input text-xs">
+              <span className="text-text">Date & Time</span>
+              <span className="font-normal text-sm leading-6 text-card-text truncate max-w-30">
+                {dateTime}
+              </span>
+            </div>
           )}
-          {!nairaAsset && (
-            <DetailBox
-              label="Amount"
-              value={`${result?.debitAmount ?? ""} ${result?.debitCurrency ?? ""}`}
-            />
+          {reference && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-text">Transaction ID</span>
+              <button
+                onClick={copy}
+                className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
+              >
+                <span className="truncate max-w-30">{reference}</span>
+                {copied ? (
+                  <CheckCircle className="w-3.5 h-3.5 text-Green shrink-0" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5 text-text shrink-0" />
+                )}
+              </button>
+            </div>
           )}
           {!nairaAsset && (
             <DetailBox

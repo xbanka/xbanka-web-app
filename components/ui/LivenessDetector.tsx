@@ -19,9 +19,7 @@ import {
   useSkipStep,
   useVerifySelfie,
 } from "@/lib/services/onboarding.service";
-import { useUserIdStore } from "@/store/verify-id.store";
 import { base64ToFile } from "@/lib/base64ToFile";
-import { useRouter } from "next/navigation";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { ErrorLayout } from "./error-layout";
 
@@ -146,7 +144,7 @@ const LivenessDetector = forwardRef<
         // await loadFaceLandmarker();
         // setModelLoading(false);
       };
-    } catch (err) {
+    } catch {
       setError("Camera permission denied");
     }
   }, []);
@@ -155,7 +153,7 @@ const LivenessDetector = forwardRef<
     startCamera,
   }));
 
-  const handleCapture = async (base64Image: string) => {
+  const handleCapture = useCallback(async (base64Image: string) => {
     console.log("handleCapture called");
 
     if (!userId) return;
@@ -173,7 +171,39 @@ const LivenessDetector = forwardRef<
         onSuccess();
       },
     });
-  };
+  }, [onSuccess, userId, verifySelfie]);
+
+  const captureImage = useCallback(async () => {
+    if (hasCapturedRef.current) return;
+
+    hasCapturedRef.current = true;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // create compressed canvas
+    const compressedCanvas = document.createElement("canvas");
+
+    // reduce resolution
+    compressedCanvas.width = 480;
+    compressedCanvas.height = 360;
+
+    const ctx = compressedCanvas.getContext("2d");
+
+    if (!ctx) return;
+
+    // draw smaller image
+    ctx.drawImage(canvas, 0, 0, 480, 360);
+
+    // compress jpeg quality (0 - 1)
+    const dataUrl = compressedCanvas.toDataURL("image/jpeg", 0.6);
+
+    setCaptured(dataUrl);
+
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+
+    handleCapture(dataUrl);
+  }, [handleCapture]);
 
   useEffect(() => {
     return () => {
@@ -260,7 +290,7 @@ const LivenessDetector = forwardRef<
     } else {
       captureImage();
     }
-  }, [countdown]);
+  }, [captureImage, countdown]);
 
   useEffect(() => {
     loadFaceLandmarker().then(() => {
@@ -296,38 +326,7 @@ const LivenessDetector = forwardRef<
   //   };
   // }, [startCamera]);
 
-  const captureImage = async () => {
-    if (hasCapturedRef.current) return;
-
-    hasCapturedRef.current = true;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // create compressed canvas
-    const compressedCanvas = document.createElement("canvas");
-
-    // reduce resolution
-    compressedCanvas.width = 480;
-    compressedCanvas.height = 360;
-
-    const ctx = compressedCanvas.getContext("2d");
-
-    if (!ctx) return;
-
-    // draw smaller image
-    ctx.drawImage(canvas, 0, 0, 480, 360);
-
-    // compress jpeg quality (0 - 1)
-    const dataUrl = compressedCanvas.toDataURL("image/jpeg", 0.6);
-
-    setCaptured(dataUrl);
-
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-
-    handleCapture(dataUrl);
-  };
-  // normal selfie image size 
+  // normal selfie image size
   // const captureImage = () => {
   //   if (hasCapturedRef.current) return;
 
@@ -365,12 +364,9 @@ const LivenessDetector = forwardRef<
   };
 
   return (
-    <div
-      className="space-y-6"
-      style={{ width: "100%", maxWidth: 500, margin: "auto" }}
-    >
+    <div className="mx-auto flex w-full max-w-[500px] flex-col space-y-6 max-sm:min-h-0 max-sm:flex-1 max-sm:space-y-0">
       {cameraStarted && !captured && (
-        <div className="space-y-4">
+        <div className="space-y-4 max-sm:space-y-5">
           <div style={{ position: "relative" }}>
             <video
               ref={videoRef}
@@ -426,8 +422,11 @@ const LivenessDetector = forwardRef<
       )}
 
       {!cameraStarted && !captured && (
-        <div className="space-y-4 ">
-          <div className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent">
+        <div className="space-y-4 max-sm:space-y-5">
+          <div
+            className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent max-sm:h-[295px] max-sm:min-h-0"
+            style={{ borderColor: brandColor }}
+          >
             {/* {!streaming && !taken && (
             <div className="flex flex-col items-center gap-3 text-placeholder">
               <Camera />
@@ -462,44 +461,59 @@ const LivenessDetector = forwardRef<
 
       {captured && (
         <div>
-          <img src={captured} style={{ width: "100%" }} />
+          <img alt="Captured selfie" src={captured} style={{ width: "100%" }} />
 
           <Button className="w-full" onClick={handleRetry}>
             Retake
           </Button>
         </div>
       )}
-      <div className="space-y-3.25">
-        <div className="flex flex-col md:flex-row gap-4 mt-1">
+      <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
+        <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
           <Button
+            type="button"
             onClick={() => onBack()}
             variant="outline"
             size="lg"
-            className="flex-1"
+            className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
           >
             Back
           </Button>
           {!cameraStarted && !captured && (
-            <Button size="lg" className="flex-3" onClick={startCamera}>
-              Open Camera
+            <Button
+              type="button"
+              size="lg"
+              className="flex-3 max-sm:h-[50px] max-sm:text-[16px]"
+              onClick={startCamera}
+            >
+              <span className="hidden sm:inline">Open Camera</span>
+              <span className="sm:hidden">Continue</span>
             </Button>
           )}
 
           {cameraStarted && !captured && (
-            <Button size="lg" className="flex-3" disabled>
+            <Button
+              size="lg"
+              className="flex-3 max-sm:h-[50px] max-sm:text-[16px]"
+              disabled
+            >
               Detecting face...
             </Button>
           )}
 
           {captured && (
-            <Button size="lg" className="flex-3" disabled={isPending}>
+            <Button
+              size="lg"
+              className="flex-3 max-sm:h-[50px] max-sm:text-[16px]"
+              disabled={isPending}
+            >
               {isPending ? "Verifying..." : "Next"}
             </Button>
           )}
         </div>
         <h1
           onClick={handleSkip}
-          className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer"
+          className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
         >
           {skipPending ? "Skipping..." : "Skip for later"}
         </h1>

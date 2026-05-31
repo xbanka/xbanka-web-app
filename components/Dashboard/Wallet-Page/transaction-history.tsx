@@ -186,31 +186,30 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 min-w-0 sm:flex-none">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-placeholder" />
             <Input
               placeholder="Search by name or email"
-              className="pl-8 pr-3 w-[250px]"
+              className="pl-8 pr-3 w-full sm:w-62.5 truncate"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <SelectFieldWithValue
-            placeholder="Transaction Type"
-            // className="w-[150px] text-center"
-            options={[
-              { value: "ALL", label: "All" },
-              { value: "DEPOSIT", label: "DEPOSIT" },
-              { value: "WITHDRAWAL", label: "WITHDRAWAL" },
-              // { value: "TRANSFER_IN", label: "TRANSFER IN" },
-              // { value: "TRANSFER_OUT", label: "TRANSFER OUT" },
-            ]}
-            value={selectedType}
-            onChange={(value) => {
-              setSelectedType(value);
-            }}
-          />
+          <div className="shrink-0 w-30 sm:w-auto">
+            <SelectFieldWithValue
+              placeholder="Transaction Type"
+              options={[
+                { value: "ALL", label: "All" },
+                { value: "DEPOSIT", label: "DEPOSIT" },
+                { value: "WITHDRAWAL", label: "WITHDRAWAL" },
+              ]}
+              value={selectedType}
+              onChange={(value) => {
+                setSelectedType(value);
+              }}
+            />
+          </div>
         </div>
       </div>
 
