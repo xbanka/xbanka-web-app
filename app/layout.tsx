@@ -5,6 +5,7 @@ import { Providers } from "@/components/Layout/provider";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
 import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
 import { Toaster } from "sonner";
+import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -49,6 +50,7 @@ export default function RootLayout({
 
             {children}
             <Toaster richColors position="top-right" />
+            <GlobalNotificationsModal />
             <GlobalLogout />
             <OnboardingModalProvider />
           </body>
