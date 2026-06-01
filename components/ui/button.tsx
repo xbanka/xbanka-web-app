@@ -21,6 +21,7 @@ const buttonVariants = cva(
         disabled:
           "bg-border text-disabled-text cursor-not-allowed hover:bg-muted",
         red: "bg-error-bg-button border border-error-border-button text-white hover:bg-error-bg-button/90",
+        notification: "bg-background text-Green hover:bg-background/90",
       },
       size: {
         default: "h-12 py-2 px-3",

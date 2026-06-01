@@ -38,7 +38,7 @@ export function Modal({
     >
       <div
         className={cn(
-          "relative z-10 w-full max-w-150 bg-[#1B1D20] px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150",
+          "relative z-10 w-full max-w-150 bg-card-background px-10 pb-10 border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150",
           "max-sm:max-w-full max-sm:max-h-[90vh] max-sm:overflow-y-auto max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 max-sm:slide-in-from-bottom-4 ",
           className,
         )}
