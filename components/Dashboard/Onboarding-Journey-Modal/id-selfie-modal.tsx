@@ -62,19 +62,12 @@ export function IdSelfieModal({
   }, [identityCompleted, selfieCompleted]);
 
   useEffect(() => {
-    const checkMobile = () => {
-      const userAgent =
-        typeof navigator === "undefined" ? "" : navigator.userAgent;
+    const checkMobile = async () => {
+      const mobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-      const mobile =
-        /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
-          userAgent,
-        );
+      const touchDevice = navigator.maxTouchPoints > 1;
 
-      // optional width fallback
-      const smallScreen = window.innerWidth < 1024;
-
-      setIsMobileDevice(mobile);
+      setIsMobileDevice(mobileUA && touchDevice);
     };
 
     checkMobile();

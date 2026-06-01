@@ -22,10 +22,9 @@ export default function RootLayout({
       <Providers>
         <html lang="en" data-theme="light">
           <body>
-            <head>
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
               (function() {
                 try {
                   const storedTheme = localStorage.getItem("theme-preference");
@@ -44,9 +43,8 @@ export default function RootLayout({
                 } catch (e) {}
               })();
             `,
-                }}
-              />
-            </head>
+              }}
+            />
 
             {children}
             <Toaster richColors position="top-right" />
