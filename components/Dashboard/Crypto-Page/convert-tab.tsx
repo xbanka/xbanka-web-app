@@ -175,7 +175,7 @@ export function ConvertTab() {
     <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-4">
       <DashboardCard className="lg:col-span-2 space-y-3">
         <AmountRow
-          label="You Receive"
+          label="From"
           dropDownLoading={currencyPending}
           available={`${availableBalance} ${sourceCurrency}`}
           availableBalanceLoading={cryptoWalletPending}
@@ -191,7 +191,7 @@ export function ConvertTab() {
         </p>
 
         <AmountRow
-          label="You Receive"
+          label="To (Estimated)"
           dropDownLoading={groupedPairPending}
           value={convertData?.netPayout ? convertData.netPayout.toString() : ""}
           readOnly
