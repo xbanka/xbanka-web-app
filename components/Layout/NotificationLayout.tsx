@@ -13,6 +13,7 @@ import {
   useReadAllNotifications,
   useReadSingleNotification,
 } from "@/lib/services/notification.service";
+import { groupNotificationsByDate } from "@/lib/groupNotifications";
 
 interface NotificationsModalProps {
   onClose: () => void;
@@ -26,6 +27,7 @@ export function NotificationsModal({
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
   const { data, isPending, error } = UseGetNotifications();
+  console.log("notifications data", data);
   const {
     mutate: readAllNotifications,
     isPending: readAllPending,
@@ -37,7 +39,9 @@ export function NotificationsModal({
     error: readSingleError,
   } = useReadSingleNotification();
 
-  const notifications = data?.data?.notifications ?? [];
+  const notifications = data?.data ?? [];
+
+  const groupedNotifications = groupNotificationsByDate(notifications);
 
   return (
     <div className="max-w-150 bg-card-background border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ">
@@ -76,20 +80,30 @@ export function NotificationsModal({
 
         {/* Feed */}
         <div className="overflow-y-auto max-h-[420px] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border space-y-6">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4 first:mt-0">
-                Today
-              </p>
-              <div className="space-y-3">
-                {notifications.map((n: any) => (
-                  <NotifItem
-                    key={n.id}
-                    n={n}
-                    onClick={() => readSingleNotification(n.id)}
-                  />
-                ))}
-              </div>
-            </div>
+          {Object.entries(groupedNotifications).map(
+            ([label, items]) =>
+              items.length > 0 && (
+                <div key={label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4">
+                    {label}
+                  </p>
+
+                  <div className="space-y-3">
+                    {items.map((notification) => (
+                      <NotifItem
+                        key={notification.id}
+                        n={notification}
+                        onClick={() => {
+                          if (!notification.isRead) {
+                            readSingleNotification(notification.id);
+                          }
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ),
+          )}
         </div>
       </div>
 

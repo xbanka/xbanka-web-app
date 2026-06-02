@@ -24,7 +24,6 @@ export const useTransferFiatToXbankaUsers = () => {
     mutationFn: (data: XbankaUserPayload) => transferFiatToXbankaUsers(data),
 
     onSuccess: () => {
-      toast.success("OTP sent to your email");
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
