@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   UseBankAccountList,
   UseGetFiatWallet,
+  UseGetVirtualAccount,
 } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, Plus, Send } from "lucide-react";
@@ -27,6 +28,8 @@ export const FiatBalance = () => {
   const latestWallet = wallets?.[0];
   const { data: bankAccountList } = UseBankAccountList();
   const { data: profileData } = UseProfileUser();
+  // const { data: virtualAccountData } = UseGetVirtualAccount();
+  // console.log("virtualAccountData", virtualAccountData);
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
   const totalFiatBalance = sumFiatBalances(wallets);
   const isSendDisabled = totalFiatBalance <= 0;
@@ -114,6 +117,17 @@ export const FiatBalance = () => {
                 </span>
               )} */}
             </div>
+            {/* <div className="">
+              <Button
+                // onClick={handleAddFund}
+                variant={"default"}
+                size={"sm"}
+                className="flex items-center transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+                get virtual account
+              </Button>
+            </div> */}
             <DisabledTooltipButton
               disabled={isSendDisabled}
               tooltip="Add funds to continue"
