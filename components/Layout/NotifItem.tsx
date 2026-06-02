@@ -2,14 +2,14 @@ import { iconStyles, Notification } from "@/lib/types/notification-types";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 
-export function NotifItem({ n }: { n: Notification }) {
+export function NotifItem({ n, onClick }: { n: Notification | any | [any]; onClick: () => void }) {
   const Icon = n.icon;
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-border last:border-b-0">
+    <div className="flex items-start gap-3 py-3 px-4 bg-border last:border-b-0 rounded-lg">
       <div
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-          iconStyles[n.type],
+          // iconStyles[n.type],
         )}
       >
         <Icon className="w-4 h-4" />
@@ -17,7 +17,7 @@ export function NotifItem({ n }: { n: Notification }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <span className="text-[13px] font-semibold text-card-text leading-snug">
+          <span className="text-[14px] font-medium text-card-text leading-5">
             {n.title}
           </span>
           <span className="flex items-center gap-1.5 text-[11px] text-placeholder shrink-0 pt-0.5">
@@ -28,7 +28,7 @@ export function NotifItem({ n }: { n: Notification }) {
           </span>
         </div>
 
-        <p className="text-[12px] text-text mt-0.5 leading-relaxed">{n.desc}</p>
+        <p className="text-[12px] font-normal text-text mt-1">{n.desc}</p>
 
         {n.actionLabel && (
           <button
