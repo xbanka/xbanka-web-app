@@ -1,23 +1,35 @@
 // hooks/use-onboarding-guard.ts
 "use client";
 
-import { UseProfileUser } from "@/lib/services/profile.service";
+import {
+  UseProfileUser,
+  UseVerificationStatus,
+} from "@/lib/services/profile.service";
 import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 
 export const useOnboardingGuard = () => {
   const { data: profileData } = UseProfileUser();
+  const { data: verificationData } = UseVerificationStatus();
 
-  const openPersonalInfo =
-    useOnboardingModalStore(
-      (state) => state.openPersonalInfo,
-    );
+  const openPersonalInfo = useOnboardingModalStore(
+    (state) => state.openPersonalInfo,
+  );
 
-  const openBvn =
-    useOnboardingModalStore(
-      (state) => state.openBvn,
-    );
+  const openBvn = useOnboardingModalStore((state) => state.openBvn);
+
+  const openIdSelfie = useOnboardingModalStore((state) => state.openIdSelfie);
 
   const profile = profileData?.data;
+
+  const progress = verificationData?.data?.progress ?? [];
+
+  const identityCompleted = progress.find(
+    (item: any) => item.id === "IDENTITY",
+  )?.isCompleted;
+
+  const selfieCompleted = progress.find(
+    (item: any) => item.id === "SELFIE",
+  )?.isCompleted;
 
   const hasPersonalInfo =
     !!profile?.firstName &&
@@ -27,8 +39,10 @@ export const useOnboardingGuard = () => {
     !!profile?.phoneNumber &&
     !!profile?.country;
 
-  const hasTierOne =
-    profile?.kycStatus?.bvnVerified;
+  const hasTierOne = profile?.kycStatus?.bvnVerified;
+
+  const hasIdentityVerification =
+    identityCompleted && selfieCompleted;
 
   const validateUser = () => {
     // Step 1 → personal info
@@ -46,9 +60,30 @@ export const useOnboardingGuard = () => {
     return true;
   };
 
+  const validateCryptoSend = () => {
+    if (!hasPersonalInfo) {
+      openPersonalInfo();
+      return false;
+    }
+
+    if (!hasTierOne) {
+      openBvn();
+      return false;
+    }
+
+    if (!hasIdentityVerification) {
+      openIdSelfie();
+      return false;
+    }
+
+    return true;
+  };
+
   return {
     validateUser,
+    validateCryptoSend,
     profile,
+    hasIdentityVerification,
     hasPersonalInfo,
     hasTierOne,
   };
