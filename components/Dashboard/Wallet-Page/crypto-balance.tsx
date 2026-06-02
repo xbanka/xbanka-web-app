@@ -19,7 +19,8 @@ export const CryptoBalance = () => {
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
-  const { validateUser } = useOnboardingGuard();
+  const { validateCryptoSend } =
+  useOnboardingGuard();
   const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 
@@ -30,7 +31,7 @@ export const CryptoBalance = () => {
   console.log(hasTransactionPin);
 
   const handleSendCrypto = () => {
-    const isAllowed = validateUser();
+    const isAllowed = validateCryptoSend();
 
     if (!isAllowed) return;
     if (!hasTransactionPin) {
