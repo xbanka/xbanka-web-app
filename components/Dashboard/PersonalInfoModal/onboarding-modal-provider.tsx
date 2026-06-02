@@ -4,13 +4,15 @@
 import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 import { PersonalInfoModal } from "./personal-info-modal";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
-
+import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
 
 export const OnboardingModalProvider = () => {
-  const {
-    activeModal,
-    closeModal,
-  } = useOnboardingModalStore();
+  const { activeModal, closeModal } = useOnboardingModalStore();
+  const isIdSelfieOpen = useOnboardingModalStore(
+    (state) => state.isIdSelfieOpen,
+  );
+
+  const closeIdSelfie = useOnboardingModalStore((state) => state.closeIdSelfie);
 
   return (
     <>
@@ -19,10 +21,11 @@ export const OnboardingModalProvider = () => {
       )}
 
       {activeModal === "bvn" && (
-        <BvnModal
-          onClose={closeModal}
-          onCompleted={closeModal}
-        />
+        <BvnModal onClose={closeModal} onCompleted={closeModal} />
+      )}
+
+      {isIdSelfieOpen && (
+        <IdSelfieModal onClose={closeIdSelfie} onCompleted={closeIdSelfie} />
       )}
     </>
   );
