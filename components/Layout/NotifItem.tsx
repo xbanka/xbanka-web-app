@@ -1,15 +1,45 @@
-import { iconStyles, Notification } from "@/lib/types/notification-types";
+import { timeAgo } from "@/lib/formatDate";
+import {
+  getNotificationColor,
+  getNotificationIcon,
+} from "@/lib/getNotificationIcon";
+import { Notification } from "@/lib/types/notification-types";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUp, ShieldCheck, Bell } from "lucide-react";
 
-export function NotifItem({ n, onClick }: { n: Notification | any | [any]; onClick: () => void }) {
-  const Icon = n.icon;
+const notificationIcons = {
+  SUCCESS: ArrowDown,
+  WARNING: ArrowUp,
+  SECURITY: ShieldCheck,
+  INFO: Bell,
+};
+
+const notificationColors = {
+  SUCCESS: "bg-green-900 text-green-400",
+  WARNING: "bg-red-900 text-red-400",
+  SECURITY: "bg-green-900 text-green-400",
+  INFO: "bg-blue-900 text-blue-400",
+};
+
+export function NotifItem({
+  n,
+  onClick,
+}: {
+  n: Notification;
+  onClick: () => void;
+}) {
+  const Icon = getNotificationIcon(n);
   return (
-    <div className="flex items-start gap-3 py-3 px-4 bg-border last:border-b-0 rounded-lg">
+    <div
+      onClick={onClick}
+      className={cn(
+        "flex items-start gap-3 py-4 px-4 rounded-lg cursor-pointer transition-colors bg-border",
+      )}
+    >
       <div
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-          // iconStyles[n.type],
+          getNotificationColor(n),
         )}
       >
         <Icon className="w-4 h-4" />
@@ -21,24 +51,14 @@ export function NotifItem({ n, onClick }: { n: Notification | any | [any]; onCli
             {n.title}
           </span>
           <span className="flex items-center gap-1.5 text-[11px] text-placeholder shrink-0 pt-0.5">
-            {n.time}
-            {n.unread && (
-              <span className="w-1.5 h-1.5 rounded-full bg-Green inline-block" />
+            {timeAgo(n.createdAt)}
+            {!n.isRead && (
+              <span className="w-1.5 h-1.5 rounded-full bg-Green" />
             )}
           </span>
         </div>
 
-        <p className="text-[12px] font-normal text-text mt-1">{n.desc}</p>
-
-        {n.actionLabel && (
-          <button
-            onClick={n.onAction}
-            className="mt-1 inline-flex items-center gap-1 text-[12px] text-Green hover:opacity-80 transition-opacity"
-          >
-            {n.actionLabel}
-            <ArrowUpRight className="w-3 h-3" />
-          </button>
-        )}
+        <p className="text-[12px] font-normal text-text mt-1">{n.message}</p>
       </div>
     </div>
   );

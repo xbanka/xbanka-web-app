@@ -89,7 +89,6 @@ export const UseWithdrawCrypto = () => {
   return useMutation({
     mutationFn: (data: WithdrawCryptoPayload) => withdrawCrypto(data),
     onSuccess: (result) => {
-      toast.success("Funded Successfully");
     },
     onError: (err) => {
       handleApiError(err);
@@ -222,7 +221,6 @@ export const UseVerifyFund = () => {
   return useMutation({
     mutationFn: (data: string) => verifyFund(data),
     onSuccess: (result) => {
-      toast.success("Conversion successful");
 
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
@@ -248,7 +246,6 @@ export const UseFundFiatWallet = () => {
       const ref = payload?.reference;
 
       if (!url) {
-        console.error("No authorization_url found", result);
         toast.error("Payment initialization failed");
         return;
       }
@@ -267,7 +264,6 @@ export const UseFundFiatWalletBank = () => {
   return useMutation({
     mutationFn: (data: fundWalletBankPayload) => FundFiatWalletBank(data),
     onSuccess: (result) => {
-      console.log("FULL result", result);
     },
     onError: (err) => {
       handleApiError(err);
@@ -280,7 +276,6 @@ export const UseSendFiatWallet = () => {
   return useMutation({
     mutationFn: (data: sendWalletPayload) => sendFiatWallet(data),
     onSuccess: (result) => {
-      console.log("FULL result", result);
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
@@ -341,7 +336,6 @@ export const UseAddBankAcounts = () => {
   return useMutation({
     mutationFn: async (data: AddBankAccountPayload) => addBankAcounts(data),
     onSuccess: (result) => {
-      toast.success("Conversion successful");
       queryClient.refetchQueries({ queryKey: ["bank-accounts"] });
     },
     onError: (err) => {
@@ -402,7 +396,6 @@ export const useQuoteConversion = () => {
   return useMutation({
     mutationFn: (data: QuoteExecutePayload) => quoteConversion(data),
     onSuccess: (result) => {
-      toast.success("Conversion successful");
     },
     onError: (err) => {
       handleApiError(err);
@@ -415,7 +408,6 @@ export const useExecuteConversion = () => {
   return useMutation({
     mutationFn: (data: ConvertExecutePayload) => executeConversion(data),
     onSuccess: (result) => {
-      toast.success("Conversion successful");
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
