@@ -99,21 +99,19 @@ export function EditProfileModal({
   useEffect(() => {
     if (!profile) return;
 
+    const countryValue =
+      countryOptions.find(
+        (option) =>
+          option.value.toLowerCase() === profile.country?.toLowerCase(),
+      )?.value || "";
     reset({
       firstName: profile.firstName || "",
       lastName: profile.lastName || "",
       gender: profile.gender || "",
       phoneNumber: profile.phoneNumber || "",
       dateOfBirth: profile.dateOfBirth ? profile.dateOfBirth.split("T")[0] : "",
-      country: profile.country || "",
+      country: countryValue || "",
     });
-
-    const matchedCountry =
-      COUNTRIES.find(
-        (c) => c.code.toLowerCase() === profile.country?.toLowerCase(),
-      ) || COUNTRIES[0];
-
-    setCountry(matchedCountry);
   }, [profile, reset]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

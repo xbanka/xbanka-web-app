@@ -1,9 +1,11 @@
 import { create } from "zustand";
 
-type ModalType = "personal-info" | "bvn" | null;
+type ModalType = "personal-info" | "bvn" | "id-selfie" | null;
 
 type OnboardingModalStore = {
   activeModal: ModalType;
+
+  openIdSelfie: () => void;
 
   openPersonalInfo: () => void;
   openBvn: () => void;
@@ -16,6 +18,8 @@ export const useOnboardingModalStore = create<OnboardingModalStore>((set) => ({
   openPersonalInfo: () => set({ activeModal: "personal-info" }),
 
   openBvn: () => set({ activeModal: "bvn" }),
+
+  openIdSelfie: () => set({ activeModal: "id-selfie" }),
 
   closeModal: () => set({ activeModal: null }),
 }));

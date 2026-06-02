@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { Modal } from "../ui/Modal";
 import { Tab } from "@/lib/types/notification-types";
-import { TABS } from "@/lib/MockData";
-Modal;
 import { Check } from "lucide-react";
 import { NotifItem } from "./NotifItem";
 import { cn } from "@/lib/utils";
@@ -13,6 +10,7 @@ import {
   useReadAllNotifications,
   useReadSingleNotification,
 } from "@/lib/services/notification.service";
+import { groupNotificationsByDate } from "@/lib/groupNotifications";
 
 interface NotificationsModalProps {
   onClose: () => void;
@@ -26,6 +24,7 @@ export function NotificationsModal({
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
   const { data, isPending, error } = UseGetNotifications();
+  console.log("notifications data", data);
   const {
     mutate: readAllNotifications,
     isPending: readAllPending,
@@ -37,7 +36,9 @@ export function NotificationsModal({
     error: readSingleError,
   } = useReadSingleNotification();
 
-  const notifications = data?.data?.notifications ?? [];
+  const notifications = data?.data ?? [];
+
+  const groupedNotifications = groupNotificationsByDate(notifications);
 
   return (
     <div className="max-w-150 bg-card-background border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ">
@@ -48,7 +49,7 @@ export function NotificationsModal({
       />
       <div className="px-8 pt-6 space-y-6 max-sm:px-5 max-sm:pb-6 max-sm:pt-2 max-sm:space-y-6">
         {/* Tabs */}
-        <div className="flex items-center border-b border-border">
+        {/* <div className="flex items-center border-b border-border">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -72,24 +73,34 @@ export function NotificationsModal({
             <Check className="w-3.5 h-3.5" />
             {readAllPending ? "Updating..." : "Mark all as read"}
           </button>
-        </div>
+        </div> */}
 
         {/* Feed */}
         <div className="overflow-y-auto max-h-[420px] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border space-y-6">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4 first:mt-0">
-                Today
-              </p>
-              <div className="space-y-3">
-                {notifications.map((n: any) => (
-                  <NotifItem
-                    key={n.id}
-                    n={n}
-                    onClick={() => readSingleNotification(n.id)}
-                  />
-                ))}
-              </div>
-            </div>
+          {Object.entries(groupedNotifications).map(
+            ([label, items]) =>
+              items.length > 0 && (
+                <div key={label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4">
+                    {label}
+                  </p>
+
+                  <div className="space-y-3">
+                    {items.map((notification) => (
+                      <NotifItem
+                        key={notification.id}
+                        n={notification}
+                        onClick={() => {
+                          if (!notification.isRead) {
+                            readSingleNotification(notification.id);
+                          }
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ),
+          )}
         </div>
       </div>
 

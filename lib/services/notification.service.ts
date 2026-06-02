@@ -43,7 +43,6 @@ export const useReadSingleNotification = () => {
   const mutate = useMutation({
     mutationFn: (data: string) => readSingleNotification(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
       queryClient.invalidateQueries({
         queryKey: ["get-notifications"],
       });
