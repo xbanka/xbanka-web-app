@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { Modal } from "../ui/Modal";
 import { Tab } from "@/lib/types/notification-types";
-import { TABS } from "@/lib/MockData";
-Modal;
 import { Check } from "lucide-react";
 import { NotifItem } from "./NotifItem";
 import { cn } from "@/lib/utils";
@@ -52,7 +49,7 @@ export function NotificationsModal({
       />
       <div className="px-8 pt-6 space-y-6 max-sm:px-5 max-sm:pb-6 max-sm:pt-2 max-sm:space-y-6">
         {/* Tabs */}
-        <div className="flex items-center border-b border-border">
+        {/* <div className="flex items-center border-b border-border">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -76,7 +73,7 @@ export function NotificationsModal({
             <Check className="w-3.5 h-3.5" />
             {readAllPending ? "Updating..." : "Mark all as read"}
           </button>
-        </div>
+        </div> */}
 
         {/* Feed */}
         <div className="overflow-y-auto max-h-[420px] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border space-y-6">

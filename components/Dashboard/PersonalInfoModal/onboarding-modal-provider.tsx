@@ -8,11 +8,6 @@ import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
 
 export const OnboardingModalProvider = () => {
   const { activeModal, closeModal } = useOnboardingModalStore();
-  const isIdSelfieOpen = useOnboardingModalStore(
-    (state) => state.isIdSelfieOpen,
-  );
-
-  const closeIdSelfie = useOnboardingModalStore((state) => state.closeIdSelfie);
 
   return (
     <>
@@ -24,8 +19,8 @@ export const OnboardingModalProvider = () => {
         <BvnModal onClose={closeModal} onCompleted={closeModal} />
       )}
 
-      {isIdSelfieOpen && (
-        <IdSelfieModal onClose={closeIdSelfie} onCompleted={closeIdSelfie} />
+      {activeModal === "id-selfie" && (
+        <IdSelfieModal onClose={closeModal} onCompleted={closeModal} />
       )}
     </>
   );
