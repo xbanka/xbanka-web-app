@@ -125,6 +125,7 @@ export const useGenerateAddress = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -227,6 +228,7 @@ export const UseVerifyFund = () => {
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+      queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -282,6 +284,7 @@ export const UseSendFiatWallet = () => {
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+      queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -417,6 +420,7 @@ export const useExecuteConversion = () => {
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
       queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
     },
     onError: (err) => {
       handleApiError(err);
