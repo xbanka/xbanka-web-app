@@ -79,6 +79,16 @@ export const getFiatWallet = async () => {
   };
 };
 
+export const getVirtualAccount = async () => {
+  const response = await AxiosInstance.get("/wallets/virtual-account");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
 export const fundFiatWallet = async (data: fundWalletPayload) => {
   const response = await AxiosInstance.post("/wallets/fiat/fund/initiate", {
     amount: data.amount,

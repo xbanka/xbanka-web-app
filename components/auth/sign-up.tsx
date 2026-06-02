@@ -184,7 +184,7 @@ const SignUp = () => {
 
       <div className="px-30 text-center max-sm:px-0">
         <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
-          By signing in, you agree to our{" "}
+          By signing up, you agree to our{" "}
           <span className="text-Green">Terms of Service</span> &{" "}
           <span className="text-Green">Privacy Policy</span>
         </p>

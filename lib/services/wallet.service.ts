@@ -21,6 +21,7 @@ import {
   getRateConversion,
   getSingleWalletBalance,
   getTransactionHistory,
+  getVirtualAccount,
   quoteConversion,
   sendFiatWallet,
   verifyFund,
@@ -138,6 +139,20 @@ export const UseGetFiatWallet = () => {
     queryFn: async () => {
       try {
         const response = await getFiatWallet();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+  });
+};
+
+export const UseGetVirtualAccount = () => {
+  return useQuery({
+    queryKey: ["virtual-account"],
+    queryFn: async () => {
+      try {
+        const response = await getVirtualAccount();
         return response;
       } catch (err) {
         handleApiError(err);
@@ -401,6 +416,7 @@ export const useExecuteConversion = () => {
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+      queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
     },
     onError: (err) => {
       handleApiError(err);
