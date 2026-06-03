@@ -1,37 +1,38 @@
-import { AppleIcon, BarChart2, Bell, Clock, Repeat } from "lucide-react";
+import { AppleIcon, ArrowDownCircle, ArrowLeftRight, ArrowUpCircle, BadgeCheck, BarChart2, Bell, Bitcoin, Clock, IdCard, Laptop, Repeat, ShieldCheck } from "lucide-react";
+import { NotifGroup, Tab } from "./types/notification-types";
 
-export const MARKET = [
-  { name: "Bitcoin", symbol: "BTC", price: "92,300", change: "3.21", up: true },
-  {
-    name: "Ethereum",
-    symbol: "ETH",
-    price: "87,500",
-    change: "4.15",
-    up: true,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    price: "76,800",
-    change: "2.78",
-    up: false,
-  },
-  { name: "Ripple", symbol: "XRP", price: "85,400", change: "4.98", up: true },
-];
+// export const MARKET = [
+//   { name: "Bitcoin", symbol: "BTC", price: "92,300", change: "3.21", up: true },
+//   {
+//     name: "Ethereum",
+//     symbol: "ETH",
+//     price: "87,500",
+//     change: "4.15",
+//     up: true,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   {
+//     name: "Tether",
+//     symbol: "USDT",
+//     price: "76,800",
+//     change: "2.78",
+//     up: false,
+//   },
+//   { name: "Ripple", symbol: "XRP", price: "85,400", change: "4.98", up: true },
+// ];
 
 export const GIFT_CARDS = [
   { name: "Apple", bg: "#6C47FF", rate: "₦100 per $1", icon: AppleIcon },

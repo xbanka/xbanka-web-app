@@ -1,10 +1,7 @@
 import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeftRight } from "lucide-react";
-import { UseWithdrawCrypto } from "@/lib/services/wallet.service";
 import { useEffect } from "react";
-import { UserWallet } from "../Wallet-Page/types";
-import { WalletSuccessState } from "./crypto-modal-types";
 import { RecipientXbankaUsersTypes } from "./types";
 import { useTransferCryptoToXbankaUsers } from "@/lib/services/send-crypto.service";
 
