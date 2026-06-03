@@ -9,6 +9,7 @@ export function FormField({
   label,
   type = "text",
   placeholder,
+
   icon: Icon,
   register,
   error,
