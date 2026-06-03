@@ -1,4 +1,3 @@
-// store/logout.store.ts
 import { create } from "zustand";
 
 type LogoutState = {

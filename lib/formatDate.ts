@@ -35,7 +35,7 @@ export function timeAgo(date: string) {
 export const formatTransactionDate = (date: Date = new Date()) => {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
-    day: "2-digit",
+    day: "2-digit", 
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",

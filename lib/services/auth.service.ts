@@ -18,6 +18,7 @@ import {
 } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
 import { tokenStore } from "@/store/token.store";
+import { authTokens } from "../authToken";
 
 type TokenResponse = {
   access_token?: string;
@@ -81,8 +82,10 @@ export const useLogin = () => {
     mutationFn: (data: logInFormData) => login(data.email, data.password),
     onSuccess: (res, variables) => {
       const result = res.data;
-      const token = getAccessToken(result);
-      console.log(variables)
+      const accessToken = getAccessToken(result);
+      const refreshToken = result?.refresh_token;
+      console.log(refreshToken);
+      console.log(variables);
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         localStorage.removeItem("accessToken");
@@ -94,13 +97,11 @@ export const useLogin = () => {
 
         router.push("/verify-device");
       } else {
-        if (token) {
-          localStorage.setItem("accessToken", token);
-          tokenStore.set(token);
+        if (accessToken && refreshToken) {
+          authTokens.setTokens(accessToken, refreshToken);
+          tokenStore.set(accessToken);
+          document.cookie = `accessToken=${accessToken}; path=/`;
         }
-
-        console.log("token", token);
-        console.log("successful", result);
         router.push("/");
       }
     },
@@ -116,13 +117,19 @@ export const useVerifyDevice = () => {
   const mutate = useMutation({
     mutationFn: (data: VerifyDeviceData) => verifyDevice(data),
     onSuccess: (result) => {
-      const token = getAccessToken(result.data);
-      console.log(token);
-      if (token) {
-        localStorage.setItem("accessToken", token);
-        tokenStore.set(token);
+      const accessToken = result.data.access_token;
+      const refreshToken = result.data.refresh_token;
+
+      if (accessToken && refreshToken) {
+        authTokens.setTokens(accessToken, refreshToken);
+        tokenStore.set(accessToken);
+        document.cookie = `accessToken=${accessToken}; path=/`;
       }
+
       localStorage.removeItem("verifyEmail");
+      localStorage.removeItem("verifyUserId");
+      localStorage.removeItem("verifyDeviceId");
+
       toast.success(result.data.message);
       router.push("/");
     },
@@ -138,11 +145,17 @@ export const useVerifyMail = () => {
     mutationFn: (data: string) => verifyEmail(data),
     onSuccess: (res) => {
       const result = res.data;
-      console.log(result)
+
       toast.success(result.data.message);
-      const token = result.data.access_token;
-      localStorage.setItem("accessToken", token);
-      tokenStore.set(token);
+
+      const accessToken = result.data.access_token;
+      const refreshToken = result.data.refresh_token;
+
+      if (accessToken && refreshToken) {
+        authTokens.setTokens(accessToken, refreshToken);
+        tokenStore.set(accessToken);
+        document.cookie = `accessToken=${accessToken}; path=/`;
+      }
     },
     onError: (err) => {
       handleApiError(err);

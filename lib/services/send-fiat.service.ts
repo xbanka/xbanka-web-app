@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getActiveXbankaUsers, transferFiatToXbankaUsers, XbankaUserPayload } from "../actions/send-fiat-to-users";
 import { handleApiError } from "../errors/error";
 import { toast } from "sonner";
@@ -19,11 +19,14 @@ export const UseGetActiveXbankaUsers = () => {
 };
 
 export const useTransferFiatToXbankaUsers = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: XbankaUserPayload) => transferFiatToXbankaUsers(data),
 
     onSuccess: () => {
-      toast.success("OTP sent to your email");
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
     },
 
     onError: (err) => {

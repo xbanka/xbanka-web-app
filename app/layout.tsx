@@ -5,6 +5,7 @@ import { Providers } from "@/components/Layout/provider";
 import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-modal";
 import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
 import { Toaster } from "sonner";
+import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,10 +22,9 @@ export default function RootLayout({
       <Providers>
         <html lang="en" data-theme="light">
           <body>
-            <head>
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
               (function() {
                 try {
                   const storedTheme = localStorage.getItem("theme-preference");
@@ -43,12 +43,12 @@ export default function RootLayout({
                 } catch (e) {}
               })();
             `,
-                }}
-              />
-            </head>
+              }}
+            />
 
             {children}
             <Toaster richColors position="top-right" />
+            <GlobalNotificationsModal />
             <GlobalLogout />
             <OnboardingModalProvider />
           </body>
