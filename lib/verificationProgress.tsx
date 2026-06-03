@@ -44,14 +44,14 @@ export const ONBOARDING_STEPS = (data: any) => {
       desc: "Basic account features unlocked",
       label: "Account created",
     },
-    // {
-    //   key: "BVN",
-    //   modalKey: "bvn",
-    //   title: "Verify BVN",
-    //   ids: ["BVN"],
-    //   desc: "Unlocks gift cards & bill payments",
-    //   label: "Gift cards & bill payments unlocked",
-    // },
+    {
+      key: "BVN",
+      modalKey: "bvn",
+      title: "Verify BVN",
+      ids: ["BVN"],
+      desc: "Unlocks gift cards & bill payments",
+      label: "Gift cards & bill payments unlocked",
+    },
     {
       key: "IDENTITY",
       modalKey: "id-selfie",
