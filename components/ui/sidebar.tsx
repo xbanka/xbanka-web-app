@@ -1,6 +1,5 @@
 "use client";
 
-import { MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -16,14 +15,6 @@ export function SidebarWrapper({
   className,
   open,
 }: SidebarProps) {
-  const handleBackdropClick = (
-    event: MouseEvent<HTMLDivElement>,
-  ) => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
     // <div
     //   onClick={handleBackdropClick}
@@ -55,9 +46,12 @@ export function SidebarWrapper({
 
       {/* sidebar */}
       <div
-        className={`absolute right-0 top-0 h-full w-full md:max-w-150 bg-card-background border-8 border-border rounded-bl-[20px] rounded-tl-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:border-0 max-sm:rounded-none max-sm:px-0 max-sm:pb-0 ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={cn(
+          "absolute right-0 top-0 flex h-full w-full flex-col overflow-hidden bg-card-background border-8 border-border rounded-bl-[20px] rounded-tl-[20px] shadow-2xl transition-transform animate-in fade-in zoom-in-95 duration-150 md:max-w-150",
+          "max-sm:h-dvh max-sm:border-0 max-sm:rounded-none max-sm:px-0 max-sm:pb-0",
+          open ? "translate-x-0" : "translate-x-full",
+          className,
+        )}
       >
         {children}
       </div>

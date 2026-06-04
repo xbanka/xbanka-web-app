@@ -112,15 +112,15 @@ export default function PhoneNumberField({
         </label>
       )}
 
-      <div className="flex gap-2 items-start">
+      <div className="flex min-w-0 items-start gap-2 max-[420px]:grid max-[420px]:grid-cols-1">
         {/* ── Country selector ───────────────────────────────────── */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative shrink-0 max-[420px]:w-full" ref={dropdownRef}>
           <button
             ref={triggerRef}
             type="button"
             onClick={handleOpen}
             disabled={disabled}
-            className={`${inputBase} border-input focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 w-auto gap-2 cursor-pointer hover:border-border-active disabled:cursor-not-allowed
+            className={`${inputBase} border-input focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 w-auto gap-2 cursor-pointer hover:border-border-active disabled:cursor-not-allowed max-[420px]:w-full max-[420px]:justify-between
               ${isOpen ? "border-border-active ring-[3px] ring-border-active/20" : ""}`}
           >
             <span className="text-lg leading-none">{selectedCountry.flag}</span>
@@ -135,7 +135,7 @@ export default function PhoneNumberField({
           {/* ── Dropdown ──────────────────────────────────────────── */}
           {isOpen && (
             <div
-              className={`absolute left-0 z-50 w-60 rounded-xl border border-border bg-input-background shadow-lg overflow-hidden
+              className={`absolute left-0 z-50 w-60 rounded-xl border border-border bg-input-background shadow-lg overflow-hidden max-[420px]:w-full
                 ${dropdownPosition === "bottom" ? "top-full mt-1.5" : "bottom-full mb-1.5"}`}
             >
               {/* Search */}
@@ -194,7 +194,7 @@ export default function PhoneNumberField({
         </div>
 
         {/* ── Phone number input ────────────────────────────────── */}
-        <div className="flex-1 relative">
+        <div className="relative min-w-0 flex-1">
           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
           <Input
             id={id}
