@@ -7,10 +7,12 @@ export const useOtpFlow = () => {
   const [cooldown, setCooldown] = useState(0);
 
   const sendOtp = useCallback(() => {
+    console.log("sendOtp called", cooldown);
     if (cooldown > 0) return;
 
     requestOtp(undefined, {
       onSuccess: () => {
+        console.log("OTP success");
         setCooldown(60); // 60 sec countdown
       },
     });
@@ -39,5 +41,6 @@ export const useOtpFlow = () => {
     isPending,
     error,
     canResend: cooldown === 0,
+    startCooldown: (seconds = 60) => setCooldown(seconds),
   };
 };
