@@ -141,13 +141,13 @@ export function SelectAssetStep({
                   className={cn(
                     "grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border p-3 text-left transition-colors max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
                     active
-                      ? "border-Green bg-[#06362F]"
+                      ? "border-Green bg-Green/10"
                       : "border-input bg-transparent hover:border-border-active",
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
-                    <CoinAvatar currency={asset.currency} size={40} />
-                    <div className="min-w-0">
+                    <CoinAvatar className="flex-1" currency={asset.currency} size={40} />
+                    <div className="min-w-0 flex-1">
                       <div className="flex min-w-0 items-center gap-3 max-sm:gap-1.5">
                         <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
                           {getCurrencyHeader(asset.currency)}
