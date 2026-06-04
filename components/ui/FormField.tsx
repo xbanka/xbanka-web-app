@@ -22,9 +22,9 @@ export function FormField({
   const registration = register ? register(id) : {};
 
   return (
-    <div className={cn("space-y-1", className)}>
+    <div className={cn("min-w-0 space-y-1", className)}>
       {label && <Label label={label} />}
-      <div className="relative">
+      <div className="relative min-w-0">
         {Icon && (
           <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
         )}
@@ -34,6 +34,7 @@ export function FormField({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
+            "truncate",
             Icon ? "pl-10 pr-4" : "px-4",
             // Use opacity-0 instead of hidden to keep the functionality
             type === "date" &&
