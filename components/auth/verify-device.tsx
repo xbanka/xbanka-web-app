@@ -11,7 +11,8 @@ import { useOtpFlow } from "@/hooks/use-otp-flow";
 
 export default function VerifyDevice() {
   const [code, setCode] = useState("");
-  const { sendOtp, cooldown, canResend } = useOtpFlow();
+  const { sendOtp, cooldown, canResend, startCooldown } = useOtpFlow();
+  console.log("cooldown", cooldown);
   const verifyEmail =
     typeof window !== "undefined" ? localStorage.getItem("verifyEmail") : null;
 
@@ -43,9 +44,9 @@ export default function VerifyDevice() {
     console.log("otp", otp);
   };
 
-  // useEffect(() => {
-  //   sendOtp();
-  // }, []);
+  useEffect(() => {
+  startCooldown();
+}, []);
 
   return (
     <Card className="max-sm:justify-center max-sm:text-center">
