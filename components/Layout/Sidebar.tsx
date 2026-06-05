@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useThemeStore } from "@/store/theme.store";
 
 const BOTTOM_NAV_ITEMS = [
   { id: "dashboard", label: "Home", icon: LayoutDashboard, route: "/" },
@@ -42,6 +43,8 @@ export function Sidebar({
   mobileOpen: boolean;
   setMobileOpen: (v: boolean) => void;
 }) {
+  const { theme } = useThemeStore();
+
   const pathname = usePathname();
   const [showMore, setShowMore] = useState(false);
 
@@ -60,9 +63,23 @@ export function Sidebar({
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
-          <span className="text-base leading-6 font-medium tracking-tight text-foreground">
-            <span className="text-Green">X</span>banka
-          </span>
+          <div className="w-16">
+            { theme === "dark" ? (
+              <img
+                src="/xbanka_white.png"
+                className="w-full object-cover dark:hidden"
+                loading="lazy"
+                alt="xBanka"
+              />
+            ) : (
+              <img
+                src="/xbanka_logo.png"
+                className="w-full object-cover dark:hidden"
+                loading="lazy"
+                alt="xBanka"
+              />
+          )}
+          </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
