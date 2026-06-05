@@ -30,14 +30,14 @@ export function Topbar({
           { theme === "dark" ? (
             <img
               src="/xbanka_white.png"
-              className="w-full object-cover dark:hidden"
+              className="w-full object-cover"
               loading="lazy"
               alt="xBanka"
             />
           ) : (
             <img
               src="/xbanka_logo.png"
-              className="w-full object-cover dark:hidden"
+              className="w-full object-cover"
               loading="lazy"
               alt="xBanka"
             />
