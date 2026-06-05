@@ -7,6 +7,7 @@ import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModa
 import { Toaster } from "sonner";
 import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import InstallDebugger from "@/components/BeforeInstallPrompt";
 
 export const metadata: Metadata = {
   title: "Xbanka",
@@ -56,6 +57,7 @@ export default function RootLayout({
             <GlobalLogout />
             <OnboardingModalProvider />
             <ServiceWorkerRegistration />
+            <InstallDebugger />
           </Providers>
         </QueryProvider>
       </body>
