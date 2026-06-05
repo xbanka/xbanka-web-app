@@ -63,18 +63,18 @@ export function Sidebar({
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
-          <div className="w-16">
+          <div className="w-20">
             { theme === "dark" ? (
               <img
                 src="/xbanka_white.png"
-                className="w-full object-cover dark:hidden"
+                className="w-full object-cover"
                 loading="lazy"
                 alt="xBanka"
               />
             ) : (
               <img
                 src="/xbanka_logo.png"
-                className="w-full object-cover dark:hidden"
+                className="w-full object-cover"
                 loading="lazy"
                 alt="xBanka"
               />
