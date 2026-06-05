@@ -62,7 +62,7 @@ export function SelectAssetStep({
   return (
     <Modal
       backdropClassName="items-end p-0 sm:items-center sm:p-4"
-      className="send-crypto-sheet border-[6px] border-[#26282D] bg-card-background p-0 shadow-2xl max-sm:flex max-sm:max-h-[82vh] max-sm:w-full max-sm:max-w-full max-sm:flex-col max-sm:overflow-hidden max-sm:rounded-b-none max-sm:rounded-t-[24px] max-sm:border-x-0 max-sm:border-b-0 max-sm:border-t-[6px]"
+      className="send-crypto-sheet border-[6px] bg-card-background p-0 shadow-2xl max-sm:flex max-sm:max-h-[82vh] max-sm:w-full max-sm:max-w-full max-sm:flex-col max-sm:overflow-hidden max-sm:rounded-b-none max-sm:rounded-t-[24px] max-sm:border-x-0 max-sm:border-b-0 max-sm:border-t-[6px]"
       onClose={onClose}
     >
       <div className="flex max-h-[86vh] flex-col px-8 pb-8 pt-4 max-sm:h-[82vh] max-sm:px-4 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)] max-sm:pt-4">
@@ -148,7 +148,7 @@ export function SelectAssetStep({
                   <div className="flex min-w-0 items-center gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
                     <CoinAvatar className="flex-1" currency={asset.currency} size={40} />
                     <div className="min-w-0 flex-1">
-                      <div className="flex min-w-0 items-center gap-3 max-sm:gap-1.5">
+                      <div className="flex justify-between min-w-0 items-center gap-3 max-sm:gap-1.5">
                         <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
                           {getCurrencyHeader(asset.currency)}
                         </p>
