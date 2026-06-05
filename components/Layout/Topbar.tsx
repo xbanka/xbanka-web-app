@@ -1,8 +1,11 @@
+"use client";
+
 import { Bell } from "lucide-react";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import UserDropdown from "./dropDownMenu";
 import { useNotificationModalStore } from "@/store/notification-modal-store";
 import { UseGetNotifications } from "@/lib/services/notification.service";
+import { useThemeStore } from "@/store/theme.store";
 
 export function Topbar({
   setMobileOpen,
@@ -18,9 +21,29 @@ export function Topbar({
     (notification: any) => !notification.isRead,
   );
 
+  const { theme } = useThemeStore();
+
   return (
     <header className="flex items-center justify-between px-4 sm:px-8 py-2 border-b border-border bg-card-background shrink-0">
-      <div className="md:hidden w-7" />
+      <div className="md:hidden ml-2">
+        <div className="w-20">
+          { theme === "dark" ? (
+            <img
+              src="/xbanka_white.png"
+              className="w-full object-cover dark:hidden"
+              loading="lazy"
+              alt="xBanka"
+            />
+          ) : (
+            <img
+              src="/xbanka_logo.png"
+              className="w-full object-cover dark:hidden"
+              loading="lazy"
+              alt="xBanka"
+            />
+          )}
+        </div>
+      </div>
       <div className="flex-1" />
       <div className="flex items-center gap-4">
         <ThemeToggle />
