@@ -2,14 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  X,
   Camera,
-  Phone,
   Mail,
   Calendar,
   MapPin,
   Lock,
-  Sidebar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -64,7 +61,6 @@ type FormValues = z.infer<typeof schema>;
 
 export function EditProfileModal({
   onClose,
-  avatarUrl,
 }: EditProfileModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [address, setAddress] = useState("");
@@ -157,16 +153,20 @@ export function EditProfileModal({
   return (
     <SidebarWrapper onClose={onClose} open={true}>
       {/* Header */}
-      <ModalHeader title="Edit Profile" onClose={onClose} />
+      <ModalHeader
+        title="Edit Profile"
+        onClose={onClose}
+        className="shrink-0 max-sm:px-5 max-sm:py-5"
+      />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="pt-6 pb-10 px-10 max-h-180 overflow-y-scroll"
+        className="min-h-0 flex-1 overflow-y-auto px-10 pb-10 pt-4 sm:pt-6 max-sm:px-5 max-sm:pb-0 max-sm:pt-1"
       >
         {/* Avatar */}
-        <div className="flex flex-col items-center mb-5">
-          <div className="relative w-20 h-20">
-            <div className="w-20 h-20 rounded-full bg-input overflow-hidden border-2 border-border-active">
+        <div className="mb-5 flex flex-col items-center max-sm:mb-4">
+          <div className="relative h-20 w-20 max-sm:h-18 max-sm:w-18">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-border-active bg-input text-xl font-semibold text-card-text max-sm:h-18 max-sm:w-18">
               {image || avatar ? (
                 <Image
                   src={image || avatar}
@@ -191,7 +191,7 @@ export function EditProfileModal({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-Green border-2 border-card-background flex items-center justify-center hover:bg-Green/90 transition-colors"
+              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card-background bg-Green transition-colors hover:bg-Green/90"
             >
               <Camera className="w-3.5 h-3.5 text-white" />
             </button>
@@ -199,14 +199,14 @@ export function EditProfileModal({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="mt-2.5 text-[12px] text-Green font-medium cursor-pointer hover:text-Green/80 transition-colors"
+            className="mt-2.5 cursor-pointer text-[12px] font-medium text-Green transition-colors hover:text-Green/80"
           >
             {updateAvatarPending ? "Uploading..." : "Change photo"}
           </button>
         </div>
 
         {/* Form */}
-        <div className="space-y-4">
+        <div className="space-y-4 max-sm:space-y-3.5">
           {/* Row 1: Display Name + Gender */}
           {/* <div className="grid grid-cols-2 gap-3">
             <FormField
@@ -227,7 +227,7 @@ export function EditProfileModal({
           {/* Full Name — locked */}
           <div className="space-y-2">
             {bvnVerified && (
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-end max-sm:justify-start">
                 <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                   <Lock className="w-3 h-3" />
                   Locked after BVN verification
@@ -235,7 +235,7 @@ export function EditProfileModal({
               </div>
             )}
 
-            <div className="flex items-start gap-4">
+            <div className="grid grid-cols-2 items-start gap-4 max-[420px]:grid-cols-1 max-[420px]:gap-3">
               <FormField
                 id="firstName"
                 label="First Name"
@@ -329,7 +329,7 @@ export function EditProfileModal({
 
           {/* Address */}
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <Label label="Address" />
               <span className="inline-flex items-center rounded-md bg-[#C19700]/15 border border-[#C19700]/40 px-2 py-0.5 text-[11px] font-medium text-[#C19700]">
                 Tier 3 Required
@@ -346,12 +346,12 @@ export function EditProfileModal({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 mt-8">
+        <div className="mt-8 flex items-center gap-3 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-5 max-sm:bg-card-background max-sm:px-5 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)] max-sm:pt-4">
           <Button
             type="button"
             variant="outline"
             size="default"
-            className="flex-1"
+            className="flex-1 max-sm:h-11"
             onClick={onClose}
           >
             Cancel
@@ -361,7 +361,7 @@ export function EditProfileModal({
             variant={isPending ? "disabled" : "default"}
             size="default"
             disabled={isPending}
-            className="flex-3"
+            className="flex-[2] max-sm:h-11"
           >
             {isPending ? "Saving..." : "Save Changes"}
           </Button>

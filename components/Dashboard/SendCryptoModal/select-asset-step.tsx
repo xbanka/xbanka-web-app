@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "../Wallet-Page/types";
@@ -19,10 +19,12 @@ const formatNaira = (amount?: number) =>
       }).format(amount)
     : "₦0.00";
 
-const walletLabel = (index: number) => {
-  const labels = ["Primary wallet", "Trading wallet", "Savings wallet"];
-  return labels[index % labels.length];
-};
+const formatCryptoAmount = (amount?: number) =>
+  typeof amount === "number"
+    ? new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 6,
+      }).format(amount)
+    : "0";
 
 export function SelectAssetStep({
   selectedId,
@@ -60,10 +62,10 @@ export function SelectAssetStep({
   return (
     <Modal
       backdropClassName="items-end p-0 sm:items-center sm:p-4"
-      className="send-crypto-sheet border-[6px] border-[#26282D] bg-card-background p-0 shadow-2xl max-sm:flex max-sm:max-h-[76vh] max-sm:max-w-[360px] max-sm:flex-col max-sm:overflow-hidden max-sm:rounded-[24px] max-sm:border-[6px]"
+      className="send-crypto-sheet border-[6px] bg-card-background p-0 shadow-2xl max-sm:flex max-sm:max-h-[82vh] max-sm:w-full max-sm:max-w-full max-sm:flex-col max-sm:overflow-hidden max-sm:rounded-b-none max-sm:rounded-t-[24px] max-sm:border-x-0 max-sm:border-b-0 max-sm:border-t-[6px]"
       onClose={onClose}
     >
-      <div className="flex max-h-[86vh] flex-col px-8 pb-8 pt-4 max-sm:h-[76vh] max-sm:px-4 max-sm:pb-4 max-sm:pt-4">
+      <div className="flex max-h-[86vh] flex-col px-8 pb-8 pt-4 max-sm:h-[82vh] max-sm:px-4 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)] max-sm:pt-4">
         <ModalHeader
           className="px-0"
           title="Send Crypto"
@@ -103,7 +105,7 @@ export function SelectAssetStep({
             Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_28px] items-center gap-4 rounded-xl border-2 border-input px-5 py-4 max-sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_22px] max-sm:gap-2 max-sm:px-3 max-sm:py-3"
+                className="grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border-2 border-input px-5 py-4 max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3"
               >
                 <div className="flex min-w-0 items-center gap-4 border-r-2 border-input pr-4 max-sm:gap-2 max-sm:pr-2">
                   <Skeleton className="h-10 w-10 shrink-0 rounded-full bg-border max-sm:h-8 max-sm:w-8" />
@@ -137,39 +139,38 @@ export function SelectAssetStep({
                   key={asset.id}
                   onClick={() => onSelect(asset)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-4 rounded-xl border p-3 text-left transition-colors max-sm:grid max-sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_22px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
+                    "grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border p-3 text-left transition-colors max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
                     active
-                      ? "border-Green bg-[#06362F]"
+                      ? "border-Green bg-Green/10"
                       : "border-input bg-transparent hover:border-border-active",
                   )}
                 >
-                  <div className="flex">
-                    <div className="flex justify-start items-start gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
-                      <CoinAvatar currency={asset.currency} size={40} />
-                      <div className="min-w-0">
-                        <div className="flex min-w-0 items-center gap-3 max-sm:gap-1.5">
-                          <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
-                            {getCurrencyHeader(asset.currency)}
-                          </p>
-                          <span className="shrink-0 rounded-sm border border-input bg-background px-2 py-0.5 text-[13px] font-medium leading-5 text-text max-sm:px-1.5 max-sm:py-0 max-sm:text-[11px]">
-                            {asset.currency}
-                          </span>
-                        </div>
+                  <div className="flex min-w-0 items-center gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
+                    <CoinAvatar className="flex-1" currency={asset.currency} size={40} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex justify-between min-w-0 items-center gap-3 max-sm:gap-1.5">
+                        <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
+                          {getCurrencyHeader(asset.currency)}
+                        </p>
+                        <span className="shrink-0 rounded-sm border border-input bg-background px-2 py-0.5 text-[13px] font-medium leading-5 text-text max-sm:px-1.5 max-sm:py-0 max-sm:text-[11px]">
+                          {asset.currency}
+                        </span>
                       </div>
                     </div>
-                    <div className="pl-6">
-                      <p className="truncate text-[14px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
-                        {asset.balance} {asset.currency}
-                      </p>
-                      <p className="mt-1 truncate text-[12px] font-normal leading-5.5 text-text max-sm:mt-0.5 max-sm:text-[12px] max-sm:leading-4">
-                        {formatNaira(asset.fiatEquivalent?.amount)}
-                      </p>
-                    </div>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="min-w-0 pr-1 max-sm:pr-0">
+                    <p className="truncate text-[14px] font-medium leading-5 text-card-text max-sm:text-[12px] max-sm:leading-5">
+                      {formatCryptoAmount(asset.balance)}
+                      <span className="max-sm:hidden"> {asset.currency}</span>
+                    </p>
+                    <p className="mt-1 truncate text-[12px] font-normal leading-5.5 text-text max-sm:mt-0.5 max-sm:text-[11px] max-sm:leading-4">
+                      {formatNaira(asset.fiatEquivalent?.amount)}
+                    </p>
+                  </div>
+                  <div className="flex justify-end justify-self-end">
                     <div
                       className={cn(
-                        "flex h-5 w-5 items-center justify-center rounded-full border max-sm:h-5 max-sm:w-5",
+                        "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border max-sm:h-5 max-sm:w-5",
                         active ? "border-Green" : "border-text",
                       )}
                     >

@@ -15,9 +15,9 @@ export const SelectField = ({
   disabled,
   className,
 }: SelectFieldProps) => (
-  <div className={cn("space-y-1", className)}>
+  <div className={cn("min-w-0 space-y-1", className)}>
     {label && <Label label={label} />}
-    <div className="relative flex items-center">
+    <div className="relative flex min-w-0 items-center">
       {Icon && (
         <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder" />
       )}
@@ -39,7 +39,7 @@ export const SelectField = ({
       </select>
       {!disabled && (
         <span className="absolute right-3 text-placeholder pointer-events-none flex items-center">
-          <ChevronDown />
+          <ChevronDown className="h-5 w-5" />
         </span>
       )}
     </div>
