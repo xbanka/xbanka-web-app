@@ -132,7 +132,7 @@ export function MarketOverview() {
       key: "id",
       header: "Action",
       render: () => (
-        <span className="text-sm leading-6 text-Green font-normal">Trade</span>
+        <Link href={"/crypto"}><span  className="font-normal text-sm leading-6 text-Green">Trade</span></Link>
       ),
     },
   ];

@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getActiveXbankaUsers, transferFiatToXbankaUsers, XbankaUserPayload } from "../actions/send-fiat-to-users";
 import { handleApiError } from "../errors/error";
-import { toast } from "sonner";
 
 export const UseGetActiveXbankaUsers = () => {
   const mutate = useQuery({

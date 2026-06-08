@@ -10,6 +10,7 @@ import {
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import { useLogoutStore } from "@/store/logout.store";
+import { cn } from "@/lib/utils";
 
 interface UserDropdownProps {
   avatarInitials?: string;
@@ -21,8 +22,7 @@ const TIER_COLORS: Record<number, string> = {
   3: "bg-purple-500/20 text-purple-400 border-purple-500/30",
 };
 
-export default function UserDropdown({
-}: UserDropdownProps) {
+export default function UserDropdown({}: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const userData = useUserStore((state) => state.user);
@@ -172,17 +172,38 @@ export default function UserDropdown({
 
           {/* Menu items */}
           <nav className="mb-6">
-            {MENU_ITEMS.map(({ icon: Icon, label, href }) => (
-              <a
-                key={label}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm hover:text-text hover:bg-border text-card-text transition-colors"
-              >
-                <Icon className="w-6 h-6 shrink-0" />
-                <span>{label}</span>
-              </a>
-            ))}
+            {MENU_ITEMS.map(
+              ({ icon: Icon, label, href, disabled, badge, badgeColor }) => (
+                <a
+                  key={label}
+                  href={disabled ? undefined : href}
+                  onClick={(e) => {
+                    if (disabled) {
+                      e.preventDefault();
+                      return;
+                    }
+
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm hover:text-text hover:bg-border text-card-text transition-colors",
+                    disabled
+                      ? "opacity-50 cursor-not-allowed bg-card-background text-text"
+                      : "hover:text-text hover:bg-border text-card-text",
+                  )}
+                >
+                  <Icon className="w-6 h-6 shrink-0" />
+                  <span>{label}</span>
+                  {badge && (
+                    <span
+                      className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badgeColor}`}
+                    >
+                      {badge}
+                    </span>
+                  )}
+                </a>
+              ),
+            )}
           </nav>
 
           {/* Divider + Logout */}

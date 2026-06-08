@@ -5,6 +5,7 @@ import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "./types";
 import { getCoinImage } from "@/lib/coin-images";
 import Image from "next/image";
+import Link from "next/link";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
@@ -82,7 +83,7 @@ export function CryptoView() {
       key: "note",
       header: "Action",
       render: () => (
-        <span className="font-normal text-sm leading-6 text-Green">Trade</span>
+        <Link href={"/crypto"}><span  className="font-normal text-sm leading-6 text-Green">Trade</span></Link>
       ),
     },
   ];
