@@ -286,7 +286,7 @@ export function EditProfileModal({
             placeholder="email@example.com"
             icon={Mail}
             value={profile?.email || ""}
-            disabled
+            // disabled={bvnVerified}
           />
 
           {/* Date of Birth — locked */}

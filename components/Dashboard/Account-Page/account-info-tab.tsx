@@ -19,7 +19,7 @@ import { UseGetBankAcounts } from "@/lib/services/wallet.service";
 import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
-import { EditProfileModal } from "../Edit-Profile-Modal/edit-modal-profile";
+import { EditProfileModal } from "./edit-modal-profile";
 
 export function AccountInfoTab() {
   const userData = useUserStore((state) => state.user);
@@ -72,7 +72,7 @@ export function AccountInfoTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
-              {(image || avatar) ? (
+              {image || avatar ? (
                 <Image
                   src={image || avatar}
                   alt="profile"
@@ -80,7 +80,8 @@ export function AccountInfoTab() {
                   className="object-cover"
                 />
               ) : (
-                `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` || userData?.email[0]
+                `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
+                userData?.email[0]
               )}
 
               <input
@@ -138,59 +139,82 @@ export function AccountInfoTab() {
 
       {/* Linked Bank Accounts */}
       <DashboardCard className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
           <h3 className="text-[16px] leading-6 font-medium text-card-text">
-            Linked Bank Account
+            Payment Methods
           </h3>
-          <span className="text-xs text-text bg-border px-2.5 py-1 rounded-full">
+          {/* <span className="text-xs text-text bg-border px-2.5 py-1 rounded-full">
             3 of 5 linked
-          </span>
+          </span> */}
         </div>
 
         {getBankAccountsPending && <BankAccountSkeleton />}
         {!getBankAccountsPending &&
           !getBankAccounts &&
           getBankAccountsError && (
-            <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
-              <Image
+            <div className="space-y-3 pb-6">
+              <p className="font-medium text-sm leading-5 text-text">
+                Bank Accounts
+              </p>
+              <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
+                {/* <Image
                 className="mx-auto mb-1"
                 alt="frame"
                 width={96}
                 height={122}
                 src={"/Frame.svg"}
-              />
-              {getBankAccountsError?.message || "Failed to load bank accounts"}
+              /> */}
+                {getBankAccountsError?.message ||
+                  "Failed to load bank accounts"}
+              </div>
             </div>
           )}
 
         {!getBankAccountsPending &&
           !getBankAccountsError &&
           getBankAccounts?.data?.data?.length === 0 && (
-            <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
-              <Image
+            <div className="space-y-3 pb-6">
+              <p className="font-medium text-sm leading-5 text-text">
+                Bank Accounts
+              </p>
+              <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
+                {/* <Image
                 className="mx-auto mb-1"
                 alt="frame"
                 width={96}
                 height={122}
                 src={"/Frame.svg"}
-              />
-              No linked bank accounts found
+              /> */}
+                No linked bank account found
+              </div>
             </div>
           )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {getBankAccounts?.data?.data?.map((b: BankAccount, i: number) => (
-            <BankAccountCard
-              key={i}
-              index={i}
-              label="Primary Account"
-              status={b.isVerified ? "Verified" : "Under Review"}
-              bank={b.bankName}
-              number={b.accountNumber}
-              name={b.accountName}
-            />
-          ))}
-        </div>
+        {getBankAccounts?.data?.data &&
+          getBankAccounts?.data?.data?.length !== 0 &&
+          !getBankAccountsPending &&
+          !getBankAccountsError && (
+            <div className="space-y-3 pb-6">
+              <p className="font-medium text-sm leading-5 text-text">
+                Bank Accounts
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {getBankAccounts?.data?.data?.map(
+                  (b: BankAccount, i: number) => (
+                    <BankAccountCard
+                      key={i}
+                      index={i}
+                      label="Primary Account"
+                      status={b.isVerified ? "Verified" : "Under Review"}
+                      bank={b.bankName}
+                      number={b.accountNumber}
+                      name={b.accountName}
+                    />
+                  ),
+                )}
+              </div>
+            </div>
+          )}
 
         <div
           onClick={handleAddAccountModal}
