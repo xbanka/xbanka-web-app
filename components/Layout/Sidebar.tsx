@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useThemeStore } from "@/store/theme.store";
 
 const BOTTOM_NAV_ITEMS = [
   { id: "dashboard", label: "Home", icon: LayoutDashboard, route: "/" },
@@ -42,6 +43,8 @@ export function Sidebar({
   mobileOpen: boolean;
   setMobileOpen: (v: boolean) => void;
 }) {
+  const { theme } = useThemeStore();
+
   const pathname = usePathname();
   const [showMore, setShowMore] = useState(false);
 
@@ -60,9 +63,23 @@ export function Sidebar({
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
-          <span className="text-base leading-6 font-medium tracking-tight text-foreground">
-            <span className="text-Green">X</span>banka
-          </span>
+          <div className="w-20">
+            { theme === "dark" ? (
+              <img
+                src="/xbanka_white.png"
+                className="w-full object-cover"
+                loading="lazy"
+                alt="xBanka"
+              />
+            ) : (
+              <img
+                src="/xbanka_logo.png"
+                className="w-full object-cover"
+                loading="lazy"
+                alt="xBanka"
+              />
+          )}
+          </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
@@ -211,21 +228,50 @@ export function Sidebar({
             const Icon = item.icon;
             const route = `/${item.id}`;
             const active = pathname === route;
+            const cardClassName = `relative flex min-h-[74px] flex-col items-center justify-center gap-1.5 rounded-xl px-1 py-2.5 transition-colors ${
+              item.disabled
+                ? "cursor-not-allowed bg-border/20 text-card-text/60"
+                : active
+                  ? "bg-border text-Green"
+                  : "bg-border/30 text-card-text hover:bg-border/60"
+            }`;
+
+            const cardContent = (
+              <>
+                {item.badge && (
+                  <span className="absolute right-1 top-1 rounded-[4px] border border-[#A27D00]/80 bg-[#3E2E00] px-1 py-px text-[7px] font-semibold uppercase leading-3 tracking-normal text-[#FEC84B] shadow-[0_0_10px_rgba(254,200,75,0.14)]">
+                    {item.badge}
+                  </span>
+                )}
+                <Icon className="w-5 h-5 shrink-0" />
+                <span className="text-[9px] font-medium text-center leading-tight">
+                  {item.label}
+                </span>
+              </>
+            );
+
+            if (item.disabled) {
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled
+                  aria-label={`${item.label}${item.badge ? ` ${item.badge}` : ""}`}
+                  className={cardClassName}
+                >
+                  {cardContent}
+                </button>
+              );
+            }
+
             return (
               <Link
                 key={item.id}
                 href={route}
                 onClick={() => setShowMore(false)}
-                className={`flex flex-col items-center gap-2 py-3 px-1 rounded-xl transition-colors ${
-                  active
-                    ? "bg-border text-Green"
-                    : "bg-border/30 text-card-text hover:bg-border/60"
-                }`}
+                className={cardClassName}
               >
-                <Icon className="w-5 h-5 shrink-0" />
-                <span className="text-[9px] font-medium text-center leading-tight">
-                  {item.label}
-                </span>
+                {cardContent}
               </Link>
             );
           })}

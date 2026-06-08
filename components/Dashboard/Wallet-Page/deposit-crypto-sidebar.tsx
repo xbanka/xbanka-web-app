@@ -65,7 +65,7 @@ export const DepositSidebar = ({
   return (
     <SidebarWrapper onClose={onClose} open={open}>
       {/* your content */}
-      <div className="flex h-full flex-col space-y-8 overflow-y-auto max-sm:bg-[#121315] max-sm:space-y-6 max-sm:px-6 max-sm:py-8">
+      <div className="flex h-full flex-col space-y-8 overflow-y-auto max-sm:space-y-6 max-sm:px-6 max-sm:py-8">
         <div className="py-6 px-10 flex items-start justify-between border-b border-input max-sm:border-0 max-sm:p-0">
           <div className="">
             <h1 className="font-semibold leading-8 text-2xl text-card-text max-sm:text-[24px] max-sm:leading-8">
@@ -140,7 +140,7 @@ export const DepositSidebar = ({
                 setNetwork(value);
               }}
             />
-            <div className="bg-background max-sm:bg-[#1B1D20] text-text py-3 px-4 rounded-lg flex items-center gap-4 mt-3 max-sm:items-start">
+            <div className="bg-background text-text py-3 px-4 rounded-lg flex items-center gap-4 mt-3 max-sm:items-start">
               <AlertTriangle className="w-4 h-4 shrink-0 text-text max-sm:mt-12" />
               <p className="font-normal text-[12px] leading-4.5 max-sm:text-[16px] max-sm:leading-7">
                 Only send {currency || "USDT"} via the selected network. Sending
@@ -208,7 +208,7 @@ export const DepositSidebar = ({
         <div className="px-10 max-sm:mt-auto max-sm:px-0 max-sm:pb-6">
           <Button
             variant={"secondary"}
-            className="w-full p-4 max-sm:h-14 max-sm:text-[16px] bg-[#1B1D20]"
+            className="w-full p-4 max-sm:h-14 max-sm:text-[16px]"
           >
             View Deposit History
           </Button>
