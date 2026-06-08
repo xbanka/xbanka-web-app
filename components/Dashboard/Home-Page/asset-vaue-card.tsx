@@ -3,17 +3,20 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
+import { Modal } from "@/components/ui/Modal";
+import { ModalHeader } from "@/components/ui/modal-header";
 import {
-  UseGetAllWalletBalances,
   UseGetCryptoWallet,
   UseGetFiatWallet,
 } from "@/lib/services/wallet.service";
 import { sumCryptoFiatEquivalent, sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, HelpCircle, Plus } from "lucide-react";
 import { useState } from "react";
+import { HowItWorksModal } from "./how-it-works-modal";
 
 export function AssetValueCard() {
   const [hidden, setHidden] = useState(false);
+  const [howItWorksModal, setHowItWorksModal] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const {
     data: fiatData,
@@ -78,7 +81,9 @@ export function AssetValueCard() {
             </select>
           </div>
           <p className="text-text text-xs font-normal leading-4.5">
-            {hidden ? "≈ ••••••" : `≈ $${cryptoEquivalent.toLocaleString()} USD`}
+            {hidden
+              ? "≈ ••••••"
+              : `≈ $${cryptoEquivalent.toLocaleString()} USD`}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -86,11 +91,15 @@ export function AssetValueCard() {
             variant={"outline"}
             size={"sm"}
             className="border border-input"
+            onClick={() => setHowItWorksModal(true)}
           >
             <HelpCircle className="w-4 h-4" />
             How it works
           </Button>
         </div>
+        {howItWorksModal && (
+          <HowItWorksModal onClose={() => setHowItWorksModal(false)} />
+        )}
       </div>
     </DashboardCard>
   );

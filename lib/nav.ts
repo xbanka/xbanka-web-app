@@ -125,11 +125,47 @@ export const NAV: NavSection[] = [
 ];
 
 export const MENU_ITEMS = [
-  { icon: User, label: "My Profile", href: "#" },
-  { icon: ShieldCheck, label: "Security", href: "#" },
-  { icon: BadgeCheck, label: "Verification Status", href: "#" },
-  { icon: Gift, label: "Refer & Earn", href: "#" },
-  { icon: Star, label: "Rewards", href: "#" },
-  { icon: Settings, label: "Settings", href: "#" },
-  { icon: HelpCircle, label: "Help & Support", href: "#" },
+  { icon: User, label: "My Profile", href: "/account" },
+  { icon: ShieldCheck, label: "Security", href: "/account?tab=security" },
+  {
+    icon: BadgeCheck,
+    label: "Verification Status",
+    href: "/account?tab=identity",
+  },
+  {
+    icon: Gift,
+    label: "Refer & Earn",
+    href: "#",
+    disabled: true,
+    badge: "Soon",
+    badgeColor:
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+  },
+  {
+    icon: Star,
+    label: "Rewards",
+    href: "#",
+    disabled: true,
+    badge: "Soon",
+    badgeColor:
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+  },
+  {
+    icon: Settings,
+    label: "Settings",
+    href: "#",
+    disabled: true,
+    badge: "Soon",
+    badgeColor:
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+  },
+  {
+    icon: HelpCircle,
+    label: "Help & Support",
+    href: "#",
+    disabled: true,
+    badge: "Soon",
+    badgeColor:
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+  },
 ];
