@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tab } from "@/lib/types/notification-types";
-import { Check } from "lucide-react";
+import { Check, BellOff, Loader2 } from "lucide-react";
 import { NotifItem } from "./NotifItem";
 import { cn } from "@/lib/utils";
 import { ModalHeader } from "../ui/modal-header";
@@ -39,15 +39,16 @@ export function NotificationsModal({
   const notifications = data?.data ?? [];
 
   const groupedNotifications = groupNotificationsByDate(notifications);
+  const hasNotifications = notifications.length > 0;
 
   return (
-    <div className="max-w-150 bg-card-background border-8 border-border rounded-[20px] shadow-2xl animate-in fade-in zoom-in-95 duration-150 ">
+    <div className="flex max-h-[calc(100vh-96px)] w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:max-h-[calc(100dvh-24px)] max-sm:rounded-2xl max-sm:border-4">
       <ModalHeader
-        className="px-8 py-6 max-sm:px-5 max-sm:py-5 border-b border-input items-center"
+        className="shrink-0 px-8 py-6 max-sm:px-5 max-sm:py-5 border-b border-input items-center"
         title="Notifications"
         onClose={onClose}
       />
-      <div className="px-8 pt-6 space-y-6 max-sm:px-5 max-sm:pb-6 max-sm:pt-2 max-sm:space-y-6">
+      <div className="flex min-h-0 flex-1 flex-col px-8 pt-6 max-sm:px-5 max-sm:pt-4">
         {/* Tabs */}
         {/* <div className="flex items-center border-b border-border">
           {TABS.map((t) => (
@@ -76,36 +77,64 @@ export function NotificationsModal({
         </div> */}
 
         {/* Feed */}
-        <div className="overflow-y-auto max-h-[420px] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border space-y-6">
-          {Object.entries(groupedNotifications).map(
-            ([label, items]) =>
-              items.length > 0 && (
-                <div key={label}>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4">
-                    {label}
-                  </p>
+        <div className="-mr-2 flex-1 space-y-6 overflow-y-auto pb-2 pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border">
+          {isPending ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-text">
+              <Loader2 className="h-6 w-6 animate-spin text-Green" />
+              <p className="text-sm">Loading notifications…</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+              <p className="text-sm font-medium text-card-text">
+                Couldn&apos;t load notifications
+              </p>
+              <p className="text-xs text-text">
+                Please check your connection and try again.
+              </p>
+            </div>
+          ) : !hasNotifications ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-border text-text">
+                <BellOff className="h-5 w-5" />
+              </div>
+              <p className="text-sm font-medium text-card-text">
+                You&apos;re all caught up
+              </p>
+              <p className="text-xs text-text">
+                New notifications will show up here.
+              </p>
+            </div>
+          ) : (
+            Object.entries(groupedNotifications).map(
+              ([label, items]) =>
+                items.length > 0 && (
+                  <div key={label}>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-text mb-4">
+                      {label}
+                    </p>
 
-                  <div className="space-y-3">
-                    {items.map((notification) => (
-                      <NotifItem
-                        key={notification.id}
-                        n={notification}
-                        onClick={() => {
-                          if (!notification.isRead) {
-                            readSingleNotification(notification.id);
-                          }
-                        }}
-                      />
-                    ))}
+                    <div className="space-y-3">
+                      {items.map((notification) => (
+                        <NotifItem
+                          key={notification.id}
+                          n={notification}
+                          onClick={() => {
+                            if (!notification.isRead) {
+                              readSingleNotification(notification.id);
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ),
+                ),
+            )
           )}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="pb-6 px-8 text-center mt-10">
+      <div className="shrink-0 px-8 pb-6 pt-4 text-center max-sm:px-5 max-sm:pb-5">
         <Button
           onClick={onSeeAll}
           variant="notification"
