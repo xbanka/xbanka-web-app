@@ -1,13 +1,9 @@
 import { NAV } from "@/lib/nav";
 import { useLogoutStore } from "@/store/logout.store";
 import {
-  Bitcoin,
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
   LogOut,
-  MoreHorizontal,
-  User,
   Wallet,
   X,
 } from "lucide-react";
@@ -15,13 +11,112 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useThemeStore } from "@/store/theme.store";
+import Image from "next/image";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { useUserStore } from "@/store/user.store";
+
+type IconProps = { className?: string };
+
+// 2×2 grid with a plus — matches the "Home" tab in the design.
+function HomeTabIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="6.5" cy="6.5" r="3" />
+      <circle cx="6.5" cy="17.5" r="3" />
+      <circle cx="17.5" cy="17.5" r="3" />
+      <path d="M17.5 3.5v6M14.5 6.5h6" />
+    </svg>
+  );
+}
+
+// Circular convert arrows around a ₿ — matches the "Trade" tab in the design.
+function TradeTabIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M20 11a8 8 0 0 0-13.6-4.7L3.5 9" />
+      <path d="M4 13a8 8 0 0 0 13.6 4.7L20.5 15" />
+      <path d="M3.5 4.5V9H8" />
+      <path d="M20.5 19.5V15H16" />
+      <text
+        x="12"
+        y="12.5"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="8.5"
+        fontWeight="700"
+        fill="currentColor"
+        stroke="none"
+      >
+        ₿
+      </text>
+    </svg>
+  );
+}
+
+// Two rounded lines — matches the "More" tab in the design.
+function MoreTabIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M5 9h14M5 15h14" />
+    </svg>
+  );
+}
 
 const BOTTOM_NAV_ITEMS = [
-  { id: "dashboard", label: "Home", icon: LayoutDashboard, route: "/" },
+  { id: "dashboard", label: "Home", icon: HomeTabIcon, route: "/" },
   { id: "wallet", label: "Wallet", icon: Wallet, route: "/wallet" },
-  { id: "crypto", label: "Crypto", icon: Bitcoin, route: "/crypto" },
-  { id: "account", label: "Account", icon: User, route: "/account" },
+  { id: "crypto", label: "Trade", icon: TradeTabIcon, route: "/crypto" },
+  { id: "account", label: "Account", icon: HomeTabIcon, route: "/account" },
 ];
+
+// Account tab shows the user's profile photo (like the topbar), not an icon.
+function AccountTabAvatar({ active }: { active: boolean }) {
+  const { data: profileData } = UseProfileUser();
+  const userData = useUserStore((state) => state.user);
+  const avatar = profileData?.data?.avatarUrl;
+  const initials =
+    `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
+    userData?.email?.[0] ||
+    "";
+
+  return (
+    <div
+      className={`relative w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-border text-[9px] font-bold text-card-text ${
+        active ? "ring-2 ring-Green ring-offset-2 ring-offset-card-background" : ""
+      }`}
+    >
+      {avatar ? (
+        <Image src={avatar} alt="profile" fill className="object-cover" />
+      ) : (
+        initials
+      )}
+    </div>
+  );
+}
 
 const BOTTOM_NAV_IDS = new Set(["dashboard", "wallet", "crypto", "account"]);
 const MORE_NAV_ITEMS = NAV.flatMap((s) => s.items).filter(
@@ -287,19 +382,35 @@ export function Sidebar({
               key={id}
               href={route}
               onClick={() => setShowMore(false)}
-              className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${active ? "text-Green" : "text-card-text"}`}
+              className="flex flex-col items-center gap-1 flex-1 py-1"
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] font-medium">{label}</span>
+              {id === "account" ? (
+                <AccountTabAvatar active={active} />
+              ) : (
+                <Icon
+                  className={`w-5 h-5 shrink-0 transition-colors ${active ? "text-Green" : "text-text"}`}
+                />
+              )}
+              <span
+                className={`text-[10px] font-medium transition-colors ${active ? "text-card-text" : "text-text"}`}
+              >
+                {label}
+              </span>
             </Link>
           );
         })}
         <button
           onClick={() => setShowMore((v) => !v)}
-          className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${showMore ? "text-Green" : "text-card-text"}`}
+          className="flex flex-col items-center gap-1 flex-1 py-1"
         >
-          <MoreHorizontal className="w-5 h-5" />
-          <span className="text-[10px] font-medium">More</span>
+          <MoreTabIcon
+            className={`w-5 h-5 shrink-0 transition-colors ${showMore ? "text-Green" : "text-text"}`}
+          />
+          <span
+            className={`text-[10px] font-medium transition-colors ${showMore ? "text-card-text" : "text-text"}`}
+          >
+            More
+          </span>
         </button>
       </nav>
     </>

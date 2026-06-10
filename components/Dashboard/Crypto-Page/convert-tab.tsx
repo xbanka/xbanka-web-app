@@ -255,6 +255,7 @@ export function ConvertTab() {
           open={confirmOpen}
           handleReset={handleReset}
           mode="SELL"
+          isConvert
           payAmount={Number(amount || 0)}
           paySymbol={sourceCurrency}
           receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
