@@ -19,6 +19,7 @@ export interface TransactionHistoryProps {
 export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
   const [selectedType, setSelectedType] = useState("ALL");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const limit = 4;
@@ -28,22 +29,21 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
     isPending,
     isError,
     error,
-  } = UseGetTransactionHistory(page, limit, tableType);
+  } = UseGetTransactionHistory(page, limit, tableType, debouncedSearch);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const transactions = transactionHistory?.data?.data?.items || [];
 
   const filteredData = useMemo(() => {
     return (
       transactions?.filter((item: TransactionTypes) => {
-        const searchStr = searchQuery.toLowerCase();
-        const matchesSearch =
-          item?.type?.toLowerCase().includes(searchStr) ||
-          item?.reference?.toLowerCase().includes(searchStr) ||
-          item?.currency?.toLowerCase().includes(searchStr) ||
-          item?.status?.toLowerCase().includes(searchStr) ||
-          item?.note?.toLowerCase().includes(searchStr) ||
-          item?.category?.toLowerCase().includes(searchStr) ||
-          String(item?.amount).includes(searchStr);
         const matchesStatus =
           filter.toLowerCase() === "all" ||
           item.status?.toLowerCase() === filter.toLowerCase();
@@ -52,7 +52,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           selectedType === "ALL" ||
           item.type?.toLowerCase() === selectedType.toLowerCase();
 
-        return matchesStatus && matchesTransactionType && matchesSearch;
+        return matchesStatus && matchesTransactionType;
       }) || []
     );
   }, [transactions, filter, selectedType, searchQuery]);
