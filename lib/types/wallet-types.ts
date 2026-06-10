@@ -64,3 +64,18 @@ export interface AddBankAccountPayload {
   accountNumber: string;
   accountName: string;
 }
+
+export interface Wallet {
+  type: "FIAT" | "CRYPTO";
+  balance: number;
+  fiatEquivalent?: {
+    amount: number;
+    currency: string;
+    rate: number;
+  } | null;
+  usdEquivalent?: {
+    amount: number;
+    currency: string;
+    rate: number;
+  } | null;
+};
