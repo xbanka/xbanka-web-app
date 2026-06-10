@@ -51,7 +51,9 @@ export const UseGetAllWalletBalances = () => {
         const response = await getAllWalletBalances();
         return response;
       } catch (err) {
-        handleApiError(err);
+        console.log(err)
+        throw err
+        // handleApiError(err);
       }
     },
   });
@@ -361,15 +363,17 @@ export const UseGetTransactionHistory = (
   page = 1,
   limit = 10,
   category?: "FIAT" | "CRYPTO" | "GIFTCARD",
+  search?: string,
 ) => {
   return useQuery({
-    queryKey: ["transaction-history", page, limit, category],
+    queryKey: ["transaction-history", page, limit, category, search],
     queryFn: async () => {
       try {
         const response = await getTransactionHistory({
           page,
           limit,
           category,
+          search
         });
 
         return response;

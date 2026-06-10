@@ -1,14 +1,12 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
-import { CryptoSelectField } from "@/components/ui/crypto-select";
 import { Input } from "@/components/ui/input";
 import { SelectFieldWithValue } from "@/components/ui/select-with-value";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { TransactionHistoryStatusBadge } from "@/lib/statusBadge";
-import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -21,6 +19,7 @@ export interface TransactionHistoryProps {
 export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
   const [selectedType, setSelectedType] = useState("ALL");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const limit = 4;
@@ -30,22 +29,21 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
     isPending,
     isError,
     error,
-  } = UseGetTransactionHistory(page, limit, tableType);
+  } = UseGetTransactionHistory(page, limit, tableType, debouncedSearch);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const transactions = transactionHistory?.data?.data?.items || [];
 
   const filteredData = useMemo(() => {
     return (
       transactions?.filter((item: TransactionTypes) => {
-        const searchStr = searchQuery.toLowerCase();
-        const matchesSearch =
-          item?.type?.toLowerCase().includes(searchStr) ||
-          item?.reference?.toLowerCase().includes(searchStr) ||
-          item?.currency?.toLowerCase().includes(searchStr) ||
-          item?.status?.toLowerCase().includes(searchStr) ||
-          item?.note?.toLowerCase().includes(searchStr) ||
-          item?.category?.toLowerCase().includes(searchStr) ||
-          String(item?.amount).includes(searchStr);
         const matchesStatus =
           filter.toLowerCase() === "all" ||
           item.status?.toLowerCase() === filter.toLowerCase();
@@ -54,7 +52,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           selectedType === "ALL" ||
           item.type?.toLowerCase() === selectedType.toLowerCase();
 
-        return matchesStatus && matchesTransactionType && matchesSearch;
+        return matchesStatus && matchesTransactionType;
       }) || []
     );
   }, [transactions, filter, selectedType, searchQuery]);
@@ -190,7 +188,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           <div className="relative flex-1 min-w-0 sm:flex-none">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-placeholder" />
             <Input
-              placeholder="Search by name or email"
+              placeholder="Search by reference id or amount"
               className="pl-8 pr-3 w-full sm:w-62.5 truncate"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
