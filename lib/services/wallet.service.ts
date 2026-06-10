@@ -51,7 +51,9 @@ export const UseGetAllWalletBalances = () => {
         const response = await getAllWalletBalances();
         return response;
       } catch (err) {
-        handleApiError(err);
+        console.log(err)
+        throw err
+        // handleApiError(err);
       }
     },
   });

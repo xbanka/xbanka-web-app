@@ -3,14 +3,9 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
-import { Modal } from "@/components/ui/Modal";
-import { ModalHeader } from "@/components/ui/modal-header";
-import {
-  UseGetCryptoWallet,
-  UseGetFiatWallet,
-} from "@/lib/services/wallet.service";
-import { sumCryptoFiatEquivalent, sumFiatBalances } from "@/lib/sumBalances";
-import { Eye, EyeOff, HelpCircle, Plus } from "lucide-react";
+import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
+import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
+import { Eye, EyeOff, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { HowItWorksModal } from "./how-it-works-modal";
 
@@ -19,21 +14,15 @@ export function AssetValueCard() {
   const [howItWorksModal, setHowItWorksModal] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const {
-    data: fiatData,
-    error: fiatError,
-    isPending: fiatIsPending,
-  } = UseGetFiatWallet();
-  const wallets = fiatData?.data?.data || [];
-  const fiatBalance = sumFiatBalances(wallets);
-  const {
-    data: cryptoData,
-    error: cryptoError,
-    isPending: cryptoIsPending,
-  } = UseGetCryptoWallet();
-  const cryptoWallets = cryptoData?.data?.data || [];
-  const cryptoBalance = sumCryptoFiatEquivalent(cryptoWallets);
-  const cryptoEquivalent = sumFiatBalances(cryptoWallets);
-  const totalBalance = fiatBalance + cryptoBalance;
+    data: getAllWalletBalance,
+    error: getAllWalletBalanceError,
+    isPending: getAllWalletBalancePending,
+  } = UseGetAllWalletBalances();
+
+  const mainWallet = getAllWalletBalance?.data?.data || [];
+
+  const totalBalance = sumWallets(mainWallet);
+  const totalCryptoEquivalent = sumWalletsEquivalent(mainWallet);
   return (
     <DashboardCard className="border border-teal-border bg-teal-light">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -52,24 +41,22 @@ export function AssetValueCard() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            {(fiatIsPending || cryptoIsPending) && (
+            {getAllWalletBalancePending && (
               <div className="text-sm text-card-text font-bold leading-11">
                 Your balance might have changed
               </div>
             )}
-            {!fiatIsPending && !cryptoIsPending && (
+            {!getAllWalletBalancePending && (
               <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
                 {hidden
                   ? "•••••••"
                   : view === "NGN"
                     ? `₦${totalBalance.toLocaleString()}`
-                    : `$${"0".toLocaleString()}`}
+                    : `$${totalCryptoEquivalent.toLocaleString()}`}
               </span>
             )}
-            {(fiatError || cryptoError) && (
-              <ErrorField
-                message={fiatError?.message || cryptoError?.message}
-              />
+            {getAllWalletBalanceError && (
+              <ErrorField message={getAllWalletBalanceError?.message} />
             )}
             <select
               value={view}
@@ -83,7 +70,7 @@ export function AssetValueCard() {
           <p className="text-text text-xs font-normal leading-4.5">
             {hidden
               ? "≈ ••••••"
-              : `≈ $${cryptoEquivalent.toLocaleString()} USD`}
+              : `≈ $${totalCryptoEquivalent.toLocaleString()} USD`}
           </p>
         </div>
         <div className="flex items-center gap-2">
