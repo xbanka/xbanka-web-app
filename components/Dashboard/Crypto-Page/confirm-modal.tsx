@@ -10,6 +10,7 @@ export function ConfirmModal({
   open,
   handleReset,
   mode,
+  isConvert,
   payAmount,
   paySymbol,
   receiveAmount,
@@ -22,6 +23,7 @@ export function ConfirmModal({
   open: boolean;
   handleReset: () => void;
   mode: "BUY" | "SELL";
+  isConvert?: boolean;
   payAmount: string | number;
   paySymbol: string;
   receiveAmount: string;
@@ -61,6 +63,7 @@ export function ConfirmModal({
     return (
       <ConfirmStep
         mode={mode}
+        isConvert={isConvert}
         payAmount={payAmount}
         paySymbol={paySymbol}
         receiveAmount={receiveAmount}
