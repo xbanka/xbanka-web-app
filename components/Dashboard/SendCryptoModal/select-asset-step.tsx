@@ -65,13 +65,28 @@ export function SelectAssetStep({
       className="send-crypto-sheet border-[6px] bg-card-background p-0 shadow-2xl max-sm:flex max-sm:max-h-[82vh] max-sm:w-full max-sm:max-w-full max-sm:flex-col max-sm:overflow-hidden max-sm:rounded-b-none max-sm:rounded-t-[24px] max-sm:border-x-0 max-sm:border-b-0 max-sm:border-t-[6px]"
       onClose={onClose}
     >
-      <div className="flex max-h-[86vh] flex-col px-8 pb-8 pt-4 max-sm:h-[82vh] max-sm:px-4 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)] max-sm:pt-4">
+      <div className="flex max-h-[86vh] flex-col px-8 pb-8 pt-4 sm:max-h-[600px] max-sm:h-[82vh] max-sm:px-4 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)] max-sm:pt-4">
         <ModalHeader
           className="px-0"
           title="Send Crypto"
           subtitle="Transfer assets to external wallets or XBanka users."
           onClose={onClose}
         />
+
+        {/* Progress stepper */}
+        <div className="mb-6 shrink-0 max-sm:mb-5">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-input">
+            <div className="h-full w-1/5 rounded-full bg-Green" />
+          </div>
+          <div className="mt-3 flex items-center justify-between max-sm:mt-2">
+            <span className="text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px]">
+              Asset selection
+            </span>
+            <span className="text-[16px] font-normal leading-5 text-text max-sm:text-[13px]">
+              1 of 5
+            </span>
+          </div>
+        </div>
         {/* <div className="mb-6 flex shrink-0 items-start justify-between gap-5 max-sm:mb-4 max-sm:gap-3">
           <div className="min-w-0">
             <h3 className="text-[24px] font-semibold leading-8 text-card-text max-sm:text-[22px] max-sm:leading-7">
@@ -100,14 +115,14 @@ export function SelectAssetStep({
           />
         </div>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 max-sm:space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 max-sm:space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {isPending &&
             Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border-2 border-input px-5 py-4 max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3"
+                className="grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border border-input p-4 max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3"
               >
-                <div className="flex min-w-0 items-center gap-4 border-r-2 border-input pr-4 max-sm:gap-2 max-sm:pr-2">
+                <div className="flex min-w-0 items-center gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
                   <Skeleton className="h-10 w-10 shrink-0 rounded-full bg-border max-sm:h-8 max-sm:w-8" />
                   <div className="min-w-0 flex-1 space-y-2">
                     <Skeleton className="h-4 w-28 rounded bg-border max-sm:w-20" />
@@ -139,16 +154,16 @@ export function SelectAssetStep({
                   key={asset.id}
                   onClick={() => onSelect(asset)}
                   className={cn(
-                    "grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border p-3 text-left transition-colors max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
+                    "grid w-full grid-cols-[minmax(0,1.15fr)_minmax(0,0.9fr)_24px] items-center gap-4 rounded-xl border p-4 text-left transition-colors max-sm:grid-cols-[minmax(0,1fr)_minmax(76px,0.75fr)_24px] max-sm:gap-2 max-sm:px-3 max-sm:py-3",
                     active
                       ? "border-Green bg-Green/10"
                       : "border-input bg-transparent hover:border-border-active",
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-4 border-r border-input pr-4 max-sm:gap-2 max-sm:pr-2">
-                    <CoinAvatar className="flex-1" currency={asset.currency} size={40} />
+                    <CoinAvatar currency={asset.currency} size={40} />
                     <div className="min-w-0 flex-1">
-                      <div className="flex justify-between min-w-0 items-center gap-3 max-sm:gap-1.5">
+                      <div className="flex min-w-0 items-center gap-2 max-sm:gap-1.5">
                         <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[13px] max-sm:leading-5">
                           {getCurrencyHeader(asset.currency)}
                         </p>
@@ -156,14 +171,17 @@ export function SelectAssetStep({
                           {asset.currency}
                         </span>
                       </div>
+                      <p className="mt-1.5 truncate text-[13px] font-normal leading-4 text-text max-sm:mt-1 max-sm:text-[11px]">
+                        Crypto wallet
+                      </p>
                     </div>
                   </div>
                   <div className="min-w-0 pr-1 max-sm:pr-0">
-                    <p className="truncate text-[14px] font-medium leading-5 text-card-text max-sm:text-[12px] max-sm:leading-5">
+                    <p className="truncate text-[16px] font-medium leading-5 text-card-text max-sm:text-[12px] max-sm:leading-5">
                       {formatCryptoAmount(asset.balance)}
                       <span className="max-sm:hidden"> {asset.currency}</span>
                     </p>
-                    <p className="mt-1 truncate text-[12px] font-normal leading-5.5 text-text max-sm:mt-0.5 max-sm:text-[11px] max-sm:leading-4">
+                    <p className="mt-1.5 truncate text-[14px] font-normal leading-5 text-text max-sm:mt-0.5 max-sm:text-[11px] max-sm:leading-4">
                       {formatNaira(asset.fiatEquivalent?.amount)}
                     </p>
                   </div>
