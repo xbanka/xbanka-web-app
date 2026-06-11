@@ -36,9 +36,10 @@ export function FormField({
           className={cn(
             "truncate",
             Icon ? "pl-10 pr-4" : "px-4",
-            // Use opacity-0 instead of hidden to keep the functionality
+            // Normalize iOS/Safari date inputs so they keep the h-10 height and
+            // left-align the value instead of rendering taller than other fields.
             type === "date" &&
-              "[&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
+              "appearance-none [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:m-0 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
           )}
           value={value}
           {...registration}
