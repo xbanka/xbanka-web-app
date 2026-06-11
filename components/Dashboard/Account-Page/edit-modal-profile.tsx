@@ -287,38 +287,22 @@ export function EditProfileModal({
             // disabled={bvnVerified}
           />
 
-          {/* Date of Birth — locked */}
-          <div className="space-y-1">
-            {/* <div className="flex items-center justify-between">
-              <Label label="Date of Birth" />
-              <span className="flex items-center gap-1 text-[11px] text-disabled-text">
-                <Lock className="w-3 h-3" />
-                Cannot be changed
-              </span>
-            </div> */}
+          {/* Date of Birth + Country — side by side */}
+          <div className="grid grid-cols-2 items-start gap-4 max-sm:gap-3">
             <FormField
               id="dateOfBirth"
               type="date"
               label="Date of Birth"
               icon={Calendar}
+              className="w-full"
               register={register}
               error={errors.dateOfBirth}
             />
-          </div>
-
-          {/* Country of Residence — locked */}
-          <div className="space-y-1">
-            {/* <div className="flex items-center justify-between">
-              <Label label="Country of Residence" />
-              <span className="flex items-center gap-1 text-[11px] text-disabled-text">
-                <Lock className="w-3 h-3" />
-                Cannot be changed
-              </span>
-            </div> */}
             <SelectField
               id="country"
               label="Country"
               placeholder="Country"
+              className="w-full"
               options={countryOptions}
               register={register}
               error={errors.country}
