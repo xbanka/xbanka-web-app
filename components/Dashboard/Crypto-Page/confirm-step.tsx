@@ -108,13 +108,13 @@ export function ConfirmStep({
     <Modal onClose={onCancel} className="p-0">
       {/* Header */}
       <ModalHeader
-        className="px-10 py-6 max-sm:px-5 max-sm:py-4"
+        className="px-10 py-6 max-sm:px-4 max-sm:py-4"
         title={confirmTitle}
         onClose={onCancel}
       />
 
       {/* Body */}
-      <div className="px-10 pb-10 pt-6 space-y-8 max-sm:px-5 max-sm:pb-6 max-sm:pt-4 max-sm:space-y-6">
+      <div className="px-10 pb-10 pt-6 space-y-8 max-sm:px-4 max-sm:pb-5 max-sm:pt-4">
         <div className="space-y-6 max-sm:space-y-5">
           <RateLocked key={rate} seconds={30} onExpire={onRefreshQuote} />
 
@@ -129,7 +129,7 @@ export function ConfirmStep({
           {isConvert ? (
             /* ── Convert: stacked full-width boxes ───────────────── */
             <div className="space-y-3">
-              <div className="bg-background border border-border rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex items-center justify-between gap-3">
+              <div className="bg-card-secondary border border-[#34373D] rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-normal leading-4.5 text-text mb-2">
                     You Convert
@@ -141,7 +141,7 @@ export function ConfirmStep({
                 <CurrencyPill symbol={paySymbol} />
               </div>
 
-              <div className="bg-background border border-border rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex items-center justify-between gap-3">
+              <div className="bg-card-secondary border border-[#34373D] rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-normal leading-4.5 text-text mb-2">
                     You Get
@@ -189,7 +189,7 @@ export function ConfirmStep({
             /* ── Buy / Sell: side-by-side boxes ──────────────────── */
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3 items-stretch">
-                <div className="bg-card-secondary border border-border rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex flex-col">
+                <div className="bg-card-secondary border border-[#34373D] rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex flex-col">
                   <p className="text-sm max-sm:text-xs font-normal leading-5 text-text mb-2">
                     {mode === "BUY" ? "You Pay" : "You Sell"}
                   </p>
@@ -198,7 +198,7 @@ export function ConfirmStep({
                     {formatAmount(payAmount)}
                   </p>
                 </div>
-                <div className="bg-background border border-input rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex flex-col">
+                <div className="bg-card-secondary border border-[#34373D] rounded-xl py-4 px-5 max-sm:py-3.5 max-sm:px-4 flex flex-col">
                   <p className="text-sm max-sm:text-xs font-normal leading-5 text-text mb-2">
                     You Receive
                   </p>

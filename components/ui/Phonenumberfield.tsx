@@ -112,30 +112,30 @@ export default function PhoneNumberField({
         </label>
       )}
 
-      <div className="flex min-w-0 items-start gap-2 max-[420px]:grid max-[420px]:grid-cols-1">
+      <div className="flex min-w-0 items-start gap-2">
         {/* ── Country selector ───────────────────────────────────── */}
-        <div className="relative shrink-0 max-[420px]:w-full" ref={dropdownRef}>
+        <div className="relative shrink-0" ref={dropdownRef}>
           <button
             ref={triggerRef}
             type="button"
             onClick={handleOpen}
             disabled={disabled}
-            className={`${inputBase} border-input focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 w-auto gap-2 cursor-pointer hover:border-border-active disabled:cursor-not-allowed max-[420px]:w-full max-[420px]:justify-between
+            className={`${inputBase} border-input focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 w-auto gap-2 cursor-pointer hover:border-border-active disabled:cursor-not-allowed max-sm:px-3
               ${isOpen ? "border-border-active ring-[3px] ring-border-active/20" : ""}`}
           >
             <span className="text-lg leading-none">{selectedCountry.flag}</span>
-            <span className="text-sm font-medium text-card-text min-w-10">
+            <span className="text-sm font-medium text-card-text">
               {selectedCountry.dialCode}
             </span>
             <ChevronDown
-              className={`w-4 h-4 text-placeholder transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+              className={`w-4 h-4 shrink-0 text-placeholder transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
             />
           </button>
 
           {/* ── Dropdown ──────────────────────────────────────────── */}
           {isOpen && (
             <div
-              className={`absolute left-0 z-50 w-60 rounded-xl border border-border bg-input-background shadow-lg overflow-hidden max-[420px]:w-full
+              className={`absolute left-0 z-50 w-60 max-w-[calc(100vw-2.5rem)] rounded-xl border border-border bg-input-background shadow-lg overflow-hidden
                 ${dropdownPosition === "bottom" ? "top-full mt-1.5" : "bottom-full mb-1.5"}`}
             >
               {/* Search */}

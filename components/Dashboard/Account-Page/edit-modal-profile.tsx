@@ -161,7 +161,7 @@ export function EditProfileModal({
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="min-h-0 flex-1 overflow-y-auto px-10 pb-10 pt-4 sm:pt-6 max-sm:px-5 max-sm:pb-0 max-sm:pt-1"
+        className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-10 pb-10 pt-4 sm:pt-6 max-sm:px-5 max-sm:pb-0 max-sm:pt-1"
       >
         {/* Avatar */}
         <div className="mb-5 flex flex-col items-center max-sm:mb-4">
@@ -226,15 +226,6 @@ export function EditProfileModal({
 
           {/* Full Name — locked */}
           <div className="space-y-2">
-            {bvnVerified && (
-              <div className="flex items-center justify-end max-sm:justify-start">
-                <span className="flex items-center gap-1 text-[11px] text-disabled-text">
-                  <Lock className="w-3 h-3" />
-                  Locked after BVN verification
-                </span>
-              </div>
-            )}
-
             <div className="grid grid-cols-2 items-start gap-4 max-[420px]:grid-cols-1 max-[420px]:gap-3">
               <FormField
                 id="firstName"
@@ -257,6 +248,13 @@ export function EditProfileModal({
                 disabled={bvnVerified}
               />
             </div>
+
+            {bvnVerified && (
+              <span className="flex items-center gap-1 text-[11px] text-disabled-text">
+                <Lock className="w-3 h-3 shrink-0" />
+                Name is locked after BVN verification
+              </span>
+            )}
           </div>
 
           <SelectField
