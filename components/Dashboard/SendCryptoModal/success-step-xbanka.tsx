@@ -75,8 +75,8 @@ export function SuccessStepXbanka({
           {/* Network fee */}
           <div className="flex items-center justify-between px-4 py-3 text-xs">
             <span className="text-text">Network</span>
-            <span className="font-medium text-card-text">
-              {asset?.currency}
+            <span className="font-normal text-[12px] text-text px-2 py-2.5 bg-background rounded-lg">
+              {network ?? "-"}
             </span>
           </div>
           {/* Network label with info */}

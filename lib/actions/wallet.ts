@@ -19,12 +19,11 @@ import {
 
 export const getAllWalletBalances = async () => {
   const response = await AxiosInstance.get("/wallets");
-  const total = sumWallets(response.data);
+  // const total = sumWallets(response.data);
 
   return {
     success: true,
     data: response.data,
-    totalBalance: total,
     status: response.status,
   };
 };
@@ -224,13 +223,15 @@ export const getTransactionHistory = async ({
   page = 1,
   limit = 10,
   category,
+  search
 }: {
   page?: number;
   limit?: number;
   category?: "FIAT" | "CRYPTO" | "GIFTCARD";
+  search?: string
 }) => {
   const response = await AxiosInstance.get("/wallet/transactions", {
-    params: { page, limit, category },
+    params: { page, limit, category, search },
   });
 
   return {

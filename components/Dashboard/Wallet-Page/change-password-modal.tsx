@@ -8,7 +8,6 @@ import { Lock, X } from "lucide-react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useChangePassword } from "@/lib/services/security.service";
-import { CloseBtn } from "../Account-Page/create-pin-modal";
 import {
   ChangePasswordForm,
   changePasswordSchema,
