@@ -125,7 +125,11 @@ export function SendCryptoModal({
         network={selectedNetworkId}
         amount={amount}
         setAmount={setAmount}
-        onBack={() => setStep("select_network")}
+        onBack={() =>
+          setStep(
+            recipientType === "xbanka-user" ? "recipient" : "select_network",
+          )
+        }
         onClose={handleClose}
         onNext={() => setStep("confirm")}
       />

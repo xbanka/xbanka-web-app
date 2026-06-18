@@ -126,6 +126,7 @@ export function RecipientStep({
               filteredUsers.map((user: XbankaUser) => (
                 <button
                   key={user.id}
+                  type="button"
                   onClick={() =>
                     onNext({
                       type: "xbanka-user",
