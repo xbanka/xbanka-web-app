@@ -98,9 +98,7 @@ export function SendCryptoModal({
 
           if (data.type === "xbanka-user") {
             setXbankaRecipient(data.user || null);
-
-            // internal transfer skips network step
-            setStep("enter_amount");
+            setStep("select_network");
           }
         }}
       />
@@ -125,11 +123,7 @@ export function SendCryptoModal({
         network={selectedNetworkId}
         amount={amount}
         setAmount={setAmount}
-        onBack={() =>
-          setStep(
-            recipientType === "xbanka-user" ? "recipient" : "select_network",
-          )
-        }
+        onBack={() => setStep("select_network")}
         onClose={handleClose}
         onNext={() => setStep("confirm")}
       />
