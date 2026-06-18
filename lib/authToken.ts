@@ -25,9 +25,11 @@ export const authTokens = {
 
   getRefreshToken: () => localStorage.getItem("refreshToken"),
 
-  setTokens: (accessToken: string, refreshToken: string) => {
+  setTokens: (accessToken: string, refreshToken?: string) => {
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    if(refreshToken){
+      localStorage.setItem("refreshToken", refreshToken);
+    }
   },
 
   clear: () => {
