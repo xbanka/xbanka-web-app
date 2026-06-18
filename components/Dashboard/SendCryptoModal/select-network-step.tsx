@@ -46,6 +46,15 @@ export function SelectNetworkStep({
     asset?.currency && data?.data?.data?.[asset.currency]?.networks
       ? data.data.data[asset.currency].networks
       : [];
+
+  const query = search.trim().toLowerCase();
+  const filteredNetworks = networks.filter((n: any) => {
+    if (!query) return true;
+    const meta = NETWORK_META[n.networkCode];
+    const haystack =
+      `${n.networkName ?? ""} ${n.networkCode ?? ""} ${meta?.label ?? ""} ${meta?.chain ?? ""}`.toLowerCase();
+    return haystack.includes(query);
+  });
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
@@ -59,20 +68,8 @@ export function SelectNetworkStep({
         <ProgressBar step="select_network" />
       </div>
 
-      <div className="px-8 pt-4 pb-8 space-y-8">
-        <div className="space-y-4 mt-4">
-          {/* Chosen asset display */}
-          {/* <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-3">
-            <CoinAvatar color={asset.color} symbol={asset.symbol} size={36} />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-card-text">
-                {asset.name}
-              </p>
-              <p className="text-xs text-text">
-                {asset.balance} {asset.symbol}
-              </p>
-            </div>
-          </div> */}
+      <div className="px-8 pt-4 pb-8 space-y-5">
+        <div className="space-y-4">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
@@ -83,8 +80,8 @@ export function SelectNetworkStep({
               className="w-full h-10 pl-9 pr-4 text-sm border border-input rounded-xl bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
             />
           </div>
-          <div className="space-y-4">
-            {!isPending && networks.map((network: any) => {
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {!isPending && filteredNetworks.map((network: any) => {
               const active = selectedNetworkId === network.networkCode;
               const meta = NETWORK_META[network.networkCode] ?? {
                 label: network.networkName,
@@ -157,8 +154,12 @@ export function SelectNetworkStep({
                 <ErrorLayout message={error.message} />
               )
             }
-            {!isPending && !error && networks.length === 0 && (
-              <p className="text-center text-sm text-text">No networks available for this asset.</p>
+            {!isPending && !error && filteredNetworks.length === 0 && (
+              <p className="text-center text-sm text-text">
+                {networks.length === 0
+                  ? "No networks available for this asset."
+                  : "No networks match your search."}
+              </p>
             )}
           </div>
         </div>
