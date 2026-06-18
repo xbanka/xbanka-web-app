@@ -1,125 +1,295 @@
-"use client"
-import { ArrowDown, ArrowUp, ArrowUpDown, Search, Star } from "lucide-react";
-import { useState } from "react";
+"use client";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Search,
+  Star,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetMarketPrices } from "@/lib/services/wallet.service";
+import { CryptoMarketOverview } from "../Home-Page/types";
+import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
+import { getCoinImage } from "@/lib/coin-images";
 
-const MARKET_FULL = Array(6).fill(null).map((_, i) => ({
-  pair: "BTC/USDT",
-  lastPrice: "93,311.92",
-  change: i === 4 ? "-0.45%" : `+${(1 + i * 0.5).toFixed(2)}%`,
-  up: i !== 4,
-  marketCap: ["1.84T", "236.3M", "238.3M", "340.1M", "275.8M", "300.7M"][i],
-  amount: ["298.6M", "312.4M", "340.1M", "269.3M", "275.8M", "300.7M"][i],
-}));
- 
 export function MarketPage() {
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<"favorites" | "spot" | "futures">("spot");
   const [filter, setFilter] = useState<"all" | "new">("all");
   const [search, setSearch] = useState("");
- 
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  const page = 1;
+  const limit = 100;
+  const {
+    data: marketPrices,
+    error: marketPricesError,
+    isError: marketPricesIsError,
+    isPending: marketPricesPending,
+  } = useGetMarketPrices(page, limit);
+
+  const items: CryptoMarketOverview[] = useMemo(
+    () => marketPrices?.data?.items ?? [],
+    [marketPrices],
+  );
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      "https://backend.xbankang.com/wallets/market-stream",
+    );
+
+    eventSource.onmessage = (event) => {
+      try {
+        const update = JSON.parse(event.data);
+        queryClient.setQueryData(
+          ["market-prices", page, limit],
+          (oldData: any) => {
+            if (!oldData?.data?.items) return oldData;
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                items: oldData.data.items.map((item: any) =>
+                  item.symbol === update.symbol ? { ...item, ...update } : item,
+                ),
+              },
+            };
+          },
+        );
+      } catch (err) {
+        console.error("Invalid SSE data", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE error", err);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [queryClient, page, limit]);
+
+  const toggleFavorite = (symbol: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(symbol)) {
+        next.delete(symbol);
+      } else {
+        next.add(symbol);
+      }
+      return next;
+    });
+  };
+
+  const visibleCoins = useMemo(() => {
+    let list = [...items];
+
+    if (tab === "favorites") {
+      list = list.filter((c) => favorites.has(c.symbol));
+    }
+
+    if (filter === "new") {
+      list = list.sort(
+        (a, b) =>
+          new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
+      );
+    }
+
+    const query = search.trim().toLowerCase();
+    if (query) {
+      list = list.filter(
+        (c) =>
+          c.symbol.toLowerCase().includes(query) ||
+          c.name.toLowerCase().includes(query),
+      );
+    }
+
+    return list;
+  }, [items, tab, filter, search, favorites]);
+
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       <h1 className="text-xl sm:text-2xl font-bold text-card-text">Market</h1>
- 
+
       {/* Tab row */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex gap-1 border-b border-border">
+        <div className="flex gap-1 border-b border-border overflow-x-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {(["favorites", "spot", "futures"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`pb-2.5 px-4 text-sm font-medium capitalize border-b-2 transition-colors -mb-px
-                ${tab === t ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}>
-              {t === "favorites" ? "⭐ Favorites" : t.charAt(0).toUpperCase() + t.slice(1)}
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`pb-2.5 px-4 text-sm font-medium capitalize border-b-2 transition-colors -mb-px whitespace-nowrap
+                ${tab === t ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}
+            >
+              {t === "favorites"
+                ? "⭐ Favorites"
+                : t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
           ))}
         </div>
- 
+
         {/* All / New + search */}
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 bg-background border border-border rounded-lg p-0.5">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex gap-1 bg-background border border-border rounded-lg p-0.5 shrink-0">
             {(["all", "new"] as const).map((f) => (
-              <button key={f} onClick={() => setFilter(f)}
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
                 className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors
-                  ${filter === f ? "bg-Green text-white" : "text-text"}`}>
+                  ${filter === f ? "bg-Green text-white" : "text-text"}`}
+              >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
           </div>
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-placeholder" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)}
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search coin"
-              className="pl-8 pr-3 h-8 text-xs border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-36" />
+              className="pl-8 pr-3 h-8 text-xs border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-full sm:w-36"
+            />
           </div>
         </div>
       </div>
- 
+
       {/* Table */}
       <div className="bg-card-background border border-border rounded-2xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-xs text-text">
-              <th className="text-left px-4 py-3 font-medium w-6"></th>
-              <th className="text-left px-4 py-3 font-medium">
-                <button className="flex items-center gap-1 hover:text-card-text transition-colors">
-                  Pair <ArrowUpDown className="w-3 h-3" />
-                </button>
-              </th>
-              <th className="text-right px-4 py-3 font-medium">
-                <button className="flex items-center gap-1 ml-auto hover:text-card-text transition-colors">
-                  Last Price <ArrowUpDown className="w-3 h-3" />
-                </button>
-              </th>
-              <th className="text-right px-4 py-3 font-medium">
-                <button className="flex items-center gap-1 ml-auto hover:text-card-text transition-colors">
-                  Change <ArrowUpDown className="w-3 h-3" />
-                </button>
-              </th>
-              <th className="text-right px-4 py-3 font-medium hidden sm:table-cell">
-                <button className="flex items-center gap-1 ml-auto hover:text-card-text transition-colors">
-                  Market Cap <ArrowUpDown className="w-3 h-3" />
-                </button>
-              </th>
-              <th className="text-right px-4 py-3 font-medium hidden md:table-cell">
-                <button className="flex items-center gap-1 ml-auto hover:text-card-text transition-colors">
-                  Amount <ArrowUpDown className="w-3 h-3" />
-                </button>
-              </th>
-              <th className="text-right px-4 py-3 font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {MARKET_FULL.filter(
-              (c) => !search || c.pair.toLowerCase().includes(search.toLowerCase())
-            ).map((coin, i) => (
-              <tr key={i} className="hover:bg-border/20 transition-colors">
-                <td className="px-4 py-3">
-                  <button className="text-text hover:text-yellow-400 transition-colors">
-                    <Star className="w-3.5 h-3.5" />
-                  </button>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500 font-bold text-[10px]">₿</div>
-                    <span className="text-xs font-semibold text-card-text">{coin.pair}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-right text-xs font-medium text-card-text">{coin.lastPrice}</td>
-                <td className="px-4 py-3 text-right">
-                  <span className={`text-xs font-semibold flex items-center justify-end gap-0.5 ${coin.up ? "text-green-500" : "text-red-500"}`}>
-                    {coin.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                    {coin.change}
+        <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <table className="w-full min-w-[460px] text-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-text">
+                <th className="text-left px-4 py-3 font-medium w-6"></th>
+                <th className="text-left px-4 py-3 font-medium">
+                  <span className="flex items-center gap-1">
+                    Pair <ArrowUpDown className="w-3 h-3" />
                   </span>
-                </td>
-                <td className="px-4 py-3 text-right text-xs text-card-text hidden sm:table-cell">{coin.marketCap}</td>
-                <td className="px-4 py-3 text-right text-xs text-card-text hidden md:table-cell">{coin.amount}</td>
-                <td className="px-4 py-3 text-right">
-                  <button className="bg-Green hover:bg-Green/90 text-white text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                    Trade
-                  </button>
-                </td>
+                </th>
+                <th className="text-right px-4 py-3 font-medium">
+                  <span className="flex items-center gap-1 ml-auto justify-end">
+                    Last Price <ArrowUpDown className="w-3 h-3" />
+                  </span>
+                </th>
+                <th className="text-right px-4 py-3 font-medium">
+                  <span className="flex items-center gap-1 ml-auto justify-end">
+                    Change <ArrowUpDown className="w-3 h-3" />
+                  </span>
+                </th>
+                <th className="text-right px-4 py-3 font-medium">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {marketPricesPending && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-10 text-center text-text">
+                    Loading market data...
+                  </td>
+                </tr>
+              )}
+
+              {!marketPricesPending && marketPricesIsError && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-4 py-10 text-center text-error-text"
+                  >
+                    {marketPricesError?.message || "Failed to load market data."}
+                  </td>
+                </tr>
+              )}
+
+              {!marketPricesPending &&
+                !marketPricesIsError &&
+                visibleCoins.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-4 py-10 text-center text-text"
+                    >
+                      {tab === "favorites"
+                        ? "No favorites yet. Tap the star to add coins."
+                        : "No coins found."}
+                    </td>
+                  </tr>
+                )}
+
+              {!marketPricesPending &&
+                !marketPricesIsError &&
+                visibleCoins.map((coin) => {
+                  const isNegative = coin.changePercent24h < 0;
+                  const isFavorite = favorites.has(coin.symbol);
+                  return (
+                    <tr
+                      key={coin.id}
+                      className="hover:bg-border/20 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <button
+                          type="button"
+                          onClick={() => toggleFavorite(coin.symbol)}
+                          aria-label={
+                            isFavorite
+                              ? `Remove ${coin.symbol} from favorites`
+                              : `Add ${coin.symbol} to favorites`
+                          }
+                          className={`transition-colors hover:text-yellow-400 ${isFavorite ? "text-yellow-400" : "text-text"}`}
+                        >
+                          <Star
+                            className="w-3.5 h-3.5"
+                            fill={isFavorite ? "currentColor" : "none"}
+                          />
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-card-background overflow-hidden shrink-0">
+                            <Image
+                              src={getCoinImage(coin.symbol)}
+                              alt={coin.symbol}
+                              width={28}
+                              height={28}
+                            />
+                          </div>
+                          <span className="text-xs font-semibold text-card-text whitespace-nowrap">
+                            {coin.symbol}
+                            <span className="text-text font-normal">/USDT</span>
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right text-xs font-medium text-card-text whitespace-nowrap">
+                        ${formatPrice(coin.priceUsd)}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <span
+                          className={`text-xs font-semibold flex items-center justify-end gap-0.5 whitespace-nowrap ${isNegative ? "text-red-500" : "text-green-500"}`}
+                        >
+                          {isNegative ? (
+                            <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUp className="w-3 h-3" />
+                          )}
+                          {formatToTwoDecimals(coin.changePercent24h)}%
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          href={`/crypto?tab=buy&mode=buy&coin=${coin.symbol}`}
+                          className="inline-block bg-Green hover:bg-Green/90 text-white text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          Trade
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
