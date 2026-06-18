@@ -172,8 +172,10 @@ export function MarketOverview() {
     {
       key: "id",
       header: "Action",
-      render: () => (
-        <Link href={"/crypto"}><span  className="font-normal text-sm leading-6 text-Green">Trade</span></Link>
+      render: (item: CryptoMarketOverview) => (
+        <Link href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}>
+          <span className="font-normal text-sm leading-6 text-Green">Trade</span>
+        </Link>
       ),
     },
   ];
@@ -315,7 +317,7 @@ export function MarketOverview() {
                       </span>
                     </div>
                     <Link
-                      href="/crypto"
+                      href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}
                       className="text-left text-[16px] max-sm:text-[12px] font-medium leading-6 text-Green"
                     >
                       Trade

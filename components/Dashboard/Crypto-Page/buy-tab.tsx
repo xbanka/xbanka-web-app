@@ -20,8 +20,11 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { getCoinImage } from "@/lib/coin-images";
+import { useSearchParams } from "next/navigation";
 
 export function BuyTab() {
+  const searchParams = useSearchParams();
+  const coinParam = searchParams.get("coin")?.toUpperCase();
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [quoteData, setQuoteData] = useState<CryptoQuoteTypes | null>();
@@ -139,11 +142,18 @@ export function BuyTab() {
   };
   useEffect(() => {
     if (validTargets.length > 0) {
+      const preferred =
+        coinParam && validTargets.find((p: any) => p.code === coinParam);
+      if (preferred) {
+        setTargetCurrency(preferred.code);
+        return;
+      }
+
       const hasUSDT = validTargets.find((p: any) => p.code === "USDT");
 
       setTargetCurrency(hasUSDT ? "USDT" : validTargets[0].code);
     }
-  }, [validTargets]);
+  }, [validTargets, coinParam]);
 
   useEffect(() => {
     if (!debouncedAmount) {
