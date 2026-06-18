@@ -65,10 +65,6 @@ export const NAV: NavSection[] = [
         id: "market",
         label: "Market Overview",
         icon: TrendingUp,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
       },
     ],
   },
