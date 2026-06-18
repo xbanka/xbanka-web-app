@@ -100,7 +100,7 @@ export function SendCryptoModal({
             setXbankaRecipient(data.user || null);
 
             // internal transfer skips network step
-            setStep("enter_amount");
+            setStep("select_network");
           }
         }}
       />
