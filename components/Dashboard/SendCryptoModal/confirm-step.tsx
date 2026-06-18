@@ -102,7 +102,7 @@ export function ConfirmStep({
 
             <SendCryptoConfirmList
               title="Network"
-              value={recipientType === "wallet" ? network || "" : "-"}
+              value={network || "-"}
             />
           </div>
 
