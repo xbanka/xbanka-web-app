@@ -11,11 +11,18 @@ import {
   useReadSingleNotification,
 } from "@/lib/services/notification.service";
 import { groupNotificationsByDate } from "@/lib/groupNotifications";
+import { getNotificationCategory } from "@/lib/getNotificationIcon";
 
 interface NotificationsModalProps {
   onClose: () => void;
   onSeeAll?: () => void;
 }
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "transactions", label: "Transactions" },
+  { key: "activities", label: "Activities" },
+];
 
 export function NotificationsModal({
   onClose,
@@ -38,8 +45,16 @@ export function NotificationsModal({
 
   const notifications = data?.data ?? [];
 
-  const groupedNotifications = groupNotificationsByDate(notifications);
-  const hasNotifications = notifications.length > 0;
+  const filteredNotifications =
+    activeTab === "all"
+      ? notifications
+      : notifications.filter(
+          (n: any) => getNotificationCategory(n) === activeTab,
+        );
+
+  const groupedNotifications = groupNotificationsByDate(filteredNotifications);
+  const hasNotifications = filteredNotifications.length > 0;
+  const hasUnread = notifications.some((n: any) => !n.isRead);
 
   return (
     <div className="flex max-h-[calc(100vh-96px)] w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:max-h-[calc(100dvh-24px)] max-sm:rounded-2xl max-sm:border-4">
@@ -50,31 +65,38 @@ export function NotificationsModal({
       />
       <div className="flex min-h-0 flex-1 flex-col px-8 pt-6 max-sm:px-5 max-sm:pt-4">
         {/* Tabs */}
-        {/* <div className="flex items-center border-b border-border">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
-              className={cn(
-                "text-[13px] font-medium px-3 pb-2.5 pt-1 relative border-none bg-transparent cursor-pointer transition-colors",
-                activeTab === t.key
-                  ? "text-card-text after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:bg-Green after:rounded-t"
-                  : "text-placeholder hover:text-text",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between gap-2 border-b border-border max-sm:gap-1">
+          <div className="flex items-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={cn(
+                  "relative cursor-pointer whitespace-nowrap border-none bg-transparent px-3 pb-2.5 pt-1 text-[13px] font-medium transition-colors max-sm:px-2 max-sm:text-[12px]",
+                  activeTab === t.key
+                    ? "text-card-text after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:rounded-t after:bg-Green"
+                    : "text-placeholder hover:text-text",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
           <button
-            disabled={readAllPending}
+            disabled={readAllPending || !hasUnread}
             onClick={() => readAllNotifications()}
-            className="ml-auto flex items-center gap-1 text-[12px] text-Green bg-transparent border-none cursor-pointer pb-2.5 pt-1 hover:opacity-80 transition-opacity"
+            className="ml-auto flex shrink-0 items-center gap-1 border-none bg-transparent pb-2.5 pt-1 text-[12px] text-Green transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 max-sm:text-[11px]"
           >
-            <Check className="w-3.5 h-3.5" />
-            {readAllPending ? "Updating..." : "Mark all as read"}
+            <Check className="h-3.5 w-3.5" />
+            <span className="max-sm:hidden">
+              {readAllPending ? "Updating..." : "Mark all as read"}
+            </span>
+            <span className="hidden max-sm:inline">
+              {readAllPending ? "..." : "Mark all"}
+            </span>
           </button>
-        </div> */}
+        </div>
 
         {/* Feed */}
         <div className="-mr-2 flex-1 space-y-6 overflow-y-auto pb-2 pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border">
@@ -98,10 +120,14 @@ export function NotificationsModal({
                 <BellOff className="h-5 w-5" />
               </div>
               <p className="text-sm font-medium text-card-text">
-                You&apos;re all caught up
+                {activeTab === "all"
+                  ? "You're all caught up"
+                  : `No ${activeTab} yet`}
               </p>
               <p className="text-xs text-text">
-                New notifications will show up here.
+                {activeTab === "all"
+                  ? "New notifications will show up here."
+                  : "Notifications in this category will show up here."}
               </p>
             </div>
           ) : (
