@@ -173,19 +173,21 @@ export function AccountInfoTab() {
         {!getBankAccountsPending &&
           !getBankAccountsError &&
           getBankAccounts?.data?.data?.length === 0 && (
-            <div className="space-y-3 pb-6">
-              <p className="font-medium text-sm leading-5 text-text">
-                Bank Accounts
-              </p>
-              <div className="text-center text-card-text text-[14px] font-medium leading-5 py-6">
-                {/* <Image
-                className="mx-auto mb-1"
-                alt="frame"
-                width={96}
-                height={122}
+            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+              <Image
+                className="mx-auto"
+                alt="No linked bank accounts"
+                width={88}
+                height={112}
                 src={"/Frame.svg"}
-              /> */}
-                No linked bank account found
+              />
+              <div className="space-y-1">
+                <p className="text-[14px] font-medium leading-5 text-card-text">
+                  No linked bank account
+                </p>
+                <p className="mx-auto max-w-[260px] text-[12px] font-normal leading-5 text-text">
+                  Add a bank account to fund your wallet and make withdrawals.
+                </p>
               </div>
             </div>
           )}
