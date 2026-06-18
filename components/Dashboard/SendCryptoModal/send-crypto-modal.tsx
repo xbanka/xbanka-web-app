@@ -98,8 +98,6 @@ export function SendCryptoModal({
 
           if (data.type === "xbanka-user") {
             setXbankaRecipient(data.user || null);
-
-            // internal transfer skips network step
             setStep("select_network");
           }
         }}

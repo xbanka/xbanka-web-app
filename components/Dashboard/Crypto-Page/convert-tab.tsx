@@ -172,8 +172,8 @@ export function ConvertTab() {
   }, [debouncedAmount, sourceCurrency, targetCurrency, groupedPairData]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-4">
-      <DashboardCard className="lg:col-span-2 space-y-3">
+    <div className="grid grid-cols-1 lg:grid-cols-5 items-start gap-4">
+      <DashboardCard className="lg:col-span-3 space-y-3 p-4 max-sm:p-3.5">
         <AmountRow
           label="From"
           dropDownLoading={currencyPending}

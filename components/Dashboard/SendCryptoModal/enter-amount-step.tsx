@@ -5,6 +5,7 @@ import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { UserWallet } from "../Wallet-Page/types";
 import { RecipientXbankaUsersTypes } from "./types";
+import { TRANSACTION_FEE } from "./crypto-modal-types";
 
 export function EnterAmountStep({
   asset,
@@ -24,15 +25,14 @@ export function EnterAmountStep({
   onNext: () => void;
 }) {
   const numericBalance = asset?.balance ?? 0;
-  console.log("Numeric balance:", numericBalance);
-  // const fee = parseFloat(network.fee);
   const inputAmount = parseFloat(amount) || 0;
   const rate = asset?.fiatEquivalent?.rate ?? 0;
   const nairaEquiv = (inputAmount * rate).toLocaleString();
-  const isValid = inputAmount > 0 && inputAmount <= numericBalance;
+  const totalDeduction = inputAmount + TRANSACTION_FEE;
+  const isValid = inputAmount > 0 && totalDeduction <= numericBalance;
 
   const sendMax = () => {
-    const max = Math.max(0, numericBalance).toFixed(2);
+    const max = Math.max(0, numericBalance - TRANSACTION_FEE).toFixed(2);
     setAmount(max);
   };
 
@@ -91,16 +91,28 @@ export function EnterAmountStep({
             </button>
           </div>
 
-          {/* Network fee */}
-          {/* <div className="flex items-center justify-between text-xs p-3">
+          {/* Transaction fee */}
+          <div className="flex items-center justify-between text-xs p-3 border-b border-input">
             <div className="flex items-center gap-2 text-text">
-              <span className="text-[12px] font-normal leading-5.5">Network fee</span>
+              <span className="text-[12px] font-normal leading-5.5">
+                Transaction fee
+              </span>
               <Info className="w-5 h-5" />
             </div>
             <span className="text-card-text font-medium text-sm leading-5">
-              — {network.fee} {asset.symbol}
+              {TRANSACTION_FEE} {asset?.currency}
             </span>
-          </div> */}
+          </div>
+
+          {/* Total deducted */}
+          <div className="flex items-center justify-between text-xs p-3">
+            <span className="text-[12px] font-normal leading-5.5 text-text">
+              Total deducted
+            </span>
+            <span className="text-card-text font-semibold text-sm leading-5">
+              {totalDeduction.toLocaleString()} {asset?.currency}
+            </span>
+          </div>
         </div>
 
         {/* Security note */}
