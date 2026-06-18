@@ -90,8 +90,9 @@ export function ConfirmStep({
 
             {recipientType === "wallet" ? (
               <SendCryptoConfirmList
-                title="Wallet Address"
-                value={shortAddr}
+                title="Recipient"
+                value={recipientName || shortAddr}
+                subValue={recipientName ? shortAddr : undefined}
               />
             ) : (
               <SendCryptoConfirmList
@@ -114,6 +115,7 @@ export function ConfirmStep({
             <SendCryptoConfirmList
               title="Total Deducted"
               value={`${(parsedAmount + TRANSACTION_FEE).toLocaleString()} ${asset?.currency ?? ""}`}
+              subValue={`≈ ₦${((parsedAmount + TRANSACTION_FEE) * rate).toLocaleString()}`}
             />
           </div>
 
