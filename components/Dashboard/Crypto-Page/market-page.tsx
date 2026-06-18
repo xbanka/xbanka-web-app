@@ -122,7 +122,7 @@ export function MarketPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`pb-2.5 px-4 text-base font-medium capitalize border-b-2 transition-colors -mb-px whitespace-nowrap
+              className={`pb-2.5 px-4 text-[14px] font-medium capitalize border-b-2 transition-colors -mb-px whitespace-nowrap
                 ${tab === t ? "border-Green text-Green" : "border-transparent text-text hover:text-card-text"}`}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -137,7 +137,7 @@ export function MarketPage() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3.5 py-1.5 rounded-md text-sm font-medium capitalize transition-colors
+                className={`px-3.5 py-1.5 rounded-md text-[14px] font-medium capitalize transition-colors
                   ${filter === f ? "bg-Green text-white" : "text-text"}`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -150,7 +150,7 @@ export function MarketPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search coin"
-              className="pl-8 pr-3 h-9 text-sm border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-full sm:w-40"
+              className="pl-8 pr-3 h-9 text-[14px] border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-full sm:w-40"
             />
           </div>
         </div>
@@ -159,26 +159,26 @@ export function MarketPage() {
       {/* Table */}
       <div className="bg-card-background border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <table className="w-full min-w-[460px] text-base">
+          <table className="w-full min-w-[460px] text-[14px]">
             <thead>
-              <tr className="border-b border-border text-sm text-text">
-                <th className="text-left px-4 py-3 font-medium w-6"></th>
-                <th className="text-left px-4 py-3 font-medium">
+              <tr className="border-b border-border text-[14px] text-text">
+                <th className="text-left px-4 py-4 font-medium w-6"></th>
+                <th className="text-left px-4 py-4 font-medium">
                   <span className="flex items-center gap-1">
                     Pair <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
-                <th className="text-right px-4 py-3 font-medium">
+                <th className="text-right px-4 py-4 font-medium">
                   <span className="flex items-center gap-1 ml-auto justify-end">
                     Last Price <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
-                <th className="text-right px-4 py-3 font-medium">
+                <th className="text-right px-4 py-4 font-medium">
                   <span className="flex items-center gap-1 ml-auto justify-end">
                     Change <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
-                <th className="text-right px-4 py-3 font-medium">Action</th>
+                <th className="text-right px-4 py-4 font-medium">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -226,7 +226,7 @@ export function MarketPage() {
                       key={coin.id}
                       className="hover:bg-border/20 transition-colors"
                     >
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-4">
                         <button
                           type="button"
                           onClick={() => toggleFavorite(coin.symbol)}
@@ -243,7 +243,7 @@ export function MarketPage() {
                           />
                         </button>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-card-background overflow-hidden shrink-0">
                             <Image
@@ -253,18 +253,18 @@ export function MarketPage() {
                               height={28}
                             />
                           </div>
-                          <span className="text-sm font-semibold text-card-text whitespace-nowrap">
+                          <span className="text-[14px] font-semibold text-card-text whitespace-nowrap">
                             {coin.symbol}
                             <span className="text-text font-normal">/USDT</span>
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right text-sm font-medium text-card-text whitespace-nowrap">
+                      <td className="px-4 py-4 text-right text-[14px] font-medium text-card-text whitespace-nowrap">
                         ${formatPrice(coin.priceUsd)}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-4 text-right">
                         <span
-                          className={`text-sm font-semibold flex items-center justify-end gap-0.5 whitespace-nowrap ${isNegative ? "text-red-500" : "text-green-500"}`}
+                          className={`text-[14px] font-semibold flex items-center justify-end gap-0.5 whitespace-nowrap ${isNegative ? "text-red-500" : "text-green-500"}`}
                         >
                           {isNegative ? (
                             <ArrowDown className="w-3 h-3" />
@@ -274,10 +274,10 @@ export function MarketPage() {
                           {formatToTwoDecimals(coin.changePercent24h)}%
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-4 text-right">
                         <Link
                           href={`/crypto?tab=buy&mode=buy&coin=${coin.symbol}`}
-                          className="inline-block bg-Green hover:bg-Green/90 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                          className="inline-block bg-Green hover:bg-Green/90 text-white text-[14px] font-semibold px-4 py-2 rounded-lg transition-colors"
                         >
                           Trade
                         </Link>
