@@ -168,13 +168,13 @@ export function MarketPage() {
                     Pair <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
-                <th className="text-right px-4 py-4 font-medium">
-                  <span className="flex items-center gap-1 ml-auto justify-end">
+                <th className="text-left px-4 py-4 font-medium">
+                  <span className="flex items-center gap-1">
                     Last Price <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
-                <th className="text-right px-4 py-4 font-medium">
-                  <span className="flex items-center gap-1 ml-auto justify-end">
+                <th className="text-left px-4 py-4 font-medium">
+                  <span className="flex items-center gap-1">
                     Change <ArrowUpDown className="w-3 h-3" />
                   </span>
                 </th>
@@ -259,12 +259,12 @@ export function MarketPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-right text-[14px] font-medium text-card-text whitespace-nowrap">
+                      <td className="px-4 py-4 text-left text-[14px] font-medium text-card-text whitespace-nowrap">
                         ${formatPrice(coin.priceUsd)}
                       </td>
-                      <td className="px-4 py-4 text-right">
+                      <td className="px-4 py-4 text-left">
                         <span
-                          className={`text-[14px] font-semibold flex items-center justify-end gap-0.5 whitespace-nowrap ${isNegative ? "text-red-500" : "text-green-500"}`}
+                          className={`text-[14px] font-semibold flex items-center justify-start gap-0.5 whitespace-nowrap ${isNegative ? "text-red-500" : "text-green-500"}`}
                         >
                           {isNegative ? (
                             <ArrowDown className="w-3 h-3" />
