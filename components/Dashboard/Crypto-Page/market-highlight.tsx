@@ -134,7 +134,7 @@ export function MarketHighlight() {
     },
   ];
   return (
-    <DashboardCard className="lg:col-span-1">
+    <DashboardCard className="lg:col-span-2 p-4 max-sm:p-3.5">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-card-text">
           Market Highlight

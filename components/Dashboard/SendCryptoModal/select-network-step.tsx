@@ -11,6 +11,19 @@ import { UseActiveNetworksCrypto } from "@/lib/services/wallet.service";
 import { ErrorLayout } from "@/components/ui/error-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Standard token-label, chain name and (static) estimated arrival per network code.
+const NETWORK_META: Record<
+  string,
+  { label: string; chain: string; time: string }
+> = {
+  ETH: { label: "ERC-20", chain: "Ethereum network", time: "3-5 mins" },
+  TRX: { label: "TRC-20", chain: "Tron network", time: "1-3 mins" },
+  BSC: { label: "BEP-20", chain: "BNB smart chain", time: "~3 mins" },
+  SOL: { label: "Solana", chain: "Solana network", time: "~1 min" },
+  MATIC: { label: "Polygon", chain: "Polygon network", time: "~2 mins" },
+  BTC: { label: "Bitcoin", chain: "Bitcoin network", time: "10-30 mins" },
+};
+
 export function SelectNetworkStep({
   asset,
   selectedNetworkId,
@@ -33,6 +46,15 @@ export function SelectNetworkStep({
     asset?.currency && data?.data?.data?.[asset.currency]?.networks
       ? data.data.data[asset.currency].networks
       : [];
+
+  const query = search.trim().toLowerCase();
+  const filteredNetworks = networks.filter((n: any) => {
+    if (!query) return true;
+    const meta = NETWORK_META[n.networkCode];
+    const haystack =
+      `${n.networkName ?? ""} ${n.networkCode ?? ""} ${meta?.label ?? ""} ${meta?.chain ?? ""}`.toLowerCase();
+    return haystack.includes(query);
+  });
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
@@ -46,20 +68,8 @@ export function SelectNetworkStep({
         <ProgressBar step="select_network" />
       </div>
 
-      <div className="px-8 pt-4 pb-8 space-y-8">
-        <div className="space-y-4 mt-4">
-          {/* Chosen asset display */}
-          {/* <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-3">
-            <CoinAvatar color={asset.color} symbol={asset.symbol} size={36} />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-card-text">
-                {asset.name}
-              </p>
-              <p className="text-xs text-text">
-                {asset.balance} {asset.symbol}
-              </p>
-            </div>
-          </div> */}
+      <div className="px-8 pt-4 pb-8 space-y-5">
+        <div className="space-y-4">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
@@ -70,9 +80,14 @@ export function SelectNetworkStep({
               className="w-full h-10 pl-9 pr-4 text-sm border border-input rounded-xl bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
             />
           </div>
-          <div className="space-y-4">
-            {!isPending && networks.map((network: any) => {
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {!isPending && filteredNetworks.map((network: any) => {
               const active = selectedNetworkId === network.networkCode;
+              const meta = NETWORK_META[network.networkCode] ?? {
+                label: network.networkName,
+                chain: network.networkCode,
+                time: "",
+              };
               return (
                 <button
                   key={network.networkCode}
@@ -84,22 +99,28 @@ export function SelectNetworkStep({
                       : "border-border hover:border-border-active",
                   )}
                 >
-                  <div className="flex min-w-0 flex-1 gap-3 items-center">
-                    <div className="rounded-[360px] p-1.5 h-10 w-10 bg-background mx-auto items-center justify-center">
-                      <Wallet size={24} className="text-[#0C9A8E] mx-auto" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-card-text">
-                        {network.networkName}
-                      </p>
-                      <p className="text-xs text-text mt-0.5">
-                        Fee ≈ {network.withdrawalFee}
-                      </p>
-                    </div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background">
+                    <Wallet size={22} className="text-[#0C9A8E]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-card-text">
+                      {meta.label}
+                    </p>
+                    <p className="text-xs text-text mt-0.5 truncate">
+                      {meta.chain}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-medium text-card-text">
+                      ~{network.withdrawalFee} {asset?.currency}
+                    </p>
+                    {meta.time && (
+                      <p className="text-xs text-text mt-0.5">{meta.time}</p>
+                    )}
                   </div>
                   <div
                     className={cn(
-                      "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center",
+                      "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center ml-1",
                       active ? "border-Green" : "border-text",
                     )}
                   >
@@ -133,8 +154,12 @@ export function SelectNetworkStep({
                 <ErrorLayout message={error.message} />
               )
             }
-            {!isPending && !error && networks.length === 0 && (
-              <p className="text-center text-sm text-text">No networks available for this asset.</p>
+            {!isPending && !error && filteredNetworks.length === 0 && (
+              <p className="text-center text-sm text-text">
+                {networks.length === 0
+                  ? "No networks available for this asset."
+                  : "No networks match your search."}
+              </p>
             )}
           </div>
         </div>

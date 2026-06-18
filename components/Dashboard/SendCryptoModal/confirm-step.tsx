@@ -6,6 +6,7 @@ import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { SendCryptoConfirmList } from "./send-crypto-confirm-list";
 import { UserWallet } from "../Wallet-Page/types";
 import { RecipientXbankaUsersTypes } from "./types";
+import { TRANSACTION_FEE } from "./crypto-modal-types";
 
 export function ConfirmStep({
   amount,
@@ -89,8 +90,9 @@ export function ConfirmStep({
 
             {recipientType === "wallet" ? (
               <SendCryptoConfirmList
-                title="Wallet Address"
-                value={shortAddr}
+                title="Recipient"
+                value={recipientName || shortAddr}
+                subValue={recipientName ? shortAddr : undefined}
               />
             ) : (
               <SendCryptoConfirmList
@@ -103,6 +105,17 @@ export function ConfirmStep({
             <SendCryptoConfirmList
               title="Network"
               value={network || "-"}
+            />
+
+            <SendCryptoConfirmList
+              title="Transaction fee"
+              value={`${TRANSACTION_FEE} ${asset?.currency ?? ""}`}
+            />
+
+            <SendCryptoConfirmList
+              title="Total Deducted"
+              value={`${(parsedAmount + TRANSACTION_FEE).toLocaleString()} ${asset?.currency ?? ""}`}
+              subValue={`≈ ₦${((parsedAmount + TRANSACTION_FEE) * rate).toLocaleString()}`}
             />
           </div>
 

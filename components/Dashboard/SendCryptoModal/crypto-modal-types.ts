@@ -1,3 +1,6 @@
+// Flat transaction fee applied to crypto sends (in the asset's currency unit).
+export const TRANSACTION_FEE = 1;
+
 export interface WalletSuccessState {
   id: string;
   walletId: string;

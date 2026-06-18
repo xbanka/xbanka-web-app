@@ -196,15 +196,15 @@ export function Sidebar({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4.5 px-4 space-y-3">
+      <nav className="flex-1 overflow-y-auto py-4.5 px-4 space-y-4">
         {NAV.map((section) => (
-          <div key={section.title} className="space-y-2">
+          <div key={section.title} className="space-y-2.5">
             {!collapsed && (
               <p className="text-[12px] font-normal leading-4.5 tracking-widest text-text">
                 {section.title}
               </p>
             )}
-            <ul className="space-y-0.5">
+            <ul className="space-y-1.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
 
@@ -215,7 +215,7 @@ export function Sidebar({
                 const content = (
                   <div
                     title={collapsed ? item.label : undefined}
-                    className={`w-full flex font-medium leading-5.5 items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors
+                    className={`w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
       ${
         item.disabled
           ? "opacity-50 cursor-not-allowed bg-card-background text-text"
@@ -226,7 +226,7 @@ export function Sidebar({
       ${collapsed ? "justify-center" : ""}`}
                   >
                     <Icon
-                      className={`${active ? "text-Green" : "text-card-text"} w-4 h-4 shrink-0`}
+                      className={`${active ? "text-Green" : "text-card-text"} w-5 h-5 shrink-0`}
                     />
 
                     {!collapsed && (
