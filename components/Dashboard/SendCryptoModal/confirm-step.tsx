@@ -6,6 +6,7 @@ import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { SendCryptoConfirmList } from "./send-crypto-confirm-list";
 import { UserWallet } from "../Wallet-Page/types";
 import { RecipientXbankaUsersTypes } from "./types";
+import { TRANSACTION_FEE } from "./crypto-modal-types";
 
 export function ConfirmStep({
   amount,
@@ -103,6 +104,16 @@ export function ConfirmStep({
             <SendCryptoConfirmList
               title="Network"
               value={recipientType === "wallet" ? network || "" : "-"}
+            />
+
+            <SendCryptoConfirmList
+              title="Transaction fee"
+              value={`${TRANSACTION_FEE} ${asset?.currency ?? ""}`}
+            />
+
+            <SendCryptoConfirmList
+              title="Total Deducted"
+              value={`${(parsedAmount + TRANSACTION_FEE).toLocaleString()} ${asset?.currency ?? ""}`}
             />
           </div>
 
