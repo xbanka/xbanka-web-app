@@ -15,9 +15,47 @@ import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 import { getCoinImage } from "@/lib/coin-images";
 import Image from "next/image";
 
+const MARKET_TABS = [
+  "Favourites",
+  "Hot",
+  "Gainers",
+  "Losers",
+  "New",
+  "Turnovers",
+] as const;
+
+type MarketTab = (typeof MARKET_TABS)[number];
+
+const sortByTab = (
+  items: CryptoMarketOverview[],
+  tab: MarketTab,
+): CryptoMarketOverview[] => {
+  const sorted = [...items];
+  switch (tab) {
+    case "Hot":
+      return sorted.sort((a, b) => a.rank - b.rank);
+    case "Gainers":
+      return sorted.sort((a, b) => b.changePercent24h - a.changePercent24h);
+    case "Losers":
+      return sorted.sort((a, b) => a.changePercent24h - b.changePercent24h);
+    case "New":
+      return sorted.sort(
+        (a, b) =>
+          new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
+      );
+    case "Turnovers":
+      return sorted.sort((a, b) => b.priceUsd - a.priceUsd);
+    case "Favourites":
+    default:
+      return sorted;
+  }
+};
+
 export function MarketOverview() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<MarketTab>("Favourites");
+  const [marketType, setMarketType] = useState<"Spot" | "Futures">("Spot");
   const limit = 6;
   const {
     data: marketPrices,
@@ -25,7 +63,10 @@ export function MarketOverview() {
     isError: marketPricesIsError,
     isPending: marketPricesPending,
   } = useGetMarketPrices(page, limit);
-  const marketItems = marketPrices?.data.items.slice(0, 6) || [];
+  const marketItems = sortByTab(
+    marketPrices?.data.items ?? [],
+    activeTab,
+  ).slice(0, 6);
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -171,16 +212,17 @@ export function MarketOverview() {
         </Link>
       </div>
       <div className="mb-4 flex gap-1 overflow-x-auto text-xs max-sm:-mx-1 max-sm:px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] max-sm:text-[12px]  ">
-        {["Favourites", "Hot", "Gainers", "Losers", "New", "Turnovers"].map(
-          (t) => (
-            <button
-              key={t}
-              className={`whitespace-nowrap px-2 py-1 rounded-md transition-colors max-sm:text-[12px] max-sm:leading-6 ${t === "Favourites" ? "bg-Green/10 text-Green font-medium" : "text-text hover:text-card-text"}`}
-            >
-              {t}
-            </button>
-          ),
-        )}
+        {MARKET_TABS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setActiveTab(t)}
+            aria-pressed={activeTab === t}
+            className={`whitespace-nowrap px-2 py-1 rounded-md transition-colors max-sm:text-[12px] max-sm:leading-6 ${activeTab === t ? "bg-Green/10 text-Green font-medium" : "text-text hover:text-card-text"}`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
       <div className="hidden overflow-x-auto md:block">
         <DataTableLayout
@@ -199,15 +241,22 @@ export function MarketOverview() {
       </div>
       <div className="rounded-2xl bg-border p-4 md:hidden">
         <div className="mb-3 flex rounded-2xl bg-card-background/40 p-1 text-[16px] max-sm:text-[12px] font-medium leading-6 text-text">
-          <button className="rounded-xl bg-card-background px-4 py-3 text-card-text">
-            Spot
-          </button>
-          <button className="px-4 py-3">Futures</button>
+          {(["Spot", "Futures"] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setMarketType(type)}
+              aria-pressed={marketType === type}
+              className={`rounded-xl px-4 py-3 transition-colors ${marketType === type ? "bg-card-background text-card-text" : ""}`}
+            >
+              {type}
+            </button>
+          ))}
         </div>
 
         <div className="overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="min-w-[356px]">
-            <div className="grid grid-cols-[132px_70px_92px_40px] gap-1 border-b border-input px-1 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
+          <div className="min-w-0">
+            <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] gap-1 border-b border-input px-1 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
               <span>Assets</span>
               <span>Price</span>
               <span>24h Change</span>
@@ -230,7 +279,7 @@ export function MarketOverview() {
                 return (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[132px_70px_92px_40px] items-center gap-1 border-b border-input px-1 py-4 last:border-b-0"
+                    className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] items-center gap-1 border-b border-input px-1 py-4 last:border-b-0"
                   >
                     <div className="flex min-w-0 items-center gap-3 ">
                       <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]">
@@ -254,18 +303,23 @@ export function MarketOverview() {
                       ${formatPrice(item.priceUsd)}
                     </p>
                     <div
-                      className={`flex items-center gap-1 text-[16px] max-sm:text-[12px] font-medium leading-6 ${isNegative ? "text-error-text" : "text-Green  max-sm:text-[12px]"}`}
+                      className={`flex min-w-0 items-center gap-1 text-[16px] max-sm:text-[12px] font-medium leading-6 ${isNegative ? "text-error-text" : "text-Green  max-sm:text-[12px]"}`}
                     >
                       {isNegative ? (
-                        <ArrowDownRight className="h-5 w-5" />
+                        <ArrowDownRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
                       ) : (
-                        <ArrowUpRight className="h-5 w-5" />
+                        <ArrowUpRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
                       )}
-                      <span>{formatToTwoDecimals(item.changePercent24h)}%</span>
+                      <span className="truncate">
+                        {formatToTwoDecimals(item.changePercent24h)}%
+                      </span>
                     </div>
-                    <button className="text-left text-[16px] max-sm:text-[12px] font-medium leading-6 text-Green">
+                    <Link
+                      href="/crypto"
+                      className="text-left text-[16px] max-sm:text-[12px] font-medium leading-6 text-Green"
+                    >
                       Trade
-                    </button>
+                    </Link>
                   </div>
                 );
               })}
