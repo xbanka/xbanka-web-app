@@ -9,7 +9,7 @@ import {
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
-import { AddFundsModal } from "../AddFundFiatModal/add-funds-modal";
+import { VirtualAccountModal } from "../AddFundFiatModal/virtual-account-modal";
 import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
@@ -146,10 +146,9 @@ export const FiatBalance = () => {
           </div>
         </div>
         {addFundsOpen && (
-          <AddFundsModal
+          <VirtualAccountModal
             open={addFundsOpen}
             onClose={() => setAddFundsOpen(false)}
-            onSuccess={() => setAddFundsOpen(false)}
           />
         )}
         {sendFundsOpen && (
