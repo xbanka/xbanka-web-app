@@ -54,13 +54,13 @@ const SignIn = () => {
         className="max-sm:text-left"
         title="Welcome to XBanka"
         subtitle={
-          <>
+          <span className="max-sm:text-[14px]">
             <span>Don&apos;t have an account? </span>
 
-            <Link className="text-Green" href="/sign-up">
+            <Link className="text-Green max-sm:text-[14px]" href="/sign-up">
               Sign up
             </Link>
-          </>
+          </span>
         }
       />
       <div className="space-y-3">

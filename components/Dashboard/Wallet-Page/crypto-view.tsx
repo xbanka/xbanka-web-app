@@ -82,8 +82,10 @@ export function CryptoView() {
     {
       key: "note",
       header: "Action",
-      render: () => (
-        <Link href={"/crypto"}><span  className="font-normal text-sm leading-6 text-Green">Trade</span></Link>
+      render: (item: UserWallet) => (
+        <Link href={`/crypto?tab=buy&mode=buy&coin=${item.currency}`}>
+          <span className="font-normal text-sm leading-6 text-Green">Trade</span>
+        </Link>
       ),
     },
   ];
@@ -161,9 +163,12 @@ export function CryptoView() {
                 <p className="text-[13px] font-medium leading-5 text-card-text">
                   {wallet.balance ?? "0.00"}
                 </p>
-                <button className="text-right text-[13px] font-medium leading-5 text-Green">
+                <Link
+                  href={`/crypto?tab=buy&mode=buy&coin=${wallet.currency}`}
+                  className="text-right text-[13px] font-medium leading-5 text-Green"
+                >
                   Trade
-                </button>
+                </Link>
               </div>
             ))}
         </div>
