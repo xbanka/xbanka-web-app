@@ -28,7 +28,7 @@ export const getNotificationStatus = (
   }
 
   if (
-    /(pending|processing|in progress|in-progress|initiated|awaiting|under review|queued)/.test(
+    /(pending|processing|in[\s_-]?progress|ongoing|initiated|submitted|awaiting|under review|queued)/.test(
       content,
     )
   ) {
@@ -36,7 +36,7 @@ export const getNotificationStatus = (
   }
 
   if (
-    /(success|completed|confirmed|verified|approved|received|credited|sent|deposit)/.test(
+    /(success|complete|completed|done|settled|confirmed|verified|approved|received|credited|sent|deposit)/.test(
       content,
     )
   ) {
