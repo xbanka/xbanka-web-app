@@ -32,3 +32,12 @@ export const formatPrice = (value: string | number): string => {
     maximumFractionDigits: 2,
   });
 };
+/**
+ * Formats a crypto wallet balance, trimming long floating-point tails.
+ * Example: 23.9675000000000015 -> "23.9675"; 0 -> "0"; 1234.5 -> "1,234.5"
+ */
+export const formatCryptoBalance = (value: string | number): string => {
+  const num = typeof value === "string" ? parseFloat(value) : value;
+  if (value === null || value === undefined || isNaN(num)) return "0";
+  return num.toLocaleString("en-US", { maximumFractionDigits: 8 });
+};

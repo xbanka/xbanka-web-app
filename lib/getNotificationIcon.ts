@@ -28,7 +28,7 @@ export const getNotificationStatus = (
   }
 
   if (
-    /(pending|processing|in progress|in-progress|initiated|awaiting|under review|queued)/.test(
+    /(pending|processing|in[\s_-]?progress|ongoing|initiated|submitted|awaiting|under review|queued)/.test(
       content,
     )
   ) {
@@ -36,7 +36,7 @@ export const getNotificationStatus = (
   }
 
   if (
-    /(success|completed|confirmed|verified|approved|received|credited|sent|deposit)/.test(
+    /(success|complete|completed|done|settled|confirmed|verified|approved|received|credited|sent|deposit)/.test(
       content,
     )
   ) {
@@ -98,17 +98,19 @@ export const getNotificationCategory = (
 };
 
 export const getNotificationColor = (notification: any) => {
-  const content = notificationText(notification);
   const status = getNotificationStatus(notification);
 
-  // Progress-driven colors.
-  if (status === "failed") return "bg-red-900/30 text-red-400";
-  if (status === "pending") return "bg-yellow-900/30 text-yellow-400";
-
-  // Outgoing money is red, everything else (incoming/success/activity) green.
-  if (/withdraw|sent|transfer out|debited/.test(content)) {
-    return "bg-red-900/30 text-red-400";
+  // Color reflects progress/status.
+  switch (status) {
+    case "success":
+      // Brand green-cyan for completed transactions/activities.
+      return "bg-Green/15 text-Green";
+    case "failed":
+      return "bg-red-900/30 text-red-400";
+    case "pending":
+      return "bg-yellow-900/30 text-yellow-400";
+    default:
+      // Neutral / informational.
+      return "bg-blue-900/30 text-blue-400";
   }
-
-  return "bg-green-900/30 text-green-400";
 };
