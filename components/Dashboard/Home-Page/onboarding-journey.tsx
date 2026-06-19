@@ -75,10 +75,11 @@ export function OnboardingJourney() {
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
           <h3 className="font-medium text-card-text text-[16px] max-sm:text-[14px] max-sm:leading-5 leading-6">
-            Complete your Onboarding Journey
+            Account Verification
           </h3>
-          <p className="text-xs text-text max-sm:hidden">
-            Unlock full access to Xbanka features
+          <p className="text-xs text-text">
+            Your account is active. Complete more verification when you need
+            higher limits or external transfers.
           </p>
         </div>
         <span className="shrink-0 text-xs text-text font-normal leading-5.5 max-sm:text-[12px] max-sm:leading-6">
