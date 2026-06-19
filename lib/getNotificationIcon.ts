@@ -1,44 +1,66 @@
 import {
-  ArrowDown,
-  ArrowUp,
+  ArrowDownLeft,
+  ArrowUpRight,
   RefreshCw,
   ShieldCheck,
+  BadgeCheck,
+  Clock,
+  XCircle,
+  CheckCircle2,
   Bell,
 } from "lucide-react";
 
+const notificationText = (notification: any) =>
+  `${notification.type ?? ""} ${notification.title ?? ""} ${notification.message ?? ""}`.toLowerCase();
+
+// Progress/status of a transaction or activity, inferred from its content.
+export const getNotificationStatus = (
+  notification: any,
+): "pending" | "failed" | "success" | "neutral" => {
+  const content = notificationText(notification);
+
+  if (
+    /(failed|rejected|declined|unsuccessful|reversed|cancell?ed|error)/.test(
+      content,
+    )
+  ) {
+    return "failed";
+  }
+
+  if (
+    /(pending|processing|in progress|in-progress|initiated|awaiting|under review|queued)/.test(
+      content,
+    )
+  ) {
+    return "pending";
+  }
+
+  if (
+    /(success|completed|confirmed|verified|approved|received|credited|sent|deposit)/.test(
+      content,
+    )
+  ) {
+    return "success";
+  }
+
+  return "neutral";
+};
+
 export const getNotificationIcon = (notification: any) => {
-  const title = notification.title?.toLowerCase() ?? "";
-  const message = notification.message?.toLowerCase() ?? "";
+  const content = notificationText(notification);
+  const status = getNotificationStatus(notification);
 
-  const content = `${title} ${message}`;
+  // Progress takes priority — failed/pending states get their own icon.
+  if (status === "failed") return XCircle;
+  if (status === "pending") return Clock;
 
-  if (content.includes("withdrawal")) {
-    return ArrowUp;
-  }
-
-  if (
-    content.includes("deposit") ||
-    content.includes("received") ||
-    content.includes("credited") ||
-    content.includes("funded")
-  ) {
-    return ArrowDown;
-  }
-
-  if (
-    content.includes("swap") ||
-    content.includes("convert") ||
-    content.includes("exchange")
-  ) {
-    return RefreshCw;
-  }
-
-  if (
-    content.includes("security") ||
-    content.includes("login")
-  ) {
-    return ShieldCheck;
-  }
+  // Otherwise show a type/direction-specific icon.
+  if (/withdraw|sent|transfer out|debited/.test(content)) return ArrowUpRight;
+  if (/deposit|received|credited|funded/.test(content)) return ArrowDownLeft;
+  if (/swap|convert|exchange/.test(content)) return RefreshCw;
+  if (/verif|bvn|kyc|identity|document/.test(content)) return BadgeCheck;
+  if (/login|device|security|password/.test(content)) return ShieldCheck;
+  if (status === "success") return CheckCircle2;
 
   return Bell;
 };
@@ -49,8 +71,7 @@ export const getNotificationIcon = (notification: any) => {
 export const getNotificationCategory = (
   notification: any,
 ): "transactions" | "activities" => {
-  const content =
-    `${notification.type ?? ""} ${notification.title ?? ""} ${notification.message ?? ""}`.toLowerCase();
+  const content = notificationText(notification);
 
   const transactionKeywords = [
     "deposit",
@@ -77,29 +98,16 @@ export const getNotificationCategory = (
 };
 
 export const getNotificationColor = (notification: any) => {
-  const title = notification.title?.toLowerCase() ?? "";
-  const message = notification.message?.toLowerCase() ?? "";
+  const content = notificationText(notification);
+  const status = getNotificationStatus(notification);
 
-  const content = `${title} ${message}`;
+  // Progress-driven colors.
+  if (status === "failed") return "bg-red-900/30 text-red-400";
+  if (status === "pending") return "bg-yellow-900/30 text-yellow-400";
 
-  if (content.includes("withdrawal")) {
+  // Outgoing money is red, everything else (incoming/success/activity) green.
+  if (/withdraw|sent|transfer out|debited/.test(content)) {
     return "bg-red-900/30 text-red-400";
-  }
-
-  if (
-    content.includes("deposit") ||
-    content.includes("received") ||
-    content.includes("credited") ||
-    content.includes("funded")
-  ) {
-    return "bg-green-900/30 text-green-400";
-  }
-
-  if (
-    content.includes("swap") ||
-    content.includes("convert")
-  ) {
-    return "bg-green-900/30 text-green-400";
   }
 
   return "bg-green-900/30 text-green-400";

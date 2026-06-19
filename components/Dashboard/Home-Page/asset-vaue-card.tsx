@@ -1,17 +1,14 @@
 "use client";
 
 import { DashboardCard } from "@/components/Layout/DashboardCard";
-import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
-import { Eye, EyeOff, HelpCircle } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { HowItWorksModal } from "./how-it-works-modal";
 
 export function AssetValueCard() {
   const [hidden, setHidden] = useState(false);
-  const [howItWorksModal, setHowItWorksModal] = useState(false);
   const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
   const {
     data: getAllWalletBalance,
@@ -73,20 +70,6 @@ export function AssetValueCard() {
               : `≈ $${totalCryptoEquivalent.toLocaleString()} USD`}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            className="border border-input"
-            onClick={() => setHowItWorksModal(true)}
-          >
-            <HelpCircle className="w-4 h-4" />
-            How it works
-          </Button>
-        </div>
-        {howItWorksModal && (
-          <HowItWorksModal onClose={() => setHowItWorksModal(false)} />
-        )}
       </div>
     </DashboardCard>
   );
