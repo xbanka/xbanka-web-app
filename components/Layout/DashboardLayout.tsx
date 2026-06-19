@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar setMobileOpen={setMobileOpen} />
-        <main className="flex-1 overflow-y-auto p-4 pb-20 sm:py-6 sm:px-8 md:pb-6">
+        <main className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6">
           {children}
         </main>
       </div>
