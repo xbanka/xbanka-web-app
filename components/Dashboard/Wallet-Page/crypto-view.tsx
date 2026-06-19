@@ -4,6 +4,7 @@ import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "./types";
 import { getCoinImage } from "@/lib/coin-images";
+import { formatCryptoBalance } from "@/lib/marketFormat";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -56,7 +57,7 @@ export function CryptoView() {
       header: "Balance",
       render: (item: UserWallet) => (
         <span className="font-normal text-sm leading-6 text-card-text">
-          {item.balance}
+          {formatCryptoBalance(item.balance)}
         </span>
       ),
     },
@@ -160,8 +161,8 @@ export function CryptoView() {
                     </div>
                   </div>
                 </div>
-                <p className="text-[13px] font-medium leading-5 text-card-text">
-                  {wallet.balance ?? "0.00"}
+                <p className="truncate text-[13px] font-medium leading-5 text-card-text">
+                  {formatCryptoBalance(wallet.balance)}
                 </p>
                 <Link
                   href={`/crypto?tab=buy&mode=buy&coin=${wallet.currency}`}
