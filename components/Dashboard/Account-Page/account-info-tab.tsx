@@ -15,11 +15,15 @@ import {
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import { DatePicker } from "@/components/ui/reusable-date-picker";
-import { UseGetBankAcounts } from "@/lib/services/wallet.service";
-import { BankAccount } from "./types";
+import {
+  UseGetBankAcounts,
+  UseGetVirtualAccount,
+} from "@/lib/services/wallet.service";
+import { BankAccount, MapleradBankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
+import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
 
 export function AccountInfoTab() {
   const userData = useUserStore((state) => state.user);
@@ -29,6 +33,12 @@ export function AccountInfoTab() {
   const { mutate: updateAvatarMutate, isPending } = useUpdateAvatar();
   const { data: profileData } = UseProfileUser();
   const avatar = profileData?.data?.avatarUrl;
+
+  const {
+    data: virtualAccountData,
+    isPending: virtualAccountPending,
+    error: virtualAccountError,
+  } = UseGetVirtualAccount();
 
   const {
     data: getBankAccounts,
@@ -41,6 +51,11 @@ export function AccountInfoTab() {
     isPending: verificationPending,
     error: verificationError,
   } = UseVerificationStatus();
+
+  const account: MapleradBankAccount =
+    virtualAccountData?.data?.data?.[0] ||
+    virtualAccountData?.data?.data ||
+    virtualAccountData?.data;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,91 +156,66 @@ export function AccountInfoTab() {
       <DashboardCard className="space-y-3">
         <div className="flex items-center justify-between pb-4 border-b border-border">
           <h3 className="text-[16px] leading-6 font-medium text-card-text">
-            Payment Methods
+            Deposit & Withdrawal Account
           </h3>
-          {/* <span className="text-xs text-text bg-border px-2.5 py-1 rounded-full">
-            3 of 5 linked
-          </span> */}
         </div>
 
-        {getBankAccountsPending && <BankAccountSkeleton />}
-        {!getBankAccountsPending &&
-          !getBankAccounts &&
-          getBankAccountsError && (
-            <div className="space-y-3 pb-6">
-              <p className="font-medium text-sm leading-5 text-text">
-                Bank Accounts
-              </p>
-              <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
-                {/* <Image
+        <div className="flex gap-6 items-start">
+          {virtualAccountPending && <BankAccountSkeleton />}
+          {!virtualAccountPending &&
+            !virtualAccountData &&
+            virtualAccountError && (
+              <div className="space-y-3 pb-6">
+                <p className="font-medium text-sm leading-5 text-text">
+                  Bank Accounts
+                </p>
+                <div className="text-center mx-auto w-fit text-card-text text-[14px] font-medium leading-5 py-6">
+                  {/* <Image
                 className="mx-auto mb-1"
                 alt="frame"
                 width={96}
                 height={122}
                 src={"/Frame.svg"}
               /> */}
-                {getBankAccountsError?.message ||
-                  "Failed to load bank accounts"}
+                  {virtualAccountError?.message ||
+                    "Failed to load bank accounts"}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-        {!getBankAccountsPending &&
-          !getBankAccountsError &&
-          getBankAccounts?.data?.data?.length === 0 && (
-            <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-              <Image
-                className="mx-auto"
-                alt="No linked bank accounts"
-                width={88}
-                height={112}
-                src={"/Frame.svg"}
-              />
-              <div className="space-y-1">
-                <p className="text-[14px] font-medium leading-5 text-card-text">
-                  No linked bank account
-                </p>
-                <p className="mx-auto max-w-[260px] text-[12px] font-normal leading-5 text-text">
-                  Add a bank account to fund your wallet and make withdrawals.
-                </p>
-              </div>
-            </div>
-          )}
-
-        {getBankAccounts?.data?.data &&
-          getBankAccounts?.data?.data?.length !== 0 &&
-          !getBankAccountsPending &&
-          !getBankAccountsError && (
+          {account && !virtualAccountPending && !virtualAccountError && (
             <div className="space-y-3 pb-6">
-              <p className="font-medium text-sm leading-5 text-text">
-                Bank Accounts
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {getBankAccounts?.data?.data?.map(
-                  (b: BankAccount, i: number) => (
-                    <BankAccountCard
-                      key={i}
-                      index={i}
-                      label="Primary Account"
-                      status={b.isVerified ? "Verified" : "Under Review"}
-                      bank={b.bankName}
-                      number={b.accountNumber}
-                      name={b.accountName}
-                    />
-                  ),
-                )}
+              <div className="mb-3">
+                <p className="font-medium text-sm leading-5 text-card-text">
+                  Xbanka Funding Account
+                </p>
+                <p className="font-normal text-xs leading-5 text-text">
+                  Transfer money to this account to fund your NGN Wallet
+                </p>
+              </div>
+              <div className="bg-border p-5">
+                <FundingAccountDetailsLayout label="Bank Name" value={account.bankName} />
+                <FundingAccountDetailsLayout label="Account Name" value={account.accountName} />
+                <FundingAccountDetailsLayout label="Account Number" value={account.address || "-"} />
+                <FundingAccountDetailsLayout label="Account Type" value={account.provider} />
+                {/* <FundingAccountDetailsLayout label="Currency" value={account.network} /> */}
               </div>
             </div>
           )}
 
-        <div
-          onClick={handleAddAccountModal}
-          className="space-y-1 mx-auto w-fit"
-        >
-          <button className="w-8 h-8 p-2 cursor-pointer flex items-center justify-center mx-auto gap-2 bg-[#042F2E] hover:bg-[#042F2E]/90 border border-[#0F766E] hover:border-[#0F766E]/5 py-3 rounded-[36px] text-sm text-text transition-colors">
-            <Plus className="w-4 h-4 text-[#5EEAD4] hover:text-Green transition-colors" />
-          </button>
-          <p className="font-medium text-xs leading-5">Add new bank account</p>
+          <div>withdraw account</div>
+
+          {/* <div
+            onClick={handleAddAccountModal}
+            className="space-y-1 mx-auto w-fit"
+          >
+            <button className="w-8 h-8 p-2 cursor-pointer flex items-center justify-center mx-auto gap-2 bg-[#042F2E] hover:bg-[#042F2E]/90 border border-[#0F766E] hover:border-[#0F766E]/5 py-3 rounded-[36px] text-sm text-text transition-colors">
+              <Plus className="w-4 h-4 text-[#5EEAD4] hover:text-Green transition-colors" />
+            </button>
+            <p className="font-medium text-xs leading-5">
+              Add new bank account
+            </p>
+          </div> */}
         </div>
       </DashboardCard>
 
