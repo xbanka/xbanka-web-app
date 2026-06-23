@@ -143,7 +143,9 @@ export function AccountInfoTab() {
                     onClick={handleCopyUid}
                     className="text-text hover:text-Green transition-colors"
                   >
-                    <Copy className={`w-3 h-3 ${uidCopied ? "text-Green" : ""}`} />
+                    <Copy
+                      className={`w-3 h-3 ${uidCopied ? "text-Green" : ""}`}
+                    />
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -185,7 +187,7 @@ export function AccountInfoTab() {
                 </p>
               </div>
               {account && !virtualAccountError && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-green-500/10 text-green-500 border border-green-500/30 shrink-0">
+                <span className="text-[12px] font-normal px-2 py-0.5 rounded-md bg-green-success-light text-green-success-text border border-green-success-border shrink-0">
                   Active
                 </span>
               )}
