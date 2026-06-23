@@ -103,14 +103,14 @@ export function IdentityVerificationTab() {
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-base font-medium leading-6 text-card-text">
-                Identity Verification
+                Verification Status
               </h2>
               <p className="text-xs font-normal leading-5.5 text-text mt-1">
-                Complete your KYC to unlock higher limits and all features.
+                Complete all 4 tiers to unlock the full XBanka platform
               </p>
             </div>
             <span className="text-xs font-normal leading-5.5 text-text">
-              {completedCount} of {totalSteps} completed
+              Tier {completedCount} of {totalSteps} completed
             </span>
           </div>
 
