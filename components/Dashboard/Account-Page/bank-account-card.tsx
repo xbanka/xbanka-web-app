@@ -1,15 +1,22 @@
 import { Copy, EllipsisVertical } from "lucide-react";
 
 export interface BankAccountCardProp {
-    index: number, 
-    label: string, 
-    status: string, 
-    bank: string, 
-    number: number | string, 
-    name: string
+  index: number | number;
+  label: string;
+  status: string;
+  bank: string;
+  number: number | string;
+  name: string;
 }
 
-export const BankAccountCard = ({index, label, status, bank, number, name}: BankAccountCardProp) => {
+export const BankAccountCard = ({
+  index,
+  label,
+  status,
+  bank,
+  number,
+  name,
+}: BankAccountCardProp) => {
   return (
     <div key={index} className="bg-border rounded-lg p-2 space-y-2">
       <div className="flex items-center justify-between">
