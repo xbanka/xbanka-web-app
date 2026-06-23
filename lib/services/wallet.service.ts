@@ -51,8 +51,8 @@ export const UseGetAllWalletBalances = () => {
         const response = await getAllWalletBalances();
         return response;
       } catch (err) {
-        console.log(err)
-        throw err
+        console.log(err);
+        throw err;
         // handleApiError(err);
       }
     },
@@ -90,8 +90,7 @@ export const UseGetCryptoWallet = () => {
 export const UseWithdrawCrypto = () => {
   return useMutation({
     mutationFn: (data: WithdrawCryptoPayload) => withdrawCrypto(data),
-    onSuccess: (result) => {
-    },
+    onSuccess: (result) => {},
     onError: (err) => {
       handleApiError(err);
     },
@@ -223,7 +222,6 @@ export const UseVerifyFund = () => {
   return useMutation({
     mutationFn: (data: string) => verifyFund(data),
     onSuccess: (result) => {
-
       queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
       queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["crypto-wallet"] });
@@ -265,8 +263,7 @@ export const UseFundFiatWallet = () => {
 export const UseFundFiatWalletBank = () => {
   return useMutation({
     mutationFn: (data: fundWalletBankPayload) => FundFiatWalletBank(data),
-    onSuccess: (result) => {
-    },
+    onSuccess: (result) => {},
     onError: (err) => {
       handleApiError(err);
     },
@@ -373,7 +370,7 @@ export const UseGetTransactionHistory = (
           page,
           limit,
           category,
-          search
+          search,
         });
 
         return response;
@@ -399,8 +396,7 @@ export const useGetRateConversion = () => {
 export const useQuoteConversion = () => {
   return useMutation({
     mutationFn: (data: QuoteExecutePayload) => quoteConversion(data),
-    onSuccess: (result) => {
-    },
+    onSuccess: (result) => {},
     onError: (err) => {
       handleApiError(err);
     },

@@ -28,8 +28,6 @@ export const FiatBalance = () => {
   const latestWallet = wallets?.[0];
   const { data: bankAccountList } = UseBankAccountList();
   const { data: profileData } = UseProfileUser();
-  // const { data: virtualAccountData } = UseGetVirtualAccount();
-  // console.log("virtualAccountData", virtualAccountData);
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
   const totalFiatBalance = sumFiatBalances(wallets);
   const isSendDisabled = totalFiatBalance <= 0;

@@ -80,3 +80,18 @@ export interface RevokeSessionModalProps {
   onClose: () => void;
   deviceId: string;
 }
+
+export interface MapleradBankAccount {
+  id: string;
+  walletId: string;
+  provider: "MAPLERAD" | string; // Strict literal token with string fallback
+  providerRef: string;
+  network: "NUBAN" | string;    // NUBAN represents regular Nigerian bank account numbers
+  accountName: string;
+  address: string;              // This contains the actual bank account number string
+  bankName: string;             // e.g., "Maplerad"
+  bankCode: string | null;      // Nullable in case code isn't provided explicitly
+  memo: string | null;
+  createdAt: string;            // ISO 8601 string format
+  updatedAt: string;            // ISO 8601 string format
+}
