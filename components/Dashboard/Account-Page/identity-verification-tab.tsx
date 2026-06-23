@@ -1,12 +1,7 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import {
-  AlertCircle,
   ArrowUpRight,
   CheckCircle,
-  ChevronRight,
-  Clock,
-  ExternalLink,
-  Lock,
 } from "lucide-react";
 import { OnboardingJourneyCard } from "../Home-Page/onboarding-journey-card";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
@@ -21,36 +16,6 @@ import { ErrorLayout } from "@/components/ui/error-layout";
 
 export function IdentityVerificationTab() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
-  const tiers = [
-    {
-      tier: "TIER 0",
-      title: "Email Verified",
-      unlocks: "Account created & verified",
-      status: "completed",
-      date: "Completed Mar 7, 2026",
-    },
-    {
-      tier: "TIER 1",
-      title: "Verify BVN",
-      unlocks: "Unlocked: Gift Cards • Bill Payments",
-      status: "completed",
-      date: "Completed Mar 7, 2026",
-    },
-    {
-      tier: "TIER 2",
-      title: "ID & Selfie",
-      unlocks: "Unlocked: Crypto • Withdrawals • ₦50k limit",
-      status: "review",
-      date: "Under review - Submitted Mar 9, 2026",
-      action: "View submission",
-    },
-    {
-      tier: "TIER 3",
-      title: "Proof of Address",
-      unlocks: "Unlocked: Full access • KZM limit",
-      status: "locked",
-    },
-  ];
 
   const {
     data: verificationStatus,
