@@ -1,42 +1,33 @@
 "use client";
 
-import { useState } from "react";
-import { Edit2 } from "lucide-react";
-
 export interface PersonalInfoTabProps {
   label: string;
   value: string;
-  onSave?: (value: string) => Promise<void> | void;
-  renderInput?: (
-    value: string,
-    onChange: (val: string) => void,
-  ) => React.ReactNode;
+  subtitle?: string;
+  action?: React.ReactNode;
 }
 
 export const PersonalInfoTab = ({
   label,
   value,
-  onSave,
-  renderInput,
+  subtitle,
+  action,
 }: PersonalInfoTabProps) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [localValue, setLocalValue] = useState(value);
-
-  const handleSave = async () => {
-    await onSave?.(localValue);
-    setIsEditing(false);
-  };
-
   return (
     <div className="space-y-1">
-      {/* Label + Change */}
-      <div className="flex items-center justify-between">
+      {/* Label + action (Change / lock / badge) */}
+      <div className="flex items-center justify-between gap-2">
         <p className="font-medium text-text text-xs leading-5">{label}</p>
+        {action}
       </div>
 
-      {/* Content */}
+      {/* Value */}
+      <h1 className="font-medium text-card-text text-sm leading-5">{value}</h1>
 
-      <h1 className="font-medium text-card-text text-xs leading-5">{value}</h1>
+      {/* Optional subtitle */}
+      {subtitle && (
+        <p className="font-normal text-text text-xs leading-4">{subtitle}</p>
+      )}
     </div>
   );
 };
