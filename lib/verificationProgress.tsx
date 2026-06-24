@@ -60,14 +60,14 @@ export const ONBOARDING_STEPS = (data: any) => {
       desc: "Unlocks crypto & withdrawals",
       label: "Crypto & withdrawals unlocked",
     },
-    {
-      key: "ADDRESS",
-      modalKey: "address",
-      title: "Proof of Address",
-      ids: ["ADDRESS"],
-      desc: "Unlocks full platform access",
-      label: "Full platform access unlocked",
-    },
+    // {
+    //   key: "ADDRESS",
+    //   modalKey: "address",
+    //   title: "Proof of Address",
+    //   ids: ["ADDRESS"],
+    //   desc: "Unlocks full platform access",
+    //   label: "Full platform access unlocked",
+    // },
   ];
 
   let activeStepFound = false;
