@@ -1,6 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import LivenessDetector from "../../ui/LivenessDetector";
+import { useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface Step4Props {
   setStep: (n: number) => void;
@@ -8,6 +12,40 @@ interface Step4Props {
 }
 
 function Step4({ setStep }: Step4Props) {
+  const router = useRouter();
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  if (isSuccess) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
+        <Image
+          src="/badge 2.svg"
+          alt="done badge"
+          width={60}
+          height={60}
+        />
+
+        <div>
+          <h2 className="text-2xl font-bold text-card-text">
+            Selfie Verification Complete
+          </h2>
+
+          <p className="mt-2 text-text">
+            Your selfie has been successfully verified.
+          </p>
+        </div>
+
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => router.push("/welcome")}
+        >
+          Continue to Welcome Screen
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
       <div className="text-center space-y-2 max-sm:mb-6 max-sm:text-left">
@@ -23,7 +61,7 @@ function Step4({ setStep }: Step4Props) {
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
           onBack={() => setStep(2)}
-          onSuccess={() => setStep(4)}
+          onSuccess={() => setIsSuccess(true)}
           brandColor="#36b6ab"
         />
       </div>
