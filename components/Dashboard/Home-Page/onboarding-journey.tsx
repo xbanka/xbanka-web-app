@@ -4,7 +4,10 @@ import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
 import { ErrorField } from "@/components/ui/field-error";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
-import { IdSelfieModal, IdSelfieStep } from "../Onboarding-Journey-Modal/id-selfie-modal";
+import {
+  IdSelfieModal,
+  IdSelfieStep,
+} from "../Onboarding-Journey-Modal/id-selfie-modal";
 import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
 import { useState } from "react";
 import { ModalType, stepsConfig } from "./types";
@@ -115,19 +118,22 @@ export function OnboardingJourney() {
       {openModal === "id-selfie" && (
         <IdSelfieModal
           onClose={() => setOpenModal(null)}
+          // onCompleted={() => {
+          //   setOpenModal("address");
+          // }}
           onCompleted={() => {
-            setOpenModal("address");
+            setOpenModal(null);
           }}
         />
       )}
-      {openModal === "address" && (
+      {/* {openModal === "address" && (
         <AddressModal
           onClose={() => setOpenModal(null)}
           onCompleted={() => {
             setOpenModal(null);
           }}
         />
-      )}
+      )} */}
     </DashboardCard>
   );
 }
