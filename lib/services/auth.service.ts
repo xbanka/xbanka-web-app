@@ -105,7 +105,10 @@ export const useLogin = () => {
         router.push("/");
       }
     },
-    onError: (err) => {
+    onError: (err: any) => {
+      if (err?.raw?.response?.data?.errorGroup === "EMAIL_VERIFICATION_REQUIRED") {
+        return; // Component will handle this specific error
+      }
       handleApiError(err);
     },
   });

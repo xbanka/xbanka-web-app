@@ -14,13 +14,25 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import PasswordField from "../ui/password-field";
 import Image from "next/image";
-import { useLogin } from "@/lib/services/auth.service";
+import { useLogin, useResendVerifyMail } from "@/lib/services/auth.service";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
+import { useState, useEffect } from "react";
+import { maskEmail } from "@/lib/maskEmail";
+import MailPic from "../../public/mail.svg";
 
 const SignIn = () => {
   const { loginWithGoogle } = useGoogleAuth();
+  const [showVerifyEmail, setShowVerifyEmail] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [countdown, setCountdown] = useState(0);
+
+  const {
+    mutate: resendMutate,
+    isPending: resendPending,
+    error: resendError,
+  } = useResendVerifyMail();
   const methods = useForm<logInFormData>({
     resolver: zodResolver(logInSchema),
     mode: "onChange",
@@ -44,8 +56,66 @@ const SignIn = () => {
       onSuccess: () => {
         reset();
       },
+      onError: (err: any) => {
+        if (err?.raw?.response?.data?.errorGroup === "EMAIL_VERIFICATION_REQUIRED") {
+          setUserEmail(data.email);
+          setShowVerifyEmail(true);
+          resendMutate(data.email);
+          setCountdown(60);
+        }
+      }
     });
   };
+
+  const handleResendVerification = () => {
+    resendMutate(userEmail);
+    setCountdown(60);
+  };
+
+  useEffect(() => {
+    if (countdown === 0) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+  if (showVerifyEmail) {
+    return (
+      <Card className="space-y-6 text-center">
+        <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
+          <Image src={MailPic} alt="mail" className="" fill />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-[36px] max-sm:text-[28px] leading-11 max-sm:leading-[36px] font-bold text-card-text">
+            Verify your email address
+          </h2>
+          <p className="font-normal leading-6 text-[16px] text-text px-7">
+            We sent a verification link to{" "}
+            <strong className="text-text-border">{maskEmail(userEmail)}</strong>{" "}
+            Check your inbox or spam to verify your account
+          </p>
+          <ErrorLayout message={resendError?.message} />
+        </div>
+        <div className="text-center mt-6 font-normal leading-6 text-[16px] text-text">
+          Did not get the email?{" "}
+          <Button
+            disabled={countdown > 0 || resendPending}
+            onClick={handleResendVerification}
+            className="w-full border-none bg-transparent text-Green hover:bg-transparent"
+          >
+            {resendPending
+              ? "Sending..."
+              : countdown > 0
+                ? `Resend in ${countdown}s`
+                : "Resend verification email"}
+          </Button>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="space-y-6 max-sm:text-left">
