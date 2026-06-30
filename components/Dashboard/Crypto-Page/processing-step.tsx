@@ -1,5 +1,5 @@
 import { useExecuteConversion } from "@/lib/services/wallet.service";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ConversionResult, ExecuteConversionResponse } from "./types";
 import { Spinner } from "@/components/ui/spinner";
 import { LucideArrowLeftRight } from "lucide-react";
@@ -16,35 +16,32 @@ export function ProcessingStep({
   onSuccess: (data: ConversionResult) => void;
   onError: (error: any) => void;
 }) {
-  const { mutate, isPending } = useExecuteConversion();
+  const { mutateAsync } = useExecuteConversion();
+  const hasMutated = useRef(false);
 
   useEffect(() => {
-    if (!quoteId) return;
-    mutate(
-      {
-        quoteId,
-      },
-      {
-        onSuccess: (res: ExecuteConversionResponse) => {
-          const debit = res.data.debit;
-          const credit = res.data.credit;
-          onSuccess({
-            debitAmount: debit.amount,
-            debitCurrency: debit.currency,
+    if (!quoteId || hasMutated.current) return;
+    hasMutated.current = true;
+    
+    mutateAsync({ quoteId })
+      .then((res: ExecuteConversionResponse) => {
+        const debit = res.data.debit;
+        const credit = res.data.credit;
+        onSuccess({
+          debitAmount: debit.amount,
+          debitCurrency: debit.currency,
 
-            creditAmount: credit.amount,
-            creditCurrency: credit.currency,
+          creditAmount: credit.amount,
+          creditCurrency: credit.currency,
 
-            dateTime: credit.createdAt,
-            transactionId: credit.reference,
-          });
-        },
-        onError: (error) => {
-          onError(error);
-        },
-      },
-    );
-  }, [quoteId]);
+          dateTime: credit.createdAt,
+          transactionId: credit.reference,
+        });
+      })
+      .catch((error) => {
+        onError(error);
+      });
+  }, [quoteId, mutateAsync, onSuccess, onError]);
 
   return (
     <Modal
