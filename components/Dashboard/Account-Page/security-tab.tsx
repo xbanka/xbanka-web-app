@@ -19,9 +19,7 @@ import { useState } from "react";
 import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
 import {
-  useDisable2FA,
-  useEnable2FA,
-  useRequestOtp,
+  useDisable2FA
 } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";

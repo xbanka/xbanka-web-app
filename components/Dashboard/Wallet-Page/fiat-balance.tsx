@@ -31,7 +31,6 @@ export const FiatBalance = () => {
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
   const totalFiatBalance = sumFiatBalances(wallets);
   const isSendDisabled = totalFiatBalance <= 0;
-  console.log(hasTransactionPin);
 
   const handleAddFund = () => {
     if (!hasTransactionPin) {
@@ -109,23 +108,7 @@ export const FiatBalance = () => {
                 <Plus className="w-5 h-5" />
                 Add Fund
               </Button>
-              {/* {isAddFundDisabled && (
-                <span className="text-[10px] text-error-text">
-                  Verify your bvn
-                </span>
-              )} */}
             </div>
-            {/* <div className="">
-              <Button
-                // onClick={handleAddFund}
-                variant={"default"}
-                size={"sm"}
-                className="flex items-center transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-                get virtual account
-              </Button>
-            </div> */}
             <DisabledTooltipButton
               disabled={isSendDisabled}
               tooltip="Add funds to continue"
