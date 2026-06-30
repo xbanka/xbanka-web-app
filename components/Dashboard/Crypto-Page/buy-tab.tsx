@@ -193,7 +193,7 @@ export function BuyTab() {
       <div className="gap-4">
         <div className="space-y-6">
           <AmountRow
-            label="You Pay"
+            label="You Buy"
             dropDownLoading={groupedPairPending}
             available={`${availableBalance} ${targetCurrency}`}
             availableBalanceLoading={cryptoWalletPending}
@@ -206,7 +206,7 @@ export function BuyTab() {
           />
           <div className="space-y-3">
             <AmountRow
-              label="You Receive"
+              label="You Pay"
               dropDownLoading={currencyPending}
               availableBalanceLoading={walletPending}
               available={
@@ -222,10 +222,12 @@ export function BuyTab() {
               selectedCurrency={sourceCurrency}
               onCurrencyChange={setSourceCurrency}
             />
-            {RateConversionData?.data?.estimatedPrice && (
+            {RateConversionData?.data?.rate && (
               <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
                 <div className="flex items-center gap-1.5">
-                  <span>{RateConversionData?.data?.estimatedPrice}</span>
+                  <span>
+                    1 {targetCurrency} ≈ {(1 / RateConversionData.data.rate).toLocaleString(undefined, { maximumFractionDigits: 2 })} {sourceCurrency}
+                  </span>
                   <button className="text-card-text hover:text-Green/80 transition-colors">
                     <RefreshCcw className="w-4 h-4" />
                   </button>
@@ -272,13 +274,13 @@ export function BuyTab() {
           open={confirmOpen}
           handleReset={handleReset}
           mode="BUY"
-          payAmount={Number(amount || 0)}
-          paySymbol={targetCurrency}
-          receiveAmount={`${quoteData?.netPayout} ${sourceCurrency}` || ""}
+          payAmount={Number(quoteData?.netPayout || 0)}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${amount} ${targetCurrency}` || ""}
           receiveSymbol={targetCurrency}
           rate={
             quoteData
-              ? `1 ${sourceCurrency} = ${quoteData.rate} ${targetCurrency}`
+              ? `1 ${targetCurrency} = ${(1 / quoteData.rate).toFixed(2)} ${sourceCurrency}`
               : ""
           }
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}
