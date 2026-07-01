@@ -11,11 +11,9 @@ import { UseGetAllBanks, UseResolveBankAccount } from "@/lib/services/wallet.ser
 import { useEffect } from "react";
 
 export function BankDetailsStep({
-  onBack,
   onClose,
   onContinue,
 }: {
-  onBack: () => void;
   onClose: () => void;
   onContinue: (data: BankForm) => void;
 }) {
@@ -69,7 +67,6 @@ export function BankDetailsStep({
         className="px-10 py-6"
         title="Add funds"
         onClose={onClose}
-        onBack={onBack}
       />
 
       <form
@@ -117,7 +114,7 @@ export function BankDetailsStep({
             variant="outline"
             size="lg"
             className="flex-1"
-            onClick={onBack}
+            onClick={onClose}
           >
             Back
           </Button>
