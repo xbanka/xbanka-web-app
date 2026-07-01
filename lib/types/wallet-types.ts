@@ -63,6 +63,7 @@ export interface AddBankAccountPayload {
   bankName: string;
   accountNumber: string;
   accountName: string;
+  bankCode: string;
 }
 
 export interface Wallet {

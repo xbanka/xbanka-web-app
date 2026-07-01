@@ -3,10 +3,12 @@ import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectField } from "@/components/ui/select";
-import { BANK_OPTIONS, BankForm, bankSchema } from "@/lib/schema/bank-schema";
+import { BankForm, bankSchema } from "@/lib/schema/bank-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { UseGetAllBanks, UseResolveBankAccount } from "@/lib/services/wallet.service";
+import { useEffect } from "react";
 
 export function BankDetailsStep({
   onBack,
@@ -20,11 +22,46 @@ export function BankDetailsStep({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<BankForm>({
     resolver: zodResolver(bankSchema),
     mode: "onTouched",
   });
+
+  const { mutateAsync: resolveAccount, isPending: isResolving } = UseResolveBankAccount();
+  const bankCode = watch("bankName"); // Stored as the select value
+  const accountNumber = watch("accountNumber");
+
+  useEffect(() => {
+    const resolve = async () => {
+      if (bankCode && accountNumber?.length === 10) {
+        try {
+          const res = await resolveAccount({ accountNumber, bankCode });
+          if (res?.data?.account_name) {
+            setValue("accountName", res.data.account_name, { shouldValidate: true });
+          }
+        } catch (e) {
+          // Keep whatever user typed or empty if resolution fails
+        }
+      }
+    };
+    resolve();
+  }, [bankCode, accountNumber, resolveAccount, setValue]);
+
+  const { data: banksResponse, isPending: isLoadingBanks } = UseGetAllBanks();
+  const rawBanks = banksResponse?.data?.data || [];
+  
+  // Sort alphabetically and map to SelectField options
+  const bankOptions = Array.isArray(rawBanks) 
+    ? [...rawBanks]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((bank: any) => ({
+          label: bank.name,
+          value: bank.code, // Storing code as the value!
+        }))
+    : [];
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -43,10 +80,11 @@ export function BankDetailsStep({
           <SelectField
             id="bankName"
             label="Bank Name"
-            placeholder="Select bank"
-            options={BANK_OPTIONS}
+            placeholder={isLoadingBanks ? "Loading banks..." : "Select bank"}
+            options={bankOptions}
             register={register}
             error={errors.bankName}
+            disabled={isLoadingBanks}
           />
 
           <FormField
@@ -60,9 +98,10 @@ export function BankDetailsStep({
           <FormField
             id="accountName"
             label="Account Name"
-            placeholder="John Doe"
+            placeholder={isResolving ? "Resolving account name..." : "John Doe"}
             register={register}
             error={errors.accountName}
+            disabled={isResolving}
           />
 
           {/* Deduction note */}
@@ -86,8 +125,8 @@ export function BankDetailsStep({
             type="submit"
             size="lg"
             className="flex-3"
-            disabled={!isValid}
-            variant={isValid ? "default" : "disabled"}
+            disabled={!isValid || isResolving}
+            variant={isValid && !isResolving ? "default" : "disabled"}
           >
             Continue
           </Button>
