@@ -9,7 +9,7 @@ import { AddBankModalProps, BankStep, FundMethod } from "./types";
 import { UseAddBankAcounts, UseGetAllBanks } from "@/lib/services/wallet.service";
 
 export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
-  const [step, setStep] = useState<BankStep>("select");
+  const [step, setStep] = useState<BankStep>("details");
   const [method, setMethod] = useState<FundMethod>(null);
   const [formData, setFormData] = useState<BankForm | null>(null);
   const {
@@ -23,7 +23,7 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   if (!open) return null;
 
   const reset = () => {
-    setStep("select");
+    setStep("details");
     setMethod(null);
     setFormData(null);
   };
@@ -77,21 +77,20 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
     handleClose();
   };
 
-  if (step === "select") {
-    return (
-      <SelectMethodStep
-        selected={method}
-        onSelect={setMethod}
-        onClose={handleClose}
-        onContinue={handleContinueFromSelect}
-      />
-    );
-  }
+  // if (step === "details" && !method) {
+  //   return (
+  //     <SelectMethodStep
+  //       selected={method}
+  //       onSelect={setMethod}
+  //       onClose={handleClose}
+  //       onContinue={handleContinueFromSelect}
+  //     />
+  //   );
+  // }
 
   if (step === "details") {
     return (
       <BankDetailsStep
-        onBack={() => setStep("select")}
         onClose={handleClose}
         onContinue={handleDetailsSubmit}
       />
