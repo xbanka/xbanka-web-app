@@ -1,4 +1,4 @@
-import { BankForm } from "@/lib/schema/bank-schema";
+import { BankForm, bankOptions } from "@/lib/schema/bank-schema";
 import { ConfirmStep } from "./confirm-step";
 import { BankDetailsStep } from "./fund-bank-details-step";
 import { LinkingStep } from "./linking-step";
@@ -6,7 +6,7 @@ import { SelectMethodStep } from "./select-method-step";
 import { SuccessStep } from "./success-step";
 import { useState } from "react";
 import { AddBankModalProps, BankStep, FundMethod } from "./types";
-import { UseAddBankAcounts } from "@/lib/services/wallet.service";
+import { UseAddBankAcounts, UseGetAllBanks } from "@/lib/services/wallet.service";
 
 export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   const [step, setStep] = useState<BankStep>("select");
@@ -17,6 +17,8 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
     error: addBankError,
     isPending: isAddingBank,
   } = UseAddBankAcounts();
+  const { data: banksResponse } = UseGetAllBanks();
+  const rawBanks = banksResponse?.data?.data || [];
 
   if (!open) return null;
 
@@ -44,10 +46,17 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
 
   const handleConfirm = async () => {
     setStep("linking");
+    
+    // formData.bankName actually contains the bank.code now!
+    const selectedBankCode = formData?.bankName || "";
+    // find the real bank name from rawBanks
+    const realBankName = rawBanks.find((b: any) => b.code === selectedBankCode)?.name || "";
+
     const payload = {
-      bankName: formData?.bankName || "",
+      bankName: realBankName,
       accountNumber: formData?.accountNumber || "",
       accountName: formData?.accountName || "",
+      bankCode: selectedBankCode,
     };
     await addBankAccountsMutate(payload, {
       onSuccess: () => {
