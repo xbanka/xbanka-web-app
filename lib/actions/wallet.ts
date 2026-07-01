@@ -189,6 +189,21 @@ export const getBankAcounts = async () => {
   };
 };
 
+export const getAllBanks = async () => {
+  const response = await AxiosInstance.get("/accounts/banks");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const resolveBankAccount = async (data: { accountNumber: string; bankCode: string }) => {
+  const response = await AxiosInstance.post("/accounts/paystack/lookup", data);
+  return response.data;
+};
+
 export const getBankAcountsList = async () => {
   const response = await AxiosInstance.get("/wallets/direct-debit-banks");
 
