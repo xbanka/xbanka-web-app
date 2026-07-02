@@ -26,7 +26,6 @@ const VerifyPage = ({ token }: { token?: string }) => {
   useEffect(() => {
     if (data?.data?.data?.id) {
       setUserId(data.data.data.id);
-      console.log("User ID set in store:", data.data.data.id);
     }
   }, [data]);
 

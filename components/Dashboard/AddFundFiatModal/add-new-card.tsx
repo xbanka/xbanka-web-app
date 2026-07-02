@@ -39,7 +39,6 @@ export function AddNewCardStep({
       amount: parsedAmount,
       saveCard: saveCard,
     };
-    console.log("payload", payload);
 
     mutate(payload);
   };

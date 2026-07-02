@@ -35,8 +35,6 @@ export const DepositSidebar = ({
     error: activeNetworksError,
   } = UseActiveNetworksCrypto();
   const cryptoData = activeNetworksData?.data?.data || {};
-  console.log("active crypto networks", cryptoData);
-  console.log("addressData", addressData?.data?.address || "none address");
 
   const networkOptions =
     currency && cryptoData[currency]?.networks

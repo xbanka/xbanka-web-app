@@ -25,14 +25,12 @@ export function ProcessingStep({
   const { mutate, isPending, error } = UseFundBankAcounts();
 
   useEffect(() => {
-    console.log("selectedCard", selectedCard, amount)
     if (!mandateId || !amount) return
     const mainAmount = Number(amount.replace(/,/g, ""));
     const payload = {
       mandateId,
       amount: mainAmount,
     };
-    console.log("payload", payload)
     mutate(payload, {
       onSuccess: () => {
         handleStep("success");

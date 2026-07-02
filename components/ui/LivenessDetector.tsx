@@ -154,18 +154,12 @@ const LivenessDetector = forwardRef<
   }));
 
   const handleCapture = useCallback(async (base64Image: string) => {
-    console.log("handleCapture called");
-
     if (!userId) return;
     const formData = new FormData();
 
     formData.append("userId", userId);
-    // const file = base64ToFile(base64Image, "selfie.jpg");
-
-    // console.log("File size MB:", (file.size / 1024 / 1024).toFixed(2));
     formData.append("selfieImage", base64ToFile(base64Image, "selfie.jpg"));
 
-    console.log("sending request");
     verifySelfie(formData, {
       onSuccess: () => {
         onSuccess();

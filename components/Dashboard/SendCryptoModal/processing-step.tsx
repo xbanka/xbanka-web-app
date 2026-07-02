@@ -45,7 +45,6 @@ export function ProcessingStep({
         onConfirm();
       },
       onError: (error) => {
-          console.log("Conversion error", error.message);
           onError(error);
         },
     });
