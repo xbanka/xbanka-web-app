@@ -22,9 +22,8 @@ export function IdentityVerificationTab() {
     isPending,
     error,
   } = UseVerificationStatus();
-  console.log("verificationStatus:", verificationStatus);
   const progress = ONBOARDING_STEPS(verificationStatus?.data);
-  console.log("progress", progress)
+  
   const completedCount = progress.filter(
     (step) => step.status === "done",
   ).length;

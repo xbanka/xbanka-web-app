@@ -64,7 +64,6 @@ export const useUpdateProfile = () => {
     mutationFn: (data: UpdateProfileData) => updateProfile(data),
     onSuccess: (result, variables) => {
       toast.success(result?.message);
-      console.log(result, variables);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       updateUser({
         ...variables,

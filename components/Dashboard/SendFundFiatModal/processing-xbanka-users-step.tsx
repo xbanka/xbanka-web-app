@@ -39,8 +39,6 @@ export function ProcessingXbankaStep({
       },
       {
         onSuccess: (result) => {
-          console.log("Transfer successful, reference:", result);
-          console.log("Transfer successful, reference:", result.data.transactions[0].reference);
           setReference(result.data.transactions[0].reference);
           setMessage(result.data.message);
           handleStep("success");

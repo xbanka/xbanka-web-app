@@ -12,7 +12,6 @@ export default function GoogleCallbackClient() {
 
   useEffect(() => {
     const token = params.get("token");
-    console.log("Received token:", token); // Debug log
 
     if (!token) {
       router.replace("/sign-in");

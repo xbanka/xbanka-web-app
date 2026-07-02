@@ -53,7 +53,6 @@ export const UseGetAllWalletBalances = () => {
         const response = await getAllWalletBalances();
         return response;
       } catch (err) {
-        console.log(err);
         throw err;
         // handleApiError(err);
       }
@@ -240,8 +239,6 @@ export const UseFundFiatWallet = () => {
   return useMutation({
     mutationFn: (data: fundWalletPayload) => fundFiatWallet(data),
     onSuccess: (result) => {
-      console.log("FULL result", result);
-
       const payload = result?.data || result; // 🔥 safe fallback
 
       const url = payload?.authorization_url;

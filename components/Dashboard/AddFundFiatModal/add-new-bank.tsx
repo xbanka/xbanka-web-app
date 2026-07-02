@@ -41,7 +41,6 @@ export function AddNewBankStep({
       accountNumber: data.accountNumber,
       bankCode: data.bankName,
     };
-    console.log("payload", payload);
 
     mutate(payload);
   };

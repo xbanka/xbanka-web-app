@@ -56,7 +56,6 @@ export function BuyTab() {
     error: groupedPairError,
     isPending: groupedPairPending,
   } = useGetGroupedPair();
-  console.log("groupedPairData", groupedPairData);
   const {
     error: currencyError,
     data: currencyData,
@@ -69,7 +68,6 @@ export function BuyTab() {
   } = UseGetCryptoWallet();
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
-  console.log(hasTransactionPin);
 
   const currencies = currencyData?.data || [];
   const { fiat, crypto } = splitCurrencies(currencies);
@@ -135,7 +133,6 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
-          console.log("refetchQuote id:", res?.data);
         },
       },
     );
@@ -181,7 +178,6 @@ export function BuyTab() {
           const result = res?.data;
 
           setReceiveAmount(result?.amount?.toString() || "");
-          console.log("quote result", result);
           setConvertData(result);
         },
       },
