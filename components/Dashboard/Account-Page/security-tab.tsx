@@ -128,13 +128,11 @@ export function SecurityTab() {
   const handleModal = (id: string) => {
     setRemoveDeviceModal(true);
     setRemoveDeviceId(id);
-    console.log("Device ID to remove:", id);
   };
 
   const handleSessionModal = (id: string) => {
     setRemoveSessionModal(true);
     setRemoveDeviceId(id);
-    console.log("session ID to remove:", id);
   };
 
   const authItems = [

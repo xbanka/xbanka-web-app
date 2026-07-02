@@ -12,14 +12,12 @@ import { useOtpFlow } from "@/hooks/use-otp-flow";
 export default function VerifyDevice() {
   const [code, setCode] = useState("");
   const { sendOtp, cooldown, canResend, startCooldown } = useOtpFlow();
-  console.log("cooldown", cooldown);
   const verifyEmail =
     typeof window !== "undefined" ? localStorage.getItem("verifyEmail") : null;
 
   const { mutate, isPending, error } = useVerifyDevice();
 
   const handleVerify = async () => {
-    console.log("submit", code);
     const userId = localStorage.getItem("verifyUserId");
     const deviceId = localStorage.getItem("verifyDeviceId");
 
@@ -41,7 +39,6 @@ export default function VerifyDevice() {
 
   const handleChange = (otp: string) => {
     setCode(otp);
-    console.log("otp", otp);
   };
 
   useEffect(() => {

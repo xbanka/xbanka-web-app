@@ -9,7 +9,6 @@ export const signup = async (
   password: string,
   referralCode: string,
 ) => {
-  console.log(baseUrl);
   const response = await AxiosInstance.post("/auth/signup", {
     email,
     password,
