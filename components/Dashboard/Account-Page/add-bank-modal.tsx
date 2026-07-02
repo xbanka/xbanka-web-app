@@ -39,7 +39,6 @@ export function AddBankModal({ open, onClose, onSuccess }: AddBankModalProps) {
   };
 
   const handleDetailsSubmit = (data: BankForm) => {
-    console.log("Bank details submitted", data);
     setFormData(data);
     setStep("confirm");
   };

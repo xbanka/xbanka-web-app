@@ -49,7 +49,6 @@ const SignIn = () => {
   } = methods;
 
   const { error, mutate, isPending } = useLogin();
-  console.log(error);
 
   const onSubmit = (data: logInFormData) => {
     mutate(data, {

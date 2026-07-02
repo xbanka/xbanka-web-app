@@ -41,7 +41,6 @@ const ResetPassword = () => {
   } = methods;
 
   const { error, mutate, isPending } = useResetPassword();
-  console.log(error);
 
   const onSubmit = (data: resetPasswordData) => {
     mutate(data, {

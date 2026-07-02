@@ -84,8 +84,6 @@ export const useLogin = () => {
       const result = res.data;
       const accessToken = getAccessToken(result);
       const refreshToken = result?.refresh_token;
-      console.log(refreshToken);
-      console.log(variables);
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         localStorage.removeItem("accessToken");

@@ -47,7 +47,6 @@ const SignUp = () => {
   } = methods;
 
   const { data, error, mutate, isSuccess, isPending } = useSignup();
-  console.log(error);
 
   const onSubmit = (data: SignupFormData) => {
     mutate(data, {
