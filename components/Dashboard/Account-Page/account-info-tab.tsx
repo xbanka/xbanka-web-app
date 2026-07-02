@@ -22,7 +22,10 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import { UseGetBankAcounts, UseGetVirtualAccount } from "@/lib/services/wallet.service";
+import {
+  UseGetBankAcounts,
+  UseGetVirtualAccount,
+} from "@/lib/services/wallet.service";
 import { MapleradBankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
@@ -58,7 +61,8 @@ export function AccountInfoTab() {
     error: virtualAccountError,
   } = UseGetVirtualAccount();
 
-  const { data: bankAccountsResponse, isPending: bankAccountsPending } = UseGetBankAcounts();
+  const { data: bankAccountsResponse, isPending: bankAccountsPending } =
+    UseGetBankAcounts();
   const bankAccounts = bankAccountsResponse?.data?.data || [];
 
   const { data: verificationData } = UseVerificationStatus();
@@ -316,10 +320,22 @@ export function AccountInfoTab() {
             {!bankAccountsPending && bankAccounts.length > 0 && (
               <div className="space-y-3">
                 {bankAccounts.map((bank: any) => (
-                  <div key={bank.id} className="bg-border rounded-lg p-5 space-y-3">
-                    <FundingAccountDetailsLayout label="Bank Name" value={bank.bankName} />
-                    <FundingAccountDetailsLayout label="Account Name" value={bank.accountName} />
-                    <FundingAccountDetailsLayout label="Account Number" value={bank.accountNumber} />
+                  <div
+                    key={bank.id}
+                    className="bg-border rounded-lg p-5 space-y-3"
+                  >
+                    <FundingAccountDetailsLayout
+                      label="Bank Name"
+                      value={bank.bankName}
+                    />
+                    <FundingAccountDetailsLayout
+                      label="Account Name"
+                      value={bank.accountName}
+                    />
+                    <FundingAccountDetailsLayout
+                      label="Account Number"
+                      value={bank.accountNumber}
+                    />
                     <FundingAccountDetailsLayout label="Currency" value="NGN" />
                   </div>
                 ))}

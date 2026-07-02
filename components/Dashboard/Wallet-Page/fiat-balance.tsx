@@ -11,11 +11,15 @@ import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { VirtualAccountModal } from "../AddFundFiatModal/virtual-account-modal";
 import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
-import { UseProfileUser } from "@/lib/services/profile.service";
+import {
+  UseProfileUser,
+  UseVerificationStatus,
+} from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { DisabledTooltipButton } from "@/components/ui/disabled-tooltip-button";
 import { ErrorField } from "@/components/ui/field-error";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { getTierLimit } from "@/lib/tier-limits";
 
 export const FiatBalance = () => {
   const [hidden, setHidden] = useState(false);
@@ -26,13 +30,16 @@ export const FiatBalance = () => {
   const { validateUser } = useOnboardingGuard();
   const wallets = data?.data?.data || [];
   const latestWallet = wallets?.[0];
-  const { data: bankAccountList } = UseBankAccountList();
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
   const totalFiatBalance = sumFiatBalances(wallets);
   const isSendDisabled = totalFiatBalance <= 0;
+  const { data: verificationData } = UseVerificationStatus();
 
   const handleAddFund = () => {
+    // const isAllowed = validateUser();
+
+    // if (!isAllowed) return;
     if (!hasTransactionPin) {
       setOpenCreatePin(true);
       return;
@@ -52,6 +59,17 @@ export const FiatBalance = () => {
 
     setSendFundsOpen(true);
   };
+
+  const tierLevel = verificationData?.data?.tierLevel ?? 0;
+
+  const tierLimit = getTierLimit(tierLevel);
+
+  const addFundDisabled = totalFiatBalance >= tierLimit;
+
+  const addFundTooltip =
+    tierLevel < 2
+      ? `You've reached your Tier ${tierLevel} wallet limit of ₦${tierLimit.toLocaleString()}. Upgrade to Tier ${tierLevel + 1} to continue.`
+      : `Maximum wallet limit of ₦${tierLimit.toLocaleString()} reached.`;
 
   return (
     <div>
@@ -108,6 +126,20 @@ export const FiatBalance = () => {
                 <Plus className="w-5 h-5" />
                 Add Fund
               </Button>
+              {/* <DisabledTooltipButton
+                disabled={addFundDisabled}
+                tooltip={addFundTooltip}
+              >
+                <Button
+                  disabled={addFundDisabled}
+                  variant={"default"}
+                  size={"sm"}
+                  onClick={handleAddFund}
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Fund
+                </Button>
+              </DisabledTooltipButton> */}
             </div>
             <DisabledTooltipButton
               disabled={isSendDisabled}
