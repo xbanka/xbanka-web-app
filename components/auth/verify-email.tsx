@@ -30,16 +30,6 @@ const VerifyPage = ({ token }: { token?: string }) => {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (isSuccess && data?.success) {
-  //     const timer = setTimeout(() => {
-  //       router.push("/welcome");
-  //     }, 2000);
-
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [isSuccess, data, router]);
-
   if (isSuccess && data?.success) {
     return (
       <Card className="text-center">

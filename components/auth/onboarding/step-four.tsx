@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useIsMobileDevice } from "@/hooks/use-IsMobileDevice";
 import { useSkipStep } from "@/lib/services/onboarding.service";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { ErrorField } from "@/components/ui/field-error";
 
 interface Step4Props {
   setStep: (n: number) => void;
@@ -61,7 +62,7 @@ function Step4({ setStep }: Step4Props) {
             Please continue this step on your phone.
           </p>
         </div>
-        <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
+        <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5 w-full">
           <Button
             variant="outline"
             className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
@@ -84,6 +85,11 @@ function Step4({ setStep }: Step4Props) {
             Skip for later
           </Button>
         </div>
+        {
+          skipError && (
+            <ErrorField message={skipError?.message || "An error occurred while skipping the step."} />
+          )
+        }
       </div>
     );
   }
