@@ -107,8 +107,8 @@ function Step2({ setStep }: Step2Props) {
             <Button
               size="lg"
               className="h-[50px] text-[16px] sm:hidden"
-              disabled={isPending}
-              variant={isPending ? "disabled" : "default"}
+              disabled={!isValid || isPending}
+              variant={isPending || !isValid ? "disabled" : "default"}
               type="submit"
             >
               {isPending ? "Verifying..." : "Continue"}

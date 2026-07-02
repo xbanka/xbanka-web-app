@@ -207,7 +207,7 @@ export function AccountInfoTab() {
             {virtualAccountPending && <BankAccountSkeleton />}
 
             {!virtualAccountPending && !account && virtualAccountError && (
-              <div className="bg-border rounded-lg p-5 text-center text-card-text text-sm font-medium">
+              <div className="bg-border rounded-lg p-5 text-center text-card-text text-sm font-medium h-[70%]">
                 {virtualAccountError?.message || "Failed to load account"}
               </div>
             )}
