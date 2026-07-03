@@ -44,7 +44,7 @@ const VerifyPage = ({ token }: { token?: string }) => {
     return (
       <Card className="text-center">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill />
+          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] leading-11 font-bold text-card-text">
@@ -67,7 +67,7 @@ const VerifyPage = ({ token }: { token?: string }) => {
     return (
       <Card className="w-full mx-auto">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill />
+          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] leading-11 font-bold text-card-text">
@@ -90,7 +90,7 @@ const VerifyPage = ({ token }: { token?: string }) => {
     return (
       <Card className="w-full mx-auto">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill />
+          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
         </div>
         <h2 className="text-[20px] font-bold text-card-text">
           Verifying your email...

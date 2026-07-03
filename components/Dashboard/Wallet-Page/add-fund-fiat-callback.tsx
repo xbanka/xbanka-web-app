@@ -51,8 +51,7 @@ export default function FundCallbackPage() {
               src="/badge 2.svg"
               alt="badge"
               width={60}
-              height={60}
-            />
+              height={60} unoptimized />
             <div className="space-y-2">
               <h2 className="text-Green text-xl font-bold">
                 Payment Successful

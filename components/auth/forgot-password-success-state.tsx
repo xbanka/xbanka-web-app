@@ -39,8 +39,7 @@ export function ForgotPasswordSuccessState({
                 src="/badge 2.svg"
                 alt="done badge"
                 width={60}
-                height={60}
-              />
+                height={60} unoptimized />
             )}
           </div>
 

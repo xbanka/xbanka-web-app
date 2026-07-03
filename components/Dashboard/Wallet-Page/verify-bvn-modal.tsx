@@ -174,8 +174,7 @@ export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
             src={"/badge 2.svg"}
             width={60}
             height={60}
-            className="mx-auto"
-          />
+            className="mx-auto" unoptimized />
 
           <div className="space-y-1">
             <h2 className="text-4xl font-bold leading-11 text-card-text">
@@ -280,8 +279,7 @@ export function VerifyBvnModal({ open, onClose }: VerifyBvnModalProps) {
             src={"/badge 2.svg"}
             width={60}
             height={60}
-            className="mx-auto"
-          />
+            className="mx-auto" unoptimized />
 
           <div className="space-y-1">
             <h2 className="text-4xl font-bold leading-11 text-card-text">

@@ -131,8 +131,7 @@ export function AccountInfoTab() {
                   width={60}
                   height={19}
                   alt="tier"
-                  src={`/Tier${tierLevel}.svg`}
-                />
+                  src={`/Tier${tierLevel}.svg`} unoptimized />
               </div>
               <div className="flex items-center mt-1 gap-2">
                 <div className="flex items-center gap-1">

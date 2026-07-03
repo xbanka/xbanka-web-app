@@ -19,7 +19,7 @@ export function WelcomeScreen() {
         {/* Card */}
         <div className="w-full rounded-2xl bg-card-background px-0 sm:px-[33.5px]">
           {/* Illustration area */}
-          {/* <Image src={"/Content.svg"} alt="content" width={400} height={260} /> */}
+          {/* <Image src={"/Content.svg"} alt="content" width={400} height={260} unoptimized /> */}
           <div className="mx-auto h-44 w-full max-w-100 rounded-tl-[20px] rounded-tr-[20px] border-x-6 border-t-6 border-input sm:h-65"></div>
 
           {/* Avatars */}
@@ -29,43 +29,37 @@ export function WelcomeScreen() {
               alt=""
               src="/Rectangle3.svg"
               width={64}
-              height={64}
-            />
+              height={64} unoptimized />
             <Image
               className="z-20 -mr-2.5 h-12 w-12 min-[375px]:-mr-3 min-[375px]:h-14 min-[375px]:w-14 sm:-mr-4 sm:h-20 sm:w-20"
               alt=""
               src="/Rectangle2.svg"
               width={80}
-              height={80}
-            />
+              height={80} unoptimized />
             <Image
               className="z-30 -mr-2.5 h-14 w-14 min-[375px]:-mr-3 min-[375px]:h-16 min-[375px]:w-16 sm:-mr-4 sm:h-[100px] sm:w-[100px]"
               alt=""
               src="/Rectangle1.svg"
               width={100}
-              height={100}
-            />
+              height={100} unoptimized />
             <Image
               className="z-40 -mr-2.5 h-14 w-14 min-[375px]:-mr-3 min-[375px]:h-16 min-[375px]:w-16 sm:-mr-4 sm:h-[100px] sm:w-[100px]"
               alt=""
               src="/Rectangle.svg"
               width={100}
-              height={100}
-            />
+              height={100} unoptimized />
             <Image
               className="z-50 -mr-2.5 h-12 w-12 min-[375px]:-mr-3 min-[375px]:h-14 min-[375px]:w-14 sm:-mr-4 sm:h-20 sm:w-20"
               alt=""
               src="/Rectangle5.svg"
               width={80}
-              height={80}
-            />
+              height={80} unoptimized />
             <Image
               className="z-60 h-10 w-10 rounded-full min-[375px]:h-12 min-[375px]:w-12 sm:h-16 sm:w-16"
               alt=""
               src="/Rectangle4.svg"
               width={64}
-              height={64}
-            />
+              height={64} unoptimized />
           </div>
         </div>
 

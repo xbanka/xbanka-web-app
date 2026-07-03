@@ -188,6 +188,7 @@ export function DataTableLayout<T>({
                         width={96}
                         height={122}
                         src={"/Frame.svg"}
+                        unoptimized
                       />
                       {emptyMessage}
                     </TableCell>
