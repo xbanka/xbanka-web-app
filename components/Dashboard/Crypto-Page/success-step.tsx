@@ -86,7 +86,7 @@ export function SuccessStep({
         <div className="flex flex-col items-center gap-6 text-center space-y-6">
           {/* Success badge */}
           <div className="w-16 h-16 rounded-full flex items-center justify-center">
-            <Image src={"badge 2.svg"} alt="checkmark" width={60} height={60} />
+            <Image src={"badge 2.svg"} alt="checkmark" width={60} height={60} unoptimized />
           </div>
 
           <div className="space-y-2">

@@ -78,7 +78,7 @@ const SignUp = () => {
     return (
       <Card className="space-y-6 text-center">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill />
+          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] max-sm:text-[28px] leading-11 max-sm:leading-[36px] font-bold text-card-text">
@@ -131,7 +131,7 @@ const SignUp = () => {
           variant="outline"
           className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
         >
-          <Image width={20} height={20} alt="google" src="/googleIcon.svg" />
+          <Image width={20} height={20} alt="google" src="/googleIcon.svg" unoptimized />
           Sign up with Google
         </Button>
         <div className="flex items-center gap-4 text-text">

@@ -138,32 +138,28 @@ export default function UserDropdown({}: UserDropdownProps) {
                       width={60}
                       height={19}
                       alt="tier"
-                      src={"/Tier0.svg"}
-                    />
+                      src={"/Tier0.svg"} unoptimized />
                   )}
                   {verificationData?.data?.tierLevel === 1 && (
                     <Image
                       width={60}
                       height={19}
                       alt="tier"
-                      src={"/Tier1.svg"}
-                    />
+                      src={"/Tier1.svg"} unoptimized />
                   )}
                   {verificationData?.data?.tierLevel === 2 && (
                     <Image
                       width={60}
                       height={19}
                       alt="tier"
-                      src={"/Tier2.svg"}
-                    />
+                      src={"/Tier2.svg"} unoptimized />
                   )}
                   {verificationData?.data?.tierLevel === 3 && (
                     <Image
                       width={60}
                       height={19}
                       alt="tier"
-                      src={"/Tier3.svg"}
-                    />
+                      src={"/Tier3.svg"} unoptimized />
                   )}
                 </div>
               </div>

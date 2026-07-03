@@ -2,10 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { AlertTriangle, CheckCircle, Copy, Info } from "lucide-react";
 import { useState } from "react";
-import { ASSETS } from "../Wallet-Page/wallet-mock-data";
 import { CloseBtn } from "@/components/ui/close-btn";
 import Image from "next/image";
-import { WalletSuccessState } from "./crypto-modal-types";
+import { WalletSuccessState, TRANSACTION_FEE } from "./crypto-modal-types";
 import { UserWallet } from "../Wallet-Page/types";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
@@ -28,9 +27,10 @@ export function SuccessStep({
   successDetails: WalletSuccessState | null
 }) {
   const [copied, setCopied] = useState(false);
-  // const fee = parseFloat(network.fee);
-  const total = (parseFloat(amount)).toFixed(2);
-  const nairaTotal = (parseFloat(total) * 1600).toLocaleString();
+  const amountNum = parseFloat(amount) || 0;
+  const total = amountNum + TRANSACTION_FEE;
+  const rate = asset?.fiatEquivalent?.rate ?? 0;
+  const nairaTotal = (total * rate).toLocaleString();
 
   const copy = () => {
     navigator.clipboard.writeText(txHash).catch(() => {});
@@ -49,7 +49,7 @@ export function SuccessStep({
       <div className="flex flex-col items-center gap-6 text-center">
         {/* Success icon */}
 
-        <Image alt="check" src="/badge 2.svg" width={60} height={60} />
+        <Image alt="check" src="/badge 2.svg" width={60} height={60} unoptimized />
 
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text">
@@ -61,61 +61,72 @@ export function SuccessStep({
         </div>
 
         {/* Transaction receipt */}
-        <div className="w-full bg-border border border-input rounded-[20px] p-5 divide-y divide-input text-left">
+        <div className="w-full bg-border border border-input rounded-[20px] p-5 space-y-1 text-left">
           {/* Amount */}
-          <div className="flex items-center justify-between px-4 py-3 text-xs">
+          <div className="flex items-center justify-between px-1 py-3 text-xs">
             <span className="text-text">Amount</span>
-            <span className="font-semibold text-card-text">
-              {amount}.00 {successDetails?.provider}
+            <span className="text-sm font-semibold text-card-text">
+              {amountNum.toFixed(2)} {asset?.currency}
             </span>
           </div>
           {/* Network fee */}
-          <div className="flex items-center justify-between px-4 py-3 text-xs">
-            <span className="text-text">Network</span>
-            <span className="font-medium text-card-text">
-              {successDetails?.currency}
+          <div className="flex items-center justify-between px-1 py-3 text-xs">
+            <span className="text-text">Network fee</span>
+            <span className="text-sm font-medium text-card-text">
+              {TRANSACTION_FEE.toFixed(2)} {asset?.currency}
             </span>
           </div>
-          {/* Network label with info */}
-          {/* <div className="flex items-center justify-between px-4 py-3 text-xs">
+          {/* Network */}
+          <div className="flex items-center justify-between px-1 py-3 text-xs">
             <div className="flex items-center gap-1.5 text-text">
               <span>Network</span>
               <Info className="w-3.5 h-3.5" />
             </div>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-border text-card-text">
-              {network.name}
+            <span className="text-xs font-medium px-2.5 py-1 rounded-md bg-input-background border border-input text-card-text">
+              {network || "-"}
             </span>
-          </div> */}
+          </div>
           {/* Date & Time */}
-          <div className="flex items-center justify-between px-4 py-3 text-xs">
-            <span className="text-text">Date & Time</span>
-            <span className="font-medium text-card-text">
-              {formatDate(successDetails?.createdAt ?? "")} • {formatTo12Hour(successDetails?.createdAt || "")}
+          <div className="flex items-center justify-between px-1 py-3 text-xs">
+            <span className="text-text">Date &amp; Time</span>
+            <span className="text-sm font-medium text-card-text">
+              {formatDate(successDetails?.createdAt ?? "")} •{" "}
+              {formatTo12Hour(successDetails?.createdAt || "")}
             </span>
           </div>
           {/* Transaction ID */}
-          <div className="flex items-center justify-between px-4 py-3 text-xs">
+          <div className="flex items-center justify-between px-1 py-3 text-xs">
             <span className="text-text">Transaction ID</span>
             <button
               onClick={copy}
-              className="flex items-center gap-1.5 font-medium text-card-text hover:text-Green transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium text-card-text hover:text-Green transition-colors"
             >
               <span>{successDetails?.reference}</span>
               {copied ? (
                 <CheckCircle className="w-3.5 h-3.5 text-Green" />
               ) : (
-                <Copy className="w-3.5 h-3.5 text-text" />
+                <Copy className="w-3.5 h-3.5 text-Green" />
               )}
             </button>
           </div>
           {/* Total Deducted — highlighted row */}
-          <div className="px-2 py-2.5 bg-background flex justify-between rounded-lg">
-              <h1 className="font-normal text-xs leading-5.5 text-text">Total Deducted</h1>
-              <div className="space-y-1">
-                <p className="font-medium text-[14px] leading-5 text-Green"></p>
-                <h2 className="font-normal text-xs leading-4.5 text-text">{successDetails?.amount?.toFixed(2)} {successDetails?.currency}</h2>
-              </div>
+          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-background rounded-xl mt-1">
+            <span className="font-normal text-xs leading-5.5 text-text">
+              Total Deducted
+            </span>
+            <div className="text-right">
+              <p className="font-semibold text-sm leading-5 text-Green">
+                {total.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                {asset?.currency}
+              </p>
+              <p className="font-normal text-xs leading-5 text-text mt-0.5">
+                ≈ ₦{nairaTotal}
+              </p>
             </div>
+          </div>
         </div>
 
         {/* Actions */}

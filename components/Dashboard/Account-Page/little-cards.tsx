@@ -69,7 +69,7 @@ const LittleCards = ({
       </div>
       <div className="flex items-center gap-3 shrink-0 max-sm:flex-col max-sm:items-end max-sm:gap-2">
         {isSet && (
-          <Image alt="seal-check" width={16} height={16} src="/SealCheck.svg" />
+          <Image alt="seal-check" width={16} height={16} src="/SealCheck.svg" unoptimized />
         )}
         {status && (
           <span className="max-w-[112px] truncate text-right text-xs font-medium max-sm:max-w-[92px]">
