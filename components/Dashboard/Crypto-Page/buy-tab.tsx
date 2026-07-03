@@ -217,7 +217,7 @@ export function BuyTab() {
             OPTIONS={TARGET_OPTIONS}
             currencyId
             value={
-              convertData?.amount ? convertData.amount.toString() : ""
+              convertData?.targetCurrency ? convertData.targetCurrency.toString() : ""
             }
             readOnly
             selectedCurrency={targetCurrency}
