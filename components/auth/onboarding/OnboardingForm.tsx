@@ -12,16 +12,17 @@ const STEPS = [
   { label: "BVN Verification" },
   { label: "Identity Verification" },
   { label: "Selfie Verification" },
-  { label: "Proof of Address" },
+  // { label: "Proof of Address" },
 ];
 
 export default function OnboardingForm() {
   const [step, setStep] = useState(0);
 
-  const TOTAL = 5;
+  const TOTAL = 4;
   const progress = ((step + 1) / TOTAL) * 100;
 
-  const StepComponents = [Step1, Step2, Step3, Step4, Step5];
+  // const StepComponents = [Step1, Step2, Step3, Step4, Step5];
+  const StepComponents = [Step1, Step2, Step3, Step4];
   const StepComp = StepComponents[step];
 
   return (

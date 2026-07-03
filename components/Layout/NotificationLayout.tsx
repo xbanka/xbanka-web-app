@@ -31,7 +31,6 @@ export function NotificationsModal({
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
   const { data, isPending, error } = UseGetNotifications();
-  console.log("notifications data", data);
   const {
     mutate: readAllNotifications,
     isPending: readAllPending,

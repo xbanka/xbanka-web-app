@@ -12,6 +12,7 @@ import {
   generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
+  getAllBanks,
   getBankAcountsList,
   getCryptoWallet,
   getCurrency,
@@ -23,6 +24,7 @@ import {
   getTransactionHistory,
   getVirtualAccount,
   quoteConversion,
+  resolveBankAccount,
   sendFiatWallet,
   verifyFund,
   withdrawCrypto,
@@ -51,7 +53,6 @@ export const UseGetAllWalletBalances = () => {
         const response = await getAllWalletBalances();
         return response;
       } catch (err) {
-        console.log(err);
         throw err;
         // handleApiError(err);
       }
@@ -238,8 +239,6 @@ export const UseFundFiatWallet = () => {
   return useMutation({
     mutationFn: (data: fundWalletPayload) => fundFiatWallet(data),
     onSuccess: (result) => {
-      console.log("FULL result", result);
-
       const payload = result?.data || result; // 🔥 safe fallback
 
       const url = payload?.authorization_url;
@@ -327,6 +326,31 @@ export const UseGetBankAcounts = () => {
     },
     staleTime: 1000 * 60 * 10, // ✅ 10 mins
     gcTime: 1000 * 60 * 30, // keep in cache for 30 mins
+  });
+};
+
+export const UseGetAllBanks = () => {
+  return useQuery({
+    queryKey: ["all-banks"],
+    queryFn: async () => {
+      try {
+        const response = await getAllBanks();
+        return response;
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours since banks rarely change
+    gcTime: 1000 * 60 * 60 * 24,
+  });
+};
+
+export const UseResolveBankAccount = () => {
+  return useMutation({
+    mutationFn: async (data: { accountNumber: string; bankCode: string }) => resolveBankAccount(data),
+    onError: (err) => {
+      // Don't toast error here because it happens as user types
+    },
   });
 };
 

@@ -137,8 +137,8 @@ export function SellTab() {
   const refetchQuote = () => {
     mutate(
       {
-        sourceCurrency,
-        targetCurrency,
+        sourceCurrency: targetCurrency,
+        targetCurrency: sourceCurrency,
         amount: Number(debouncedAmount),
         action: "SELL",
       },
@@ -182,8 +182,8 @@ export function SellTab() {
 
     RateConversionMutate(
       {
-        sourceCurrency,
-        targetCurrency,
+        sourceCurrency: targetCurrency,
+        targetCurrency: sourceCurrency,
         amount: Number(debouncedAmount),
         action: "SELL",
       },
@@ -203,6 +203,19 @@ export function SellTab() {
         <div className="space-y-3">
           <AmountRow
             label="You Sell"
+            dropDownLoading={groupedPairPending}
+            available={`${availableBalance} ${targetCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
+            OPTIONS={TARGET_OPTIONS}
+            currencyId
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
+          />
+          
+          <AmountRow
+            label="You Receive"
             dropDownLoading={currencyPending}
             availableBalanceLoading={walletPending}
             available={
@@ -210,27 +223,13 @@ export function SellTab() {
                 ? `₦${sumFiatBalances(fiatWallets).toLocaleString()}`
                 : "₦0.00"
             }
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            OPTIONS={FIAT_OPTIONS}
-            selectedCurrency={sourceCurrency}
-            onCurrencyChange={setSourceCurrency}
-          />
-          
-          <AmountRow
-            label="You Receive"
-            dropDownLoading={groupedPairPending}
-            available={`${availableBalance} ${targetCurrency}`}
-            availableBalanceLoading={cryptoWalletPending}
             value={
               convertData?.netPayout ? convertData?.netPayout.toString() : ""
             }
-            onChange={(e) => setAmount(e.target.value)}
-            OPTIONS={TARGET_OPTIONS}
             readOnly
-            currencyId
-            selectedCurrency={targetCurrency}
-            onCurrencyChange={setTargetCurrency}
+            OPTIONS={FIAT_OPTIONS}
+            selectedCurrency={sourceCurrency}
+            onCurrencyChange={setSourceCurrency}
           />
           <p className="text-[10px] text-text px-1">
             Min: 15 USDT • Max: 20,000 USDT
@@ -284,9 +283,9 @@ export function SellTab() {
           handleReset={handleReset}
           mode="SELL"
           payAmount={Number(amount || 0)}
-          paySymbol={sourceCurrency}
-          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
-          receiveSymbol={targetCurrency}
+          paySymbol={targetCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${sourceCurrency}` || ""}
+          receiveSymbol={sourceCurrency}
           rate={
             quoteData
               ? `1 ${targetCurrency} = ${quoteData.rate} ${sourceCurrency}`

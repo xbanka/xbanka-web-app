@@ -52,7 +52,7 @@ export function SuccessStep({
 
   const rows = [
     {
-      label: mode === "BUY" ? "Asset Sold" : "You paid",
+      label: mode === "BUY" ? "You paid" : "Asset Sold",
       value: paidValue,
       valueClass: "text-card-text",
     },
@@ -91,12 +91,12 @@ export function SuccessStep({
 
           <div className="space-y-2">
             <h3 className="text-2xl font-semibold leading-8 text-card-text">
-              {mode === "BUY" ? "Sale" : "Purchase"} successful!
+              {mode === "BUY" ? "Purchase" : "Sale"} successful!
             </h3>
             <p className="text-sm font-normal leading-6 text-text">
               {mode === "BUY"
-                ? `You sold ${result?.debitAmount} ${result?.debitCurrency} and received ${result?.creditAmount} ${result?.creditCurrency}`
-                : `${result?.creditAmount} ${result?.creditCurrency} has been credited to your wallet`}
+                ? `You paid ${result?.debitAmount} ${result?.debitCurrency} and received ${result?.creditAmount} ${result?.creditCurrency}`
+                : `You sold ${result?.debitAmount} ${result?.debitCurrency} and received ${result?.creditAmount} ${result?.creditCurrency}`}
             </p>
           </div>
 

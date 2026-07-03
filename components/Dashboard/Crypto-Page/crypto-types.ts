@@ -13,6 +13,7 @@ export interface CryptoQuoteTypes {
 export interface CryptoGetConversionTypes {
   adminFee: number;
   grossPayout: number;
+  amount: number;
   netPayout: number;
   rate: number;
   sourceAmount: number;
