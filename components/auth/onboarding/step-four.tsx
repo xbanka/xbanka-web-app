@@ -37,6 +37,32 @@ function Step4({ setStep }: Step4Props) {
     });
   };
 
+  if (isSuccess) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
+        <Image src="/badge 2.svg" alt="done badge" width={60} height={60} />
+
+        <div>
+          <h2 className="text-2xl font-bold text-card-text">
+            Selfie Verification Complete
+          </h2>
+
+          <p className="mt-2 text-text">
+            Your selfie has been successfully verified.
+          </p>
+        </div>
+
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => router.push("/welcome")}
+        >
+          Continue to Welcome Screen
+        </Button>
+      </div>
+    );
+  }
+
   if (!isMobileDevice) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
@@ -90,32 +116,6 @@ function Step4({ setStep }: Step4Props) {
             <ErrorField message={skipError?.message || "An error occurred while skipping the step."} />
           )
         }
-      </div>
-    );
-  }
-
-  if (isSuccess) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
-        <Image src="/badge 2.svg" alt="done badge" width={60} height={60} />
-
-        <div>
-          <h2 className="text-2xl font-bold text-card-text">
-            Selfie Verification Complete
-          </h2>
-
-          <p className="mt-2 text-text">
-            Your selfie has been successfully verified.
-          </p>
-        </div>
-
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={() => router.push("/welcome")}
-        >
-          Continue to Welcome Screen
-        </Button>
       </div>
     );
   }
