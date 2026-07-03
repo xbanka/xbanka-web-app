@@ -17,7 +17,7 @@ export const SecurityOverviewCard = ({
       <div className="flex items-center justify-between">
         <Icon className="w-4 h-4 text-text" />
         {}
-        {status && <Image alt="seal-check" width={16} height={16} src="/SealCheck.svg" />}
+        {status && <Image alt="seal-check" width={16} height={16} src="/SealCheck.svg" unoptimized />}
       </div>
       <div className="">
         <p className="text-[14px] leading-5 font-medium text-card-text">{label}</p>

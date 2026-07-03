@@ -1,5 +1,5 @@
 import { Modal } from "@/components/ui/Modal";
-import { AlertTriangle, Info, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Info, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
@@ -64,15 +64,19 @@ export function EnterAmountStep({
               {asset?.currency}
             </span>
           </div>
-          <p className="text-xs text-text">≈ ₦{nairaEquiv}</p>
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-1 text-xs font-normal text-text px-3 py-1.5 bg-input-background rounded-lg">
+              ≈ ₦{nairaEquiv}
+            </span>
+          </div>
         </div>
 
-        <div className="border border-input bg-border rounded-[20px] p-5">
+        <div className="border border-input bg-border rounded-[20px] p-2">
           {/* Balance row */}
           <div className="flex items-center justify-between border-b border-input p-3">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold">
-                {asset?.currency[0]}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-Green/10 flex items-center justify-center shrink-0">
+                <Wallet className="w-5 h-5 text-Green" />
               </div>
               <div>
                 <p className="text-[12px] font-normal leading-5.5 text-text">
@@ -91,26 +95,16 @@ export function EnterAmountStep({
             </button>
           </div>
 
-          {/* Transaction fee */}
-          <div className="flex items-center justify-between text-xs p-3 border-b border-input">
+          {/* Network fee */}
+          <div className="flex items-center justify-between text-xs p-3">
             <div className="flex items-center gap-2 text-text">
               <span className="text-[12px] font-normal leading-5.5">
-                Transaction fee
+                Network fee
               </span>
-              <Info className="w-5 h-5" />
+              <Info className="w-4 h-4" />
             </div>
             <span className="text-card-text font-medium text-sm leading-5">
-              {TRANSACTION_FEE} {asset?.currency}
-            </span>
-          </div>
-
-          {/* Total deducted */}
-          <div className="flex items-center justify-between text-xs p-3">
-            <span className="text-[12px] font-normal leading-5.5 text-text">
-              Total deducted
-            </span>
-            <span className="text-card-text font-semibold text-sm leading-5">
-              {totalDeduction.toLocaleString()} {asset?.currency}
+              ~{TRANSACTION_FEE} {asset?.currency}
             </span>
           </div>
         </div>

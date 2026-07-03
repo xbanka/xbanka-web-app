@@ -118,8 +118,7 @@ export const DepositSidebar = ({
                       src={"/tether.svg"}
                       alt="tether"
                       width={16}
-                      height={16}
-                    />
+                      height={16} unoptimized />
                     <span className="text-[12px] font-normal leading-4.5 text-card-text">
                       {item}
                     </span>

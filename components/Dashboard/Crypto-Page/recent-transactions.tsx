@@ -95,6 +95,7 @@ export function RecentTransactions() {
                 width={96}
                 height={122}
                 src={"/Frame.svg"}
+                unoptimized
               />
               No recent transaction
             </div>

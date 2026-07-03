@@ -1,7 +1,7 @@
 "use client";
 
 import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
-import { Copy, Landmark } from "lucide-react";
+import { Copy, Info } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ModalHeader } from "@/components/ui/modal-header";
@@ -33,7 +33,7 @@ export function VirtualAccountModal({ open, onClose }: VirtualAccountModalProps)
       <ModalHeader
         className="px-10 py-6 max-sm:px-5 max-sm:py-5"
         title="Add Funds"
-        subtitle="Transfer money to your dedicated virtual account to fund your wallet."
+        subtitle="Transfer money from any Nigerian bank to your dedicated Xbanka account."
         onClose={onClose}
       />
 
@@ -53,45 +53,94 @@ export function VirtualAccountModal({ open, onClose }: VirtualAccountModalProps)
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="flex items-center justify-center">
-              <div className="w-16 h-16 bg-blue-light rounded-full flex items-center justify-center">
-                <Landmark className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-background-light rounded-xl border border-blue-border">
-                <div className="space-y-1">
-                  <p className="text-xs text-text">Bank Name</p>
-                  <p className="text-sm font-semibold text-card-text">{bankName}</p>
-                </div>
+            {/* Account details */}
+            <div className="bg-border rounded-2xl p-5 space-y-1">
+              {/* Bank Name */}
+              <div className="flex items-center justify-between gap-3 px-1 py-3">
+                <span className="text-xs font-normal text-text">Bank Name</span>
+                <span className="text-sm font-semibold text-card-text text-right">
+                  {bankName}
+                </span>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-background-light rounded-xl border border-blue-border">
-                <div className="space-y-1">
-                  <p className="text-xs text-text">Account Number</p>
-                  <p className="text-sm font-semibold text-card-text">{accountNumber}</p>
-                </div>
+              {/* Account Number — highlighted */}
+              <div className="flex items-center justify-between gap-3 bg-background rounded-xl px-4 py-3.5">
+                <span className="text-xs font-normal text-text">
+                  Account Number
+                </span>
                 <button
                   onClick={() => handleCopy(accountNumber, "Account Number")}
-                  className="p-2 hover:bg-blue-light rounded-md transition-colors"
+                  className="flex items-center gap-2 text-Green hover:opacity-80 transition-opacity"
                   title="Copy Account Number"
                 >
-                  <Copy className="w-4 h-4 text-primary" />
+                  <span className="text-base font-semibold">
+                    {accountNumber}
+                  </span>
+                  <Copy className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-background-light rounded-xl border border-blue-border">
-                <div className="space-y-1">
-                  <p className="text-xs text-text">Account Name</p>
-                  <p className="text-sm font-semibold text-card-text">{accountName}</p>
-                </div>
+              {/* Account Name */}
+              <div className="flex items-center justify-between gap-3 px-1 py-3">
+                <span className="text-xs font-normal text-text">
+                  Account Name
+                </span>
+                <span className="text-sm font-semibold text-card-text text-right">
+                  {accountName}
+                </span>
+              </div>
+
+              {/* Account Type */}
+              <div className="flex items-center justify-between gap-3 px-1 py-3">
+                <span className="text-xs font-normal text-text">
+                  Account Type
+                </span>
+                <span className="text-sm font-semibold text-card-text text-right">
+                  Virtual Account
+                </span>
+              </div>
+
+              {/* Currency */}
+              <div className="flex items-center justify-between gap-3 px-1 py-3">
+                <span className="text-xs font-normal text-text">Currency</span>
+                <span className="text-sm font-semibold text-card-text text-right">
+                  NGN
+                </span>
               </div>
             </div>
 
-            <div className="pt-4">
-              <Button onClick={onClose} className="w-full">
-                Done
+            {/* Info note */}
+            <div className="flex items-center gap-2.5 bg-Green/5 border border-Green/40 rounded-lg px-4 py-3">
+              <Info className="w-4 h-4 text-Green shrink-0" />
+              <p className="text-xs font-normal leading-5 text-Green">
+                Your Xbanka wallet will be credited automatically once the
+                transfer is confirmed.
+              </p>
+            </div>
+
+            {/* Helper text */}
+            <p className="text-xs font-normal leading-5 text-text text-center px-4">
+              You can transfer from your own bank account or share these details
+              with someone sending money to you.
+            </p>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex-1"
+                onClick={onClose}
+              >
+                Close
+              </Button>
+              <Button
+                size="lg"
+                className="flex-2 gap-2"
+                onClick={() => handleCopy(accountNumber, "Account Number")}
+              >
+                <Copy className="w-4 h-4" />
+                Copy Account Number
               </Button>
             </div>
           </div>

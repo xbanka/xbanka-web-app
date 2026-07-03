@@ -29,7 +29,7 @@ export function SuccessStep({
         <CloseBtn onClose={onDone} />
       </div>
       <div className="flex flex-col items-center gap-5 text-center space-y-6 max-sm:space-y-4 max-sm:gap-4">
-        <Image src={"/badge 2.svg"} alt="badge" width={60} height={60} />
+        <Image src={"/badge 2.svg"} alt="badge" width={60} height={60} unoptimized />
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text max-sm:text-[22px] max-sm:leading-7">
             ₦{amount} Added Successfully

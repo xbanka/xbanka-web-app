@@ -1,15 +1,7 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import {
-  Camera,
-  Copy,
-  Edit2,
-  Lock,
-  Info,
-  Plus,
-  WalletMinimal,
-} from "lucide-react";
+import { Camera, Copy, Edit2, Lock, Info, Plus } from "lucide-react";
 import { useState } from "react";
 import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
@@ -146,8 +138,7 @@ export function AccountInfoTab() {
                   width={60}
                   height={19}
                   alt="tier"
-                  src={`/Tier${tierLevel}.svg`}
-                />
+                  src={`/Tier${tierLevel}.svg`} unoptimized />
               </div>
               <div className="flex items-center mt-1 gap-2">
                 <div className="flex items-center gap-1">
@@ -298,7 +289,14 @@ export function AccountInfoTab() {
 
             {!bankAccountsPending && bankAccounts.length === 0 && (
               <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
-                <WalletMinimal className="w-10 h-10 text-text/60 mb-1" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/withdrawal-empty.png"
+                  alt="No withdrawal account"
+                  width={48}
+                  height={48}
+                  className="mb-1 opacity-80"
+                />
                 <p className="text-sm font-medium leading-5 text-card-text">
                   No Withdrawal account added
                 </p>

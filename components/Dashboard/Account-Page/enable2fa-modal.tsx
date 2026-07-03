@@ -149,8 +149,7 @@ export const Enable2faModal = ({
               src={"/badge 2.svg"}
               width={60}
               height={60}
-              className="mx-auto"
-            />
+              className="mx-auto" unoptimized />
 
             <h2 className="text-3xl font-bold text-card-text">
               Two factor authentication set successfully

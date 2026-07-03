@@ -131,7 +131,7 @@ const SignUp = () => {
           variant="outline"
           className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
         >
-          <Image width={20} height={20} alt="google" src="/googleIcon.svg" />
+          <Image width={20} height={20} alt="google" src="/googleIcon.svg" unoptimized />
           Sign up with Google
         </Button>
         <div className="flex items-center gap-4 text-text">
