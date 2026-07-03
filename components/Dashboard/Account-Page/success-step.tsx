@@ -19,7 +19,7 @@ export function SuccessStep({
  
       <div className="flex flex-col items-center gap-5 pb-10">
         {/* Success icon */}
-        <Image src={"/badge 2.svg"} alt="badge" width={60} height={60} />
+        <Image src={"/badge 2.svg"} alt="badge" width={60} height={60} unoptimized />
  
         <div className="space-y-1">
           <h3 className="text-xl font-bold text-card-text">Bank account added</h3>

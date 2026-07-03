@@ -3,8 +3,8 @@ import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { ProgressBar } from "../Wallet-Page/progress-bar";
-import { SendCryptoConfirmList } from "./send-crypto-confirm-list";
-import { UserWallet } from "../Wallet-Page/types";
+import { UserWallet, getCurrencyHeader } from "../Wallet-Page/types";
+import { CoinAvatar } from "../Wallet-Page/coin-avatar";
 import { RecipientXbankaUsersTypes } from "./types";
 import { TRANSACTION_FEE } from "./crypto-modal-types";
 
@@ -81,42 +81,66 @@ export function ConfirmStep({
           </div>
 
           {/* Breakdown */}
-          <div className="border border-input bg-border rounded-[20px] p-5 divide-y divide-input">
+          <div className="border border-input bg-border rounded-[20px] p-5 space-y-4">
+            {/* Asset */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-normal leading-5.5 text-text">
+                Asset
+              </span>
+              <div className="flex items-center gap-2">
+                <CoinAvatar currency={asset?.currency ?? ""} size={24} />
+                <span className="text-sm font-medium leading-5 text-card-text">
+                  {getCurrencyHeader(asset?.currency ?? "")} ({asset?.currency})
+                </span>
+              </div>
+            </div>
 
-            <SendCryptoConfirmList
-              title="Asset"
-              value={asset?.currency ?? ""}
-            />
+            {/* Recipient */}
+            <div className="flex items-start justify-between gap-3">
+              <span className="text-xs font-normal leading-5.5 text-text shrink-0">
+                {recipientType === "wallet" ? "Recipient" : "XBanka User"}
+              </span>
+              <div className="text-right min-w-0">
+                <p className="text-sm font-medium leading-5 text-card-text truncate">
+                  {recipientType === "wallet"
+                    ? recipientName || shortAddr
+                    : xbankaName}
+                </p>
+                <p className="text-xs font-normal leading-5 text-text mt-0.5 truncate">
+                  {recipientType === "wallet"
+                    ? recipientName
+                      ? shortAddr
+                      : ""
+                    : xbankaRecipient?.uid || ""}
+                </p>
+              </div>
+            </div>
 
-            {recipientType === "wallet" ? (
-              <SendCryptoConfirmList
-                title="Recipient"
-                value={recipientName || shortAddr}
-                subValue={recipientName ? shortAddr : undefined}
-              />
-            ) : (
-              <SendCryptoConfirmList
-                title="XBanka User"
-                value={xbankaName}
-                subValue={xbankaRecipient?.uid || ""}
-              />
-            )}
+            {/* Network */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-normal leading-5.5 text-text">
+                Network
+              </span>
+              <span className="text-xs font-medium leading-5 text-card-text px-2.5 py-1 rounded-md bg-input-background border border-input">
+                {network || "-"}
+              </span>
+            </div>
 
-            <SendCryptoConfirmList
-              title="Network"
-              value={network || "-"}
-            />
-
-            <SendCryptoConfirmList
-              title="Transaction fee"
-              value={`${TRANSACTION_FEE} ${asset?.currency ?? ""}`}
-            />
-
-            <SendCryptoConfirmList
-              title="Total Deducted"
-              value={`${(parsedAmount + TRANSACTION_FEE).toLocaleString()} ${asset?.currency ?? ""}`}
-              subValue={`≈ ₦${((parsedAmount + TRANSACTION_FEE) * rate).toLocaleString()}`}
-            />
+            {/* Total deducted — highlighted */}
+            <div className="flex items-center justify-between gap-3 bg-background rounded-xl px-4 py-3">
+              <span className="text-xs font-normal leading-5.5 text-text">
+                Total Deducted
+              </span>
+              <div className="text-right">
+                <p className="text-sm font-semibold leading-5 text-Green">
+                  {(parsedAmount + TRANSACTION_FEE).toLocaleString()}{" "}
+                  {asset?.currency ?? ""}
+                </p>
+                <p className="text-xs font-normal leading-5 text-text mt-0.5">
+                  ≈ ₦{((parsedAmount + TRANSACTION_FEE) * rate).toLocaleString()}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Warning */}

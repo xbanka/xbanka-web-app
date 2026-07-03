@@ -51,7 +51,7 @@ export function SuccessStepXbanka({
       <div className="flex flex-col items-center gap-6 text-center">
         {/* Success icon */}
 
-        <Image alt="check" src="/badge 2.svg" width={60} height={60} />
+        <Image alt="check" src="/badge 2.svg" width={60} height={60} unoptimized />
 
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text">
