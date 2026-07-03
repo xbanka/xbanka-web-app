@@ -125,6 +125,7 @@ export function BuyTab() {
   };
 
   const refetchQuote = () => {
+    // amount = fiat the user is paying; quote returns crypto they receive
     mutate(
       {
         sourceCurrency,
@@ -135,7 +136,6 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
-          console.log("refetchQuote id:", res?.data);
         },
       },
     );
@@ -159,6 +159,7 @@ export function BuyTab() {
     if (!debouncedAmount) {
       setError("Amount is required");
       setReceiveAmount("");
+      setConvertData(null);
       return;
     }
 
@@ -169,6 +170,7 @@ export function BuyTab() {
 
     setError("");
 
+    // User enters fiat amount (sourceCurrency) → API returns crypto amount (targetCurrency)
     RateConversionMutate(
       {
         sourceCurrency,
@@ -179,9 +181,7 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           const result = res?.data;
-
           setReceiveAmount(result?.amount?.toString() || "");
-          console.log("quote result", result);
           setConvertData(result);
         },
       },
@@ -192,18 +192,7 @@ export function BuyTab() {
     <>
       <div className="gap-4">
         <div className="space-y-6">
-          <AmountRow
-            label="You Buy"
-            dropDownLoading={groupedPairPending}
-            available={`${availableBalance} ${targetCurrency}`}
-            availableBalanceLoading={cryptoWalletPending}
-            OPTIONS={TARGET_OPTIONS}
-            currencyId
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            selectedCurrency={targetCurrency}
-            onCurrencyChange={setTargetCurrency}
-          />
+          {/* You Pay — user enters fiat amount */}
           <div className="space-y-3">
             <AmountRow
               label="You Pay"
@@ -214,27 +203,40 @@ export function BuyTab() {
                   ? `₦${sumFiatBalances(wallets).toLocaleString()}`
                   : "₦0.00"
               }
-              value={
-                convertData?.netPayout ? convertData.netPayout.toString() : ""
-              }
-              readOnly
-              OPTIONS={FIAT_OPTIONS}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              OPTIONS={SOURCE_OPTIONS}
               selectedCurrency={sourceCurrency}
               onCurrencyChange={setSourceCurrency}
             />
-            {RateConversionData?.data?.rate && (
-              <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
-                <div className="flex items-center gap-1.5">
-                  <span>
-                    1 {targetCurrency} ≈ {(1 / RateConversionData.data.rate).toLocaleString(undefined, { maximumFractionDigits: 2 })} {sourceCurrency}
-                  </span>
-                  <button className="text-card-text hover:text-Green/80 transition-colors">
-                    <RefreshCcw className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
+          {/* You Receive — read-only, calculated crypto amount */}
+          <AmountRow
+            label="You Receive"
+            dropDownLoading={groupedPairPending}
+            available={`${availableBalance} ${targetCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
+            OPTIONS={TARGET_OPTIONS}
+            currencyId
+            value={
+              convertData?.amount ? convertData.amount.toString() : ""
+            }
+            readOnly
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
+          />
+          {RateConversionData?.data?.rate && (
+            <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+              <div className="flex items-center gap-1.5">
+                <span>
+                  1 {targetCurrency} ≈ {(1 / RateConversionData.data.rate).toLocaleString(undefined, { maximumFractionDigits: 2 })} {sourceCurrency}
+                </span>
+                <button className="text-card-text hover:text-Green/80 transition-colors">
+                  <RefreshCcw className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <Button
               onClick={handleQuoteModal}
@@ -274,9 +276,9 @@ export function BuyTab() {
           open={confirmOpen}
           handleReset={handleReset}
           mode="BUY"
-          payAmount={Number(quoteData?.netPayout || 0)}
+          payAmount={Number(amount || 0)}
           paySymbol={sourceCurrency}
-          receiveAmount={`${amount} ${targetCurrency}` || ""}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
           receiveSymbol={targetCurrency}
           rate={
             quoteData
