@@ -18,6 +18,7 @@ import { maskEmail } from "@/lib/maskEmail";
 import { ErrorField } from "../ui/field-error";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
+import MailPic  from "../../public/mail.svg";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -46,7 +47,6 @@ const SignUp = () => {
   } = methods;
 
   const { data, error, mutate, isSuccess, isPending } = useSignup();
-  console.log(error);
 
   const onSubmit = (data: SignupFormData) => {
     mutate(data, {
@@ -78,7 +78,7 @@ const SignUp = () => {
     return (
       <Card className="space-y-6 text-center">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
+          <Image src={MailPic} alt="mail" className="" fill />
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] max-sm:text-[28px] leading-11 max-sm:leading-[36px] font-bold text-card-text">

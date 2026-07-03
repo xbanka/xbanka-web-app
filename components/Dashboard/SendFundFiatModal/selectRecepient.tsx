@@ -16,7 +16,6 @@ export function SelectRecipientStep({
   const { data, isPending } = UseGetActiveXbankaUsers();
 
   const users = data?.data || [];
-  console.log("Active Xbanka Users:", users);
   const [search, setSearch] = useState("");
 
   const filteredUsers = users.filter((user: XbankaUser) => {
@@ -29,7 +28,6 @@ export function SelectRecipientStep({
       user.email?.toLowerCase().includes(value)
     );
   });
-  console.log("Filtered Users:", filteredUsers);
 
   return (
     <div className="px-8 pb-8 pt-4 space-y-8">

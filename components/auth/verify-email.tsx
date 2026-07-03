@@ -26,39 +26,35 @@ const VerifyPage = ({ token }: { token?: string }) => {
   useEffect(() => {
     if (data?.data?.data?.id) {
       setUserId(data.data.data.id);
-      console.log("User ID set in store:", data.data.data.id);
     }
   }, [data]);
-
-  useEffect(() => {
-    if (isSuccess && data?.success) {
-      const timer = setTimeout(() => {
-        router.push("/welcome");
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isSuccess, data, router]);
 
   if (isSuccess && data?.success) {
     return (
       <Card className="text-center">
         <div className="relative h-24 w-32.25 flex items-center justify-center mx-auto">
-          <Image src={"/mail.svg"} alt="mail" className="" fill unoptimized />
+          <Image src={"/kyc.svg"} alt="mail" className="" fill unoptimized />
         </div>
         <div className="space-y-4">
           <h2 className="text-[36px] leading-11 font-bold text-card-text">
-            Email Verified Successfully
+            Complete your KYC
           </h2>
           <p className="font-normal leading-6 text-[16px] text-text px-7">
-            Redirecting you to your dashboard...
+            Kindly complete your KYC to start trading without limits on xbanka
           </p>
         </div>
-        {/* <Link href="/welcome">
+        <div>
+        <Link href="/onboarding">
           <Button type="submit" className="w-full p-2.5">
-            Continue
+            Start KYC
           </Button>
-        </Link> */}
+        </Link>
+        <Link href="/welcome">
+          <Button type="submit" className="w-full p-2.5 bg-transparent border-none hover:bg-Green/10 text-Green">
+            I’ll do this later
+          </Button>
+        </Link>
+        </div>
       </Card>
     );
   }

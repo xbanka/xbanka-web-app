@@ -57,8 +57,6 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const handleContinue = (updatedRecipient: Recipient) => {
     setRecipient(updatedRecipient);
     setStep("confirm_bank");
-
-    console.log("Final Data for Backend:", updatedRecipient);
   };
 
   const reset = () => {

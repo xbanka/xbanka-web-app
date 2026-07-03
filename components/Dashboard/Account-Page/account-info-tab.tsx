@@ -14,7 +14,10 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
+import {
+  UseGetBankAcounts,
+  UseGetVirtualAccount,
+} from "@/lib/services/wallet.service";
 import { MapleradBankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
@@ -49,6 +52,10 @@ export function AccountInfoTab() {
     isPending: virtualAccountPending,
     error: virtualAccountError,
   } = UseGetVirtualAccount();
+
+  const { data: bankAccountsResponse, isPending: bankAccountsPending } =
+    UseGetBankAcounts();
+  const bankAccounts = bankAccountsResponse?.data?.data || [];
 
   const { data: verificationData } = UseVerificationStatus();
   const tierLevel = verificationData?.data?.tierLevel ?? 0;
@@ -195,7 +202,7 @@ export function AccountInfoTab() {
             {virtualAccountPending && <BankAccountSkeleton />}
 
             {!virtualAccountPending && !account && virtualAccountError && (
-              <div className="bg-border rounded-lg p-5 text-center text-card-text text-sm font-medium">
+              <div className="bg-border rounded-lg p-5 text-center text-card-text text-sm font-medium h-[70%]">
                 {virtualAccountError?.message || "Failed to load account"}
               </div>
             )}
@@ -256,41 +263,82 @@ export function AccountInfoTab() {
 
           {/* Withdrawal Account */}
           <div className="space-y-4 lg:pl-6">
-            <div>
-              <p className="font-medium text-sm leading-5 text-card-text">
-                Withdrawal Account
-              </p>
-              <p className="font-normal text-xs leading-5 text-text mt-0.5">
-                Transfer money to this account to fund your NGN Wallet
-              </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-medium text-sm leading-5 text-card-text">
+                  Withdrawal Account
+                </p>
+                <p className="font-normal text-xs leading-5 text-text mt-0.5">
+                  Transfer money to this account to fund your NGN Wallet
+                </p>
+              </div>
+              {bankAccounts.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpenAccountModal(true)}
+                  className="gap-2 text-Green shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New
+                </Button>
+              )}
             </div>
 
-            {/* Empty state */}
-            <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/withdrawal-empty.png"
-                alt="No withdrawal account"
-                width={48}
-                height={48}
-                className="mb-1 opacity-80"
-              />
-              <p className="text-sm font-medium leading-5 text-card-text">
-                No Withdrawal account added
-              </p>
-              <p className="text-xs font-normal leading-5 text-text max-w-xs">
-                Add a personal account to withdraw funds from your NGN wallet
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOpenAccountModal(true)}
-                className="mt-2 gap-2 text-Green"
-              >
-                <Plus className="w-4 h-4" />
-                Add withdrawal account
-              </Button>
-            </div>
+            {bankAccountsPending && <BankAccountSkeleton />}
+
+            {!bankAccountsPending && bankAccounts.length === 0 && (
+              <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/withdrawal-empty.png"
+                  alt="No withdrawal account"
+                  width={48}
+                  height={48}
+                  className="mb-1 opacity-80"
+                />
+                <p className="text-sm font-medium leading-5 text-card-text">
+                  No Withdrawal account added
+                </p>
+                <p className="text-xs font-normal leading-5 text-text max-w-xs">
+                  Add a personal account to withdraw funds from your NGN wallet
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpenAccountModal(true)}
+                  className="mt-2 gap-2 text-Green"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add withdrawal account
+                </Button>
+              </div>
+            )}
+
+            {!bankAccountsPending && bankAccounts.length > 0 && (
+              <div className="space-y-3">
+                {bankAccounts.map((bank: any) => (
+                  <div
+                    key={bank.id}
+                    className="bg-border rounded-lg p-5 space-y-3"
+                  >
+                    <FundingAccountDetailsLayout
+                      label="Bank Name"
+                      value={bank.bankName}
+                    />
+                    <FundingAccountDetailsLayout
+                      label="Account Name"
+                      value={bank.accountName}
+                    />
+                    <FundingAccountDetailsLayout
+                      label="Account Number"
+                      value={bank.accountNumber}
+                    />
+                    <FundingAccountDetailsLayout label="Currency" value="NGN" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </DashboardCard>

@@ -56,7 +56,6 @@ export function BuyTab() {
     error: groupedPairError,
     isPending: groupedPairPending,
   } = useGetGroupedPair();
-  console.log("groupedPairData", groupedPairData);
   const {
     error: currencyError,
     data: currencyData,
@@ -69,7 +68,6 @@ export function BuyTab() {
   } = UseGetCryptoWallet();
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
-  console.log(hasTransactionPin);
 
   const currencies = currencyData?.data || [];
   const { fiat, crypto } = splitCurrencies(currencies);
@@ -125,6 +123,7 @@ export function BuyTab() {
   };
 
   const refetchQuote = () => {
+    // amount = fiat the user is paying; quote returns crypto they receive
     mutate(
       {
         sourceCurrency,
@@ -135,7 +134,6 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           setQuoteData(res?.data);
-          console.log("refetchQuote id:", res?.data);
         },
       },
     );
@@ -159,6 +157,7 @@ export function BuyTab() {
     if (!debouncedAmount) {
       setError("Amount is required");
       setReceiveAmount("");
+      setConvertData(null);
       return;
     }
 
@@ -169,6 +168,7 @@ export function BuyTab() {
 
     setError("");
 
+    // User enters fiat amount (sourceCurrency) → API returns crypto amount (targetCurrency)
     RateConversionMutate(
       {
         sourceCurrency,
@@ -179,9 +179,7 @@ export function BuyTab() {
       {
         onSuccess: (res) => {
           const result = res?.data;
-
           setReceiveAmount(result?.amount?.toString() || "");
-          console.log("quote result", result);
           setConvertData(result);
         },
       },
@@ -192,21 +190,10 @@ export function BuyTab() {
     <>
       <div className="gap-4">
         <div className="space-y-6">
-          <AmountRow
-            label="You Pay"
-            dropDownLoading={groupedPairPending}
-            available={`${availableBalance} ${targetCurrency}`}
-            availableBalanceLoading={cryptoWalletPending}
-            OPTIONS={TARGET_OPTIONS}
-            currencyId
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            selectedCurrency={targetCurrency}
-            onCurrencyChange={setTargetCurrency}
-          />
+          {/* You Pay — user enters fiat amount */}
           <div className="space-y-3">
             <AmountRow
-              label="You Receive"
+              label="You Pay"
               dropDownLoading={currencyPending}
               availableBalanceLoading={walletPending}
               available={
@@ -214,25 +201,40 @@ export function BuyTab() {
                   ? `₦${sumFiatBalances(wallets).toLocaleString()}`
                   : "₦0.00"
               }
-              value={
-                convertData?.netPayout ? convertData.netPayout.toString() : ""
-              }
-              readOnly
-              OPTIONS={FIAT_OPTIONS}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              OPTIONS={SOURCE_OPTIONS}
               selectedCurrency={sourceCurrency}
               onCurrencyChange={setSourceCurrency}
             />
-            {RateConversionData?.data?.estimatedPrice && (
-              <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
-                <div className="flex items-center gap-1.5">
-                  <span>{RateConversionData?.data?.estimatedPrice}</span>
-                  <button className="text-card-text hover:text-Green/80 transition-colors">
-                    <RefreshCcw className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
+          {/* You Receive — read-only, calculated crypto amount */}
+          <AmountRow
+            label="You Receive"
+            dropDownLoading={groupedPairPending}
+            available={`${availableBalance} ${targetCurrency}`}
+            availableBalanceLoading={cryptoWalletPending}
+            OPTIONS={TARGET_OPTIONS}
+            currencyId
+            value={
+              convertData?.amount ? convertData.amount.toString() : ""
+            }
+            readOnly
+            selectedCurrency={targetCurrency}
+            onCurrencyChange={setTargetCurrency}
+          />
+          {RateConversionData?.data?.rate && (
+            <div className="flex items-center justify-between font-normal leading-6 text-xs text-card-ext px-1">
+              <div className="flex items-center gap-1.5">
+                <span>
+                  1 {targetCurrency} ≈ {(1 / RateConversionData.data.rate).toLocaleString(undefined, { maximumFractionDigits: 2 })} {sourceCurrency}
+                </span>
+                <button className="text-card-text hover:text-Green/80 transition-colors">
+                  <RefreshCcw className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <Button
               onClick={handleQuoteModal}
@@ -273,12 +275,12 @@ export function BuyTab() {
           handleReset={handleReset}
           mode="BUY"
           payAmount={Number(amount || 0)}
-          paySymbol={targetCurrency}
-          receiveAmount={`${quoteData?.netPayout} ${sourceCurrency}` || ""}
+          paySymbol={sourceCurrency}
+          receiveAmount={`${quoteData?.netPayout} ${targetCurrency}` || ""}
           receiveSymbol={targetCurrency}
           rate={
             quoteData
-              ? `1 ${sourceCurrency} = ${quoteData.rate} ${targetCurrency}`
+              ? `1 ${targetCurrency} = ${(1 / quoteData.rate).toFixed(2)} ${sourceCurrency}`
               : ""
           }
           fee={quoteData?.adminFee ? `${quoteData.adminFee}` : "0 Fee"}

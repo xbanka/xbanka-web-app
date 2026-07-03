@@ -22,11 +22,9 @@ export function ProcessingStep({
   const { mutate, isPending, error } = UseSendFiatWallet();
 
   useEffect(() => {
-    console.log("selectedCard", amount)
     if (!mandateId || !amount) return
     const mainAmount = Number(amount.replace(/,/g, ""));
     if(!recipient) return
-    console.log("payload", recipient)
     mutate(recipient, {
       onSuccess: () => {
         handleStep("success");

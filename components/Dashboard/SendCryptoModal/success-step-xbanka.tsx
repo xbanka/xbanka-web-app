@@ -30,7 +30,6 @@ export function SuccessStepXbanka({
   const [copied, setCopied] = useState(false);
   // const fee = parseFloat(network.fee);
   const parsedAmount = parseFloat(amount || "0");
-  console.log(successDetails)
 
   const rate = asset?.fiatEquivalent?.rate ?? 0;
 
