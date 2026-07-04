@@ -35,7 +35,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       {
         id: "bill-payment",
@@ -44,7 +44,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const NAV: NavSection[] = [
         icon: ArrowLeftRight,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
         disabled: true,
       },
       {
@@ -78,7 +78,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       // { id: "analytics", label: "Analytics", icon: BarChart2, badge: "Beta", badgeColor: "bg-blue-500/20 text-blue-400" },
     ],
@@ -93,7 +93,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       {
         id: "affiliate",
@@ -102,7 +102,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       {
         id: "referrals",
@@ -111,7 +111,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       {
         id: "help",
@@ -120,7 +120,7 @@ export const NAV: NavSection[] = [
         disabled: true,
         badge: "Soon",
         badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
     ],
   },
@@ -141,7 +141,7 @@ export const MENU_ITEMS = [
     disabled: true,
     badge: "Soon",
     badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
   },
   {
     icon: Star,
@@ -150,7 +150,7 @@ export const MENU_ITEMS = [
     disabled: true,
     badge: "Soon",
     badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
   },
   {
     icon: Settings,
@@ -159,7 +159,7 @@ export const MENU_ITEMS = [
     disabled: true,
     badge: "Soon",
     badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
   },
   {
     icon: HelpCircle,
@@ -168,6 +168,6 @@ export const MENU_ITEMS = [
     disabled: true,
     badge: "Soon",
     badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-[4px] border border-[#A27D00] px-2",
+      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
   },
 ];

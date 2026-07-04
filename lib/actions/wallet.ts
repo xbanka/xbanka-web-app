@@ -291,8 +291,10 @@ export const getGroupedPair = async () => {
   return response.data;
 };
 
-export const getMarketPrices = async () => {
-  const response = await AxiosInstance.get("/wallets/market-prices");
+export const getMarketPrices = async (page = 1, limit = 10) => {
+  const response = await AxiosInstance.get("/wallets/market-prices", {
+    params: { page, limit },
+  });
 
   return response.data;
 };
