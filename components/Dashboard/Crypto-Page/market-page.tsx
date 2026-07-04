@@ -9,16 +9,41 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetMarketPrices } from "@/lib/services/wallet.service";
 import { CryptoMarketOverview } from "../Home-Page/types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 import { getCoinImage } from "@/lib/coin-images";
 
+const MARKET_PAGE_TABS = ["favorites", "spot", "futures"] as const;
+const MARKET_FILTERS = ["all", "new"] as const;
+
+type MarketPageTab = (typeof MARKET_PAGE_TABS)[number];
+type MarketFilter = (typeof MARKET_FILTERS)[number];
+type MarketPricesCache = {
+  data?: {
+    items?: CryptoMarketOverview[];
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+const isMarketPageTab = (value: string | null): value is MarketPageTab =>
+  !!value && (MARKET_PAGE_TABS as readonly string[]).includes(value);
+
+const isMarketFilter = (value: string | null): value is MarketFilter =>
+  !!value && (MARKET_FILTERS as readonly string[]).includes(value);
+
 export function MarketPage() {
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<"favorites" | "spot" | "futures">("spot");
-  const [filter, setFilter] = useState<"all" | "new">("all");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const filterParam = searchParams.get("filter");
+  const initialTab = isMarketPageTab(tabParam) ? tabParam : "spot";
+  const initialFilter = isMarketFilter(filterParam) ? filterParam : "all";
+  const [tab, setTab] = useState<MarketPageTab>(initialTab);
+  const [filter, setFilter] = useState<MarketFilter>(initialFilter);
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
@@ -44,15 +69,15 @@ export function MarketPage() {
     eventSource.onmessage = (event) => {
       try {
         const update = JSON.parse(event.data);
-        queryClient.setQueryData(
+        queryClient.setQueryData<MarketPricesCache>(
           ["market-prices", page, limit],
-          (oldData: any) => {
+          (oldData) => {
             if (!oldData?.data?.items) return oldData;
             return {
               ...oldData,
               data: {
                 ...oldData.data,
-                items: oldData.data.items.map((item: any) =>
+                items: oldData.data.items.map((item) =>
                   item.symbol === update.symbol ? { ...item, ...update } : item,
                 ),
               },
@@ -118,7 +143,7 @@ export function MarketPage() {
       {/* Tab row */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex gap-1 border-b border-border overflow-x-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {(["favorites", "spot", "futures"] as const).map((t) => (
+          {MARKET_PAGE_TABS.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -133,7 +158,7 @@ export function MarketPage() {
         {/* All / New + search */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="flex gap-1 bg-background border border-border rounded-lg p-0.5 shrink-0">
-            {(["all", "new"] as const).map((f) => (
+            {MARKET_FILTERS.map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}

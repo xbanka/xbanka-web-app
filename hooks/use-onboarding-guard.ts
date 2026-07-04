@@ -5,6 +5,7 @@ import {
   UseProfileUser,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
+import { isOnboardingStepCompleted } from "@/lib/verificationProgress";
 import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 
 export const useOnboardingGuard = () => {
@@ -23,13 +24,13 @@ export const useOnboardingGuard = () => {
 
   const progress = verificationData?.data?.progress ?? [];
 
-  const identityCompleted = progress.find(
-    (item: any) => item.id === "IDENTITY",
-  )?.isCompleted;
+  const identityCompleted = isOnboardingStepCompleted(
+    progress.find((item: { id: string }) => item.id === "IDENTITY"),
+  );
 
-  const selfieCompleted = progress.find(
-    (item: any) => item.id === "SELFIE",
-  )?.isCompleted;
+  const selfieCompleted = isOnboardingStepCompleted(
+    progress.find((item: { id: string }) => item.id === "SELFIE"),
+  );
 
   const hasPersonalInfo =
     !!profile?.firstName &&

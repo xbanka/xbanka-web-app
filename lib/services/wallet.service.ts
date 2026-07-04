@@ -477,7 +477,7 @@ export const useGetMarketPrices = (page = 1, limit = 10) => {
     queryKey: ["market-prices", page, limit],
     queryFn: async () => {
       try {
-        const response = await getMarketPrices();
+        const response = await getMarketPrices(page, limit);
         return response;
       } catch (err) {
         handleApiError(err);

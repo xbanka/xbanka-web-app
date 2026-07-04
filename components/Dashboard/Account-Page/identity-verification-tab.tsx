@@ -29,6 +29,8 @@ export function IdentityVerificationTab() {
   ).length;
 
   const totalSteps = progress.length;
+  const isVerificationComplete =
+    totalSteps > 0 && completedCount === totalSteps;
 
   return (
     <div className="space-y-6">
@@ -43,24 +45,26 @@ export function IdentityVerificationTab() {
 
       <div className="space-y-4">
         {/* Review banner */}
-        <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-lg bg-[#3E2E00] border-l-3 border-[#A27D00]">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-[#FEC84B] leading-5">
-                Complete your verification to unlock your wallet
-              </p>
-              <p className="text-xs font-medium leading-5 text-[#FEC84B] truncate">
-                Verify your BVN to add funds, send money, and do more
-              </p>
+        {!isVerificationComplete && (
+          <div className="flex items-center justify-between gap-6 px-4 py-3 rounded-lg bg-[#3E2E00] border-l-3 border-[#A27D00]">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[#FEC84B] leading-5">
+                  Complete your verification to unlock your wallet
+                </p>
+                <p className="text-xs font-medium leading-5 text-[#FEC84B] truncate">
+                  Verify your BVN to add funds, send money, and do more
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="text-xs cursor-pointer font-medium leading-5 text-[#FEC84B] hover:text-[#FEC84B]/60 transition-colors whitespace-nowrap flex items-center gap-2">
+                Verify Now
+                <ArrowUpRight className="w-4 h-4" />
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="text-xs cursor-pointer font-medium leading-5 text-[#FEC84B] hover:text-[#FEC84B]/60 transition-colors whitespace-nowrap flex items-center gap-2">
-              Verify Now
-              <ArrowUpRight className="w-4 h-4" />
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Header */}
         <DashboardCard>
