@@ -1,36 +1,50 @@
-const getStepDescription = (id: string) => {
-  switch (id) {
-    case "SIGNUP":
-      return "Account created";
-    case "EMAIL_VERIFIED":
-      return "Verify your email address";
-    case "BASIC_INFO":
-      return "Provide your basic details";
-    case "BVN":
-      return "Verify your BVN";
-    case "IDENTITY":
-      return "Upload identity document";
-    case "SELFIE":
-      return "Complete selfie verification";
-    case "ADDRESS":
-      return "Provide proof of address";
-    default:
-      return "";
-  }
+type RawOnboardingStep = {
+  id: string;
+  label?: string;
+  status?: string;
+  isCompleted?: boolean;
+  completed?: boolean;
 };
 
-export const ONBOARDING_STEPS = (data: any) => {
+type VerificationProgressData = {
+  emailVerified?: boolean;
+  isEmailVerified?: boolean;
+  completedOnboardingSteps?: string[];
+  progress?: RawOnboardingStep[];
+};
+
+export const isOnboardingStepCompleted = (step?: RawOnboardingStep) => {
+  if (!step) return false;
+
+  const status = step.status?.toLowerCase();
+
+  return Boolean(
+    step.isCompleted ||
+      step.completed ||
+      status === "completed" ||
+      status === "done" ||
+      status === "approved",
+  );
+};
+
+export const ONBOARDING_STEPS = (data?: VerificationProgressData) => {
   if (!data?.progress) return [];
 
-  const progressMap = Object.fromEntries(
-    data.progress.map((step: any) => [
+  const completedStepIds = new Set(data.completedOnboardingSteps ?? []);
+
+  const progressMap: Record<string, RawOnboardingStep> = Object.fromEntries(
+    data.progress.map((step) => [
       step.id,
       {
         ...step,
         isCompleted:
           step.id === "EMAIL_VERIFIED"
-            ? data.emailVerified
-            : step.isCompleted,
+            ? Boolean(
+                data.emailVerified ??
+                  data.isEmailVerified ??
+                  isOnboardingStepCompleted(step),
+              )
+            : completedStepIds.has(step.id) || isOnboardingStepCompleted(step),
       },
     ]),
   );
@@ -75,9 +89,7 @@ export const ONBOARDING_STEPS = (data: any) => {
   return stepGroups.map((group, index) => {
     const groupSteps = group.ids.map((id) => progressMap[id]);
 
-    const isCompleted = groupSteps.every(
-      (step) => step?.isCompleted,
-    );
+    const isCompleted = groupSteps.every(isOnboardingStepCompleted);
 
     let status: "done" | "active" | "pending" = "pending";
 
