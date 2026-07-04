@@ -4,13 +4,9 @@ import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
 import { ErrorField } from "@/components/ui/field-error";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
-import {
-  IdSelfieModal,
-  IdSelfieStep,
-} from "../Onboarding-Journey-Modal/id-selfie-modal";
-import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
+import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
 import { useState } from "react";
-import { ModalType, stepsConfig } from "./types";
+import { ModalType } from "./types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function OnboardingJourney() {
@@ -26,6 +22,9 @@ export function OnboardingJourney() {
   ).length;
 
   const totalSteps = progress.length;
+  const isVerificationComplete =
+    totalSteps > 0 && completedCount === totalSteps;
+
   if (isPending) {
     return (
       <DashboardCard className="space-y-4 animate-pulse">
@@ -73,6 +72,11 @@ export function OnboardingJourney() {
       </DashboardCard>
     );
   }
+
+  if (isVerificationComplete) {
+    return null;
+  }
+
   return (
     <DashboardCard className="space-y-4 overflow-hidden">
       <div className="flex items-center justify-between gap-4">

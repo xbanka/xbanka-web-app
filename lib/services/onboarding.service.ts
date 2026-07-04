@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   address,
   identity,
@@ -38,10 +38,14 @@ export const useUserProfile = () => {
 };
 
 export const useSkipStep = () => {
+  const queryClient = useQueryClient();
+
   const mutate = useMutation({
     mutationFn: (data: string) => skipStep(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -68,10 +72,14 @@ export const useVerifyBvn = () => {
 };
 
 export const useIdentity = () => {
+  const queryClient = useQueryClient();
+
   const mutate = useMutation({
     mutationFn: (formData: FormData) => identity(formData),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -81,10 +89,14 @@ export const useIdentity = () => {
 };
 
 export const useAddressProof = () => {
+  const queryClient = useQueryClient();
+
   const mutate = useMutation({
     mutationFn: (formData: FormData) => address(formData),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
@@ -94,11 +106,15 @@ export const useAddressProof = () => {
 };
 
 export const useVerifySelfie = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (formData: FormData) => selfie(formData),
 
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
 
     onError: (err) => {
