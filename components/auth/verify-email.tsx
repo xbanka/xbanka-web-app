@@ -26,19 +26,8 @@ const VerifyPage = ({ token }: { token?: string }) => {
   useEffect(() => {
     if (data?.data?.data?.id) {
       setUserId(data.data.data.id);
-      console.log("User ID set in store:", data.data.data.id);
     }
   }, [data]);
-
-  // useEffect(() => {
-  //   if (isSuccess && data?.success) {
-  //     const timer = setTimeout(() => {
-  //       router.push("/welcome");
-  //     }, 2000);
-
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [isSuccess, data, router]);
 
   if (isSuccess && data?.success) {
     return (

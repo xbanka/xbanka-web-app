@@ -67,7 +67,6 @@ export function ConvertTab() {
 
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
-  console.log(hasTransactionPin);
 
   const currencies = currencyData?.data || [];
   const pairMap = useMemo(() => groupedPairData?.data || [], [groupedPairData]);

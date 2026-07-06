@@ -14,7 +14,6 @@ export default function FundCallbackPage() {
   const router = useRouter();
 
   const reference = params?.get("paymentReference");
-  console.log("reference", reference);
 
   const { mutate, error, isSuccess } = UseVerifyFund();
 
@@ -24,7 +23,6 @@ export default function FundCallbackPage() {
 
   useEffect(() => {
     if (!reference) return;
-    console.log("Verifying fund with reference:", reference);
 
     mutate(reference, {
       onSuccess: () => {
