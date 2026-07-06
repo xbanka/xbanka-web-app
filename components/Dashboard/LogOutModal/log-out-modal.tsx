@@ -15,6 +15,7 @@ export const Logout = ({ onClose }: LogoutProps) => {
   const handleLogout = () => {
     tokenStore.clear();
     authTokens.clear();
+    document.cookie = "accessToken=; Max-Age=0; path=/";
 
     onClose();
     router.push("/sign-in");
