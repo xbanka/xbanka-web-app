@@ -2,6 +2,7 @@ import axios from "axios";
 import { getDeviceId, getDeviceInfo } from "../device";
 import { tokenStore } from "@/store/token.store";
 import { authTokens } from "../authToken";
+import { refreshAccessToken } from "../refresh-token";
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -52,33 +53,29 @@ AxiosInstance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const refreshToken = authTokens.getRefreshToken();
-        const refreshResponse = await AxiosInstance.post("/auth/refresh", {
-          refresh_token: refreshToken,
-        });
+        const newAccessToken = await refreshAccessToken();
 
-        const newAccessToken = refreshResponse.data?.access_token;
-        const newRefreshToken = refreshResponse.data?.refresh_token;
-
-        if (newAccessToken && newRefreshToken) {
-          authTokens.setTokens(newAccessToken, newRefreshToken);
-
-          tokenStore.set(newAccessToken);
-
-          originalRequest.headers = {
-            ...(originalRequest.headers || {}),
-            Authorization: `Bearer ${newAccessToken}`,
-          };
-        }
+        originalRequest.headers = {
+          ...(originalRequest.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        };
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
         tokenStore.clear();
         authTokens.clear();
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
+          document.cookie = "accessToken=; Max-Age=0; path=/";
           window.location.href = "/sign-in";
         }
-        return Promise.reject(refreshError);
+        return Promise.reject({
+          success: false,
+          status: 401,
+          message: "Session expired",
+          silent: true,
+          raw: refreshError,
+        });
+        // return Promise.reject(refreshError);
       }
     }
     // NETWORK / TIMEOUT HANDLING
