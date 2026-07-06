@@ -60,7 +60,8 @@ export interface BankAccount {
   isVerified: boolean;
 }
 
-export type BankStep = "select" | "details" | "confirm" | "linking" | "success";
+export type BankStep = "details" | "confirm" | "linking" | "success";
+// export type BankStep = "select" | "details" | "confirm" | "linking" | "success";
 export type FundMethod = "bank" | "card" | null;
  
 export interface AddBankModalProps {

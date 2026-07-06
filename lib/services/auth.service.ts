@@ -84,8 +84,6 @@ export const useLogin = () => {
       const result = res.data;
       const accessToken = getAccessToken(result);
       const refreshToken = result?.refresh_token;
-      console.log(refreshToken);
-      console.log(variables);
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         localStorage.removeItem("accessToken");
@@ -105,7 +103,10 @@ export const useLogin = () => {
         router.push("/");
       }
     },
-    onError: (err) => {
+    onError: (err: any) => {
+      if (err?.raw?.response?.data?.errorGroup === "EMAIL_VERIFICATION_REQUIRED") {
+        return; // Component will handle this specific error
+      }
       handleApiError(err);
     },
   });
