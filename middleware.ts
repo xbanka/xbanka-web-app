@@ -6,7 +6,7 @@ const PUBLIC_ROUTES = [
   "/google",
   "/auth/google/callback",
   "/google/callback",
-  "/verify-mail",
+  "/verify-email",
   "/verify-device",
 ];
 
