@@ -132,7 +132,7 @@ function Step1({ setStep }: StepOneProps) {
             id="dateOfBirth"
             icon={Calendar}
             placeholder="Date of Birth"
-            type="text"
+            type="date"
             error={errors.dateOfBirth}
             register={register}
             className={mobileFieldClass}
