@@ -41,7 +41,7 @@ export function FormField({
             // iOS needs the -webkit-prefixed appearance reset to drop its fixed
             // intrinsic height; align the value box to the field height too.
             type === "date" &&
-              "appearance-none [-webkit-appearance:none] h-10 min-h-0 leading-5 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:m-0 [&::-webkit-date-and-time-value]:min-h-5 [&::-webkit-datetime-edit]:p-0 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
+              "appearance-none [-webkit-appearance:none] h-10 min-h-0 leading-5 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:m-0 [&::-webkit-date-and-time-value]:min-h-5 [&::-webkit-datetime-edit]:p-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
           )}
           value={value}
           {...registration}
