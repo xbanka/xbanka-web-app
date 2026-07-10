@@ -22,6 +22,8 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { getCoinImage } from "@/lib/coin-images";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 type FormValues = {
   amount: string;
@@ -30,6 +32,8 @@ type FormValues = {
 };
 
 export function SellTab() {
+  const searchParams = useSearchParams();
+  const coinParam = searchParams.get("coin")?.toUpperCase();
   const [amount, setAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [error, setError] = useState("");
@@ -110,6 +114,29 @@ export function SellTab() {
   const validTargets =
     pairMap.find((item: any) => item.code === "NGNX")?.pairs || [];
 
+  // A coin can appear in Market Overview but not be a tradeable pair. When we
+  // arrive via a "Trade" link (?coin=) for such a coin, flag it so we can tell
+  // the user instead of silently falling back to the default.
+  const coinUnsupported = useMemo(() => {
+    if (!coinParam || validTargets.length === 0) return false;
+    return !validTargets.some((pair: any) => pair.code === coinParam);
+  }, [coinParam, validTargets]);
+
+  useEffect(() => {
+    if (!coinUnsupported) return;
+    toast(
+      `${coinParam} isn't available for buy & sell yet. ${targetCurrency} has been selected instead.`,
+      {
+        id: `coin-unsupported-${coinParam}`,
+        style: {
+          background: "#0c9a8e",
+          color: "#ffffff",
+          border: "1px solid #0c9a8e",
+        },
+      },
+    );
+  }, [coinUnsupported, coinParam, targetCurrency]);
+
   const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
 
   // const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
@@ -151,10 +178,15 @@ export function SellTab() {
   };
 
   useEffect(() => {
+    // Preselect the coin passed via ?coin= (from a "Trade" link) when it's sellable
+    if (coinParam && validTargets.find((p: any) => p.code === coinParam)) {
+      setTargetCurrency(coinParam);
+      return;
+    }
     if (!validTargets.find((p: any) => p.code === targetCurrency)) {
       setTargetCurrency("USDT");
     }
-  }, [groupedPairData]);
+  }, [groupedPairData, coinParam]);
 
   // 🔥 Auto call backend when user stops typing
   useEffect(() => {

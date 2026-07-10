@@ -193,7 +193,7 @@ export function ConfirmStep({
                   <p className="text-sm max-sm:text-xs font-normal leading-5 text-text mb-2">
                     {mode === "BUY" ? "You Pay" : "You Sell"}
                   </p>
-                  <p className="text-2xl max-sm:text-xl font-bold leading-8 text-card-text wrap-break-word">
+                  <p className="text-base font-normal leading-6 text-card-text wrap-break-word">
                     {paySymbol ? `${paySymbol} ` : ""}
                     {formatAmount(payAmount)}
                   </p>
@@ -204,7 +204,7 @@ export function ConfirmStep({
                   </p>
                   {isValidAmount ? (
                     <div className="space-y-1">
-                      <p className="text-2xl max-sm:text-xl font-bold leading-8 text-[#A6F4C5] wrap-break-word">
+                      <p className="text-base font-normal leading-6 text-[#A6F4C5] wrap-break-word">
                         {receiveAmount}
                       </p>
                       {rateChanged && (
