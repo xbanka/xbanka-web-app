@@ -25,7 +25,10 @@ export function CryptoPage() {
   const tradeMode = (searchParams.get("mode") as "buy" | "sell") || "buy";
 
   const handleModeChange = (mode: "buy" | "sell") => () => {
-    router.push(`/crypto?tab=buy&mode=${mode}`);
+    const coin = searchParams.get("coin");
+    const params = new URLSearchParams({ tab: "buy", mode });
+    if (coin) params.set("coin", coin);
+    router.push(`/crypto?${params.toString()}`);
   };
 
   return (

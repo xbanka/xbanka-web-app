@@ -21,6 +21,7 @@ import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { getCoinImage } from "@/lib/coin-images";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 export function BuyTab() {
   const searchParams = useSearchParams();
@@ -78,6 +79,29 @@ export function BuyTab() {
 
   const validTargets =
     pairMap.find((item: any) => item.code === sourceCurrency)?.pairs || [];
+
+  // A coin can appear in Market Overview but not be a tradeable pair. When we
+  // arrive via a "Trade" link (?coin=) for such a coin, flag it so we can tell
+  // the user instead of silently falling back to the default.
+  const coinUnsupported = useMemo(() => {
+    if (!coinParam || validTargets.length === 0) return false;
+    return !validTargets.some((pair: any) => pair.code === coinParam);
+  }, [coinParam, validTargets]);
+
+  useEffect(() => {
+    if (!coinUnsupported) return;
+    toast(
+      `${coinParam} isn't available for buy & sell yet. ${targetCurrency} has been selected instead.`,
+      {
+        id: `coin-unsupported-${coinParam}`,
+        style: {
+          background: "#0c9a8e",
+          color: "#ffffff",
+          border: "1px solid #0c9a8e",
+        },
+      },
+    );
+  }, [coinUnsupported, coinParam, targetCurrency]);
 
   const SOURCE_OPTIONS = validSources.map((pair: any) => ({
     label: pair.code,

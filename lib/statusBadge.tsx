@@ -6,8 +6,8 @@ export function StatusBadge({ status }: { status: string }) {
     Failed: "bg-red-500/10 text-red-500",
   };
   return (
-    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-medium ${map[status] ?? "bg-border text-text"}`}>
-      {status}
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-normal capitalize ${map[status] ?? "bg-border text-text"}`}>
+      {status?.toLowerCase()}
     </span>
   );
 }
@@ -20,8 +20,8 @@ export function CryptoHistoryStatusBadge({ status }: { status: string }) {
     failed: "bg-red-500/10 text-red-500",
   };
   return (
-    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 rounded-sm text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
-      {status}
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 rounded-sm text-xs font-normal capitalize ${map[normalizedStatus] ?? "bg-border text-text"}`}>
+      {status?.toLowerCase()}
     </span>
   );
 }
@@ -34,8 +34,8 @@ export function TransactionHistoryStatusBadge({ status }: { status: string }) {
     failed: "bg-red-500/10 text-red-500",
   };
   return (
-    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-medium ${map[normalizedStatus] ?? "bg-border text-text"}`}>
-      {status}
+    <span className={`inline-flex shrink-0 whitespace-nowrap px-2 py-0.5 border rounded-full text-xs font-normal capitalize ${map[normalizedStatus] ?? "bg-border text-text"}`}>
+      {status?.toLowerCase()}
     </span>
   );
 }
