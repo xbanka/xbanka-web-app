@@ -41,16 +41,25 @@ export function RecentTransactions() {
     return "w-6 h-6 text-red-error-light bg-error-text";
   };
   return (
-    <DashboardCard>
+    <DashboardCard className="opacity-60">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-[16px] leading-6 font-medium text-card-text">
-          Recent Transaction
-        </h3>
-        <button className="text-[14px] font-medium leading-5.5 text-Green cursor-pointer hover:underline">
+        <div className="flex items-center gap-2">
+          <h3 className="text-[16px] leading-6 font-medium text-text">
+            Recent Transaction
+          </h3>
+          <span className="bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2">
+            Soon
+          </span>
+        </div>
+        <button
+          disabled
+          aria-disabled="true"
+          className="text-[14px] font-medium leading-5.5 text-text cursor-not-allowed"
+        >
           See all
         </button>
       </div>
-      <div className="space-y-4 relative">
+      <div className="space-y-4 relative pointer-events-none select-none grayscale">
         {transactionHistoryPending && (
           <div>
             {Array.from({ length: 4 }).map((_, i) => (
