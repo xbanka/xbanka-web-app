@@ -157,7 +157,7 @@ export const UseGetVirtualAccount = () => {
         const response = await getVirtualAccount();
         return response;
       } catch (err) {
-        handleApiError(err);
+        handleApiError(err, { showToast: false });
       }
     },
   });

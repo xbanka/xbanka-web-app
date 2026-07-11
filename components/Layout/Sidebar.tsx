@@ -1,12 +1,6 @@
 import { NAV } from "@/lib/nav";
 import { useLogoutStore } from "@/store/logout.store";
-import {
-  ChevronLeft,
-  ChevronRight,
-  LogOut,
-  Wallet,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Wallet, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -106,7 +100,9 @@ function AccountTabAvatar({ active }: { active: boolean }) {
   return (
     <div
       className={`relative w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-border text-[9px] font-bold text-card-text ${
-        active ? "ring-2 ring-Green ring-offset-2 ring-offset-card-background" : ""
+        active
+          ? "ring-2 ring-Green ring-offset-2 ring-offset-card-background"
+          : ""
       }`}
     >
       {avatar ? (
@@ -159,7 +155,7 @@ export function Sidebar({
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
           <div className="w-20">
-            { theme === "dark" ? (
+            {theme === "dark" ? (
               <img
                 src="/xbanka_white.png"
                 className="w-full object-cover"
@@ -173,7 +169,7 @@ export function Sidebar({
                 loading="lazy"
                 alt="xBanka"
               />
-          )}
+            )}
           </div>
         )}
         <button
