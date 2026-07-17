@@ -3,6 +3,8 @@ import {
   createPin,
   passwordChange,
   requesOtp,
+  resetPin,
+  ResetPinPayload,
   twoFactorAuthenticationDisable,
   twoFactorAuthenticationEnable,
   twoFactorAuthenticationGenerate,
@@ -94,6 +96,26 @@ export const useUpdatePin = () => {
     },
   });
   return mutate;
+};
+
+export const useResetPin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: ResetPinPayload) => resetPin(data),
+
+    onSuccess: (result) => {
+      toast.success(result.data.message);
+
+      queryClient.invalidateQueries({
+        queryKey: ["user-profile"],
+      });
+    },
+
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
 };
 
 export const useValidatePin = () => {
