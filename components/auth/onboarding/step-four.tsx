@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import LivenessDetector from "../../ui/LivenessDetector";
-import { useState } from "react";
-import Image from "next/image";
+import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobileDevice } from "@/hooks/use-IsMobileDevice";
 import { useSkipStep } from "@/lib/services/onboarding.service";
@@ -17,7 +16,6 @@ interface Step4Props {
 
 function Step4({ setStep }: Step4Props) {
   const router = useRouter();
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const isMobileDevice = useIsMobileDevice();
 
@@ -32,48 +30,16 @@ function Step4({ setStep }: Step4Props) {
   const handleSkip = () => {
     skipMutate(userId, {
       onSuccess: () => {
-        setIsSuccess(true);
+        router.push("/welcome");
       },
     });
   };
-
-  if (isSuccess) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
-        <Image src="/badge 2.svg" alt="done badge" width={60} height={60} />
-
-        <div>
-          <h2 className="text-2xl font-bold text-card-text">
-            Selfie Verification Complete
-          </h2>
-
-          <p className="mt-2 text-text">
-            Your selfie has been successfully verified.
-          </p>
-        </div>
-
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={() => router.push("/welcome")}
-        >
-          Continue to Welcome Screen
-        </Button>
-      </div>
-    );
-  }
 
   if (!isMobileDevice) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
         <div className="rounded-2xl border border-border bg-card-background p-6 w-full">
-          <Image
-            src="/camera.svg"
-            alt="Camera"
-            width={48}
-            height={48}
-            className="mx-auto"
-          />
+          <Camera className="mx-auto h-12 w-12 text-text" />
 
           <h2 className="mt-4 text-xl font-semibold text-card-text">
             Mobile Device Required
@@ -100,15 +66,17 @@ function Step4({ setStep }: Step4Props) {
             size="lg"
             className="hidden flex-3 sm:inline-flex"
             onClick={handleSkip}
+            disabled={skipPending}
           >
-            Skip for later
+            {skipPending ? "Skipping..." : "Skip for later"}
           </Button>
           <Button
             size="lg"
             className="h-[50px] text-[16px] sm:hidden"
             onClick={handleSkip}
+            disabled={skipPending}
           >
-            Skip for later
+            {skipPending ? "Skipping..." : "Skip for later"}
           </Button>
         </div>
         {
@@ -136,7 +104,7 @@ function Step4({ setStep }: Step4Props) {
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
           onBack={() => setStep(2)}
-          onSuccess={() => setIsSuccess(true)}
+          onSuccess={() => router.push("/welcome")}
           brandColor="#36b6ab"
         />
       </div>

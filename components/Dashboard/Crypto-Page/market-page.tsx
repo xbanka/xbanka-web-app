@@ -35,6 +35,27 @@ const isMarketPageTab = (value: string | null): value is MarketPageTab =>
 const isMarketFilter = (value: string | null): value is MarketFilter =>
   !!value && (MARKET_FILTERS as readonly string[]).includes(value);
 
+type SortKey = "pair" | "price" | "change";
+type SortDirection = "asc" | "desc";
+type SortConfig = { key: SortKey; direction: SortDirection } | null;
+
+function SortIcon({
+  column,
+  sortConfig,
+}: {
+  column: SortKey;
+  sortConfig: SortConfig;
+}) {
+  if (sortConfig?.key !== column) {
+    return <ArrowUpDown className="w-3 h-3" />;
+  }
+  return sortConfig.direction === "asc" ? (
+    <ArrowUp className="w-3 h-3" />
+  ) : (
+    <ArrowDown className="w-3 h-3" />
+  );
+}
+
 export function MarketPage() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -46,6 +67,16 @@ export function MarketPage() {
   const [filter, setFilter] = useState<MarketFilter>(initialFilter);
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+
+  const toggleSort = (key: SortKey) => {
+    setSortConfig((prev) => {
+      if (prev?.key === key) {
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
 
   const page = 1;
   const limit = 100;
@@ -133,8 +164,24 @@ export function MarketPage() {
       );
     }
 
+    if (sortConfig) {
+      const dir = sortConfig.direction === "asc" ? 1 : -1;
+      list = list.sort((a, b) => {
+        switch (sortConfig.key) {
+          case "pair":
+            return a.symbol.localeCompare(b.symbol) * dir;
+          case "price":
+            return (a.priceUsd - b.priceUsd) * dir;
+          case "change":
+            return (a.changePercent24h - b.changePercent24h) * dir;
+          default:
+            return 0;
+        }
+      });
+    }
+
     return list;
-  }, [items, tab, filter, search, favorites]);
+  }, [items, tab, filter, search, favorites, sortConfig]);
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
@@ -189,19 +236,31 @@ export function MarketPage() {
               <tr className="border-b border-border text-[14px] text-text">
                 <th className="text-left px-4 py-4 font-medium w-6"></th>
                 <th className="text-left px-4 py-4 font-medium">
-                  <span className="flex items-center gap-1">
-                    Pair <ArrowUpDown className="w-3 h-3" />
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("pair")}
+                    className="flex items-center gap-1 hover:text-card-text transition-colors"
+                  >
+                    Pair <SortIcon column="pair" sortConfig={sortConfig} />
+                  </button>
                 </th>
                 <th className="text-left px-4 py-4 font-medium">
-                  <span className="flex items-center gap-1">
-                    Last Price <ArrowUpDown className="w-3 h-3" />
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("price")}
+                    className="flex items-center gap-1 hover:text-card-text transition-colors"
+                  >
+                    Last Price <SortIcon column="price" sortConfig={sortConfig} />
+                  </button>
                 </th>
                 <th className="text-left px-4 py-4 font-medium">
-                  <span className="flex items-center gap-1">
-                    Change <ArrowUpDown className="w-3 h-3" />
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("change")}
+                    className="flex items-center gap-1 hover:text-card-text transition-colors"
+                  >
+                    Change <SortIcon column="change" sortConfig={sortConfig} />
+                  </button>
                 </th>
                 <th className="text-right px-4 py-4 font-medium">Action</th>
               </tr>

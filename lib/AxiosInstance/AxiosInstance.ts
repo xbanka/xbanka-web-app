@@ -43,13 +43,15 @@ AxiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl: string = originalRequest?.url ?? "";
 
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/login") &&
-      !originalRequest.url.includes("/auth/signup") &&
-      !originalRequest.url.includes("/auth/verify-email")
+      !requestUrl.includes("/auth/login") &&
+      !requestUrl.includes("/auth/signup") &&
+      !requestUrl.includes("/auth/verify-email")
     ) {
       originalRequest._retry = true;
       try {
@@ -61,6 +63,17 @@ AxiosInstance.interceptors.response.use(
         };
         return AxiosInstance(originalRequest);
       } catch (refreshError) {
+        // DIAGNOSTIC: capture what triggered the forced logout so QA repros
+        // surface the failing endpoint + refresh failure instead of a silent
+        // bounce to /sign-in. Remove once the root cause is confirmed.
+        console.error(
+          "[auth] Forced sign-out after 401 + failed token refresh",
+          {
+            failedRequestUrl: requestUrl,
+            refreshError:
+              (refreshError as { message?: string })?.message ?? refreshError,
+          },
+        );
         tokenStore.clear();
         authTokens.clear();
         if (typeof window !== "undefined") {
