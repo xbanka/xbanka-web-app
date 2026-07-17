@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 const PUBLIC_ROUTES = [
   "/sign-in",
   "/sign-up",
+  "/forgot-password",
+  "/reset-password",
+  "/onboarding",
   "/google",
   "/auth/google/callback",
   "/google/callback",
