@@ -13,7 +13,7 @@ const PUBLIC_ROUTES = [
   "/verify-device",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
@@ -39,6 +39,10 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    /* 
+      🟢 OPTIMIZED: Explicitly added image folder paths to ensure your 
+      broken `/images/fallback/ramp.png` asset doesn't choke the router logic
+    */
+    "/((?!api|_next/static|_next/image|images|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
