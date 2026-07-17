@@ -1,7 +1,7 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import {
   ArrowUpRight,
-  CheckCircle,
+  Check,
 } from "lucide-react";
 import { OnboardingJourneyCard } from "../Home-Page/onboarding-journey-card";
 import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
@@ -32,6 +32,17 @@ export function IdentityVerificationTab() {
   const isVerificationComplete =
     totalSteps > 0 && completedCount === totalSteps;
 
+  // First incomplete step that has a modal to open (EMAIL has no modal).
+  const nextStep = progress.find(
+    (step) => step.status !== "done" && step.modalKey,
+  );
+
+  const handleVerifyNow = () => {
+    if (nextStep?.modalKey) {
+      setOpenModal(nextStep.modalKey as ModalType);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -58,10 +69,15 @@ export function IdentityVerificationTab() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <div className="text-xs cursor-pointer font-medium leading-5 text-[#FEC84B] hover:text-[#FEC84B]/60 transition-colors whitespace-nowrap flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleVerifyNow}
+                disabled={!nextStep}
+                className="text-xs cursor-pointer font-medium leading-5 text-[#FEC84B] hover:text-[#FEC84B]/60 transition-colors whitespace-nowrap flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 Verify Now
                 <ArrowUpRight className="w-4 h-4" />
-              </div>
+              </button>
             </div>
           </div>
         )}
@@ -176,7 +192,7 @@ export function IdentityVerificationTab() {
                     key={d}
                     className="flex items-center gap-2 text-xs text-text"
                   >
-                    <CheckCircle className="w-3 h-3 text-Green shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-Green shrink-0" />
                     {d}
                   </li>
                 ))}
@@ -198,7 +214,7 @@ export function IdentityVerificationTab() {
                     key={d}
                     className="flex items-center gap-2 text-xs text-text"
                   >
-                    <CheckCircle className="w-3 h-3 text-Green shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-Green shrink-0" />
                     {d}
                   </li>
                 ))}
@@ -214,7 +230,7 @@ export function IdentityVerificationTab() {
                     key={d}
                     className="flex items-center gap-2 text-xs text-text"
                   >
-                    <CheckCircle className="w-3 h-3 text-Green shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-Green shrink-0" />
                     {d}
                   </li>
                 ))}
