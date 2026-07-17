@@ -483,6 +483,11 @@ export const useGetMarketPrices = (page = 1, limit = 10) => {
         handleApiError(err);
       }
     },
-    staleTime: Infinity,
+    // Prices are live data — poll as a fallback so they refresh automatically
+    // even when the SSE market-stream is unavailable or stops emitting.
+    staleTime: 10_000,
+    refetchInterval: 15_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
 };
