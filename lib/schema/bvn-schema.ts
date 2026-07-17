@@ -35,7 +35,19 @@ export const updatePinSchema = z.object({
     .regex(/^\d+$/, "PIN must contain numbers only"),
 });
 
+export const resetPinSchema = z.object({
+  otp: z
+    .string()
+    .regex(/^\d+$/, "PIN must contain numbers only"),
+  newPin: z
+    .string()
+    .min(4, "PIN must be at least 4 digits")
+    .max(4, "PIN must be at most 4 digits")
+    .regex(/^\d+$/, "PIN must contain numbers only"),
+});
+
 export type BvnForm = z.infer<typeof bvnSchema>;
 export type PinForm = z.infer<typeof pinSchema>;
 export type UpdatePinForm = z.infer<typeof updatePinSchema>;
+export type ResetPinForm = z.infer<typeof resetPinSchema>;
 export type ModalState = "verify" | "error" | "success" | "pin" | "pinSuccess";
