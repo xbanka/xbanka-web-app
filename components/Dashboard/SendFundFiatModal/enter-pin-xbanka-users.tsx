@@ -6,6 +6,7 @@ import { useValidatePin } from "@/lib/services/security.service";
 import { useState } from "react";
 import { FundStep } from "../Wallet-Page/types";
 import { ErrorLayout } from "@/components/ui/error-layout";
+import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 
 export function EnterPinXbankaStep({
   onBack,
@@ -17,18 +18,19 @@ export function EnterPinXbankaStep({
   onConfirm: (value: FundStep) => void;
 }) {
   const [pin, setPin] = useState("");
-  const {mutate, isPending, error} = useValidatePin()
+  const [openResetPin, setOpenResetPin] = useState(false);
+  const { mutate, isPending, error } = useValidatePin();
 
   const handleConfirm = () => {
     // call API here with pin
     const payload = {
-      pin
-    }
+      pin,
+    };
     mutate(payload, {
       onSuccess: () => {
         onConfirm("processing");
-      }
-    })
+      },
+    });
   };
 
   return (
@@ -45,10 +47,10 @@ export function EnterPinXbankaStep({
         <div className="py-4 space-y-5">
           <OtpInput length={4} onChange={setPin} />
           <div className="text-center flex justify-center">
-          <ErrorLayout message={error?.message} />
+            <ErrorLayout message={error?.message} />
           </div>
           <div className="">
-            <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
+            <button onClick={() => setOpenResetPin(true)} className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
               Forgot PIN?
             </button>
           </div>
@@ -69,12 +71,18 @@ export function EnterPinXbankaStep({
             className="flex-3"
             disabled={pin.length < 4 || isPending}
             // variant={pin.length >= 4 ? "default" : isPending ? "disabled" : "disabled"}
-            variant={isPending ? "disabled" : pin.length >= 4 ? "default" : "disabled"}
+            variant={
+              isPending ? "disabled" : pin.length >= 4 ? "default" : "disabled"
+            }
             onClick={handleConfirm}
           >
             {isPending ? "Validating..." : "Confirm"}
           </Button>
         </div>
+        <ResetPinModal
+          open={openResetPin}
+          handleClose={() => setOpenResetPin(false)}
+        />
       </div>
     </Modal>
   );

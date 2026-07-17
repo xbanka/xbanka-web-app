@@ -1,3 +1,4 @@
+import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
 import { Modal } from "@/components/ui/Modal";
@@ -19,6 +20,7 @@ export function PinStep({
 }) {
   const [pin, setPin] = useState("");
   const { mutate, isPending, error } = useValidatePin();
+  const [openResetPin, setOpenResetPin] = useState(false);
  
   const handleConfirm = () => {
     mutate(
@@ -48,7 +50,7 @@ export function PinStep({
             <ErrorField message={error?.message} />
           </div>
           <div>
-            <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
+            <button onClick={() => setOpenResetPin(true)} className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
               Forgot PIN?
             </button>
           </div>
@@ -74,6 +76,10 @@ export function PinStep({
             {isPending ? "Verifying..." : "Confirm Transaction"}
           </Button>
         </div>
+        <ResetPinModal
+                  open={openResetPin}
+                  handleClose={() => setOpenResetPin(false)}
+                />
       </div>
     </Modal>
   );

@@ -310,7 +310,7 @@ export function EditProfileModal({
           </div>
 
           {/* Address */}
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Label label="Address" />
               <span className="inline-flex items-center rounded-md bg-[#C19700]/15 border border-[#C19700]/40 px-2 py-0.5 text-[11px] font-medium text-[#C19700]">
@@ -324,7 +324,7 @@ export function EditProfileModal({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Actions */}

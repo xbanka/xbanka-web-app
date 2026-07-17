@@ -409,7 +409,7 @@ export function AccountInfoTab() {
           />
           <PersonalInfoTab label="Gender" value={userData?.gender || "-"} />
 
-          <PersonalInfoTab
+          {/* <PersonalInfoTab
             label="Address"
             value={userData?.state || "Not yet provided"}
             subtitle={
@@ -424,7 +424,7 @@ export function AccountInfoTab() {
                 </span>
               ) : undefined
             }
-          />
+          /> */}
           <PersonalInfoTab
             label="Nationality"
             value={userData?.country || "-"}

@@ -6,6 +6,7 @@ import { useValidatePin } from "@/lib/services/security.service";
 import { useState } from "react";
 import { FundStep } from "../Wallet-Page/types";
 import { ErrorField } from "@/components/ui/field-error";
+import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 
 const PIN_LENGTH = 4;
 
@@ -19,6 +20,7 @@ export function EnterPinStep({
   onConfirm: (value: FundStep) => void;
 }) {
   const [pin, setPin] = useState("");
+  const [openResetPin, setOpenResetPin] = useState(false);
   const { mutate, isPending, error } = useValidatePin();
 
   const handleConfirm = () => {
@@ -49,7 +51,10 @@ export function EnterPinStep({
             <ErrorField message={error?.message} />
           </div>
           <div>
-            <button className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
+            <button
+              onClick={() => setOpenResetPin(true)}
+              className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors"
+            >
               Forgot PIN?
             </button>
           </div>
@@ -75,6 +80,10 @@ export function EnterPinStep({
             Confirm Transaction
           </Button>
         </div>
+        <ResetPinModal
+          open={openResetPin}
+          handleClose={() => setOpenResetPin(false)}
+        />
       </div>
     </Modal>
   );
