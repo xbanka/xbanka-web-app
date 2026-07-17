@@ -1,6 +1,12 @@
 import { OnboardingCardProps } from "@/lib/types/card-types";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check, Clock, Lock } from "lucide-react";
+
+const STATUS_BORDER: Record<OnboardingCardProps["status"], string> = {
+  done: "border-l-3 border-border-active",
+  active: "border-l-3 border-yellow-warning-dark",
+  pending: "border-l-3 border-text/20",
+};
 
 export const OnboardingJourneyCard = ({
   className,
@@ -14,7 +20,8 @@ export const OnboardingJourneyCard = ({
   return (
     <div
       className={cn(
-        `py-5 px-5 bg-border min-h-42 flex flex-col justify-between transition-colors ${status === "done" ? "border-l-3 border-border-active flex flex-col justify-between" : ""}`,
+        "py-5 px-5 bg-border min-h-42 flex flex-col justify-between transition-colors",
+        STATUS_BORDER[status],
         className,
       )}
     >
@@ -24,12 +31,15 @@ export const OnboardingJourneyCard = ({
             {step}
           </span>
           {status === "done" && (
-            <div className="bg-green-success-dark border-2 border-green-success-border rounded-full p-0.75">
-              <Check className="w-4 h-4 text-input-text max-sm:h-6 max-sm:w-6" />
-            </div>
+            <Check className="w-5 h-5 text-green-success-dark max-sm:h-6 max-sm:w-6" />
           )}
           {status === "active" && (
-            <span className="w-6 h-6 rounded-full bg-yellow-warning-dark border-2 border-yellow-warning-light p-0.75 animate-pulse" />
+            <div className="bg-yellow-warning-dark border-2 border-yellow-warning-border rounded-full p-0.75 animate-pulse">
+              <Clock className="w-4 h-4 text-yellow-warning-text max-sm:h-6 max-sm:w-6" />
+            </div>
+          )}
+          {status === "pending" && (
+            <Lock className="w-5 h-5 text-text/50 max-sm:h-6 max-sm:w-6" />
           )}
         </div>
         <p className="text-sm font-semibold text-card-text max-sm:text-[14px] max-sm:leading-5 tracking-[-3%]">
