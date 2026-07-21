@@ -39,7 +39,7 @@ const ForgotPassword = () => {
   const onSubmit = (data: forgotPasswordData) => {
     mutate(data, {
       onSuccess: () => {
-        router.push("/reset-password");
+        router.push(`/reset-password?email=${encodeURIComponent(data.email)}`);
         reset();
       },
     });
