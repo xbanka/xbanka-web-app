@@ -52,7 +52,12 @@ export const useSignup = () => {
 export const useResetPassword = () => {
   const mutate = useMutation({
     mutationFn: (data: resetPasswordData) =>
-      resetPassword(data.email, data.password, data.otp),
+      resetPassword(
+        data.email,
+        data.password,
+        data.confirm_password,
+        data.otp 
+      ),
     onSuccess: (result) => {
       toast.success(result.data.message);
     },

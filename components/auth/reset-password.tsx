@@ -18,19 +18,23 @@ import PasswordField from "../ui/password-field";
 import { useResetPassword } from "@/lib/services/auth.service";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ForgotPasswordSuccessState } from "./forgot-password-success-state";
+import { useSearchParams } from "next/navigation";
 
 const ResetPassword = () => {
   const [step, setStep] = useState<"form" | "success">("form");
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") || "";
 
   const methods = useForm<resetPasswordData>({
     resolver: zodResolver(resetPasswordSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
-      email: "",
+      email,
       password: "",
+      confirm_password: "",
       otp: "",
     },
   });
@@ -50,6 +54,12 @@ const ResetPassword = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (email) {
+      methods.setValue("email", email);
+    }
+  }, [email, methods]);
 
   return (
     <Card className="space-y-6 max-sm:text-left">
@@ -77,14 +87,14 @@ const ResetPassword = () => {
                 className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
               />
 
-              <FormField
+              {/* <FormField
                 id="email"
                 placeholder="Email"
                 icon={Mail}
                 register={methods.register}
                 error={methods.formState.errors.email}
                 className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
-              />
+              /> */}
 
               <PasswordField
                 id="password"
@@ -95,6 +105,15 @@ const ResetPassword = () => {
                 className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
               />
 
+              <PasswordField
+                id="confirm_password"
+                placeholder="Confirm Password"
+                icon={Lock}
+                register={methods.register}
+                error={methods.formState.errors?.confirm_password}
+                className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
+              />
+
               <ErrorLayout message={error?.message} />
             </div>
 
@@ -102,9 +121,7 @@ const ResetPassword = () => {
               type="submit"
               size={"lg"}
               disabled={!isValid || isPending}
-              variant={
-                isPending || !isValid ? "disabled" : "default"
-              }
+              variant={isPending || !isValid ? "disabled" : "default"}
               className="w-full max-sm:mt-auto max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
             >
               {isPending ? "Resetting Password..." : "Reset Password"}
