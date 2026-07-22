@@ -65,16 +65,23 @@ export const forgotPassword = async (email: string) => {
   };
 };
 
-export const resetPassword = async (email: string, newPassword: string, otp: string) => {
+export const resetPassword = async (
+  email: string,
+  newPassword: string,
+  confirmPassword: string,
+  otp: string
+) => {
   const response = await AxiosInstance.post(
-    "/auth/reset-password",
+    '/auth/reset-password',
     {
       email,
       newPassword,
-      otp
+      confirm_password: confirmPassword,
+      otp,
     },
-    { withCredentials: true },
+    { withCredentials: true }
   );
+
   return {
     success: true,
     data: response.data,
