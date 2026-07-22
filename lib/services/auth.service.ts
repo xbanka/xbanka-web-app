@@ -56,7 +56,7 @@ export const useResetPassword = () => {
         data.email,
         data.password,
         data.confirm_password,
-        data.otp 
+        data.otp
       ),
     onSuccess: (result) => {
       toast.success(result.data.message);
