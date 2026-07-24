@@ -7,8 +7,6 @@ import { Mail } from "lucide-react";
 import {
   forgotPasswordData,
   forgotPasswordSchema,
-  logInFormData,
-  logInSchema,
 } from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
