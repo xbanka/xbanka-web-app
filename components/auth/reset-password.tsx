@@ -21,7 +21,7 @@ import { ErrorLayout } from "../ui/error-layout";
 import { useEffect, useState } from "react";
 import { ForgotPasswordSuccessState } from "./forgot-password-success-state";
 
-interface ResetPasswordProps{
+interface ResetPasswordProps {
   email?: string;
 }
 
@@ -58,7 +58,11 @@ const ResetPassword = ({ email = "" }: ResetPasswordProps) => {
 
   useEffect(() => {
     if (email) {
-      methods.setValue("email", email);
+      methods.setValue("email", email, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
     }
   }, [email, methods]);
 
