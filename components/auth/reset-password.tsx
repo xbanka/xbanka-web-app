@@ -20,12 +20,13 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import { useEffect, useState } from "react";
 import { ForgotPasswordSuccessState } from "./forgot-password-success-state";
-import { useSearchParams } from "next/navigation";
 
-const ResetPassword = () => {
+interface ResetPasswordProps{
+  email?: string;
+}
+
+const ResetPassword = ({ email = "" }: ResetPasswordProps) => {
   const [step, setStep] = useState<"form" | "success">("form");
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
 
   const methods = useForm<resetPasswordData>({
     resolver: zodResolver(resetPasswordSchema),
