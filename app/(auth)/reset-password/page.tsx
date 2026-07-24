@@ -8,7 +8,7 @@ export default async function ResetPasswordPage({
   const { email } = await searchParams;
   return (
     <div className='bg-background min-h-dvh grid place-items-center max-sm:block'>
-      <ResetPassword />
+      <ResetPassword email={email} />
     </div>
   )
 }
