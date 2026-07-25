@@ -1,12 +1,6 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
-import {
-  Lock,
-  Mail,
-  Phone,
-  ShieldCheck,
-  Smartphone,
-} from "lucide-react";
+import { Lock, Mail, Phone, ShieldCheck, Smartphone } from "lucide-react";
 import { SecurityOverviewCard } from "./security-overview-card";
 import LittleCards from "./little-cards";
 import {
@@ -18,9 +12,7 @@ import { formatRelativeTime } from "@/lib/formatTime";
 import { useState } from "react";
 import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
-import {
-  useDisable2FA
-} from "@/lib/services/security.service";
+import { useDisable2FA } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
 import { useUserStore } from "@/store/user.store";
 import { Enable2faModal } from "./enable2fa-modal";
@@ -32,16 +24,15 @@ export function SecurityTab() {
   const hasPin = false; // Replace with actual logic to check if the user has set a PIN
   const hasPassword = true;
   const whiteList = false;
-  const userData = useUserStore((state) => state.user);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
   const [enable2faModal, setEnable2faModal] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const [removeSessionModal, setRemoveSessionModal] = useState(false);
   const [removeDeviceModal, setRemoveDeviceModal] = useState(false);
-  
+
   const [removeDeviceId, setRemoveDeviceId] = useState<string | null>(null);
-   const {
+  const {
     data: profile,
     error: profileError,
     isPending: profilePending,
@@ -87,7 +78,10 @@ export function SecurityTab() {
       icon: Smartphone,
       label: "Phone",
       status: profile?.data?.phoneNumber && profile?.data?.phoneNumber !== "",
-      statusLabel: (profile?.data?.phoneNumber && profile?.data?.phoneNumber !== "") ? "Active" : "Not enabled",
+      statusLabel:
+        profile?.data?.phoneNumber && profile?.data?.phoneNumber !== ""
+          ? "Active"
+          : "Not enabled",
       statusColor: "text-text",
       note: "",
     },
@@ -149,9 +143,9 @@ export function SecurityTab() {
       icon: Lock,
       label: "Transaction PIN",
       desc: "Required for withdrawals and transfers",
-      isSet: userData?.hasTransactionPin,
-      action: userData?.hasTransactionPin ? "Change" : "Set PIN",
-      status: userData?.hasTransactionPin ? "PIN set" : "",
+      isSet: profile?.data?.hasTransactionPin,
+      action: profile?.data?.hasTransactionPin ? "Change" : "Set PIN",
+      status: profile?.data?.hasTransactionPin ? "PIN set" : "",
       key: "pin",
       onClick: (item: any) => handleAuthAction(item),
     },
@@ -159,23 +153,23 @@ export function SecurityTab() {
       icon: Mail,
       label: "Email Authentication",
       isSet: true,
-      status: "eyebiokin****",
-      action: "Change",
+      status: profile?.data?.email,
+      // action: "Change",
     },
     {
       icon: Phone,
       label: "SMS Authentication",
       isSet: true,
-      status: "+234 708 946 205*",
-      action: "Change",
+      status: profile?.data?.phoneNumber,
+      // action: "Change",
     },
     {
       icon: ShieldCheck,
       label: "Google Authenticator",
       desc: "Highly recommended for account security",
-      isSet: userData?.isTwoFactorEnabled,
-      action: userData?.isTwoFactorEnabled ? "Disable" : "Enable",
-      status: userData?.isTwoFactorEnabled ? "" : "Not configured",
+      isSet: profile?.data?.isTwoFactorEnabled,
+      action: profile?.data?.isTwoFactorEnabled ? "Disable" : "Enable",
+      status: profile?.data?.isTwoFactorEnabled ? "" : "Not configured",
       onClick: () => handle2faModal(),
     },
   ];

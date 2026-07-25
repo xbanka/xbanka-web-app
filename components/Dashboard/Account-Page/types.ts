@@ -12,7 +12,7 @@ export interface securityOverviewCardProps {
 export interface littleCardProps {
   key: number;
   Icon?: LucideIcon;
-  action: string;
+  action?: string;
   label: string;
   status?: string;
   ip?: string;

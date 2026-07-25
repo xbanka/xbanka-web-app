@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const signUpSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().trim().email("Please enter a valid email address"),
 
   password: z
     .string()
@@ -32,14 +32,14 @@ export const logInSchema = z.object({
 export type logInFormData = z.infer<typeof logInSchema>;
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().trim().email("Please enter a valid email address"),
 });
 
 export type forgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 
 export const resetPasswordSchema = z
   .object({
-    email: z.string().email("Please enter a valid email address"),
+    email: z.string().trim().email("Please enter a valid email address"),
     otp: z.string().min(1, "OTP is required"),
     password: z
       .string()

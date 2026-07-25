@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
 import { UseProfileUser } from "@/lib/services/profile.service";
-import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/user.store";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
@@ -23,7 +22,11 @@ export function ConfirmXbankaUserStep({
   onClose: () => void;
   onConfirm: () => void;
 }) {
-  const userData = useUserStore((state) => state.user);
+   const {
+    data: profile,
+    error: profileError,
+    isPending: profilePending,
+  } = UseProfileUser();
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
   const feeNum = parseFloat(fee) || 0;
   const total = (numeric + feeNum).toLocaleString();
@@ -62,7 +65,7 @@ export function ConfirmXbankaUserStep({
           <div className="space-y-3">
             <TransactionDescriptionField
               label="From"
-              value={userData?.firstName + " " + userData?.lastName}
+              value={profile?.data?.firstName + " " + profile?.data?.lastName}
               isAccount
             />
             <TransactionDescriptionField
