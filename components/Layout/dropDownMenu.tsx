@@ -16,23 +16,16 @@ interface UserDropdownProps {
   avatarInitials?: string;
 }
 
-const TIER_COLORS: Record<number, string> = {
-  1: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-  2: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  3: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-};
-
 export default function UserDropdown({}: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const userData = useUserStore((state) => state.user);
   const {
-    data: profileData,
+    data: profile,
     isPending: profileDataPending,
     error: profileDataError,
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
-  const avatar = profileData?.data?.avatarUrl;
+  const avatar = profile?.data?.avatarUrl;
 
   const {
     data: verificationData,
@@ -80,8 +73,8 @@ export default function UserDropdown({}: UserDropdownProps) {
                 className="object-cover rounded-full"
               />
             ) : (
-              `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
-              userData?.email[0]
+              `${profile?.data?.firstName?.[0] || ""}${profile?.data?.lastName?.[0] || ""}` ||
+              profile?.data?.email[0]
             )}
           </div>
         </div>
@@ -90,11 +83,11 @@ export default function UserDropdown({}: UserDropdownProps) {
         <div className="hidden sm:block text-left min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-[14px] font-medium text-card-text leading-5 truncate">
-              {userData?.firstName}
+              {profile?.data?.firstName}
             </p>
           </div>
           <p className="text-[12px] font-normal leading-5.5 text-text max-w-28 truncate">
-            UID: {shortenUid(userData?.userId)}
+            UID: {shortenUid(profile?.data?.userId)}
           </p>
         </div>
 
@@ -119,19 +112,19 @@ export default function UserDropdown({}: UserDropdownProps) {
                       className="object-cover rounded-full"
                     />
                   ) : (
-                    `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
-                    userData?.email[0]
+                    `${profile?.data?.firstName?.[0] || ""}${profile?.data?.lastName?.[0] || ""}` ||
+                    profile?.data?.email[0]
                   )}
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-card-background" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-card-text">
-                  {userData?.firstName} {userData?.lastName}
+                  {profile?.data?.firstName} {profile?.data?.lastName}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-xs text-text mt-0.5">
-                    UID: {shortenUid(userData?.userId)}
+                    UID: {shortenUid(profile?.data?.userId)}
                   </p>
                   {verificationData?.data?.tierLevel === 0 && (
                     <Image
