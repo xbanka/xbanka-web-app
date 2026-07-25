@@ -76,7 +76,7 @@ const LittleCards = ({
             {status}
           </span>
         )}
-        <Button
+        { action && <Button
           variant="outline"
           size="sm"
           onClick={onClick}
@@ -87,7 +87,7 @@ const LittleCards = ({
           }`}
         >
           {action}
-        </Button>
+        </Button>}
       </div>
     </div>
   );
