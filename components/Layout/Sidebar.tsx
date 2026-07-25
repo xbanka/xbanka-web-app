@@ -90,11 +90,10 @@ const BOTTOM_NAV_ITEMS = [
 // Account tab shows the user's profile photo (like the topbar), not an icon.
 function AccountTabAvatar({ active }: { active: boolean }) {
   const { data: profileData } = UseProfileUser();
-  const userData = useUserStore((state) => state.user);
   const avatar = profileData?.data?.avatarUrl;
   const initials =
-    `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
-    userData?.email?.[0] ||
+    `${profileData?.data?.firstName?.[0] || ""}${profileData?.data?.lastName?.[0] || ""}` ||
+    profileData?.data?.email?.[0] ||
     "";
 
   return (
@@ -144,9 +143,6 @@ export function Sidebar({
     setMobileOpen(false);
   };
 
-  // const route = item.id === "dashboard" ? "/" : `/${item.id}`;
-
-  // const active = pathname === route;
   const { openModal } = useLogoutStore();
 
   const sidebarContent = (
