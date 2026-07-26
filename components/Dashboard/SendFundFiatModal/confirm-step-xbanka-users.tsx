@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
 import { UseProfileUser } from "@/lib/services/profile.service";
-import { useUserStore } from "@/store/user.store";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
 export function ConfirmXbankaUserStep({

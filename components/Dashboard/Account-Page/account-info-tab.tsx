@@ -3,7 +3,6 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Camera, Copy, Edit2, Lock, Info, Plus } from "lucide-react";
 import { useState } from "react";
-import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
