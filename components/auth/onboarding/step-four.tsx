@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import LivenessDetector from "../../ui/LivenessDetector";
-import { Camera } from "lucide-react";
+import { LivenessQrPanel } from "@/components/ui/liveness-qr-panel";
 import { Button } from "@/components/ui/button";
 import { useIsMobileDevice } from "@/hooks/use-IsMobileDevice";
 import { useSkipStep } from "@/lib/services/onboarding.service";
-import { UseProfileUser } from "@/lib/services/profile.service";
+import { useUserIdStore } from "@/store/verify-id.store";
 import { ErrorField } from "@/components/ui/field-error";
 
 interface Step4Props {
@@ -24,8 +24,9 @@ function Step4({ setStep }: Step4Props) {
     error: skipError,
     mutate: skipMutate,
   } = useSkipStep();
-  const { data: profileData } = UseProfileUser();
-  const userId = profileData?.data?.userId;
+  const userId = useUserIdStore((s) => s.userId);
+  // const userId = "ddccdaf1-859b-48b5-a73f-86118f46e9a9";
+  console.log("userId", userId)
 
   const handleSkip = () => {
     skipMutate(userId, {
@@ -38,22 +39,16 @@ function Step4({ setStep }: Step4Props) {
   if (!isMobileDevice) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
-        <div className="rounded-2xl border border-border bg-card-background p-6 w-full">
-          <Camera className="mx-auto h-12 w-12 text-text" />
-
-          <h2 className="mt-4 text-xl font-semibold text-card-text">
-            Mobile Device Required
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold text-card-text">
+            Almost Done! Let&apos;s take a Selfie
           </h2>
-
-          <p className="mt-2 text-text">
-            Selfie verification can only be completed on a mobile device with a
-            front-facing camera.
-          </p>
-
-          <p className="mt-2 text-sm text-text">
-            Please continue this step on your phone.
+          <p className="text-text">
+            Scan the QR code below with your phone to continue on a device
+            with a front-facing camera.
           </p>
         </div>
+        <LivenessQrPanel userId={userId} onCompleted={() => router.push("/welcome")} />
         <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5 w-full">
           <Button
             variant="outline"
@@ -103,6 +98,7 @@ function Step4({ setStep }: Step4Props) {
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
+          userId={userId}
           onBack={() => setStep(2)}
           onSuccess={() => router.push("/welcome")}
           brandColor="#36b6ab"

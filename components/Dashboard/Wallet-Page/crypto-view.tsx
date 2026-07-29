@@ -7,6 +7,7 @@ import { getCoinImage } from "@/lib/coin-images";
 import { formatCryptoBalance } from "@/lib/marketFormat";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
@@ -23,6 +24,14 @@ export function CryptoView() {
       // Optional: sort non-zero balances descending
       return bBalance - aBalance;
     }) || [];
+
+  useEffect(() => {
+    if (window.location.hash === "#transactions") {
+      document
+        .getElementById("transactions")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   const columns = [
     {
@@ -85,7 +94,9 @@ export function CryptoView() {
       header: "Action",
       render: (item: UserWallet) => (
         <Link href={`/crypto?tab=buy&mode=buy&coin=${item.currency}`}>
-          <span className="font-normal text-sm leading-6 text-Green">Trade</span>
+          <span className="font-normal text-sm leading-6 text-Green">
+            Trade
+          </span>
         </Link>
       ),
     },
@@ -175,7 +186,9 @@ export function CryptoView() {
         </div>
       </div>
 
-      <TransactionHistory tableType="CRYPTO" />
+      <div id="transactions">
+        <TransactionHistory tableType="CRYPTO" />
+      </div>
     </div>
   );
 }
