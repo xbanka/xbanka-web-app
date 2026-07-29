@@ -20,12 +20,15 @@ const VerifyPage = ({ token }: { token?: string }) => {
     if (!token || hasVerified.current) return;
 
     hasVerified.current = true;
-    mutate(token);
+    mutate(token, {
+      onSuccess: (response) => console.log("verify email response", response) 
+    });
   }, [mutate, token]);
 
   useEffect(() => {
     if (data?.data?.data?.id) {
       setUserId(data.data.data.id);
+      console.log("userId", data.data.data.id)
     }
   }, [data]);
 

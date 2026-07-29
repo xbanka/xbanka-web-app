@@ -1,7 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   address,
+  getLivenessSessionStatus,
   identity,
+  initiateLivenessSession,
   profile,
   selfie,
   skipStep,
@@ -119,6 +121,30 @@ export const useVerifySelfie = () => {
 
     onError: (err) => {
       handleApiError(err);
+    },
+  });
+};
+
+export const useInitiateLivenessSession = () => {
+  return useMutation({
+    mutationFn: (userId: string) => initiateLivenessSession(userId),
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
+};
+
+export const useLivenessSessionStatus = (
+  sessionId: string | undefined,
+  enabled: boolean = true,
+) => {
+  return useQuery({
+    queryKey: ["liveness-session-status", sessionId],
+    queryFn: () => getLivenessSessionStatus(sessionId as string),
+    enabled: !!sessionId && enabled,
+    refetchInterval: (query) => {
+      const status = query.state.data?.data?.status;
+      return status === "PENDING" ? 3000 : false;
     },
   });
 };

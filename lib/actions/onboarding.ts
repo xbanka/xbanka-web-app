@@ -63,6 +63,28 @@ export const selfie = async (formData: FormData) => {
   };
 };
 
+export const initiateLivenessSession = async (userId: string) => {
+  const response = await AxiosInstance.post("/kyc/liveness-session", {
+    userId,
+  });
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const getLivenessSessionStatus = async (sessionId: string) => {
+  const response = await AxiosInstance.get(
+    `/kyc/liveness-session/${sessionId}`,
+  );
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
 export const verifyBvn = async (userId: string, bvn: string) => {
   const response = await AxiosInstance.post("/kyc/verify-bvn", {
     userId,
