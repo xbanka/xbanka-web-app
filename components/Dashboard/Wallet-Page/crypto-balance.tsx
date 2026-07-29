@@ -11,6 +11,7 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useRouter } from "next/navigation";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { useCurrencyViewStore } from "@/store/currency-view.store";
 
 export const CryptoBalance = () => {
   const router = useRouter();
@@ -18,9 +19,8 @@ export const CryptoBalance = () => {
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
-  const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
-  const { validateCryptoSend } =
-  useOnboardingGuard();
+  const { view, setView } = useCurrencyViewStore();
+  const { validateCryptoSend } = useOnboardingGuard();
   const { data } = UseGetCryptoWallet();
   const wallets = data?.data?.data || [];
 

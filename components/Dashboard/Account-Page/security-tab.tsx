@@ -14,7 +14,6 @@ import { CreatePinModal } from "./create-pin-modal";
 import { UpdatePinModal } from "./update-pin-modal";
 import { useDisable2FA } from "@/lib/services/security.service";
 import { ChangePasswordModal } from "../Wallet-Page/change-password-modal";
-import { useUserStore } from "@/store/user.store";
 import { Enable2faModal } from "./enable2fa-modal";
 import { RemoveDeviceModal } from "./remove-device-modal";
 import { RemoveSessionModal } from "./remove-session-modal";

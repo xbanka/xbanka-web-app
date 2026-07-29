@@ -4,12 +4,13 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ErrorField } from "@/components/ui/field-error";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
+import { useCurrencyViewStore } from "@/store/currency-view.store";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 export function AssetValueCard() {
   const [hidden, setHidden] = useState(false);
-  const [view, setView] = useState<"NGN" | "CRYPTO">("NGN");
+  const { view, setView } = useCurrencyViewStore();
   const {
     data: getAllWalletBalance,
     error: getAllWalletBalanceError,
