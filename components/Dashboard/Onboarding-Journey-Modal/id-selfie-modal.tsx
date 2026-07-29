@@ -2,7 +2,7 @@ import { Modal } from "@/components/ui/Modal";
 import { SuccessState } from "./success-state";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { FormField } from "@/components/ui/FormField";
-import { Camera, IdCard } from "lucide-react";
+import { IdCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/ui/select";
 import {
@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import LivenessDetector, {
   loadFaceLandmarker,
 } from "@/components/ui/LivenessDetector";
+import { LivenessQrPanel } from "@/components/ui/liveness-qr-panel";
 import {
   UseProfileUser,
   UseVerificationStatus,
@@ -124,42 +125,6 @@ export function IdSelfieModal({
     loadFaceLandmarker();
   };
 
-  if (!isMobileDevice) {
-    return (
-      <Modal className="p-0" onClose={onClose}>
-        <div className="space-y-6 text-center py-8 px-8">
-          <div className="border border-border rounded-2xl p-6 bg-card-background">
-            <div className="space-y-3">
-              <Camera className="mx-auto h-10 w-10 text-text" />
-
-              <h2 className="text-lg font-semibold text-card-text">
-                Mobile Device Required
-              </h2>
-
-              <p className="text-sm text-text">
-                Selfie verification can only be completed on a mobile device
-                with a front-facing camera.
-              </p>
-
-              <p className="text-xs text-text">
-                Please open your account on your phone to continue.
-              </p>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full"
-            onClick={onClose}
-          >
-            Back
-          </Button>
-        </div>
-      </Modal>
-    );
-  }
-
   return (
     <Modal className="p-0" onClose={onClose}>
       {/* ── ID FORM ─────────────────────────────────────── */}
@@ -255,15 +220,27 @@ export function IdSelfieModal({
           <ModalHeader
             className="px-8"
             title="Almost Done!, Let's take a Selfie"
-            subtitle="We'll match your photo with your ID to confirm it's really you."
+            subtitle={
+              isMobileDevice
+                ? "We'll match your photo with your ID to confirm it's really you."
+                : "Scan the QR code with your phone to continue on a device with a front-facing camera."
+            }
             onClose={onClose}
           />
-          <div className="text-center pt-6">
-            <LivenessDetector
-              onBack={() => setStep("id-success")}
-              onSuccess={() => setStep("selfie-success")}
-              brandColor="#36b6ab"
-            />
+          <div className="text-center px-8 pt-6">
+            {isMobileDevice ? (
+              <LivenessDetector
+                userId={userId ?? ""}
+                onBack={() => setStep("id-success")}
+                onSuccess={() => setStep("selfie-success")}
+                brandColor="#36b6ab"
+              />
+            ) : (
+              <LivenessQrPanel
+                userId={userId ?? ""}
+                onCompleted={() => setStep("selfie-success")}
+              />
+            )}
           </div>
         </div>
       )}

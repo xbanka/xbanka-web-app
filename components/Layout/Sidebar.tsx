@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useThemeStore } from "@/store/theme.store";
 import Image from "next/image";
 import { UseProfileUser } from "@/lib/services/profile.service";
-import { useUserStore } from "@/store/user.store";
 
 type IconProps = { className?: string };
 
