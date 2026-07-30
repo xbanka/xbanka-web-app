@@ -69,7 +69,7 @@ export const initiateLivenessSession = async (userId: string) => {
   });
   return {
     success: true,
-    data: response.data,
+    data: response.data?.data ?? response.data,
     status: response.status,
   };
 };
@@ -80,7 +80,7 @@ export const getLivenessSessionStatus = async (sessionId: string) => {
   );
   return {
     success: true,
-    data: response.data,
+    data: response.data?.data ?? response.data,
     status: response.status,
   };
 };

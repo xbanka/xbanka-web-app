@@ -35,8 +35,7 @@ export function LivenessQrPanel({
     setSessionId(null);
     initiate(userId, {
       onSuccess: (result) => {
-        console.log("session id :", result?.data?.data?.sessionId)
-        setSessionId(result?.data?.data?.sessionId);
+        setSessionId(result.data.sessionId);
       },
     });
   };
@@ -56,7 +55,6 @@ export function LivenessQrPanel({
     sessionId && typeof window !== "undefined"
       ? `${window.location.origin}/onboarding/liveness/${sessionId}?uid=${encodeURIComponent(userId)}`
       : "";
-  console.log("qrUrl", qrUrl);
 
   if (status === "FAILED") {
     return (
