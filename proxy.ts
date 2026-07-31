@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = [
   "/google/callback",
   "/verify-email",
   "/verify-device",
+  "/verify-2fa",
 ];
 
 export function proxy(request: NextRequest) {

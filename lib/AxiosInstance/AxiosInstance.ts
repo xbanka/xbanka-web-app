@@ -50,6 +50,7 @@ AxiosInstance.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry &&
       !requestUrl.includes("/auth/login") &&
+      !requestUrl.includes("/auth/2fa/login") &&
       !requestUrl.includes("/auth/signup") &&
       !requestUrl.includes("/auth/verify-email")
     ) {
