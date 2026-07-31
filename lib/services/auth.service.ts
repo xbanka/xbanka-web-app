@@ -8,9 +8,10 @@ import {
   signup,
   verifyDevice,
   verifyEmail,
+  verifyTwoFactor,
 } from "../actions/auth";
 import { handleApiError } from "../errors/error";
-import { SignupFormData, VerifyDeviceData } from "../types/auth-types";
+import { SignupFormData, VerifyDeviceData, VerifyTwoFactorData } from "../types/auth-types";
 import {
   forgotPasswordData,
   logInFormData,
@@ -89,6 +90,7 @@ export const useLogin = () => {
       const result = res.data;
       const accessToken = getAccessToken(result);
       const refreshToken = result?.refresh_token;
+      console.log("result status", result.status)
 
       if (result.status === "DEVICE_VERIFICATION_REQUIRED") {
         localStorage.removeItem("accessToken");
@@ -99,14 +101,27 @@ export const useLogin = () => {
         localStorage.setItem("verifyEmail", variables.email);
 
         router.push("/verify-device");
-      } else {
-        if (accessToken && refreshToken) {
-          authTokens.setTokens(accessToken, refreshToken);
-          tokenStore.set(accessToken);
-          document.cookie = `accessToken=${accessToken}; path=/`;
-        }
-        router.push("/");
+        return;
       }
+
+      if (result.status === "2FA_REQUIRED") {
+        localStorage.removeItem("accessToken");
+        tokenStore.clear();
+
+        localStorage.setItem("twoFAUserId", result.userId);
+        localStorage.setItem("twoFAEmail", variables.email);
+
+        router.push("/verify-2fa");
+        return;
+      }
+
+      if (accessToken && refreshToken) {
+        authTokens.setTokens(accessToken, refreshToken);
+        tokenStore.set(accessToken);
+        document.cookie = `accessToken=${accessToken}; path=/`;
+      }
+
+      router.push("/");
     },
     onError: (err: any) => {
       if (err?.raw?.response?.data?.errorGroup === "EMAIL_VERIFICATION_REQUIRED") {
@@ -144,6 +159,36 @@ export const useVerifyDevice = () => {
     },
   });
   return mutate;
+};
+
+export const useVerifyTwoFactor = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: VerifyTwoFactorData) => verifyTwoFactor(data),
+
+    onSuccess: (result) => {
+      const accessToken = result.data.access_token;
+      const refreshToken = result.data.refresh_token;
+
+      if (accessToken && refreshToken) {
+        authTokens.setTokens(accessToken, refreshToken);
+        tokenStore.set(accessToken);
+        document.cookie = `accessToken=${accessToken}; path=/`;
+      }
+
+      localStorage.removeItem("twoFAUserId");
+      localStorage.removeItem("twoFAEmail");
+
+      toast.success(result.data.message);
+
+      // router.push("/");
+    },
+
+    onError: (err) => {
+      handleApiError(err);
+    },
+  });
 };
 
 export const useVerifyMail = () => {
