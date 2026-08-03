@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface SelectWithRadioButtonProps {
   id: string;
@@ -10,6 +11,8 @@ interface SelectWithRadioButtonProps {
   active: boolean;
   altIcon?: string;
   altIconColor?: string;
+  /** Custom leading visual; takes precedence over `icon` and `altIcon`. */
+  leading?: ReactNode;
   badge?: string;
 }
 
@@ -22,6 +25,7 @@ export const SelectWithRadioButton = ({
   active,
   altIcon,
   altIconColor,
+  leading,
   badge,
 }: SelectWithRadioButtonProps) => {
   return (
@@ -35,7 +39,8 @@ export const SelectWithRadioButton = ({
           : "border-border hover:border-border-active",
       )}
     >
-      {Icon && (
+      {leading}
+      {!leading && Icon && (
         <div
           className={cn(
             "w-10 h-10 max-sm:w-11 max-sm:h-11 p-2.5 rounded-lg border border-input flex items-center justify-center shrink-0 bg-border text-card-text",
@@ -44,7 +49,7 @@ export const SelectWithRadioButton = ({
           <Icon className="w-5 h-5 text-text" />
         </div>
       )}
-      {altIcon && (
+      {!leading && altIcon && (
         <div
           className={cn(
             "w-10 h-10 max-sm:w-11 max-sm:h-11 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-semibold uppercase",

@@ -1,5 +1,4 @@
-import { getCoinImage } from "@/lib/coin-images";
-import Image from "next/image";
+import { CoinIcon } from "@/components/ui/coin-icon";
 
 export function CoinAvatar({
   className,
@@ -15,15 +14,7 @@ export function CoinAvatar({
       className={`${className} rounded-full flex items-center mx-auto h-auto justify-center font-bold shrink-0`}
       style={{ width: size, height: size}}
     >
-      <Image
-        src={getCoinImage(currency)}
-        alt={currency}
-        width={size}
-        height={size}
-        // onError={(e) => {
-        //   e.currentTarget.src = "/images/default-coin.png";
-        // }}
-      />
+      <CoinIcon currency={currency} size={size} />
     </div>
   );
 }

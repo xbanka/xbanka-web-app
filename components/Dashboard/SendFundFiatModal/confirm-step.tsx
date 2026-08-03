@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
+import { BankLogo } from "@/components/ui/bank-logo";
 import { cn } from "@/lib/utils";
-import { bankColor, bankInitials } from "@/lib/wallet-page";
 import { AlertTriangle, ArrowLeftRight } from "lucide-react";
 
 export function ConfirmStep({
@@ -10,6 +10,8 @@ export function ConfirmStep({
   accountName,
   fee,
   note,
+  bankName,
+  bankCode,
   onBack,
   onClose,
   onConfirm,
@@ -19,6 +21,10 @@ export function ConfirmStep({
   accountName: string;
   fee: string;
   note?: string;
+  /** Full bank name, for logo lookup. Falls back to parsing `sourceLabel`. */
+  bankName?: string;
+  /** CBN bank code — the most reliable key for the logo lookup. */
+  bankCode?: string;
   onBack: () => void;
   onClose: () => void;
   onConfirm: () => void;
@@ -26,7 +32,10 @@ export function ConfirmStep({
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
   const feeNum = parseFloat(fee) || 0;
   const total = (numeric + feeNum).toLocaleString();
-  const sourceBankName = sourceLabel?.split(/\s+/)[0] || sourceLabel || "";
+  // `sourceLabel` is "<bank name> <account number>", so strip the trailing
+  // account number when no explicit bankName was passed.
+  const sourceBankName =
+    bankName || sourceLabel?.replace(/\s*\d+\s*$/, "").trim() || sourceLabel || "";
 
   const rows: {
     label: string;
@@ -80,14 +89,11 @@ export function ConfirmStep({
                 </span>
                 {row.isAccount ? (
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <div
-                      className={cn(
-                        "w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold shrink-0",
-                        bankColor(sourceBankName),
-                      )}
-                    >
-                      {bankInitials(sourceBankName).slice(0, 1)}
-                    </div>
+                    <BankLogo
+                      bankName={sourceBankName}
+                      bankCode={bankCode}
+                      size={16}
+                    />
                     <span className="font-medium text-card-text truncate">
                       {row.value}
                     </span>

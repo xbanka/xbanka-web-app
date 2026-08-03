@@ -243,3 +243,51 @@ body {
     }
   }
 }
+
+/* Print: isolate the transaction receipt so "Save as PDF" produces the
+   receipt alone rather than the whole dashboard behind the modal. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-printable,
+  .receipt-printable * {
+    visibility: visible;
+  }
+
+  .receipt-printable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
+
+
+/* Sonner close button: inherit the toast's own text colour so it stays legible
+   on both default toasts and ones that set a custom background (e.g. the teal
+   "coin unavailable" notice in the buy/sell tabs). */
+[data-sonner-toast] [data-close-button] {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+  opacity: 0.65;
+  transition: opacity 150ms ease;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background: transparent;
+  opacity: 1;
+}

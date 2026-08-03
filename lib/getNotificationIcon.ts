@@ -10,6 +10,13 @@ import {
   Bell,
 } from "lucide-react";
 
+/** The fields these helpers actually read off a notification. */
+type NotificationLike = {
+  type?: string | null;
+  title?: string | null;
+  message?: string | null;
+};
+
 const notificationText = (notification: any) =>
   `${notification.type ?? ""} ${notification.title ?? ""} ${notification.message ?? ""}`.toLowerCase();
 
@@ -44,6 +51,28 @@ export const getNotificationStatus = (
   }
 
   return "neutral";
+};
+
+/**
+ * Human-readable status for display, or null when the notification carries no
+ * meaningful progress (purely informational ones shouldn't get a badge).
+ *
+ * Labels match the rest of the app so notifications read the same as the
+ * transaction history tables.
+ */
+export const getNotificationStatusLabel = (
+  notification: NotificationLike,
+): "Completed" | "Pending" | "Failed" | null => {
+  switch (getNotificationStatus(notification)) {
+    case "success":
+      return "Completed";
+    case "pending":
+      return "Pending";
+    case "failed":
+      return "Failed";
+    default:
+      return null;
+  }
 };
 
 export const getNotificationIcon = (notification: any) => {

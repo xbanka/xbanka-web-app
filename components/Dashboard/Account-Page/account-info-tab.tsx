@@ -22,6 +22,7 @@ import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
 import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
+import { WithdrawalAccountCard } from "./withdrawal-account-card";
 
 const maskEmail = (email?: string) => {
   if (!email) return "";
@@ -317,24 +318,13 @@ export function AccountInfoTab() {
             {!bankAccountsPending && bankAccounts.length > 0 && (
               <div className="space-y-3">
                 {bankAccounts.map((bank: any) => (
-                  <div
+                  <WithdrawalAccountCard
                     key={bank.id}
-                    className="bg-border rounded-lg p-5 space-y-3"
-                  >
-                    <FundingAccountDetailsLayout
-                      label="Bank Name"
-                      value={bank.bankName}
-                    />
-                    <FundingAccountDetailsLayout
-                      label="Account Name"
-                      value={bank.accountName}
-                    />
-                    <FundingAccountDetailsLayout
-                      label="Account Number"
-                      value={bank.accountNumber}
-                    />
-                    <FundingAccountDetailsLayout label="Currency" value="NGN" />
-                  </div>
+                    bankName={bank.bankName}
+                    bankCode={bank.bankCode}
+                    accountName={bank.accountName}
+                    accountNumber={bank.accountNumber}
+                  />
                 ))}
               </div>
             )}

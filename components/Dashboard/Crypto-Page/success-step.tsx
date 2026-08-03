@@ -13,6 +13,8 @@ import { ConversionResult } from "./types";
 import Image from "next/image";
 import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { DetailBox } from "./detail-box";
+import { formatDateTime } from "@/lib/formatDate";
+import { TransactionReceiptModal } from "./transaction-receipt-modal";
 
 export function SuccessStep({
   mode,
@@ -28,6 +30,7 @@ export function SuccessStep({
   onRepeat: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   const copy = () => {
     if (!result?.transactionId) return;
@@ -72,6 +75,17 @@ export function SuccessStep({
       valueClass: "text-card-text",
     },
   ];
+
+  if (receiptOpen) {
+    return (
+      <TransactionReceiptModal
+        mode={mode}
+        result={result}
+        dateTime={dateTime}
+        onClose={() => setReceiptOpen(false)}
+      />
+    );
+  }
 
   return (
     <Modal
@@ -119,8 +133,8 @@ export function SuccessStep({
             {dateTime && (
               <div className="flex items-center justify-between pt-3 border-t border-input text-xs">
                 <span className="text-text">Date & Time</span>
-                <span className="font-normal text-sm leading-6 text-card-text truncate max-w-30">
-                  {dateTime}
+                <span className="font-normal text-sm leading-6 text-card-text truncate max-w-40">
+                  {formatDateTime(dateTime)}
                 </span>
               </div>
             )}
@@ -150,7 +164,7 @@ export function SuccessStep({
               variant="outline"
               size="lg"
               className="flex-1 text-card-text"
-              // onClick={onRepeat}
+              onClick={() => setReceiptOpen(true)}
             >
               <Receipt className="w-4 h-4 text-text" />
               View Receipt
