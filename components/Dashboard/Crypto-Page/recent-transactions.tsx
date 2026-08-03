@@ -42,7 +42,7 @@ export function RecentTransactions() {
   };
   return (
     <DashboardCard className="opacity-60">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center mb-3">
         <div className="flex items-center gap-2">
           <h3 className="text-[16px] leading-6 font-medium text-text">
             Recent Transaction
