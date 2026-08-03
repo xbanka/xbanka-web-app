@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { CurrencyOption } from "@/lib/crypto";
+import { CoinIcon } from "@/components/ui/coin-icon";
 import { cn } from "@/lib/utils";
+
+const isNaira = (value?: string) => value === "NGNX" || value === "NGN";
 
 export interface CryptoSelectFieldProps {
   currencyId?: boolean;
@@ -56,24 +58,12 @@ export const CryptoSelectField = ({
           >
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 flex items-center justify-center rounded-full overflow-hidden">
-                {selected?.image ? (
-                  <Image
-                    src={selected.image}
-                    alt={selected.label}
-                    width={24}
-                    height={24}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <div
-                    className={cn(
-                      "h-6 w-6 rounded-full flex items-center justify-center text-white text-xs font-bold",
-                      selected?.value === "NGNX" &&
-                        "bg-Green border border-[#5EEAD4]",
-                    )}
-                  >
+                {isNaira(selected?.value) ? (
+                  <div className="h-6 w-6 rounded-full flex items-center justify-center text-white text-xs font-bold bg-Green border border-[#5EEAD4]">
                     ₦
                   </div>
+                ) : (
+                  <CoinIcon currency={selected?.value} size={24} />
                 )}
               </div>
               <span>{selected?.label || "Select"}</span>
@@ -94,24 +84,12 @@ export const CryptoSelectField = ({
                   className="flex items-center gap-2 px-3 py-2 hover:bg-border cursor-pointer"
                 >
                   <div className="h-5 w-5 flex items-center justify-center rounded-full overflow-hidden">
-                    {o.image ? (
-                      <Image
-                        src={o.image}
-                        alt={o.label}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div
-                        className={cn(
-                          "h-5 w-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold",
-                          o.value === "NGNX" &&
-                            "bg-Green border border-[#5EEAD4]",
-                        )}
-                      >
+                    {isNaira(o.value) ? (
+                      <div className="h-5 w-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold bg-Green border border-[#5EEAD4]">
                         ₦
                       </div>
+                    ) : (
+                      <CoinIcon currency={o.value} size={20} />
                     )}
                   </div>
                   <span>{o.label}</span>

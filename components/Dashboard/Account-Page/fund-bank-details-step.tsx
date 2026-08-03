@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
-import { SelectField } from "@/components/ui/select";
+import { BankLogo } from "@/components/ui/bank-logo";
+import { SearchSelectField } from "@/components/ui/search-select-field";
 import { BankForm, bankSchema } from "@/lib/schema/bank-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -74,7 +75,7 @@ export function BankDetailsStep({
         className="space-y-8 px-10 pb-10 pt-6"
       >
         <div className="space-y-4">
-          <SelectField
+          <SearchSelectField
             id="bankName"
             label="Bank Name"
             placeholder={isLoadingBanks ? "Loading banks..." : "Select bank"}
@@ -82,6 +83,15 @@ export function BankDetailsStep({
             register={register}
             error={errors.bankName}
             disabled={isLoadingBanks}
+            renderIcon={(code) => (
+              <BankLogo
+                bankName={
+                  bankOptions.find((b) => b.value === code)?.label ?? ""
+                }
+                bankCode={code}
+                size={20}
+              />
+            )}
           />
 
           <FormField

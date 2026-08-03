@@ -1,4 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useUserStore } from "@/store/user.store";
+import {
+  dismissNotification,
+  getDismissedNotifications,
+  restoreNotification,
+} from "@/lib/dismissedNotifications";
 import { Tab } from "@/lib/types/notification-types";
 import { Check, BellOff, Loader2 } from "lucide-react";
 import { NotifItem } from "./NotifItem";
@@ -42,7 +49,28 @@ export function NotificationsModal({
     error: readSingleError,
   } = useReadSingleNotification();
 
-  const notifications = data?.data ?? [];
+  // Dismissals live in localStorage until the API gains a delete route, and are
+  // loaded after mount so server and client markup match on first render.
+  const userId = useUserStore((state) => state.user?.userId);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    setDismissedIds(getDismissedNotifications(userId));
+  }, [userId]);
+
+  const handleDismiss = (id: string) => {
+    setDismissedIds(dismissNotification(id, userId));
+    toast.success("Notification removed", {
+      action: {
+        label: "Undo",
+        onClick: () => setDismissedIds(restoreNotification(id, userId)),
+      },
+    });
+  };
+
+  const notifications = (data?.data ?? []).filter(
+    (n: { id: string }) => !dismissedIds.includes(n.id),
+  );
 
   const filteredNotifications =
     activeTab === "all"
@@ -148,6 +176,7 @@ export function NotificationsModal({
                               readSingleNotification(notification.id);
                             }
                           }}
+                          onDismiss={() => handleDismiss(notification.id)}
                         />
                       ))}
                     </div>

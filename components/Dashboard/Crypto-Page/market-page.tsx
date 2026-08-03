@@ -8,13 +8,12 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetMarketPrices } from "@/lib/services/wallet.service";
 import { CryptoMarketOverview } from "../Home-Page/types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
-import { getCoinImage } from "@/lib/coin-images";
+import { CoinIcon } from "@/components/ui/coin-icon";
 
 const MARKET_PAGE_TABS = ["favorites", "spot", "futures"] as const;
 const MARKET_FILTERS = ["all", "new"] as const;
@@ -330,12 +329,7 @@ export function MarketPage() {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-card-background overflow-hidden shrink-0">
-                            <Image
-                              src={getCoinImage(coin.symbol)}
-                              alt={coin.symbol}
-                              width={28}
-                              height={28}
-                            />
+                            <CoinIcon currency={coin.symbol} size={28} />
                           </div>
                           <span className="text-[14px] font-semibold text-card-text whitespace-nowrap">
                             {coin.symbol}

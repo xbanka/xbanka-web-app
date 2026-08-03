@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { SelectWithRadioButton } from "@/components/ui/select-with-radio-button";
-import { bankColor, bankInitials } from "@/lib/wallet-page";
+import { BankLogo } from "@/components/ui/bank-logo";
 import { Plus } from "lucide-react";
 import { BankAccount } from "../Account-Page/types";
 
@@ -55,8 +55,14 @@ export function SelectBankStep({
                 key={b.id}
                 active={active}
                 desc={b.accountName}
-                altIcon={bankInitials(b.bankName)}
-                altIconColor={bankColor(b.bankName)}
+                leading={
+                  <BankLogo
+                    bankName={b.bankName}
+                    bankCode={(b as BankAccount & { bankCode?: string }).bankCode}
+                    size={40}
+                    className="max-sm:h-11 max-sm:w-11"
+                  />
+                }
                 id={b.id}
                 label={`${b.bankName}- ${maskAccount(b.accountNumber)}`}
                 badge={index === 0 ? "Default" : undefined}

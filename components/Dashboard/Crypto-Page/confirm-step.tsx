@@ -4,8 +4,7 @@ import { Modal } from "@/components/ui/Modal";
 import { AlertTriangle } from "lucide-react";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { getCoinImage } from "@/lib/coin-images";
+import { CoinIcon } from "@/components/ui/coin-icon";
 
 function CurrencyPill({ symbol }: { symbol: string }) {
   const isNaira = symbol === "NGNX" || symbol === "NGN";
@@ -17,13 +16,7 @@ function CurrencyPill({ symbol }: { symbol: string }) {
             ₦
           </div>
         ) : (
-          <Image
-            src={getCoinImage(symbol)}
-            alt={symbol}
-            width={20}
-            height={20}
-            className="rounded-full"
-          />
+          <CoinIcon currency={symbol} size={20} />
         )}
       </div>
       <span className="text-xs font-semibold text-card-text">{symbol}</span>

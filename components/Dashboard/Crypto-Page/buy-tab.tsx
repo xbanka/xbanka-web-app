@@ -2,7 +2,7 @@
 import { RefreshCcw } from "lucide-react";
 import { AmountRow } from "./amount-input";
 import { ConfirmModal } from "./confirm-modal";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   UseGetCryptoWallet,
@@ -19,7 +19,6 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
-import { getCoinImage } from "@/lib/coin-images";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -88,8 +87,15 @@ export function BuyTab() {
     return !validTargets.some((pair: any) => pair.code === coinParam);
   }, [coinParam, validTargets]);
 
+  // Announce the fallback only once per unsupported ?coin=. Without this guard
+  // the effect re-fires every time the user picks a different coin from the
+  // dropdown, since targetCurrency changes while coinParam stays unsupported.
+  const announcedCoinRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!coinUnsupported) return;
+    if (!coinUnsupported || !coinParam) return;
+    if (announcedCoinRef.current === coinParam) return;
+    announcedCoinRef.current = coinParam;
     toast(
       `${coinParam} isn't available for buy & sell yet. ${targetCurrency} has been selected instead.`,
       {
@@ -106,13 +112,11 @@ export function BuyTab() {
   const SOURCE_OPTIONS = validSources.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
-    image: pair.code === "NGNX" ? null : getCoinImage(pair.code),
   }));
 
   const TARGET_OPTIONS = validTargets.map((pair: any) => ({
     label: pair.code,
     value: pair.code,
-    image: pair.code === "NGNX" ? null : getCoinImage(pair.code),
   }));
   const FIAT_OPTIONS = mapCurrenciesToOptions(fiat);
   const CRYPTO_OPTIONS = mapCurrenciesToOptions(crypto);

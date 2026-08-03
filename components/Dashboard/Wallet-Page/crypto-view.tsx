@@ -1,16 +1,33 @@
 "use client";
 import { TransactionHistory } from "./transaction-history";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
-import { UseGetCryptoWallet } from "@/lib/services/wallet.service";
+import {
+  UseGetCryptoWallet,
+  useGetMarketPrices,
+} from "@/lib/services/wallet.service";
 import { getCurrencyHeader, UserWallet } from "./types";
-import { getCoinImage } from "@/lib/coin-images";
-import { formatCryptoBalance } from "@/lib/marketFormat";
-import Image from "next/image";
+import { CoinIcon } from "@/components/ui/coin-icon";
+import { formatCryptoBalance, formatToTwoDecimals } from "@/lib/marketFormat";
+import { CryptoMarketOverview } from "../Home-Page/types";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
+
+  // The wallet endpoint carries no price movement, so pull 24h change from the
+  // market feed and key it by symbol. A limit high enough to cover every listed
+  // asset means a held coin is only missing here if it isn't quoted at all.
+  const { data: marketPrices } = useGetMarketPrices(1, 100);
+
+  const changeBySymbol = useMemo(() => {
+    const items: CryptoMarketOverview[] = marketPrices?.data?.items ?? [];
+    return new Map(
+      items.map((item) => [item.symbol.toUpperCase(), item.changePercent24h]),
+    );
+  }, [marketPrices]);
 
   const wallets =
     data?.data?.data?.slice()?.sort((a: UserWallet, b: UserWallet) => {
@@ -40,15 +57,7 @@ export function CryptoView() {
       render: (item: UserWallet) => (
         <div className="flex items-center gap-2">
           <div className="bg-card-background h-8 w-8 rounded-full">
-            <Image
-              src={getCoinImage(item.currency)}
-              alt={item.currency}
-              width={32}
-              height={32}
-              // onError={(e) => {
-              //   e.currentTarget.src = "/images/default-coin.png";
-              // }}
-            />
+            <CoinIcon currency={item.currency} size={32} />
           </div>
           <div>
             <p className="font-normal text-sm leading-6 text-card-text">
@@ -80,14 +89,36 @@ export function CryptoView() {
       ),
     },
     {
-      key: "chznge",
+      key: "change",
       header: "24h Change",
-      render: () => (
-        <span className="font-normal text-sm leading-6 text-card-text">
-          {" "}
-          -{" "}
-        </span>
-      ),
+      render: (item: UserWallet) => {
+        const change = changeBySymbol.get(item.currency?.toUpperCase());
+
+        if (change === undefined) {
+          return (
+            <span className="font-normal text-sm leading-6 text-card-text">
+              -
+            </span>
+          );
+        }
+
+        const isNegative = change < 0;
+
+        return (
+          <span
+            className={`flex items-center gap-1 font-normal text-sm leading-6 ${
+              isNegative ? "text-error-text" : "text-Green"
+            }`}
+          >
+            {isNegative ? (
+              <ArrowDownRight className="h-3.5 w-3.5" />
+            ) : (
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            )}
+            {formatToTwoDecimals(change)}%
+          </span>
+        );
+      },
     },
     {
       key: "note",
@@ -155,12 +186,7 @@ export function CryptoView() {
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="min-w-0 flex items-center gap-2">
                     <div className="bg-card-background h-8 w-8 rounded-full">
-                      <Image
-                        src={getCoinImage(wallet.currency)}
-                        alt={wallet.currency}
-                        width={32}
-                        height={32}
-                      />
+                      <CoinIcon currency={wallet.currency} size={32} />
                     </div>
                     <div>
                       <p className="truncate text-[13px] font-medium leading-5 text-card-text">
