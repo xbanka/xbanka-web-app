@@ -11,6 +11,7 @@ export function handleApiError(
 
   if (shouldShowToast) {
     toast.error(err.message || "Something went wrong", {
+      id: err.message,
       duration: 3000,
     });
   }
