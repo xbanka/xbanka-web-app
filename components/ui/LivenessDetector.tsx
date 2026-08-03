@@ -20,7 +20,7 @@ import {
   useVerifySelfie,
 } from "@/lib/services/onboarding.service";
 import { base64ToFile } from "@/lib/base64ToFile";
-import { UseProfileUser } from "@/lib/services/profile.service";
+import { cn } from "@/lib/utils";
 import { ErrorLayout } from "./error-layout";
 
 let _faceLandmarker: FaceLandmarker | null = null;
@@ -72,7 +72,11 @@ const TURN_RIGHT_MAX = 0;
 
 type LivenessDetectorProps = {
   brandColor?: string;
-  onBack: () => void;
+  userId: string;
+  sessionId?: string;
+  hideBack?: boolean;
+  hideSkip?: boolean;
+  onBack?: () => void;
   onSuccess: () => void;
 };
 
@@ -80,15 +84,21 @@ const LivenessDetector = forwardRef<
   { startCamera: () => Promise<void> },
   LivenessDetectorProps
 >(function LivenessDetector(
-  { brandColor = "#36b6ab", onBack, onSuccess },
+  {
+    brandColor = "#36b6ab",
+    userId,
+    sessionId,
+    hideBack = false,
+    hideSkip = false,
+    onBack,
+    onSuccess,
+  },
   ref,
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const hasCapturedRef = useRef(false);
-  const { data: profileData } = UseProfileUser();
-  const userId = profileData?.data?.userId;
   const {
     mutate: verifySelfie,
     isPending,
@@ -160,12 +170,16 @@ const LivenessDetector = forwardRef<
     formData.append("userId", userId);
     formData.append("selfieImage", base64ToFile(base64Image, "selfie.jpg"));
 
+    if (sessionId) {
+      formData.append("sessionId", sessionId);
+    }
+
     verifySelfie(formData, {
       onSuccess: () => {
         onSuccess();
       },
     });
-  }, [onSuccess, userId, verifySelfie]);
+  }, [onSuccess, sessionId, userId, verifySelfie]);
 
   const captureImage = useCallback(async () => {
     if (hasCapturedRef.current) return;
@@ -463,16 +477,23 @@ const LivenessDetector = forwardRef<
         </div>
       )}
       <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
-        <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
-          <Button
-            type="button"
-            onClick={() => onBack()}
-            variant="outline"
-            size="lg"
-            className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
-          >
-            Back
-          </Button>
+        <div
+          className={cn(
+            "flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:gap-3.5",
+            !hideBack && "max-sm:grid max-sm:grid-cols-[126px_1fr]",
+          )}
+        >
+          {!hideBack && (
+            <Button
+              type="button"
+              onClick={() => onBack?.()}
+              variant="outline"
+              size="lg"
+              className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
+            >
+              Back
+            </Button>
+          )}
           {!cameraStarted && !captured && (
             <Button
               type="button"
@@ -505,12 +526,14 @@ const LivenessDetector = forwardRef<
             </Button>
           )}
         </div>
-        <h1
-          onClick={handleSkip}
-          className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
-        >
-          {skipPending ? "Skipping..." : "Skip for later"}
-        </h1>
+        {!hideSkip && (
+          <h1
+            onClick={handleSkip}
+            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
+          >
+            {skipPending ? "Skipping..." : "Skip for later"}
+          </h1>
+        )}
       </div>
     </div>
   );

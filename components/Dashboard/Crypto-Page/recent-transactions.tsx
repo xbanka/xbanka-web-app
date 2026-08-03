@@ -1,7 +1,6 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ErrorField } from "@/components/ui/field-error";
 import { TimeAgoComponent } from "@/components/ui/timeAgo";
-import { timeAgo } from "@/lib/formatDate";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { CryptoHistoryStatusBadge, StatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";

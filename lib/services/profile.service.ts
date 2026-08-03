@@ -6,13 +6,11 @@ import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
 
 export const UseProfileUser = () => {
-  const userData = useUserStore((state) => state.setUser);
   const mutate = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       try {
         const response = await UserProfile();
-        userData(response.data);
         return response;
       } catch (err) {
         handleApiError(err);
