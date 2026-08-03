@@ -20,7 +20,6 @@ import { RemoveSessionModal } from "./remove-session-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 
 export function SecurityTab() {
-  const hasPin = false; // Replace with actual logic to check if the user has set a PIN
   const hasPassword = true;
   const whiteList = false;
   const [openCreatePin, setOpenCreatePin] = useState(false);

@@ -158,10 +158,12 @@ export const useTwoFactorAuthenticationGenerate = () => {
 };
 
 export const useEnable2FA = () => {
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationFn: (data: string) => twoFactorAuthenticationEnable(data),
     onSuccess: (result) => {
       toast.success(result.data.message);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
       handleApiError(err);
