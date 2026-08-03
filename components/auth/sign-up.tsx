@@ -127,7 +127,7 @@ const SignUp = () => {
       />
       <div className="space-y-3">
         <Button
-          onClick={loginWithGoogle}
+          onClick={() => loginWithGoogle("signup")}
           variant="outline"
           className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
         >

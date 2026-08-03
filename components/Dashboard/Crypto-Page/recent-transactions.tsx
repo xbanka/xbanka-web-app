@@ -1,14 +1,15 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ErrorField } from "@/components/ui/field-error";
 import { TimeAgoComponent } from "@/components/ui/timeAgo";
-import { timeAgo } from "@/lib/formatDate";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { CryptoHistoryStatusBadge, StatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export function RecentTransactions() {
+  const router = useRouter();
   const {
     data: transactionHistory,
     isPending: transactionHistoryPending,
@@ -51,6 +52,14 @@ export function RecentTransactions() {
             Soon
           </span>
         </div>
+        <button
+          // disabled
+          aria-disabled="true"
+          onClick={() => router.push("/wallet?tab=crypto#transactions")}
+          className="text-[14px] font-medium leading-5.5 text-text cursor-pointer"
+        >
+          See all
+        </button>
       </div>
       <div className="space-y-4 relative pointer-events-none select-none grayscale">
         {transactionHistoryPending && (

@@ -3,7 +3,6 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Camera, Copy, Edit2, Lock, Info, Plus } from "lucide-react";
 import { useState } from "react";
-import { useUserStore } from "@/store/user.store";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
@@ -39,7 +38,6 @@ const maskPhone = (phone?: string) => {
 };
 
 export function AccountInfoTab() {
-  const userData = useUserStore((state) => state.user);
   const [image, setImage] = useState<string | null>(null); // preview
   const [openAccountModal, setOpenAccountModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
@@ -60,6 +58,7 @@ export function AccountInfoTab() {
 
   const { data: verificationData } = UseVerificationStatus();
   const tierLevel = verificationData?.data?.tierLevel ?? 0;
+  console.log("tierLevel", tierLevel)
 
   const account: MapleradBankAccount =
     virtualAccountData?.data?.data?.[0] ||
@@ -76,7 +75,7 @@ export function AccountInfoTab() {
   const handleEditModal = () => setEditProfileModal(true);
 
   const handleCopyUid = () => {
-    navigator.clipboard?.writeText(String(userData?.userId ?? ""));
+    navigator.clipboard?.writeText(String(profileData?.data?.userId ?? ""));
     setUidCopied(true);
     setTimeout(() => setUidCopied(false), 1500);
   };
@@ -115,8 +114,8 @@ export function AccountInfoTab() {
                   className="object-cover"
                 />
               ) : (
-                `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}` ||
-                userData?.email?.[0]
+                `${profileData?.data?.firstName?.[0] || ""}${profileData?.data?.[0] || ""}` ||
+                profileData?.data?.email?.[0]
               )}
 
               <input
@@ -133,7 +132,7 @@ export function AccountInfoTab() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-semibold leading-8 text-card-text">
-                  {userData?.firstName}
+                  {profileData?.data?.firstName}
                 </h2>
                 <Image
                   width={60}
@@ -144,7 +143,7 @@ export function AccountInfoTab() {
               <div className="flex items-center mt-1 gap-2">
                 <div className="flex items-center gap-1">
                   <p className="text-xs font-normal leading-5.5 text-text">
-                    UID: {shortenUid(userData?.userId)}
+                    UID: {shortenUid(profileData?.data?.userId)}
                   </p>
                   <button
                     onClick={handleCopyUid}
@@ -158,7 +157,7 @@ export function AccountInfoTab() {
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-text" />
                   <p className="text-xs font-medium leading-5.5 text-text">
-                    Member since {formatDate(userData?.createdAt || "")}
+                    Member since {formatDate(profileData?.data?.createdAt || "")}
                   </p>
                 </div>
               </div>
@@ -342,7 +341,7 @@ export function AccountInfoTab() {
             </h3>
             <p className="text-[14px] leading-5.5 font-medium text-text mt-1">
               Last updated:{" "}
-              {formatDate(userData?.updatedAt ?? userData?.createdAt ?? "")}
+              {formatDate(profileData?.data?.updatedAt ?? profileData?.data?.createdAt ?? "")}
             </p>
           </div>
           <button
@@ -358,18 +357,18 @@ export function AccountInfoTab() {
           <PersonalInfoTab
             label="Full Name"
             value={
-              `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`.trim() ||
+              `${profileData?.data?.firstName ?? ""} ${profileData?.data?.lastName ?? ""}`.trim() ||
               "-"
             }
           />
           <PersonalInfoTab
             label="Display Name"
-            value={userData?.firstName || "-"}
+            value={profileData?.data?.firstName || "-"}
           />
 
           <PersonalInfoTab
             label="Email Address"
-            value={maskEmail(userData?.email) || "-"}
+            value={maskEmail(profileData?.data?.email) || "-"}
             action={
               <button
                 onClick={handleEditModal}
@@ -381,7 +380,7 @@ export function AccountInfoTab() {
           />
           <PersonalInfoTab
             label="Phone Number"
-            value={maskPhone(userData?.phoneNumber) || "-"}
+            value={maskPhone(profileData?.data?.phoneNumber) || "-"}
             action={
               <button
                 onClick={handleEditModal}
@@ -394,21 +393,21 @@ export function AccountInfoTab() {
 
           <PersonalInfoTab
             label="Date of Birth"
-            value={formatDate(userData?.dateOfBirth ?? "") || "-"}
+            value={formatDate(profileData?.data?.dateOfBirth ?? "") || "-"}
             action={<Lock className="w-3.5 h-3.5 text-text" />}
           />
-          <PersonalInfoTab label="Gender" value={userData?.gender || "-"} />
+          <PersonalInfoTab label="Gender" value={profileData?.data?.gender || "-"} />
 
           {/* <PersonalInfoTab
             label="Address"
-            value={userData?.state || "Not yet provided"}
+            value={profileData?.data?.state || "Not yet provided"}
             subtitle={
-              userData?.state
+              profileData?.data?.state
                 ? undefined
                 : "Complete tier 3 verification by adding your address"
             }
             action={
-              !userData?.state && tierLevel < 3 ? (
+              !profileData?.data?.state && tierLevel < 3 ? (
                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 whitespace-nowrap">
                   Tier 3 Required
                 </span>
@@ -417,7 +416,7 @@ export function AccountInfoTab() {
           /> */}
           <PersonalInfoTab
             label="Nationality"
-            value={userData?.country || "-"}
+            value={profileData?.data?.country || "-"}
             action={<Lock className="w-3.5 h-3.5 text-text" />}
           />
         </div>
