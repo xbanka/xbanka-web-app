@@ -50,7 +50,9 @@ export default function RootLayout({
             />
 
             {children}
-            <Toaster richColors position="top-right" />
+            {/* closeButton adds a dismiss control to every toast app-wide,
+                so it does not have to be opted into at each call site. */}
+            <Toaster richColors closeButton position="top-right" />
             <GlobalNotificationsModal />
             <GlobalLogout />
             <OnboardingModalProvider />

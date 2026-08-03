@@ -17,6 +17,8 @@ export const SearchSelectField = ({
   error,
   register,
   label,
+  renderIcon,
+  disabled,
 }: SelectFieldProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -63,11 +65,19 @@ export const SearchSelectField = ({
         />
 
         <div
-          onClick={() => setOpen((prev) => !prev)}
-          className="relative flex items-center cursor-pointer"
+          onClick={() => !disabled && setOpen((prev) => !prev)}
+          className={`relative flex items-center ${
+            disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+          }`}
         >
           {Icon && (
             <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-placeholder z-10" />
+          )}
+
+          {renderIcon && selected && (
+            <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2">
+              {renderIcon(selected)}
+            </span>
           )}
 
           <Input
@@ -77,7 +87,7 @@ export const SearchSelectField = ({
             }
             placeholder={placeholder}
             className={`cursor-pointer ${
-              Icon ? "pl-10 pr-10" : "pr-10"
+              Icon || (renderIcon && selected) ? "pl-10 pr-10" : "pr-10"
             }`}
           />
 
@@ -113,9 +123,10 @@ export const SearchSelectField = ({
                         },
                       });
                     }}
-                    className="cursor-pointer px-4 py-2 text-[14px] hover:bg-muted"
+                    className="flex cursor-pointer items-center gap-2 px-4 py-2 text-[14px] hover:bg-muted"
                   >
-                    {o.label}
+                    {renderIcon && renderIcon(o.value)}
+                    <span className="min-w-0 truncate">{o.label}</span>
                   </div>
                 ))
               ) : (

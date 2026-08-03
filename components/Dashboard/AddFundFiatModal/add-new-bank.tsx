@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/FormField";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
+import { BankLogo } from "@/components/ui/bank-logo";
 import { SearchSelectField } from "@/components/ui/search-select-field";
 import { SelectField } from "@/components/ui/select";
 import { bankOptions } from "@/lib/schema/bank-schema";
@@ -65,6 +66,15 @@ export function AddNewBankStep({
             options={bankOptions}
             register={register}
             error={errors.bankName}
+            renderIcon={(code) => (
+              <BankLogo
+                bankName={
+                  bankOptions.find((b) => b.value === code)?.label ?? ""
+                }
+                bankCode={code}
+                size={20}
+              />
+            )}
           />
           <FormField
             id="accountNumber"

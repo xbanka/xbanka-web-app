@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { FieldError, UseFormRegister } from "react-hook-form";
 
 export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -33,6 +34,8 @@ export interface SelectFieldProps {
   label?: string;
   disabled?: boolean;
   className?: string;
+  /** Optional leading visual per option, keyed by the option's value. */
+  renderIcon?: (value: string) => ReactNode;
 }
 
 export interface CryptoOptionProps {

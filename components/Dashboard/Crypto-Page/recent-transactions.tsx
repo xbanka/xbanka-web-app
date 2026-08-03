@@ -51,13 +51,6 @@ export function RecentTransactions() {
             Soon
           </span>
         </div>
-        <button
-          disabled
-          aria-disabled="true"
-          className="text-[14px] font-medium leading-5.5 text-text cursor-not-allowed"
-        >
-          See all
-        </button>
       </div>
       <div className="space-y-4 relative pointer-events-none select-none grayscale">
         {transactionHistoryPending && (

@@ -2,12 +2,11 @@
 
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
-import { getCoinImage } from "@/lib/coin-images";
+import { CoinIcon } from "@/components/ui/coin-icon";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 import { useGetMarketPrices } from "@/lib/services/wallet.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CryptoMarketOverview } from "../Home-Page/types";
@@ -117,12 +116,7 @@ export function MarketHighlight() {
       render: (item: CryptoMarketOverview) => (
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-card-background">
-            <Image
-              src={getCoinImage(item.symbol)}
-              alt={item.symbol}
-              width={32}
-              height={32}
-            />
+            <CoinIcon currency={item.symbol} size={32} />
           </div>
           <div className="min-w-0">
             <p className="truncate text-[14px] font-normal leading-6 text-card-text">

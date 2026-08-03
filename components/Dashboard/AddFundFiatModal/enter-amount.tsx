@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
-import { bankColor, bankInitials, QUICK_AMOUNTS } from "@/lib/wallet-page";
+import { BankLogo } from "@/components/ui/bank-logo";
+import { QUICK_AMOUNTS } from "@/lib/wallet-page";
 import { ChevronRight } from "lucide-react";
 
 export function EnterAmountStep({
@@ -44,14 +45,7 @@ export function EnterAmountStep({
             </span>
             <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-input">
               <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0",
-                    bankColor(sourceBankName),
-                  )}
-                >
-                  {bankInitials(sourceBankName)}
-                </div>
+                <BankLogo bankName={sourceBankName} size={40} />
                 <div className="min-w-0">
                   <p className="text-sm font-medium leading-5 text-card-text truncate max-sm:text-[13px]">
                     {sourceLabel}
