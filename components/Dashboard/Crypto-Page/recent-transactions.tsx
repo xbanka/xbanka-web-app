@@ -6,10 +6,8 @@ import { CryptoHistoryStatusBadge, StatusBadge } from "@/lib/statusBadge";
 import { transactionHistoryType } from "@/lib/transactionHistoryType";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export function RecentTransactions() {
-  const router = useRouter();
   const {
     data: transactionHistory,
     isPending: transactionHistoryPending,
@@ -43,7 +41,7 @@ export function RecentTransactions() {
   };
   return (
     <DashboardCard className="opacity-60">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center mb-3">
         <div className="flex items-center gap-2">
           <h3 className="text-[16px] leading-6 font-medium text-text">
             Recent Transaction
@@ -52,14 +50,6 @@ export function RecentTransactions() {
             Soon
           </span>
         </div>
-        <button
-          // disabled
-          aria-disabled="true"
-          onClick={() => router.push("/wallet?tab=crypto#transactions")}
-          className="text-[14px] font-medium leading-5.5 text-text cursor-pointer"
-        >
-          See all
-        </button>
       </div>
       <div className="space-y-4 relative pointer-events-none select-none grayscale">
         {transactionHistoryPending && (
