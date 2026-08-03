@@ -12,8 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CryptoMarketOverview } from "./types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
-import { getCoinImage } from "@/lib/coin-images";
-import Image from "next/image";
+import { CoinIcon } from "@/components/ui/coin-icon";
 
 const MARKET_TABS = [
   "Favourites",
@@ -120,12 +119,7 @@ export function MarketOverview() {
       render: (item: CryptoMarketOverview) => (
         <div className="flex items-center gap-2 ">
           <div className="bg-card-background h-8 w-8 rounded-full">
-            <Image
-              src={getCoinImage(item.symbol)}
-              alt={item.symbol}
-              width={32}
-              height={32}
-            />
+            <CoinIcon currency={item.symbol} size={32} />
           </div>
           <div>
             <p className="font-normal text-[14px] leading-6 text-card-text">
@@ -285,12 +279,7 @@ export function MarketOverview() {
                   >
                     <div className="flex min-w-0 items-center gap-3 ">
                       <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]">
-                        <Image
-                          src={getCoinImage(item.symbol)}
-                          alt={item.symbol}
-                          width={32}
-                          height={32}
-                        />
+                        <CoinIcon currency={item.symbol} size={32} />
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-[16px] max-sm:text-[12px] max-sm:leading-[20px] font-medium leading-6 text-card-text">

@@ -6,6 +6,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchSelectField } from "@/components/ui/search-select-field";
+import { BankLogo } from "@/components/ui/bank-logo";
 
 const addBankSchema = z.object({
   bankName: z.string().min(1, "Please select a bank"),
@@ -76,6 +77,15 @@ export function BankAccountStep({
           options={bankOptions}
           register={register}
           error={errors.bankName}
+          renderIcon={(code) => (
+            <BankLogo
+              bankName={
+                bankOptions.find((b) => b.value === code)?.label ?? ""
+              }
+              bankCode={code}
+              size={20}
+            />
+          )}
         />
       </div>
 

@@ -8,7 +8,7 @@ import {
   useGenerateAddress,
 } from "@/lib/services/wallet.service";
 import { AlertTriangle, Copy } from "lucide-react";
-import Image from "next/image";
+import { CoinIcon } from "@/components/ui/coin-icon";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
@@ -100,6 +100,7 @@ export const DepositSidebar = ({
                 setCurrency(value);
                 setNetwork(""); // reset network
               }}
+              renderIcon={(code) => <CoinIcon currency={code} size={20} />}
             />
             <div className="-mx-6 flex gap-3 mt-3 overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0">
               {Object.keys(cryptoData)
@@ -114,11 +115,7 @@ export const DepositSidebar = ({
                     }}
                     className="flex shrink-0 items-center gap-2 rounded-lg py-2.5 px-5 bg-input-background text-card-text"
                   >
-                    <Image
-                      src={"/tether.svg"}
-                      alt="tether"
-                      width={16}
-                      height={16} unoptimized />
+                    <CoinIcon currency={item} size={16} />
                     <span className="text-[12px] font-normal leading-4.5 text-card-text">
                       {item}
                     </span>

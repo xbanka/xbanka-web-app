@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Recipient, Step } from "./types";
-import { AvatarCircle } from "./avatarCircle";
+import { BankLogo } from "@/components/ui/bank-logo";
 import { QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
@@ -50,7 +50,11 @@ export function EnterAmountStep({
       <div className="px-8 pb-3">
         {/* Recipient pill */}
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border bg-background">
-          <AvatarCircle name={recipient.bankName} color="bg-orange-500" />
+          <BankLogo
+            bankName={recipient.bankName}
+            bankCode={recipient.bankCode}
+            size={36}
+          />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-card-text truncate">
               {recipient.accountName}

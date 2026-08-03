@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AmountRow } from "./amount-input";
 import { ConfirmModal } from "./confirm-modal";
 import { RefreshCcw } from "lucide-react";
@@ -21,7 +21,6 @@ import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
-import { getCoinImage } from "@/lib/coin-images";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -99,7 +98,6 @@ export function SellTab() {
       .map((item: any) => ({
         label: item.code,
         value: item.code,
-        image: item.code === "NGNX" ? null : getCoinImage(item.code),
       }));
   }, [pairMap]);
 
@@ -122,8 +120,15 @@ export function SellTab() {
     return !validTargets.some((pair: any) => pair.code === coinParam);
   }, [coinParam, validTargets]);
 
+  // Announce the fallback only once per unsupported ?coin=. Without this guard
+  // the effect re-fires every time the user picks a different coin from the
+  // dropdown, since targetCurrency changes while coinParam stays unsupported.
+  const announcedCoinRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!coinUnsupported) return;
+    if (!coinUnsupported || !coinParam) return;
+    if (announcedCoinRef.current === coinParam) return;
+    announcedCoinRef.current = coinParam;
     toast(
       `${coinParam} isn't available for buy & sell yet. ${targetCurrency} has been selected instead.`,
       {
