@@ -18,8 +18,11 @@ import { ErrorLayout } from "../ui/error-layout";
 import { useState, useEffect } from "react";
 import { maskEmail } from "@/lib/maskEmail";
 import MailPic from "../../public/mail.svg";
+import { useRouter } from "next/navigation";
 
-const SignIn = () => {
+const SignIn = ({ urlError }: { urlError?: string }) => {
+  const router = useRouter();
+  const isNoAccountError = urlError?.toLowerCase().includes("no account belongs to this google");
   const { loginWithGoogle } = useGoogleAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
   const [userEmail, setUserEmail] = useState("");
@@ -115,6 +118,35 @@ const SignIn = () => {
     );
   }
 
+  if (isNoAccountError) {
+    return (
+      <Card className="space-y-6 text-center">
+        <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
+        <div className="pt-4 space-y-4">
+          <h2 className="text-2xl font-bold text-card-text">Account Not Found</h2>
+          <p className="text-text">
+            {urlError}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            <Button
+              variant="outline"
+              onClick={() => router.push("/sign-in")}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => loginWithGoogle("signup")}
+              className="flex-1"
+            >
+              Sign Up with Google
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="space-y-6 max-sm:text-left">
       <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
@@ -133,7 +165,7 @@ const SignIn = () => {
       />
       <div className="space-y-3">
         <Button
-          onClick={loginWithGoogle}
+          onClick={() => loginWithGoogle("signin")}
           variant="outline"
           className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
         >
