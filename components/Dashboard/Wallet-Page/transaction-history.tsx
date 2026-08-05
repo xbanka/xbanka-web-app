@@ -212,49 +212,6 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
       </div>
 
       <div className="overflow-x-auto">
-        {/* {tableType === "CRYPTO" ? (
-          <DataTableLayout
-            data={cryptoTransactions}
-            columns={cryptoColumns}
-            isError={isError}
-            isLoading={isPending}
-            errorMessage={error?.message}
-            rowKey={(item) => item.id}
-            itemsPerPage={limit}
-            pageTotal={transactionHistory?.data?.data?.meta.totalPages}
-            currentPage={page}
-            onPageChange={setPage}
-            emptyMessage="No transaction history available."
-          />
-        ) : tableType === "FIAT" ? (
-          <DataTableLayout
-            data={fiatTransactions}
-            columns={columns}
-            isError={isError}
-            isLoading={isPending}
-            errorMessage={error?.message}
-            rowKey={(item) => item.id}
-            itemsPerPage={limit}
-            pageTotal={transactionHistory?.data?.data?.meta.totalPages}
-            currentPage={page}
-            onPageChange={setPage}
-            emptyMessage="No transaction history available."
-          />
-        ) : (
-          <DataTableLayout
-            data={filteredData}
-            columns={columns}
-            isError={isError}
-            isLoading={isPending}
-            errorMessage={error?.message}
-            rowKey={(item) => item.id}
-            itemsPerPage={limit}
-            pageTotal={transactionHistory?.data?.data?.meta.totalPages}
-            currentPage={page}
-            onPageChange={setPage}
-            emptyMessage="No transaction history available."
-          />
-        )} */}
         <DataTableLayout
           data={filteredData}
           columns={tableType === "CRYPTO" ? cryptoColumns : columns}
