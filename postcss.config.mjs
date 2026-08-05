@@ -8,8 +8,4 @@ const config = {
   },
 };
 
-<<<<<<< HEAD
 export default config;
-=======
-export default config;
->>>>>>> origin/main
