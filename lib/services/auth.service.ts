@@ -168,6 +168,7 @@ export const useVerifyTwoFactor = () => {
     mutationFn: (data: VerifyTwoFactorData) => verifyTwoFactor(data),
 
     onSuccess: (result) => {
+
       const accessToken = result.data.access_token;
       const refreshToken = result.data.refresh_token;
 
@@ -182,7 +183,8 @@ export const useVerifyTwoFactor = () => {
 
       toast.success(result.data.message);
 
-      // router.push("/");
+      router.push("/");
+      
     },
 
     onError: (err) => {
