@@ -184,6 +184,7 @@ export const useVerifyTwoFactor = () => {
       toast.success(result.data.message);
 
       router.push("/");
+      
     },
 
     onError: (err) => {
