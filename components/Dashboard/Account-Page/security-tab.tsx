@@ -61,7 +61,7 @@ export function SecurityTab() {
       label: "Password",
       status: hasPassword,
       statusLabel: hasPassword ? "Set" : "Not enabled",
-      statusColor: "text-text",
+      statusColor: hasPassword ? "text-Green" : "text-text",
       note: "",
     },
     {
@@ -69,7 +69,7 @@ export function SecurityTab() {
       label: "Email",
       status: profile?.data?.isEmailVerified,
       statusLabel: profile?.data?.isEmailVerified ? "Active" : "Not enabled",
-      statusColor: "text-text",
+      statusColor: profile?.data?.isEmailVerified ? "text-Green" : "text-text",
       note: "",
     },
     {
@@ -80,7 +80,10 @@ export function SecurityTab() {
         profile?.data?.phoneNumber && profile?.data?.phoneNumber !== ""
           ? "Active"
           : "Not enabled",
-      statusColor: "text-text",
+      statusColor:
+        profile?.data?.phoneNumber && profile?.data?.phoneNumber !== ""
+          ? "text-Green"
+          : "text-text",
       note: "",
     },
     {
@@ -88,15 +91,17 @@ export function SecurityTab() {
       label: "Google Authenticator",
       status: profile?.data?.isTwoFactorEnabled,
       statusLabel: profile?.data?.isTwoFactorEnabled ? "Active" : "Not enabled",
-      statusColor: "text-yellow-500",
+      statusColor: profile?.data?.isTwoFactorEnabled
+        ? "text-Green"
+        : "text-yellow-warning-text",
       note: "",
     },
     {
       icon: Lock,
       label: "Whitelist",
-      status: false,
+      status: Boolean(whiteList),
       statusLabel: whiteList ? "Active" : "Not Configured",
-      statusColor: "text-text",
+      statusColor: whiteList ? "text-Green" : "text-text",
       note: "",
     },
   ];
@@ -116,6 +121,24 @@ export function SecurityTab() {
         : securityScore >= 50
           ? "Fair"
           : "Needs attention";
+
+  // One tone drives the score, the verdict and the bar, so they always agree.
+  const securityTone =
+    securityScore >= 75
+      ? "text-Green"
+      : securityScore >= 50
+        ? "text-yellow-warning-text"
+        : "text-error-text";
+  const securityBar =
+    securityScore >= 75
+      ? "bg-Green"
+      : securityScore >= 50
+        ? "bg-yellow-warning-dark"
+        : "bg-error-text";
+
+  // Point at the first thing still switched off, so the card suggests an action
+  // instead of only reporting a number.
+  const nextSecurityStep = securityItems.find((item) => !item.status)?.label;
 
   const handleChangePassword = () => {
     setOpenChangePassword(true);
@@ -192,14 +215,45 @@ export function SecurityTab() {
     <div className="space-y-5">
       {/* Security health */}
       <DashboardCard className="space-y-3">
-        <div className="space-y-1">
-          <h3 className="text-[16px] font-medium leading-6 text-card-text">
-            Security Overview
-          </h3>
-          <p className="text-[14px] font-medium leading-5.5 text-text">
-            Your account security health is at {securityScore}%.{" "}
-            {securityVerdict}
-          </p>
+        <div className="space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <div className="space-y-1">
+              <h3 className="text-[16px] font-medium leading-6 text-card-text">
+                Security Overview
+              </h3>
+              <p className="text-[14px] font-medium leading-5.5 text-text">
+                {enabledCount} of {securityItems.length} protections enabled
+              </p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className={`text-2xl font-semibold leading-8 ${securityTone}`}>
+                {securityScore}%
+              </p>
+              <p className={`text-[12px] font-medium ${securityTone}`}>
+                {securityVerdict}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="h-2 w-full overflow-hidden rounded-full bg-input"
+            role="progressbar"
+            aria-valuenow={securityScore}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Account security health"
+          >
+            <div
+              className={`h-full rounded-full transition-[width] duration-500 ease-out ${securityBar}`}
+              style={{ width: `${securityScore}%` }}
+            />
+          </div>
+
+          {nextSecurityStep && (
+            <p className="text-[12px] font-normal leading-4.5 text-text">
+              Next step: turn on {nextSecurityStep}.
+            </p>
+          )}
         </div>
         <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 max-sm:-mx-4 max-sm:px-4 sm:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {securityItems.map((item, i) => {
