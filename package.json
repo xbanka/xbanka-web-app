@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/check-config-integrity.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/check-config-integrity.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:config": "node scripts/check-config-integrity.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
