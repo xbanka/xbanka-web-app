@@ -113,22 +113,6 @@ export function SecurityTab() {
   const securityScore = Math.round(
     (enabledCount / securityItems.length) * 100,
   );
-  const securityVerdict =
-    securityScore === 100
-      ? "Excellent"
-      : securityScore >= 75
-        ? "Good"
-        : securityScore >= 50
-          ? "Fair"
-          : "Needs attention";
-
-  // One tone drives the score, the verdict and the bar, so they always agree.
-  const securityTone =
-    securityScore >= 75
-      ? "text-Green"
-      : securityScore >= 50
-        ? "text-yellow-warning-text"
-        : "text-error-text";
   const securityBar =
     securityScore >= 75
       ? "bg-Green"
@@ -216,32 +200,17 @@ export function SecurityTab() {
       {/* Security health */}
       <DashboardCard className="space-y-3">
         <div className="space-y-3">
-          <div className="flex items-end justify-between gap-3">
-            <div className="space-y-1">
-              <h3 className="text-[16px] font-medium leading-6 text-card-text">
-                Security Overview
-              </h3>
-              <p className="text-[14px] font-medium leading-5.5 text-text">
-                {enabledCount} of {securityItems.length} protections enabled
-              </p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className={`text-2xl font-semibold leading-8 ${securityTone}`}>
-                {securityScore}%
-              </p>
-              <p className={`text-[12px] font-medium ${securityTone}`}>
-                {securityVerdict}
-              </p>
-            </div>
-          </div>
+          <h3 className="text-[16px] font-medium leading-6 text-card-text">
+            Security Overview
+          </h3>
 
           <div
             className="h-2 w-full overflow-hidden rounded-full bg-input"
             role="progressbar"
-            aria-valuenow={securityScore}
+            aria-valuenow={enabledCount}
             aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label="Account security health"
+            aria-valuemax={securityItems.length}
+            aria-label={`${enabledCount} of ${securityItems.length} protections enabled`}
           >
             <div
               className={`h-full rounded-full transition-[width] duration-500 ease-out ${securityBar}`}
@@ -249,11 +218,16 @@ export function SecurityTab() {
             />
           </div>
 
-          {nextSecurityStep && (
-            <p className="text-[12px] font-normal leading-4.5 text-text">
-              Next step: turn on {nextSecurityStep}.
+          <div className="space-y-0.5">
+            <p className="text-[14px] font-medium leading-5.5 text-text">
+              {enabledCount} of {securityItems.length} protections enabled
             </p>
-          )}
+            {nextSecurityStep && (
+              <p className="text-[12px] font-normal leading-4.5 text-text">
+                Next: {nextSecurityStep}
+              </p>
+            )}
+          </div>
         </div>
         <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 max-sm:-mx-4 max-sm:px-4 sm:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {securityItems.map((item, i) => {
