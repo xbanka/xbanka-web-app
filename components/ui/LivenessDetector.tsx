@@ -435,26 +435,50 @@ const LivenessDetector = forwardRef<
             className="border-2 border-border-active rounded-2xl min-h-64 flex items-center justify-center overflow-hidden bg-transparent max-sm:h-[295px] max-sm:min-h-0"
             style={{ borderColor: brandColor }}
           >
-            {/* {!streaming && !taken && (
-            <div className="flex flex-col items-center gap-3 text-placeholder">
-              <Camera />
-              <span className="text-sm">Camera preview will appear here</span>
+            {/* Placeholder shown before the camera starts. The dashed oval
+                doubles as a framing guide, so the user knows where their face
+                needs to sit once the preview appears. */}
+            <div className="flex flex-col items-center gap-3 px-6 text-center">
+              <svg
+                viewBox="0 0 120 140"
+                className="h-28 w-24 max-sm:h-32 max-sm:w-28"
+                fill="none"
+                aria-hidden="true"
+              >
+                {/* framing oval */}
+                <ellipse
+                  cx="60"
+                  cy="62"
+                  rx="46"
+                  ry="56"
+                  stroke={brandColor}
+                  strokeWidth="2"
+                  strokeDasharray="6 7"
+                  opacity="0.55"
+                />
+                {/* head */}
+                <circle
+                  cx="60"
+                  cy="52"
+                  r="22"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  className="text-placeholder"
+                />
+                {/* shoulders */}
+                <path
+                  d="M26 110c0-18 15-30 34-30s34 12 34 30"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  className="text-placeholder"
+                />
+              </svg>
+
+              <span className="text-xs font-normal leading-4.5 text-placeholder">
+                Position your face inside the frame
+              </span>
             </div>
-          )}
-          {streaming && (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full rounded-2xl block"
-            />
-          )}
-          <canvas
-            ref={canvasRef}
-            width={640}
-            height={480}
-            className={taken ? "rounded-2xl block w-full" : "hidden"}
-          /> */}
           </div>
           <p className="text-xs font-normal leading-4.5 text-text text-center">
             Good lighting. Neutral background. No hats or glasses.

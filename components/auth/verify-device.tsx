@@ -79,6 +79,7 @@ export default function VerifyDevice() {
       <Button
         onClick={handleVerify}
         disabled={code.length !== 6 || isPending}
+        variant={code.length === 6 && !isPending ? "default" : "disabled"}
         className="w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
       >
         {isPending ? "Verifying..." : "Verify OTP"}

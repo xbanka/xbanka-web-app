@@ -94,7 +94,7 @@ function Step1({ setStep }: StepOneProps) {
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
       <FormHeader
-        className="space-y-2 max-sm:mb-6 max-sm:text-left max-sm:[&_h1]:text-[34px] max-sm:[&_h1]:leading-10 max-sm:[&_h1]:text-card-text max-sm:[&_p]:text-[18px] max-sm:[&_p]:leading-7"
+        className="space-y-2 mb-8 max-sm:mb-6 max-sm:text-left max-sm:[&_h1]:text-[34px] max-sm:[&_h1]:leading-10 max-sm:[&_h1]:text-card-text max-sm:[&_p]:text-[18px] max-sm:[&_p]:leading-7"
         title="Let's set up your account"
         subtitle="Provide a few details to set up your xbanka account"
       />

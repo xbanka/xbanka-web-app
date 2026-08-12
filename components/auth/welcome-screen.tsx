@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "../ui/FormCard";
 import Image from "next/image";
+import { Confetti } from "@/components/ui/confetti";
 
 export function WelcomeScreen() {
   const router = useRouter();
 
   return (
     <div className="flex min-h-dvh items-center justify-center px-4 py-6 sm:min-h-screen">
+      <Confetti />
       <Card className="w-full max-w-150 space-y-5 overflow-hidden sm:space-y-6 max-sm:min-h-[calc(100dvh-48px)] max-sm:justify-center max-sm:px-5 max-sm:py-6">
         {/* Logo */}
         <span className="text-[13px] font-bold tracking-wide text-card-text">
