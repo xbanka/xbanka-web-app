@@ -1,0 +1,19 @@
+# Code owners — GitHub requests review from these people automatically, and
+# with "Require review from Code Owners" enabled in branch protection, a PR
+# cannot merge without their approval.
+#
+# Replace @xbanka-lead with the GitHub username of the designated reviewer.
+
+# Everything needs the lead's approval by default.
+*                       @xbanka-lead
+
+# Build-time config executes during `next build`. The June 2026 payload was
+# injected here, so these files get extra scrutiny and should never change
+# as a side effect of feature work.
+/postcss.config.mjs     @xbanka-lead
+/next.config.ts         @xbanka-lead
+/package.json           @xbanka-lead
+/package-lock.json      @xbanka-lead
+/.github/               @xbanka-lead
+/scripts/               @xbanka-lead
+/.githooks/             @xbanka-lead
