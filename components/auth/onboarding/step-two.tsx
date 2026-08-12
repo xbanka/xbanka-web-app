@@ -60,7 +60,7 @@ function Step2({ setStep }: Step2Props) {
 
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
-      <div className="text-center space-y-2 max-sm:mb-6 max-sm:text-left">
+      <div className="text-center space-y-2 mb-8 max-sm:mb-6 max-sm:text-left">
         <h1 className="text-[26px] font-bold text-card-text max-sm:text-[34px] max-sm:leading-10">
           Verify Your BVN
         </h1>

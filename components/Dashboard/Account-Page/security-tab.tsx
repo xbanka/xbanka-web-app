@@ -101,6 +101,22 @@ export function SecurityTab() {
     },
   ];
 
+  // The score was previously the literal string "80%. Good", so it never moved
+  // regardless of what the user had actually enabled. Derive it from the same
+  // items the cards below render, so the two can't disagree.
+  const enabledCount = securityItems.filter((item) => Boolean(item.status)).length;
+  const securityScore = Math.round(
+    (enabledCount / securityItems.length) * 100,
+  );
+  const securityVerdict =
+    securityScore === 100
+      ? "Excellent"
+      : securityScore >= 75
+        ? "Good"
+        : securityScore >= 50
+          ? "Fair"
+          : "Needs attention";
+
   const handleChangePassword = () => {
     setOpenChangePassword(true);
   };
@@ -181,7 +197,8 @@ export function SecurityTab() {
             Security Overview
           </h3>
           <p className="text-[14px] font-medium leading-5.5 text-text">
-            Your account security health is at 80%. Good
+            Your account security health is at {securityScore}%.{" "}
+            {securityVerdict}
           </p>
         </div>
         <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 max-sm:-mx-4 max-sm:px-4 sm:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
