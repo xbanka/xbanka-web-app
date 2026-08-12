@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { apiMessage } from "../toastMessage";
 import {
   forgotPassword,
   login,
@@ -41,7 +42,7 @@ export const useSignup = () => {
     mutationFn: (data: SignupFormData) =>
       signup(data.email, data.password, data.referralCode || ""),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Account created"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -60,7 +61,7 @@ export const useResetPassword = () => {
         data.otp
       ),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Password reset"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -73,7 +74,7 @@ export const useForgotPassword = () => {
   const mutate = useMutation({
     mutationFn: (data: forgotPasswordData) => forgotPassword(data.email),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Reset link sent"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -151,7 +152,7 @@ export const useVerifyDevice = () => {
       localStorage.removeItem("verifyUserId");
       localStorage.removeItem("verifyDeviceId");
 
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Device verified"));
       router.push("/");
     },
     onError: (err) => {
@@ -181,7 +182,7 @@ export const useVerifyTwoFactor = () => {
       localStorage.removeItem("twoFAUserId");
       localStorage.removeItem("twoFAEmail");
 
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Two-factor authentication verified"));
 
       router.push("/");
       
@@ -199,7 +200,7 @@ export const useVerifyMail = () => {
     onSuccess: (res) => {
       const result = res.data;
 
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Email verified"));
 
       const accessToken = result.data.access_token;
       const refreshToken = result.data.refresh_token;
@@ -222,7 +223,7 @@ export const useResendVerifyMail = () => {
   const mutate = useMutation({
     mutationFn: (data: string) => resendEmailVerification(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Verification email sent"));
     },
     onError: (err) => {
       handleApiError(err);

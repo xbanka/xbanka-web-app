@@ -9,19 +9,23 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-Green hover:bg-Green/90 border border-abstract-green text-[#FFFFFF]",
+          "bg-Green hover:bg-Green/90 active:bg-Green/80 active:scale-[0.99] border border-abstract-green text-[#FFFFFF]",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-destructive text-white hover:bg-destructive/90 active:bg-destructive/80 active:scale-[0.99] focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "border border-input bg-card-background shadow-xs text-text hover:bg-background/90 hover:text-accent-foreground",
-        secondary: "bg-background text-card-text hover:bg-background/80",
+          "border border-input bg-card-background shadow-xs text-text hover:bg-background/90 hover:text-accent-foreground active:bg-background active:scale-[0.99]",
+        secondary:
+          "bg-background text-card-text hover:bg-background/80 active:bg-background/70 active:scale-[0.99]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "hover:bg-accent hover:text-accent-foreground active:bg-accent/70 dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        // No hover/active feedback: this variant is for buttons that cannot be
+        // pressed, so it must not look interactive.
         disabled:
-          "bg-border text-disabled-text cursor-not-allowed hover:bg-muted",
-        red: "bg-error-bg-button border border-error-border-button text-white hover:bg-error-bg-button/90",
-        notification: "bg-background text-Green hover:bg-background/90",
+          "bg-border text-disabled-text cursor-not-allowed hover:bg-border",
+        red: "bg-error-bg-button border border-error-border-button text-white hover:bg-error-bg-button/90 active:bg-error-bg-button/80 active:scale-[0.99]",
+        notification:
+          "bg-background text-Green hover:bg-background/90 active:bg-background/80 active:scale-[0.99]",
       },
       size: {
         default: "h-12 py-2 px-3",
