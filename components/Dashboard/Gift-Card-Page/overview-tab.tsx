@@ -44,7 +44,7 @@ export function OverviewTab() {
         ].map((s) => (
           <div
             key={s.label}
-            className="bg-card-background border border-border rounded-2xl p-4"
+            className="bg-card-background border border-border rounded-2xl p-4 min-w-0"
           >
             <div
               className={`w-8 h-8 rounded-lg ${s.color} flex items-center justify-center text-base mb-3`}
@@ -52,7 +52,7 @@ export function OverviewTab() {
               {s.icon}
             </div>
             <p className="text-xs text-text mb-1">{s.label}</p>
-            <p className="text-lg font-bold text-card-text">{s.value}</p>
+            <p className="truncate text-lg font-bold text-card-text">{s.value}</p>
             <p className="text-xs text-text mt-0.5">{s.sub}</p>
           </div>
         ))}
@@ -60,9 +60,9 @@ export function OverviewTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Chart */}
-        <div className="bg-card-background border border-border rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
+        <div className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0">
               <h3 className="font-semibold text-card-text text-sm">
                 Payout Over Time
               </h3>
@@ -89,7 +89,7 @@ export function OverviewTab() {
         </div>
 
         {/* Current card rates */}
-        <div className="bg-card-background border border-border rounded-2xl p-5">
+        <div className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-card-text text-sm">
               Current Card Rates
@@ -98,7 +98,7 @@ export function OverviewTab() {
               See all
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
             {CARD_RATES.map((card) => (
               <div
                 key={card.name}

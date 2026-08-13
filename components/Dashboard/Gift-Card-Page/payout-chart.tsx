@@ -26,7 +26,15 @@ export function PayoutChart() {
  
   return (
     <div className="w-full overflow-hidden">
-      <svg viewBox={`0 0 ${W} ${H + 24}`} className="w-full" preserveAspectRatio="none" style={{ height: 140 }}>
+      {/* preserveAspectRatio="none" stretches the viewBox to the container so
+          the line spans full width. That distorts anything with its own shape,
+          so the stroke uses non-scaling-stroke, the dots are hidden on narrow
+          screens, and only every other date label is drawn on mobile. */}
+      <svg
+        viewBox={`0 0 ${W} ${H + 24}`}
+        className="h-[110px] w-full sm:h-[140px]"
+        preserveAspectRatio="none"
+      >
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#0C9A8E" stopOpacity="0.25" />
@@ -34,9 +42,24 @@ export function PayoutChart() {
           </linearGradient>
         </defs>
         <path d={areaPath} fill="url(#chartGrad)" />
-        <path d={path} fill="none" stroke="#0C9A8E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d={path}
+          fill="none"
+          stroke="#0C9A8E"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
         {pts.map((pt, i) => (
-          <circle key={i} cx={pt.x} cy={pt.y} r="3" fill="#0C9A8E" />
+          <circle
+            key={i}
+            cx={pt.x}
+            cy={pt.y}
+            r="3"
+            fill="#0C9A8E"
+            className="hidden sm:block"
+          />
         ))}
         {CHART_LABELS.map((label, i) => (
           <text
@@ -46,6 +69,7 @@ export function PayoutChart() {
             textAnchor="middle"
             fontSize="9"
             fill="#9CA3AF"
+            className={i % 2 === 1 ? "hidden sm:block" : undefined}
           >
             {label}
           </text>

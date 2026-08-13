@@ -20,7 +20,7 @@ function SellTab() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
       {/* Form */}
-      <div className="lg:col-span-2 bg-card-background border border-border rounded-2xl p-5 space-y-4">
+      <div className="lg:col-span-2 bg-card-background border border-border rounded-2xl p-5 max-sm:p-4 space-y-4">
         <h3 className="font-semibold text-card-text text-base">Sell Gift Card</h3>
  
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -158,7 +158,7 @@ function SellTab() {
       </div>
  
       {/* Payout summary */}
-      <div className="bg-card-background border border-border rounded-2xl p-5 space-y-4 h-fit">
+      <div className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4 space-y-4 h-fit">
         <h3 className="font-semibold text-card-text text-sm">Payout Summary</h3>
  
         {/* Estimated payout */}
