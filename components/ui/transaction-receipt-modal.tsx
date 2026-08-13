@@ -3,8 +3,9 @@
 import { Button } from "./button";
 import { CloseBtn } from "./close-btn";
 import { Modal } from "./Modal";
-import { Download, Printer, Share2 } from "lucide-react";
+import { FileText, ImageIcon } from "lucide-react";
 import { useState } from "react";
+import { canvasToPdfBlob } from "@/lib/canvasToPdf";
 import { toast } from "sonner";
 
 export interface ReceiptRow {
@@ -171,10 +172,10 @@ export function TransactionReceiptModal({
   reference?: string;
   onClose: () => void;
 }) {
-  const [saving, setSaving] = useState(false);
-  const [sharing, setSharing] = useState(false);
+  const [sharingPdf, setSharingPdf] = useState(false);
+  const [sharingImage, setSharingImage] = useState(false);
 
-  const fileName = `xbanka-receipt-${reference || "transaction"}.png`;
+  const baseName = `xbanka-receipt-${reference || "transaction"}`;
 
   const buildPng = async (): Promise<Blob> => {
     const canvas = await drawReceipt(rows, heading, headlineAmount);
@@ -185,63 +186,61 @@ export function TransactionReceiptModal({
     return blob;
   };
 
-  const handleSaveImage = async () => {
-    setSaving(true);
-    try {
-      const blob = await buildPng();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(url);
-      toast.success("Receipt saved as image");
-    } catch {
-      toast.error("Could not save the receipt image");
-    } finally {
-      setSaving(false);
+  /**
+   * Hands a generated file to the OS share sheet, falling back to a download
+   * where file sharing is unavailable (common on desktop browsers).
+   */
+  const shareFile = async (blob: Blob, name: string, type: string) => {
+    const file = new File([blob], name, { type });
+
+    // Feature-detect the file payload specifically: several browsers expose
+    // navigator.share but reject files.
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Xbanka transaction receipt",
+        text: `Xbanka receipt \u2014 ${headlineAmount}`,
+      });
+      return;
     }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.info("Sharing isn't supported here \u2014 the receipt was downloaded.");
   };
 
-  const handleShare = async () => {
-    setSharing(true);
+  const handleSharePdf = async () => {
+    setSharingPdf(true);
     try {
-      const blob = await buildPng();
-      const file = new File([blob], fileName, { type: "image/png" });
-
-      // Web Share API level 2 hands the actual image to WhatsApp, Mail, etc.
-      // Support is real on mobile but patchy on desktop, so feature-detect the
-      // file payload specifically before relying on it.
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: "Xbanka transaction receipt",
-          text: `Xbanka receipt — ${headlineAmount}`,
-        });
-        return;
-      }
-
-      // No file sharing available: save it so the user can attach it manually.
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(url);
-      toast.info("Sharing isn't supported here — the receipt was downloaded.");
+      const canvas = await drawReceipt(rows, heading, headlineAmount);
+      const blob = await canvasToPdfBlob(canvas);
+      await shareFile(blob, `${baseName}.pdf`, "application/pdf");
     } catch (err) {
-      // A user dismissing the native share sheet rejects with AbortError; that
-      // is a normal cancel, not a failure worth surfacing.
+      // Dismissing the share sheet rejects with AbortError, which is a normal
+      // cancel rather than a failure.
       if ((err as Error)?.name === "AbortError") return;
-      toast.error("Could not share the receipt");
+      toast.error("Could not share the receipt as PDF");
     } finally {
-      setSharing(false);
+      setSharingPdf(false);
     }
   };
 
-  // The browser's own print pipeline produces a true vector PDF via
-  // "Save as PDF", so no PDF library is needed.
-  const handlePrint = () => window.print();
+  const handleShareImage = async () => {
+    setSharingImage(true);
+    try {
+      const blob = await buildPng();
+      await shareFile(blob, `${baseName}.png`, "image/png");
+    } catch (err) {
+      if ((err as Error)?.name === "AbortError") return;
+      toast.error("Could not share the receipt as image");
+    } finally {
+      setSharingImage(false);
+    }
+  };
 
   return (
     <Modal
@@ -313,36 +312,25 @@ export function TransactionReceiptModal({
         </div>
       </div>
 
-      <div className="no-print mt-6 space-y-3">
-        <div className="flex gap-3 max-sm:flex-col">
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1 text-card-text"
-            onClick={handlePrint}
-          >
-            <Printer className="h-4 w-4" />
-            Save as PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1 text-card-text"
-            onClick={handleSaveImage}
-            disabled={saving}
-          >
-            <Download className="h-4 w-4" />
-            {saving ? "Saving..." : "Save as image"}
-          </Button>
-        </div>
+      <div className="no-print mt-6 flex gap-3 max-sm:flex-col">
         <Button
           size="lg"
-          className="w-full"
-          onClick={handleShare}
-          disabled={sharing}
+          className="flex-1"
+          onClick={handleSharePdf}
+          disabled={sharingPdf}
         >
-          <Share2 className="h-4 w-4" />
-          {sharing ? "Preparing..." : "Share receipt"}
+          <FileText className="h-4 w-4" />
+          {sharingPdf ? "Preparing..." : "Share as PDF"}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex-1 text-card-text"
+          onClick={handleShareImage}
+          disabled={sharingImage}
+        >
+          <ImageIcon className="h-4 w-4" />
+          {sharingImage ? "Preparing..." : "Share as image"}
         </Button>
       </div>
     </Modal>
