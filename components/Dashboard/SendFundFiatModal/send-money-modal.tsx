@@ -223,7 +223,12 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
               "0"
             }
             name={recipient?.accountName || xbankaRecipient?.name || ""}
-            bank={recipient?.bankName || xbankaRecipient?.id || ""}
+            // Xbanka-user transfers have no bank; show their UID rather than
+            // the internal record id, which rendered as a raw UUID.
+            bank={
+              recipient?.bankName ||
+              (xbankaRecipient?.uid ? `Xbanka · ${xbankaRecipient.uid}` : "")
+            }
             fee={"₦0.00"}
             date={formatTransactionDate(new Date())}
             reference={reference || ""}

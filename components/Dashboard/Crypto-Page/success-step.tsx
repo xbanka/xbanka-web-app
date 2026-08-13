@@ -14,7 +14,7 @@ import Image from "next/image";
 import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { DetailBox } from "./detail-box";
 import { formatDateTime } from "@/lib/formatDate";
-import { TransactionReceiptModal } from "./transaction-receipt-modal";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 
 export function SuccessStep({
   mode,
@@ -79,9 +79,18 @@ export function SuccessStep({
   if (receiptOpen) {
     return (
       <TransactionReceiptModal
-        mode={mode}
-        result={result}
-        dateTime={dateTime}
+        heading="Amount received"
+        headlineAmount={receivedValue}
+        reference={reference}
+        rows={[
+          { label: "Transaction type", value: mode === "BUY" ? "Buy" : "Sell" },
+          { label: mode === "BUY" ? "You paid" : "Asset sold", value: paidValue },
+          { label: "You received", value: receivedValue, accent: true },
+          { label: "Rate", value: rate },
+          { label: "Fee", value: fee },
+          { label: "Date & Time", value: formatDateTime(dateTime) },
+          { label: "Transaction ID", value: reference || "—" },
+        ]}
         onClose={() => setReceiptOpen(false)}
       />
     );
