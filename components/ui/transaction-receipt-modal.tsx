@@ -1,14 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { CloseBtn } from "@/components/ui/close-btn";
-import { Modal } from "@/components/ui/Modal";
-import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
-import { formatDateTime } from "@/lib/formatDate";
+import { Button } from "./button";
+import { CloseBtn } from "./close-btn";
+import { Modal } from "./Modal";
 import { Download, Printer, Share2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ConversionResult } from "./types";
 
 export interface ReceiptRow {
   label: string;
@@ -159,46 +156,28 @@ async function drawReceipt(
 }
 
 export function TransactionReceiptModal({
-  mode,
-  result,
-  dateTime,
+  heading,
+  headlineAmount,
+  rows,
+  reference,
   onClose,
 }: {
-  mode: "BUY" | "SELL";
-  result: ConversionResult | null;
-  dateTime?: string;
+  /** Label above the large amount, e.g. "Amount sent". */
+  heading: string;
+  /** The figure shown large at the top of the receipt. */
+  headlineAmount: string;
+  rows: ReceiptRow[];
+  /** Used for the download filename; usually the transaction reference. */
+  reference?: string;
   onClose: () => void;
 }) {
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
 
-  const paidValue = result
-    ? formatCurrencyAmount(result.debitAmount, result.debitCurrency)
-    : "—";
-  const receivedValue = result
-    ? formatCurrencyAmount(result.creditAmount, result.creditCurrency)
-    : "—";
-  const fee =
-    result?.fee && result.fee !== "0 Fee" && result.fee !== "O Fee"
-      ? result.fee
-      : "₦0.00";
-
-  const rows: ReceiptRow[] = [
-    { label: "Transaction type", value: mode === "BUY" ? "Buy" : "Sell" },
-    { label: mode === "BUY" ? "You paid" : "Asset sold", value: paidValue },
-    { label: "You received", value: receivedValue, accent: true },
-    { label: "Rate", value: result?.rate ?? "—" },
-    { label: "Fee", value: fee },
-    { label: "Date & Time", value: formatDateTime(dateTime) },
-    { label: "Transaction ID", value: result?.transactionId || "—" },
-  ];
-
-  const heading = mode === "BUY" ? "Amount received" : "Amount received";
-
-  const fileName = `xbanka-receipt-${result?.transactionId || "transaction"}.png`;
+  const fileName = `xbanka-receipt-${reference || "transaction"}.png`;
 
   const buildPng = async (): Promise<Blob> => {
-    const canvas = await drawReceipt(rows, heading, receivedValue);
+    const canvas = await drawReceipt(rows, heading, headlineAmount);
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, "image/png"),
     );
@@ -237,7 +216,7 @@ export function TransactionReceiptModal({
         await navigator.share({
           files: [file],
           title: "Xbanka transaction receipt",
-          text: `Xbanka receipt — ${receivedValue}`,
+          text: `Xbanka receipt — ${headlineAmount}`,
         });
         return;
       }
@@ -298,7 +277,7 @@ export function TransactionReceiptModal({
           <div>
             <p className="text-sm font-medium text-[#6b7280]">{heading}</p>
             <p className="mt-1 text-3xl font-bold text-[#1b1d20] max-sm:text-2xl">
-              {receivedValue}
+              {headlineAmount}
             </p>
           </div>
 
