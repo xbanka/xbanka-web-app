@@ -15,7 +15,7 @@ export default function GiftCardsPage() {
         <h1 className="text-xl sm:text-2xl font-bold text-card-text">
           Gift Cards
         </h1>
-        <div className="flex gap-1 border-b border-border sm:border-none">
+        <div className="flex gap-1 overflow-x-auto border-b border-border sm:border-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {(["overview", "sell", "history"] as GiftTab[]).map((t) => (
             <button
               key={t}
