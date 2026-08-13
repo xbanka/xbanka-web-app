@@ -3,6 +3,10 @@ import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
 import Image from "next/image";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
+import { formatDateTime } from "@/lib/formatDate";
+import { Receipt } from "lucide-react";
+import { useState } from "react";
 
 const formatAmount = (raw: string) => {
   const numeric = parseFloat(raw.replace(/,/g, ""));
@@ -32,6 +36,27 @@ export function SuccessStep({
   message: string;
 }) {
   const displayAmount = formatAmount(amount);
+  const [receiptOpen, setReceiptOpen] = useState(false);
+
+  if (receiptOpen) {
+    return (
+      <TransactionReceiptModal
+        heading="Amount sent"
+        headlineAmount={`\u20a6${displayAmount}.00`}
+        reference={reference}
+        rows={[
+          { label: "Transaction type", value: "Transfer" },
+          { label: "Recipient", value: name || "\u2014" },
+          { label: "Bank", value: bank || "\u2014" },
+          { label: "Amount", value: `\u20a6${displayAmount}.00`, accent: true },
+          { label: "Fee", value: fee || "\u20a60.00" },
+          { label: "Date & Time", value: formatDateTime(date) },
+          { label: "Reference", value: reference || "\u2014" },
+        ]}
+        onClose={() => setReceiptOpen(false)}
+      />
+    );
+  }
 
   return (
     <Modal
@@ -81,6 +106,15 @@ export function SuccessStep({
           )}
         </div>
         <div className="w-full space-y-3">
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full text-card-text"
+            onClick={() => setReceiptOpen(true)}
+          >
+            <Receipt className="h-4 w-4 text-text" />
+            View Receipt
+          </Button>
           <Button size="lg" className="w-full" onClick={onDone}>
             Done
           </Button>
