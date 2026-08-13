@@ -50,10 +50,11 @@ export default function VerifyTwoFactor() {
 
       <Button
         onClick={handleVerify}
-        disabled={code.length !== 6}
+        disabled={code.length !== 6 || isPending}
+        variant={code.length === 6 && !isPending ? "default" : "disabled"}
         className="w-full"
       >
-        Verify Code
+        {isPending ? "Verifying..." : "Verify Code"}
       </Button>
     </Card>
   );

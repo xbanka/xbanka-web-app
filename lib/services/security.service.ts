@@ -13,6 +13,7 @@ import {
   validatePin,
 } from "../actions/security";
 import { toast } from "sonner";
+import { apiMessage } from "../toastMessage";
 import { handleApiError } from "../errors/error";
 import {
   CreatePinPayload,
@@ -27,7 +28,7 @@ export const useCreatePin = () => {
   const mutate = useMutation({
     mutationFn: (data: CreatePinPayload) => createPin(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Transaction PIN created"));
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
@@ -88,7 +89,7 @@ export const useUpdatePin = () => {
   const mutate = useMutation({
     mutationFn: (data: UpdatePinPayload) => updatePin(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Transaction PIN updated"));
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
@@ -105,7 +106,7 @@ export const useResetPin = () => {
     mutationFn: (data: ResetPinPayload) => resetPin(data),
 
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Transaction PIN reset"));
 
       queryClient.invalidateQueries({
         queryKey: ["user-profile"],
@@ -122,7 +123,7 @@ export const useValidatePin = () => {
   const mutate = useMutation({
     mutationFn: (data: ValidatePinPayload) => validatePin(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "PIN confirmed"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -135,7 +136,7 @@ export const useChangePassword = () => {
   const mutate = useMutation({
     mutationFn: (data: passwordChangePayload) => passwordChange(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Password changed"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -148,7 +149,7 @@ export const useTwoFactorAuthenticationGenerate = () => {
   const mutate = useMutation({
     mutationFn: () => twoFactorAuthenticationGenerate(),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Authenticator secret generated"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -162,7 +163,7 @@ export const useEnable2FA = () => {
   const mutate = useMutation({
     mutationFn: (data: string) => twoFactorAuthenticationEnable(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Two-factor authentication enabled"));
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
@@ -176,7 +177,7 @@ export const useDisable2FA = () => {
   const mutate = useMutation({
     mutationFn: (data: string) => twoFactorAuthenticationDisable(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Two-factor authentication disabled"));
     },
     onError: (err) => {
       handleApiError(err);
@@ -189,7 +190,7 @@ export const useVerify2FALogin = () => {
   const mutate = useMutation({
     mutationFn: () => twoFactorLogin(),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Two-factor authentication verified"));
     },
     onError: (err) => {
       handleApiError(err);

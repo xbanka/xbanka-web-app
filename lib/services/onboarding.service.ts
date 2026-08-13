@@ -11,6 +11,7 @@ import {
 } from "../actions/onboarding";
 import { handleApiError } from "../errors/error";
 import { toast } from "sonner";
+import { apiMessage } from "../toastMessage";
 import { profilePayload, verifyBvnPayload } from "../types/onboarding-types";
 
 export const useUserProfile = () => {
@@ -27,7 +28,7 @@ export const useUserProfile = () => {
         data.country,
       ),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Profile saved"));
       queryClient.invalidateQueries({
         queryKey: ["user-profile"],
       });
@@ -45,7 +46,7 @@ export const useSkipStep = () => {
   const mutate = useMutation({
     mutationFn: (data: string) => skipStep(data),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Step skipped"));
       queryClient.invalidateQueries({ queryKey: ["verification-status"] });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
@@ -62,7 +63,7 @@ export const useVerifyBvn = () => {
   const mutate = useMutation({
     mutationFn: (data: verifyBvnPayload) => verifyBvn(data.userId, data.bvn),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "BVN verified"));
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       queryClient.invalidateQueries({ queryKey: ["verification-status"] });
     },
@@ -79,7 +80,7 @@ export const useIdentity = () => {
   const mutate = useMutation({
     mutationFn: (formData: FormData) => identity(formData),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Identity document submitted"));
       queryClient.invalidateQueries({ queryKey: ["verification-status"] });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
@@ -96,7 +97,7 @@ export const useAddressProof = () => {
   const mutate = useMutation({
     mutationFn: (formData: FormData) => address(formData),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Proof of address submitted"));
       queryClient.invalidateQueries({ queryKey: ["verification-status"] });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
@@ -114,7 +115,7 @@ export const useVerifySelfie = () => {
     mutationFn: (formData: FormData) => selfie(formData),
 
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "Selfie verified"));
       queryClient.invalidateQueries({ queryKey: ["verification-status"] });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },

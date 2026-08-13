@@ -1,0 +1,39 @@
+name: Security check
+
+# Runs on every PR and every push to main. Make this a *required* status check
+# in branch protection so a PR cannot merge while it fails.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  config-integrity:
+    name: Build config integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No `npm install` before this step, deliberately: the check must run
+      # before any project code or dependency script is executed.
+      - name: Check build configs for tampering
+        run: node scripts/check-config-integrity.mjs
+
+      - name: Scan repository for known payload indicators
+        run: |
+          if grep -rl --binary-files=without-match \
+               -e "A8-446" \
+               -e "166\.88\.134\.62" \
+               -e "xorDecode" \
+               -e "getClb" \
+               -e "global\['_t_s'\]" \
+               . --exclude-dir=.git --exclude-dir=node_modules \
+               --exclude-dir=.github 2>/dev/null; then
+            echo "::error::Known payload indicators found in the repository."
+            exit 1
+          fi
+          echo "No payload indicators found."

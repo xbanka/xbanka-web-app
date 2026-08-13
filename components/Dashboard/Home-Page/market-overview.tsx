@@ -201,7 +201,7 @@ export function MarketOverview() {
           Market Overview
         </h3>
         <Link
-          href="/crypto"
+          href="/market"
           className="flex shrink-0 items-center gap-2 text-xs font-medium text-Green hover:underline max-sm:text-[12px] max-sm:leading-6"
         >
           View more <ArrowUpRight className="h-4 w-4 max-sm:h-5 max-sm:w-5" />

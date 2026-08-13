@@ -1,0 +1,12 @@
+#!/bin/sh
+# Blocks commits that would reintroduce a tampered build config.
+# Enable once per clone:  git config core.hooksPath .githooks
+
+node scripts/check-config-integrity.mjs || {
+  echo ""
+  echo "  Commit blocked: a build config failed the integrity check."
+  echo "  If you believe this is a false positive, review the file first —"
+  echo "  check for content hidden far to the right on a single line."
+  echo ""
+  exit 1
+}
