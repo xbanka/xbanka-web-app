@@ -85,7 +85,7 @@ function Step4({ setStep }: Step4Props) {
 
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
-      <div className="text-center space-y-2 max-sm:mb-6 max-sm:text-left">
+      <div className="text-center space-y-2 mb-8 max-sm:mb-6 max-sm:text-left">
         <h1 className="text-[26px] font-bold text-card-text leading-tight max-sm:text-[34px] max-sm:leading-10">
           Almost Done!
           <br />

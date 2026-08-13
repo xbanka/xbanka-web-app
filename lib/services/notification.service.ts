@@ -6,6 +6,7 @@ import {
 } from "../actions/notifications";
 import { handleApiError } from "../errors/error";
 import { toast } from "sonner";
+import { apiMessage } from "../toastMessage";
 
 export const UseGetNotifications = () => {
   return useQuery({
@@ -26,7 +27,7 @@ export const useReadAllNotifications = () => {
   const mutate = useMutation({
     mutationFn: () => readAllNotifications(),
     onSuccess: (result) => {
-      toast.success(result.data.message);
+      toast.success(apiMessage(result, "All notifications marked as read"));
       queryClient.invalidateQueries({
         queryKey: ["get-notifications"],
       });

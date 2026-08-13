@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UpdateProfileData, UserProfileTypes } from "../types/profile-types";
 import { updateAvatar, updateProfile, UserProfile, VerificationStatus } from "../actions/profile";
 import { toast } from "sonner";
+import { apiMessage } from "../toastMessage";
 import { handleApiError } from "../errors/error";
 import { useUserStore } from "@/store/user.store";
 
@@ -61,7 +62,7 @@ export const useUpdateProfile = () => {
   const mutate = useMutation({
     mutationFn: (data: UpdateProfileData) => updateProfile(data),
     onSuccess: (result, variables) => {
-      toast.success(result?.message);
+      toast.success(apiMessage(result, "Profile updated"));
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       updateUser({
         ...variables,
