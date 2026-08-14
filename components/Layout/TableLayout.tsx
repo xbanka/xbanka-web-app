@@ -36,6 +36,12 @@ interface DataTableLayoutProps<T> {
   isError?: boolean;
   errorMessage?: string;
   className?: string;
+  /**
+   * Applied to the <table>. Use a min-width here to let a wide table overflow
+   * its container, which is what makes a sticky column meaningful — without
+   * it the table is w-full and never scrolls.
+   */
+  tableClassName?: string;
   pageTotal?: number;
 }
 
@@ -52,6 +58,7 @@ export function DataTableLayout<T>({
   isError = false,
   errorMessage = "Failed to load data.",
   className,
+  tableClassName,
   pageTotal,
 }: DataTableLayoutProps<T>) {
   const [localPage, setLocalPage] = useState(1);
@@ -134,6 +141,7 @@ export function DataTableLayout<T>({
               className={cn(
                 "w-full table-fixed",
                 isLoading || isError ? "pointer-events-none" : "",
+                tableClassName,
               )}
             >
               <TableHeader>
@@ -200,7 +208,10 @@ export function DataTableLayout<T>({
                   paginatedData?.map((item) => (
                     <TableRow
                       key={rowKey(item)}
-                      className="text-left text-card-text font-normal text-sm cursor-pointer hover:bg-border/90 transition-colors"
+                      // `group` lets a pinned column follow the row's hover
+                      // state; a sticky cell has its own background, so without
+                      // this it would stay unhighlighted while the row tints.
+                      className="group text-left text-card-text font-normal text-sm cursor-pointer hover:bg-border/90 transition-colors"
                     >
                       {columns.map((col) => (
                         <TableCell
