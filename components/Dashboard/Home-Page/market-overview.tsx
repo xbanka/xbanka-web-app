@@ -166,6 +166,12 @@ export function MarketOverview() {
     {
       key: "id",
       header: "Action",
+      // Pinned to the right edge so Trade stays reachable while the wider
+      // columns scroll under it. Needs its own background, and follows the
+      // row's hover via the `group` on TableRow.
+      className:
+        "sticky right-0 z-10 w-24 bg-border group-hover:bg-border/90 " +
+        "shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]",
       render: (item: CryptoMarketOverview) => (
         <Link href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}>
           <span className="font-normal text-sm leading-6 text-Green">Trade</span>
@@ -220,8 +226,11 @@ export function MarketOverview() {
           </button>
         ))}
       </div>
-      <div className="hidden overflow-x-auto md:block">
+      {/* No overflow-x here: DataTableLayout owns the horizontal scroller, and
+          nesting two would anchor the sticky Action column to the wrong one. */}
+      <div className="hidden md:block">
         <DataTableLayout
+          tableClassName="min-w-[560px]"
           data={marketItems}
           columns={columns}
           isError={marketPricesIsError}

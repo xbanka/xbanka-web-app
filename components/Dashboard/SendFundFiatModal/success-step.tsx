@@ -4,6 +4,7 @@ import { Modal } from "@/components/ui/Modal";
 import Image from "next/image";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
 import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
+import { Confetti } from "@/components/ui/confetti";
 import { formatDateTime } from "@/lib/formatDate";
 import { Receipt } from "lucide-react";
 import { useState } from "react";
@@ -63,6 +64,7 @@ export function SuccessStep({
       className="pt-6 max-sm:px-5 max-sm:pt-5 max-sm:pb-6"
       onClose={onDone}
     >
+      <Confetti />
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
       </div>
