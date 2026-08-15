@@ -260,12 +260,17 @@ export function MarketOverview() {
         </div>
 
         <div className="overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="min-w-0">
+          {/* A min-width lets the row overflow instead of compressing, which is
+              what gives the pinned Action column something to stick against. It
+              releases into its natural position at the end of the scroll. */}
+          <div className="min-w-[460px]">
             <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] gap-1 border-b border-input px-1 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
               <span>Assets</span>
               <span>Price</span>
               <span>24h Change</span>
-              <span>Action</span>
+              <span className="sticky right-0 z-10 bg-border pl-3 text-right shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
+                Action
+              </span>
             </div>
 
             {marketPricesPending && (
@@ -316,7 +321,7 @@ export function MarketOverview() {
                     </div>
                     <Link
                       href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}
-                      className="text-left text-[16px] max-sm:text-[12px] font-medium leading-6 text-Green"
+                      className="sticky right-0 z-10 bg-border pl-3 text-right text-[16px] font-medium leading-6 text-Green shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)] max-sm:text-[12px]"
                     >
                       Trade
                     </Link>
