@@ -260,75 +260,95 @@ export function MarketOverview() {
         </div>
 
         <div className="overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {/* A min-width lets the row overflow instead of compressing, which is
-              what gives the pinned Action column something to stick against. It
-              releases into its natural position at the end of the scroll. */}
-          <div className="min-w-[460px]">
-            <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] gap-1 border-b border-input px-1 py-3 text-[16px] max-sm:text-[12px] font-medium leading-6 max-sm:leading-[16px] text-text">
-              <span>Assets</span>
-              <span>Price</span>
-              <span>24h Change</span>
-              <span className="sticky right-0 z-10 bg-border pl-3 text-right shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
-                Action
-              </span>
-            </div>
+          {/* A real table, not a grid: a sticky grid item is confined to its own
+              grid area, so it has nowhere to travel and never comes into view.
+              Sticky table cells are constrained to the table instead, which is
+              what lets Trade stay pinned to the right edge while the other
+              columns scroll under it, then settle into place at the end. */}
+          <table className="w-full min-w-[460px] border-collapse">
+            <thead>
+              <tr className="text-[16px] font-medium leading-6 text-text max-sm:text-[12px] max-sm:leading-[16px]">
+                <th className="border-b border-input px-1 py-3 text-left font-medium">
+                  Assets
+                </th>
+                <th className="border-b border-input px-1 py-3 text-left font-medium">
+                  Price
+                </th>
+                <th className="border-b border-input px-1 py-3 text-left font-medium">
+                  24h Change
+                </th>
+                <th className="sticky right-0 z-10 border-b border-input bg-border px-1 py-3 text-right font-medium shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {marketPricesPending && (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-text">
+                    Loading...
+                  </td>
+                </tr>
+              )}
+              {marketPricesIsError && (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-error-text">
+                    {marketPricesError?.message}
+                  </td>
+                </tr>
+              )}
+              {!marketPricesPending &&
+                !marketPricesIsError &&
+                marketItems.map((item: CryptoMarketOverview) => {
+                  const isNegative = item.changePercent24h < 0;
 
-            {marketPricesPending && (
-              <div className="py-8 text-center text-text">Loading...</div>
-            )}
-            {marketPricesIsError && (
-              <div className="py-8 text-center text-error-text">
-                {marketPricesError?.message}
-              </div>
-            )}
-            {!marketPricesPending &&
-              !marketPricesIsError &&
-              marketItems.map((item: CryptoMarketOverview) => {
-                const isNegative = item.changePercent24h < 0;
-
-                return (
-                  <div
-                    key={item.id}
-                    className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] items-center gap-1 border-b border-input px-1 py-4 last:border-b-0"
-                  >
-                    <div className="flex min-w-0 items-center gap-3 ">
-                      <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:w-[32px] max-sm:h-[32px]">
-                        <CoinIcon currency={item.symbol} size={32} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-[16px] max-sm:text-[12px] max-sm:leading-[20px] font-medium leading-6 text-card-text">
-                          {item.name}
-                        </p>
-                        <p className="truncate text-[16px] max-sm:text-[12px] font-medium leading-6 text-text">
-                          {item.symbol}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="truncate text-[16px] font-medium leading-6 text-card-text max-sm:text-[12px]">
-                      ${formatPrice(item.priceUsd)}
-                    </p>
-                    <div
-                      className={`flex min-w-0 items-center gap-1 text-[16px] max-sm:text-[12px] font-medium leading-6 ${isNegative ? "text-error-text" : "text-Green  max-sm:text-[12px]"}`}
-                    >
-                      {isNegative ? (
-                        <ArrowDownRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
-                      ) : (
-                        <ArrowUpRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
-                      )}
-                      <span className="truncate">
-                        {formatToTwoDecimals(item.changePercent24h)}%
-                      </span>
-                    </div>
-                    <Link
-                      href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}
-                      className="sticky right-0 z-10 bg-border pl-3 text-right text-[16px] font-medium leading-6 text-Green shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)] max-sm:text-[12px]"
-                    >
-                      Trade
-                    </Link>
-                  </div>
-                );
-              })}
-          </div>
+                  return (
+                    <tr key={item.id} className="group">
+                      <td className="border-b border-input px-1 py-4 group-last:border-b-0">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="h-11 w-11 shrink-0 rounded-full bg-card-background max-sm:h-8 max-sm:w-8">
+                            <CoinIcon currency={item.symbol} size={32} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-[16px] font-medium leading-6 text-card-text max-sm:text-[12px] max-sm:leading-5">
+                              {item.name}
+                            </p>
+                            <p className="truncate text-[16px] font-medium leading-6 text-text max-sm:text-[12px]">
+                              {item.symbol}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="border-b border-input px-1 py-4 text-[16px] font-medium leading-6 text-card-text group-last:border-b-0 max-sm:text-[12px]">
+                        ${formatPrice(item.priceUsd)}
+                      </td>
+                      <td className="border-b border-input px-1 py-4 group-last:border-b-0">
+                        <div
+                          className={`flex min-w-0 items-center gap-1 text-[16px] font-medium leading-6 max-sm:text-[12px] ${isNegative ? "text-error-text" : "text-Green"}`}
+                        >
+                          {isNegative ? (
+                            <ArrowDownRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
+                          ) : (
+                            <ArrowUpRight className="h-5 w-5 shrink-0 max-sm:h-4 max-sm:w-4" />
+                          )}
+                          <span className="truncate">
+                            {formatToTwoDecimals(item.changePercent24h)}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="sticky right-0 z-10 border-b border-input bg-border px-1 py-4 text-right group-last:border-b-0 shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
+                        <Link
+                          href={`/crypto?tab=buy&mode=buy&coin=${item.symbol}`}
+                          className="text-[16px] font-medium leading-6 text-Green max-sm:text-[12px]"
+                        >
+                          Trade
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
         </div>
 
         {/* {totalPages > 1 && (
