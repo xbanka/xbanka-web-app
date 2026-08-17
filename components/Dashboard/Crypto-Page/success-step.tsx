@@ -15,6 +15,7 @@ import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { DetailBox } from "./detail-box";
 import { formatDateTime } from "@/lib/formatDate";
 import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
+import { Confetti } from "@/components/ui/confetti";
 
 export function SuccessStep({
   mode,
@@ -101,6 +102,7 @@ export function SuccessStep({
       className="pb-10 px-10 pt-6 max-sm:pb-6 max-sm:px-5 max-sm:pt-4"
       onClose={onDone}
     >
+      <Confetti />
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
       </div>

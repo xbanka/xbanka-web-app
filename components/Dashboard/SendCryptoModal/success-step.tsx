@@ -8,6 +8,7 @@ import { WalletSuccessState, TRANSACTION_FEE } from "./crypto-modal-types";
 import { UserWallet } from "../Wallet-Page/types";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
+import { Confetti } from "@/components/ui/confetti";
 
 export function SuccessStep({
   amount,
@@ -40,6 +41,7 @@ export function SuccessStep({
 
   return (
     <Modal className="pb-10 px-10 pt-6" onClose={onDone}>
+      <Confetti />
       {/* Close button */}
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
