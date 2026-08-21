@@ -178,6 +178,7 @@ export function AddressModal({
 
       {step === "success" && (
         <SuccessState
+          celebrate
           title="You're all set!"
           subtitle="Your address has been submitted. Your account is now fully set up and ready to use."
           badge="verified"

@@ -4,6 +4,7 @@ import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import { bankColor, bankInitials } from "@/lib/wallet-page";
 import Image from "next/image";
+import { Confetti } from "@/components/ui/confetti";
 
 export function SuccessStep({
   amount,
@@ -25,6 +26,7 @@ export function SuccessStep({
       className="pt-6 max-sm:px-5 max-sm:pt-5 max-sm:pb-6"
       onClose={onDone}
     >
+      <Confetti />
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
       </div>
