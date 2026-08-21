@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { LucideArrowLeftRight } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Confetti } from "@/components/ui/confetti";
 
 export default function FundCallbackPage() {
   const params = useSearchParams();
@@ -42,6 +43,7 @@ export default function FundCallbackPage() {
   return (
     <div className="flex items-center justify-center h-screen">
       <Modal className="pt-6 space-y-6" onClose={() => {}}>
+        <Confetti />
         {isSuccess && (
           <div className="text-center space-y-6">
             <Image

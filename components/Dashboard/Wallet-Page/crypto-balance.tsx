@@ -12,10 +12,11 @@ import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useRouter } from "next/navigation";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
+import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
 export const CryptoBalance = () => {
   const router = useRouter();
-  const [hidden, setHidden] = useState(false);
+  const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendCrptoModalOpen, setSendCrptoModalOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
@@ -48,7 +49,9 @@ export const CryptoBalance = () => {
             <div className="flex items-center gap-2 text-text text-xs mb-2 max-sm:text-sm">
               <span>Total Crypto Value</span>
               <button
-                onClick={() => setHidden((h) => !h)}
+                type="button"
+                aria-label={hidden ? "Show balance" : "Hide balance"}
+                onClick={toggleHidden}
                 className="opacity-60 hover:opacity-100 transition-opacity"
               >
                 {hidden ? (

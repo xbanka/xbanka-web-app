@@ -223,6 +223,10 @@ export function MarketPage() {
 
       {/* Table */}
       <div className="bg-card-background border border-border rounded-2xl overflow-hidden">
+        {/* This div owns the horizontal scroller, which is what the sticky
+            Action column anchors to. The table only overflows below `sm` — at
+            wider widths it fits, so the pin and its shadow are scoped to
+            `max-sm` and the desktop table stays flat. */}
         <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <table className="w-full min-w-[460px] text-[14px]">
             <thead>
@@ -256,7 +260,9 @@ export function MarketPage() {
                     Change <SortIcon column="change" sortConfig={sortConfig} />
                   </button>
                 </th>
-                <th className="text-right px-4 py-4 font-medium">Action</th>
+                <th className="text-right px-4 py-4 font-medium max-sm:sticky max-sm:right-0 max-sm:z-10 max-sm:bg-card-background max-sm:shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -303,7 +309,9 @@ export function MarketPage() {
                   return (
                     <tr
                       key={coin.id}
-                      className="hover:bg-border/20 transition-colors"
+                      // No hover tint below `sm`: the pinned Action cell needs an opaque
+                      // background, so it cannot pick the tint up with the rest of the row.
+                      className="hover:bg-border/20 transition-colors max-sm:hover:bg-transparent"
                     >
                       <td className="px-4 py-4">
                         <button
@@ -348,7 +356,7 @@ export function MarketPage() {
                           {formatToTwoDecimals(coin.changePercent24h)}%
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-right">
+                      <td className="px-4 py-4 text-right max-sm:sticky max-sm:right-0 max-sm:z-10 max-sm:bg-card-background max-sm:shadow-[-10px_0_10px_-10px_rgba(0,0,0,0.45)]">
                         <Link
                           href={`/crypto?tab=buy&mode=buy&coin=${coin.symbol}`}
                           className="inline-block bg-Green hover:bg-Green/90 text-white text-[14px] font-medium px-4 py-2 rounded-lg transition-colors"

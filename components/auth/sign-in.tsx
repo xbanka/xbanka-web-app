@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { maskEmail } from "@/lib/maskEmail";
 import MailPic from "../../public/mail.svg";
 import { useRouter } from "next/navigation";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 const SignIn = ({ urlError }: { urlError?: string }) => {
   const router = useRouter();
@@ -217,7 +218,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
         <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
           By signing into your account, you agree to our{" "}
           <span className="text-Green">Terms of Service</span> &{" "}
-          <span className="text-Green">Privacy Policy</span>
+          <PrivacyPolicyLink />
         </p>
       </div>
     </Card>
