@@ -23,6 +23,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 type FormValues = {
   amount: string;
@@ -307,9 +308,7 @@ export function SellTab() {
               Terms & Conditions
             </span>{" "}
             and{" "}
-            <span className="text-Green cursor-pointer hover:underline">
-              Privacy Policy
-            </span>
+            <PrivacyPolicyLink />
           </p>
         </div>
       </div>

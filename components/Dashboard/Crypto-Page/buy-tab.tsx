@@ -21,6 +21,7 @@ import { CreatePinModal } from "../Account-Page/create-pin-modal";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 export function BuyTab() {
   const searchParams = useSearchParams();
@@ -289,9 +290,7 @@ export function BuyTab() {
                 Terms & Conditions
               </span>{" "}
               and{" "}
-              <span className="text-Green cursor-pointer hover:underline">
-                Privacy Policy
-              </span>
+              <PrivacyPolicyLink />
             </p>
           </div>
         </div>

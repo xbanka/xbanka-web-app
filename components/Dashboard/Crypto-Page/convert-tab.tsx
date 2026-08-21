@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "./confirm-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 type FormValues = {
   amount: string;
@@ -240,9 +241,7 @@ export function ConvertTab() {
             Terms & Conditions
           </span>{" "}
           and{" "}
-          <span className="text-Green cursor-pointer hover:underline">
-            Privacy Policy
-          </span>
+          <PrivacyPolicyLink />
         </p>
       </DashboardCard>
       <MarketHighlight />

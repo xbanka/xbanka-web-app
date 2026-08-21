@@ -15,6 +15,7 @@ import { useForgotPassword, useLogin } from "@/lib/services/auth.service";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import { useRouter } from "next/navigation";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -77,7 +78,7 @@ const ForgotPassword = () => {
         <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
           By creating an account, you agree to our{" "}
           <span className="text-Green">Terms of Service</span> &{" "}
-          <span className="text-Green">Privacy Policy</span>
+          <PrivacyPolicyLink />
         </p>
       </div>
     </Card>
