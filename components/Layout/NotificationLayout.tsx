@@ -1,29 +1,28 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useUserStore } from "@/store/user.store";
-import {
-  dismissNotification,
-  getDismissedNotifications,
-  restoreNotification,
-} from "@/lib/dismissedNotifications";
+import { useState } from "react";
 import { Tab } from "@/lib/types/notification-types";
-import { Check, BellOff, Loader2 } from "lucide-react";
+import {
+  Check,
+  BellOff,
+  Loader2,
+  Maximize2,
+  Minimize2,
+  Search,
+} from "lucide-react";
 import { NotifItem } from "./NotifItem";
 import { cn } from "@/lib/utils";
 import { ModalHeader } from "../ui/modal-header";
 import { Button } from "../ui/button";
-import {
-  UseGetNotifications,
-  useReadAllNotifications,
-  useReadSingleNotification,
-} from "@/lib/services/notification.service";
-import { groupNotificationsByDate } from "@/lib/groupNotifications";
-import { getNotificationCategory } from "@/lib/getNotificationIcon";
+import { useNotificationsFeed } from "@/hooks/use-notifications-feed";
 
 interface NotificationsModalProps {
   onClose: () => void;
-  onSeeAll?: () => void;
+  /** Whether the panel is showing as a full-size dialog rather than a dropdown. */
+  expanded: boolean;
+  onToggleExpand: () => void;
 }
+
+/** How many notifications the collapsed panel previews before "See all". */
+const PREVIEW_COUNT = 4;
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "all", label: "All" },
@@ -33,55 +32,33 @@ const TABS: { key: Tab; label: string }[] = [
 
 export function NotificationsModal({
   onClose,
-  onSeeAll,
+  expanded,
+  onToggleExpand,
 }: NotificationsModalProps) {
   const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [search, setSearch] = useState("");
+  const [unreadOnly, setUnreadOnly] = useState(false);
 
-  const { data, isPending, error } = UseGetNotifications();
   const {
-    mutate: readAllNotifications,
-    isPending: readAllPending,
-    error: readAllError,
-  } = useReadAllNotifications();
-  const {
-    mutate: readSingleNotification,
-    isPending: readSinglePending,
-    error: readSingleError,
-  } = useReadSingleNotification();
-
-  // Dismissals live in localStorage until the API gains a delete route, and are
-  // loaded after mount so server and client markup match on first render.
-  const userId = useUserStore((state) => state.user?.userId);
-  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    setDismissedIds(getDismissedNotifications(userId));
-  }, [userId]);
-
-  const handleDismiss = (id: string) => {
-    setDismissedIds(dismissNotification(id, userId));
-    toast.success("Notification removed", {
-      action: {
-        label: "Undo",
-        onClick: () => setDismissedIds(restoreNotification(id, userId)),
-      },
-    });
-  };
-
-  const notifications = (data?.data ?? []).filter(
-    (n: { id: string }) => !dismissedIds.includes(n.id),
-  );
-
-  const filteredNotifications =
-    activeTab === "all"
-      ? notifications
-      : notifications.filter(
-          (n: any) => getNotificationCategory(n) === activeTab,
-        );
-
-  const groupedNotifications = groupNotificationsByDate(filteredNotifications);
-  const hasNotifications = filteredNotifications.length > 0;
-  const hasUnread = notifications.some((n: any) => !n.isRead);
+    isPending,
+    error,
+    grouped: groupedNotifications,
+    hasNotifications,
+    hasUnread,
+    readAllNotifications,
+    readAllPending,
+    readSingleNotification,
+    dismiss: handleDismiss,
+    hiddenCount,
+  } = useNotificationsFeed({
+    tab: activeTab,
+    // Searching and filtering only make sense with the room to show them.
+    search: expanded ? search : "",
+    unreadOnly: expanded ? unreadOnly : false,
+    // Collapsed, the panel is a preview of the most recent few; expanding
+    // reveals the rest of the history.
+    limit: expanded ? undefined : PREVIEW_COUNT,
+  });
 
   return (
     <div className="flex max-h-[calc(100vh-96px)] w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:max-h-[calc(100dvh-24px)] max-sm:rounded-2xl max-sm:border-4">
@@ -125,8 +102,36 @@ export function NotificationsModal({
           </button>
         </div>
 
+        {/* Search + unread filter — only once there is room for them */}
+        {expanded && (
+          <div className="flex items-center gap-2 pt-4 max-sm:pt-3">
+            <div className="relative flex-1">
+              <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-placeholder" />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search notifications"
+                className="h-9 w-full rounded-lg border border-input bg-card-background pr-3 pl-8 text-[14px] text-card-text transition-colors outline-none placeholder:text-placeholder focus:border-border-active"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setUnreadOnly((value) => !value)}
+              aria-pressed={unreadOnly}
+              className={cn(
+                "h-9 shrink-0 rounded-lg border px-3.5 text-[13px] font-medium transition-colors",
+                unreadOnly
+                  ? "border-Green bg-Green text-white"
+                  : "border-border bg-background text-text hover:text-card-text",
+              )}
+            >
+              Unread
+            </button>
+          </div>
+        )}
+
         {/* Feed */}
-        <div className="-mr-2 flex-1 space-y-6 overflow-y-auto pb-2 pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border">
+        <div className="-mr-2 flex-1 space-y-6 overflow-y-auto pt-4 pr-2 pb-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border">
           {isPending ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-text">
               <Loader2 className="h-6 w-6 animate-spin text-Green" />
@@ -147,14 +152,20 @@ export function NotificationsModal({
                 <BellOff className="h-5 w-5" />
               </div>
               <p className="text-sm font-medium text-card-text">
-                {activeTab === "all"
-                  ? "You're all caught up"
-                  : `No ${activeTab} yet`}
+                {search.trim()
+                  ? "No matching notifications"
+                  : unreadOnly
+                    ? "Nothing unread"
+                    : activeTab === "all"
+                      ? "You're all caught up"
+                      : `No ${activeTab} yet`}
               </p>
               <p className="text-xs text-text">
-                {activeTab === "all"
-                  ? "New notifications will show up here."
-                  : "Notifications in this category will show up here."}
+                {search.trim()
+                  ? "Try a different search term."
+                  : activeTab === "all"
+                    ? "New notifications will show up here."
+                    : "Notifications in this category will show up here."}
               </p>
             </div>
           ) : (
@@ -190,11 +201,22 @@ export function NotificationsModal({
       {/* Footer */}
       <div className="shrink-0 px-8 pb-6 pt-4 text-center max-sm:px-5 max-sm:pb-5">
         <Button
-          onClick={onSeeAll}
+          onClick={onToggleExpand}
           variant="notification"
-          className="px-4 py-3.25 w-full"
+          className="w-full gap-2 px-4 py-3.25"
         >
-          See all notifications
+          {expanded ? (
+            <>
+              <Minimize2 className="h-4 w-4" />
+              Show less
+            </>
+          ) : (
+            <>
+              <Maximize2 className="h-4 w-4" />
+              See all notifications
+              {hiddenCount > 0 && ` (${hiddenCount} more)`}
+            </>
+          )}
         </Button>
       </div>
     </div>

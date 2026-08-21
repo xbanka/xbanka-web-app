@@ -3,6 +3,7 @@ import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
 import { CheckCircle, X } from "lucide-react";
 import Image from "next/image";
+import { Confetti } from "@/components/ui/confetti";
 
 export function SuccessStep({
   onDone,
@@ -13,6 +14,7 @@ export function SuccessStep({
 }) {
   return (
     <Modal onClose={onDone} className="text-center pb-0">
+      <Confetti />
       <div className="flex justify-end pt-6">
         <CloseBtn onClose={onDone} />
       </div>

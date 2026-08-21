@@ -13,10 +13,10 @@ import {
   sumWalletsEquivalent,
 } from "@/lib/sumBalances";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
 export const ValueBalance = () => {
-  const [hidden, setHidden] = useState(false);
+  const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const {
     data: getAllWalletBalance,
     error: getAllWalletBalanceError,
@@ -36,7 +36,9 @@ export const ValueBalance = () => {
             <div className="flex items-center gap-2 text-text text-[14px] leading-6 font-normal">
               <span>Total Portfolio Value</span>
               <button
-                onClick={() => setHidden((h) => !h)}
+                type="button"
+                aria-label={hidden ? "Show balance" : "Hide balance"}
+                onClick={toggleHidden}
                 className="opacity-60 hover:opacity-100 transition-opacity"
               >
                 {hidden ? (

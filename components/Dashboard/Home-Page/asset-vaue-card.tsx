@@ -6,10 +6,10 @@ import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
 export function AssetValueCard() {
-  const [hidden, setHidden] = useState(false);
+  const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const { view, setView } = useCurrencyViewStore();
   const {
     data: getAllWalletBalance,
@@ -28,7 +28,9 @@ export function AssetValueCard() {
           <div className="flex items-center gap-2 text-text text-sm">
             <span className="leading-6">Total Asset Value</span>
             <button
-              onClick={() => setHidden((h) => !h)}
+              type="button"
+              aria-label={hidden ? "Show balance" : "Hide balance"}
+              onClick={toggleHidden}
               className="opacity-70 hover:opacity-100 transition-opacity"
             >
               {hidden ? (

@@ -19,6 +19,7 @@ import { ErrorField } from "../ui/field-error";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import MailPic  from "../../public/mail.svg";
+import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -186,7 +187,7 @@ const SignUp = () => {
         <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
           By signing up, you agree to our{" "}
           <span className="text-Green">Terms of Service</span> &{" "}
-          <span className="text-Green">Privacy Policy</span>
+          <PrivacyPolicyLink />
         </p>
       </div>
     </Card>

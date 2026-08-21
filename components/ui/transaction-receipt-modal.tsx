@@ -20,6 +20,32 @@ const MUTED = "#6b7280";
 const HAIRLINE = "#e5e7eb";
 
 /**
+ * Shrinks `text` from the middle until it fits `maxWidth` at the context's
+ * current font. Canvas text does not wrap or clip on its own, so without this a
+ * long value (an account id, a reference) runs straight over its own label.
+ */
+function fitText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+
+  let head = Math.ceil(text.length / 2);
+  let tail = text.length - head;
+
+  while (head + tail > 2) {
+    if (head > tail) head -= 1;
+    else tail -= 1;
+
+    const candidate = `${text.slice(0, head)}\u2026${text.slice(text.length - tail)}`;
+    if (ctx.measureText(candidate).width <= maxWidth) return candidate;
+  }
+
+  return "\u2026";
+}
+
+/**
  * Renders the receipt onto a canvas so it can be saved as a PNG.
  *
  * Drawn by hand rather than rasterising the DOM: Tailwind v4 emits `oklch()`
@@ -123,11 +149,14 @@ async function drawReceipt(
     ctx.font = "500 15px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
     ctx.textAlign = "left";
     ctx.fillText(row.label, padding, y);
+    const labelWidth = ctx.measureText(row.label).width;
 
     ctx.fillStyle = row.accent ? BRAND : INK;
     ctx.font = "600 16px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText(row.value, width - padding, y);
+    // Whatever is left of the row once the label and a 24px gutter are taken.
+    const valueWidth = width - padding * 2 - labelWidth - 24;
+    ctx.fillText(fitText(ctx, row.value, valueWidth), width - padding, y);
 
     if (index < rows.length - 1) {
       ctx.strokeStyle = HAIRLINE;

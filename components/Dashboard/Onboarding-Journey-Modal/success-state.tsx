@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Confetti } from "@/components/ui/confetti";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Clock, Shield } from "lucide-react";
@@ -11,6 +12,7 @@ export function SuccessState({
   ctaLabel,
   onCta,
   onClose,
+  celebrate = false,
 }: {
   title: string;
   subtitle: string;
@@ -18,9 +20,12 @@ export function SuccessState({
   ctaLabel?: string;
   onCta?: () => void;
   onClose: () => void;
+  /** Fires a confetti burst — reserve it for the end of a journey. */
+  celebrate?: boolean;
 }) {
   return (
     <div className="text-center">
+      {celebrate && <Confetti />}
       <ModalHeader className="px-8" onClose={onClose} />
       <div className="space-y-6 px-8 pb-8">
         <div className="space-y-4">
