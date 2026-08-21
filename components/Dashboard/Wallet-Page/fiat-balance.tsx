@@ -20,9 +20,10 @@ import { DisabledTooltipButton } from "@/components/ui/disabled-tooltip-button";
 import { ErrorField } from "@/components/ui/field-error";
 import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { getTierLimit } from "@/lib/tier-limits";
+import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
 export const FiatBalance = () => {
-  const [hidden, setHidden] = useState(false);
+  const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const { data, error, isPending } = UseGetFiatWallet();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendFundsOpen, setSendFundsOpen] = useState(false);
@@ -79,7 +80,9 @@ export const FiatBalance = () => {
             <div className="flex items-center gap-2 text-text text-[14px] leading-6 font-normal">
               <span>Available Balance</span>
               <button
-                onClick={() => setHidden((h) => !h)}
+                type="button"
+                aria-label={hidden ? "Show balance" : "Hide balance"}
+                onClick={toggleHidden}
                 className="opacity-60 hover:opacity-100 transition-opacity"
               >
                 {hidden ? (
