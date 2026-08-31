@@ -8,6 +8,8 @@ import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { TransactionHistoryStatusBadge } from "@/lib/statusBadge";
 import { TransactionTypes } from "@/lib/types/transaction-types";
+import { buildTransactionReceipt } from "@/lib/transactionReceipt";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -22,6 +24,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [receiptFor, setReceiptFor] = useState<TransactionTypes | null>(null);
   const limit = 4;
   const tabs = ["All", "Pending", "Completed", "In Progress", "Failed"];
   const {
@@ -56,6 +59,31 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
       }) || []
     );
   }, [transactions, filter, selectedType, searchQuery]);
+
+  /**
+   * The row (and, on mobile, the card) already opens the receipt — this is the
+   * visible affordance that says so. It sits in its own cell on desktop and at
+   * the foot of the card on mobile, where it stretches to the full width.
+   */
+  const receiptColumn = {
+    key: "actions",
+    header: "",
+    className: "w-32",
+    render: (item: TransactionTypes) => (
+      <button
+        type="button"
+        onClick={(event) => {
+          // The row itself opens the receipt too — without this the click
+          // would run twice.
+          event.stopPropagation();
+          setReceiptFor(item);
+        }}
+        className="inline-flex w-full cursor-pointer items-center justify-center rounded-full border border-Green/40 bg-Green/10 px-3 py-1.5 text-[12px] font-medium leading-4 text-Green transition-colors hover:border-Green hover:bg-Green/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-Green/40 md:w-auto"
+      >
+        View receipt
+      </button>
+    ),
+  };
 
   const columns = [
     {
@@ -104,6 +132,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
         <TransactionHistoryStatusBadge status={item.status} />
       ),
     },
+    receiptColumn,
   ];
 
   const cryptoColumns = [
@@ -153,6 +182,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
         <TransactionHistoryStatusBadge status={item.status} />
       ),
     },
+    receiptColumn,
   ];
 
   useEffect(() => {
@@ -223,9 +253,17 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
           pageTotal={transactionHistory?.data?.data?.meta.totalPages}
           currentPage={page}
           onPageChange={setPage}
+          onRowClick={setReceiptFor}
           emptyMessage="No transaction history available."
         />
       </div>
+
+      {receiptFor && (
+        <TransactionReceiptModal
+          {...buildTransactionReceipt(receiptFor)}
+          onClose={() => setReceiptFor(null)}
+        />
+      )}
     </DashboardCard>
   );
 }
