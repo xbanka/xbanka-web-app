@@ -43,4 +43,6 @@ export interface XbankaUser {
   createdAt: string;
   profile: XbankaUserProfile | null;
   email: string;
+  /** Display name computed by the API — see `xbankaUserName`. */
+  username: string;
 }

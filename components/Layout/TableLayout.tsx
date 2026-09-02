@@ -43,6 +43,11 @@ interface DataTableLayoutProps<T> {
    */
   tableClassName?: string;
   pageTotal?: number;
+  /**
+   * Makes each row (and, on mobile, each card) open something — a receipt, a
+   * detail view. Left undefined the rows stay inert and unclickable.
+   */
+  onRowClick?: (item: T) => void;
 }
 
 export function DataTableLayout<T>({
@@ -60,6 +65,7 @@ export function DataTableLayout<T>({
   className,
   tableClassName,
   pageTotal,
+  onRowClick,
 }: DataTableLayoutProps<T>) {
   const [localPage, setLocalPage] = useState(1);
   const page = currentPage ?? localPage;
@@ -106,6 +112,9 @@ export function DataTableLayout<T>({
 
   // Filter columns for mobile (show only non-hidden columns)
   const visibleColumns = columns.filter((col) => !col.hiddenOnMobile);
+  // Rendered on its own at the foot of each card, so it also honours
+  // `hiddenOnMobile` — a desktop-only action must not reserve space here.
+  const actionsColumn = visibleColumns.find((col) => col.key === "actions");
   const formatMobileRequestId = (value: unknown) => {
     const text = String(value ?? "");
     return text.length > 25 ? `${text.slice(0, 20)}.....` : text;
@@ -212,6 +221,7 @@ export function DataTableLayout<T>({
                       // state; a sticky cell has its own background, so without
                       // this it would stay unhighlighted while the row tints.
                       className="group text-left text-card-text font-normal text-sm cursor-pointer hover:bg-border/90 transition-colors"
+                      onClick={onRowClick ? () => onRowClick(item) : undefined}
                     >
                       {columns.map((col) => (
                         <TableCell
@@ -256,7 +266,23 @@ export function DataTableLayout<T>({
             {paginatedData?.map((item) => (
               <div
                 key={rowKey(item)}
-                className="w-full min-w-0 space-y-3 rounded-[10px] border border-border bg-card-background p-4 shadow-sm"
+                role={onRowClick ? "button" : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
+                onClick={onRowClick ? () => onRowClick(item) : undefined}
+                onKeyDown={
+                  onRowClick
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onRowClick(item);
+                        }
+                      }
+                    : undefined
+                }
+                className={cn(
+                  "w-full min-w-0 space-y-3 rounded-[10px] border border-border bg-card-background p-4 shadow-sm",
+                  onRowClick && "cursor-pointer active:bg-border/60 transition-colors",
+                )}
               >
                 {/* Main top row */}
                 <div className="flex min-w-0 items-start justify-between gap-3">
@@ -305,9 +331,9 @@ export function DataTableLayout<T>({
                 </div>
 
                 {/* Actions Button */}
-                <div className="pt-2">
-                  {columns.find((c) => c.key === "actions")?.render?.(item)}
-                </div>
+                {actionsColumn && (
+                  <div className="pt-2">{actionsColumn.render?.(item)}</div>
+                )}
               </div>
             ))}
           </div>

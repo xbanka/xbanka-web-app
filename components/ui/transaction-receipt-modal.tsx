@@ -6,6 +6,7 @@ import { Modal } from "./Modal";
 import { FileText, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { canvasToPdfBlob } from "@/lib/canvasToPdf";
+import { humanise } from "@/lib/humanise";
 import { toast } from "sonner";
 
 export interface ReceiptRow {
@@ -18,6 +19,84 @@ const BRAND = "#0c9a8e";
 const INK = "#1b1d20";
 const MUTED = "#6b7280";
 const HAIRLINE = "#e5e7eb";
+
+export interface ReceiptTone {
+  /** Text of the status pill. */
+  label: string;
+  /** Colour of the bar across the top of the receipt. */
+  bar: string;
+  pillBg: string;
+  pillInk: string;
+  /** First line of the footer — worded for the status. */
+  note: string;
+}
+
+const SIGNATURE_NOTE =
+  "This is a computer-generated receipt and does not require a signature.";
+
+const SUCCESS_TONE: ReceiptTone = {
+  label: "Successful",
+  bar: BRAND,
+  pillBg: "#e6f6f4",
+  pillInk: BRAND,
+  note: SIGNATURE_NOTE,
+};
+
+const PENDING_TONE: ReceiptTone = {
+  label: "Pending",
+  bar: "#d99b0a",
+  pillBg: "#fdf3e2",
+  pillInk: "#a06a06",
+  note: "This transaction is still being processed \u2014 the details may change once it settles.",
+};
+
+const FAILED_TONE: ReceiptTone = {
+  label: "Failed",
+  bar: "#d64545",
+  pillBg: "#fdeceb",
+  pillInk: "#b42318",
+  note: "This transaction was not successful.",
+};
+
+const SUCCESS_KEYS = ["completed", "complete", "success", "successful", "paid"];
+const PENDING_KEYS = [
+  "pending",
+  "processing",
+  "in progress",
+  "queued",
+  "awaiting",
+];
+const FAILED_KEYS = [
+  "failed",
+  "failure",
+  "declined",
+  "rejected",
+  "cancelled",
+  "canceled",
+  "reversed",
+  "expired",
+];
+
+/**
+ * Maps a transaction status onto the receipt's palette and wording. Anything
+ * the API sends that isn't a known status still renders — as a neutral grey
+ * pill carrying the raw status — rather than being shown as "Successful".
+ */
+export function receiptTone(status?: string): ReceiptTone {
+  const key = (status ?? "").replace(/[_-]+/g, " ").trim().toLowerCase();
+
+  if (!key || SUCCESS_KEYS.includes(key)) return SUCCESS_TONE;
+  if (PENDING_KEYS.includes(key)) return PENDING_TONE;
+  if (FAILED_KEYS.includes(key)) return FAILED_TONE;
+
+  return {
+    label: humanise(key),
+    bar: MUTED,
+    pillBg: "#f3f4f6",
+    pillInk: "#4b5563",
+    note: SIGNATURE_NOTE,
+  };
+}
 
 /**
  * Shrinks `text` from the middle until it fits `maxWidth` at the context's
@@ -56,6 +135,7 @@ async function drawReceipt(
   rows: ReceiptRow[],
   heading: string,
   headlineAmount: string,
+  tone: ReceiptTone,
 ): Promise<HTMLCanvasElement> {
   const scale = 2; // render at 2x so the PNG stays crisp
   const width = 800;
@@ -76,8 +156,8 @@ async function drawReceipt(
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
-  // Brand bar
-  ctx.fillStyle = BRAND;
+  // Brand bar — tinted by the transaction's status
+  ctx.fillStyle = tone.bar;
   ctx.fillRect(0, 0, width, 8);
 
   // Logo — falls back to a wordmark if the asset can't be loaded.
@@ -105,11 +185,11 @@ async function drawReceipt(
   }
 
   // Status pill, right-aligned against the logo
-  const pillText = "Successful";
+  const pillText = tone.label;
   ctx.font = "600 14px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
   const pillWidth = ctx.measureText(pillText).width + 32;
   const pillX = width - padding - pillWidth;
-  ctx.fillStyle = "#e6f6f4";
+  ctx.fillStyle = tone.pillBg;
   ctx.beginPath();
   // roundRect is unsupported on older Safari — fall back to a square pill
   // rather than letting the whole export throw.
@@ -119,7 +199,7 @@ async function drawReceipt(
     ctx.rect(pillX, 46, pillWidth, 34);
   }
   ctx.fill();
-  ctx.fillStyle = BRAND;
+  ctx.fillStyle = tone.pillInk;
   ctx.textAlign = "center";
   ctx.fillText(pillText, pillX + pillWidth / 2, 68);
 
@@ -175,11 +255,7 @@ async function drawReceipt(
   ctx.fillStyle = MUTED;
   ctx.font = "400 13px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(
-    "This is a computer-generated receipt and does not require a signature.",
-    width / 2,
-    footerY + 14,
-  );
+  ctx.fillText(fitText(ctx, tone.note, width - padding * 2), width / 2, footerY + 14);
   ctx.fillText("Thank you for using Xbanka.", width / 2, footerY + 40);
 
   return canvas;
@@ -190,6 +266,7 @@ export function TransactionReceiptModal({
   headlineAmount,
   rows,
   reference,
+  status,
   onClose,
 }: {
   /** Label above the large amount, e.g. "Amount sent". */
@@ -199,15 +276,18 @@ export function TransactionReceiptModal({
   rows: ReceiptRow[];
   /** Used for the download filename; usually the transaction reference. */
   reference?: string;
+  /** Raw transaction status, e.g. "COMPLETED". Defaults to a successful receipt. */
+  status?: string;
   onClose: () => void;
 }) {
   const [sharingPdf, setSharingPdf] = useState(false);
   const [sharingImage, setSharingImage] = useState(false);
+  const tone = receiptTone(status);
 
   const baseName = `xbanka-receipt-${reference || "transaction"}`;
 
   const buildPng = async (): Promise<Blob> => {
-    const canvas = await drawReceipt(rows, heading, headlineAmount);
+    const canvas = await drawReceipt(rows, heading, headlineAmount, tone);
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, "image/png"),
     );
@@ -245,7 +325,7 @@ export function TransactionReceiptModal({
   const handleSharePdf = async () => {
     setSharingPdf(true);
     try {
-      const canvas = await drawReceipt(rows, heading, headlineAmount);
+      const canvas = await drawReceipt(rows, heading, headlineAmount, tone);
       const blob = await canvasToPdfBlob(canvas);
       await shareFile(blob, `${baseName}.pdf`, "application/pdf");
     } catch (err) {
@@ -287,7 +367,7 @@ export function TransactionReceiptModal({
         id="transaction-receipt"
         className="receipt-printable overflow-hidden rounded-2xl bg-white text-[#1b1d20] ring-1 ring-black/5"
       >
-        <div className="h-2 w-full bg-Green" />
+        <div className="h-2 w-full" style={{ backgroundColor: tone.bar }} />
 
         <div className="space-y-6 p-6 max-sm:p-5">
           <div className="flex items-start justify-between gap-3">
@@ -297,8 +377,11 @@ export function TransactionReceiptModal({
               alt="Xbanka"
               className="h-8 w-auto object-contain"
             />
-            <span className="rounded-full bg-[#e6f6f4] px-3 py-1 text-xs font-semibold text-[#0c9a8e]">
-              Successful
+            <span
+              className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold"
+              style={{ backgroundColor: tone.pillBg, color: tone.pillInk }}
+            >
+              {tone.label}
             </span>
           </div>
 
@@ -330,10 +413,7 @@ export function TransactionReceiptModal({
           </div>
 
           <div className="rounded-lg bg-[#f9fafb] p-3 text-center">
-            <p className="text-xs text-[#6b7280]">
-              This is a computer-generated receipt and does not require a
-              signature.
-            </p>
+            <p className="text-xs text-[#6b7280]">{tone.note}</p>
             <p className="mt-1 text-xs text-[#6b7280]">
               Thank you for using Xbanka.
             </p>
