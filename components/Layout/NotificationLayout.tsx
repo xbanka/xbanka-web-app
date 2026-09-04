@@ -61,7 +61,19 @@ export function NotificationsModal({
   });
 
   return (
-    <div className="flex max-h-[calc(100vh-96px)] w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:max-h-[calc(100dvh-24px)] max-sm:rounded-2xl max-sm:border-4">
+    <div
+      className={cn(
+        "flex w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:rounded-2xl max-sm:border-4",
+        "max-h-[calc(100vh-96px)] max-sm:max-h-[calc(100dvh-24px)]",
+        expanded
+          ? "h-[calc(100vh-96px)]"
+          : // Collapsed, hold the height of a full four-item preview so that a
+            // tab with fewer notifications doesn't shrink the panel. min()
+            // keeps that floor under the max-height on short viewports, where
+            // the feed scrolls instead of the panel overflowing.
+            "min-h-[min(780px,calc(100vh-96px))] max-sm:min-h-0",
+      )}
+    >
       <ModalHeader
         className="shrink-0 px-8 py-6 max-sm:px-5 max-sm:py-5 border-b border-input items-center"
         title="Notifications"
