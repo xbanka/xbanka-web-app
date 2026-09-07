@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { tokenStore } from "@/store/token.store";
 import { authTokens } from "@/lib/authToken";
+import { PageLoader } from "@/components/ui/page-loader";
 
 export default function GoogleCallbackClient() {
   const router = useRouter();
@@ -26,5 +27,10 @@ export default function GoogleCallbackClient() {
     router.replace("/");
   }, [params, router]);
 
-  return <p>Signing you in...</p>;
+  return (
+    <PageLoader
+      title="Signing you in..."
+      description="Hang tight while we finish setting up your session."
+    />
+  );
 }

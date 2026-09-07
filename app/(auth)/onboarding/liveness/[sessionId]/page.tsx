@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import LivenessDetector from "@/components/ui/LivenessDetector";
 import { useLivenessSessionStatus } from "@/lib/services/onboarding.service";
+import { PageLoader } from "@/components/ui/page-loader";
 
 export default function MobileLivenessPage() {
   const params = useParams<{ sessionId: string }>();
@@ -49,9 +50,10 @@ export default function MobileLivenessPage() {
 
   if (!userId || isLoading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <p className="text-sm text-text">Loading...</p>
-      </div>
+      <PageLoader
+        title="Getting things ready..."
+        description="Preparing your verification session."
+      />
     );
   }
 
