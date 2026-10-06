@@ -66,6 +66,29 @@ export interface AddBankAccountPayload {
   bankCode: string;
 }
 
+export interface AddFundingAccountPayload {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+export interface FundingAccount {
+  id: string;
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+  createdAt: string;
+}
+
+export interface XbankaFundingAccount {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+}
+
 export interface Wallet {
   type: "FIAT" | "CRYPTO";
   balance: number;
