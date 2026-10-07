@@ -9,6 +9,7 @@ export type Step =
   | "enter_pin_xbanka"
   | "enter_pin"
   | "processing-xbanka-users"
+  | "withdrawal-result"
   | "processing"
   | "success";
 

@@ -16,7 +16,10 @@ import {
   generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
+  confirmNombaWithdrawal,
   getAllBanks,
+  getNombaWithdrawalStatus,
+  initiateNombaWithdrawal,
   getBankAcountsList,
   getCryptoWallet,
   getCurrency,
@@ -46,9 +49,12 @@ import {
   fundWalletBankSavedCardPayload,
   fundWalletPayload,
   fundWalletSavedCardPayload,
+  NombaConfirmPayload,
+  NombaInitiatePayload,
   sendWalletPayload,
   WithdrawCryptoPayload,
 } from "../types/wallet-types";
+import { nextStatusPollInterval } from "../nomba-withdrawal";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -347,6 +353,49 @@ export const UseGetAllBanks = () => {
     },
     staleTime: 1000 * 60 * 60 * 24, // 24 hours since banks rarely change
     gcTime: 1000 * 60 * 60 * 24,
+  });
+};
+
+// Nomba bank withdrawal. Errors are not toasted here: the send-money steps
+// show them inline and some (expired token, KYC) redirect instead.
+export const UseInitiateNombaWithdrawal = () => {
+  return useMutation({
+    mutationFn: (data: NombaInitiatePayload) => initiateNombaWithdrawal(data),
+  });
+};
+
+const refreshAfterWithdrawal = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+  queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+  queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+  queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
+};
+
+export const UseConfirmNombaWithdrawal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: NombaConfirmPayload) => confirmNombaWithdrawal(data),
+    onSuccess: () => refreshAfterWithdrawal(queryClient),
+  });
+};
+
+/** Polls a withdrawal while it is PENDING, until `pollUntil` (epoch ms). */
+export const UseNombaWithdrawalStatus = (
+  reference: string | undefined,
+  pollUntil: number,
+) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["nomba-withdrawal-status", reference],
+    queryFn: async () => {
+      const withdrawal = await getNombaWithdrawalStatus(reference as string);
+      // A FAILED withdrawal is refunded, so balances change either way.
+      if (withdrawal.status !== "PENDING") refreshAfterWithdrawal(queryClient);
+      return withdrawal;
+    },
+    enabled: !!reference,
+    refetchInterval: (query) =>
+      nextStatusPollInterval(query.state.data?.status, Date.now(), pollUntil),
   });
 };
 

@@ -37,7 +37,15 @@ export const NAV: NavSection[] = [
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
-      { id: "bill-payment", label: "Bill Payments", icon: Receipt },
+      {
+        id: "bill-payment",
+        label: "Bill Payments",
+        icon: Receipt,
+        disabled: true,
+        badge: "Soon",
+        badgeColor:
+          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+      },
     ],
   },
   {

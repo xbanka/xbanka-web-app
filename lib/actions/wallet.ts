@@ -14,6 +14,10 @@ import {
   fundWalletPayload,
   fundWalletSavedCardPayload,
   GenerateDepositAddressPayload,
+  NombaConfirmPayload,
+  NombaInitiatePayload,
+  NombaInitiateResponse,
+  NombaWithdrawal,
   sendWalletPayload,
   WithdrawCryptoPayload,
 } from "../types/wallet-types";
@@ -103,6 +107,41 @@ export const sendFiatWallet = async (data: sendWalletPayload) => {
   const response = await AxiosInstance.post("/wallets/withdraw/fiat", data);
 
   return response.data;
+};
+
+export const initiateNombaWithdrawal = async (
+  data: NombaInitiatePayload,
+): Promise<NombaInitiateResponse> => {
+  const response = await AxiosInstance.post(
+    "/wallets/withdraw/nomba/initiate",
+    data,
+  );
+
+  return response.data.data;
+};
+
+export const confirmNombaWithdrawal = async (
+  data: NombaConfirmPayload,
+): Promise<NombaWithdrawal> => {
+  // Longer than the default 10s: the transfer is sent to Nomba inside this
+  // request, and a timeout here does not mean the withdrawal failed.
+  const response = await AxiosInstance.post(
+    "/wallets/withdraw/nomba/confirm",
+    data,
+    { timeout: 30000 },
+  );
+
+  return response.data.data;
+};
+
+export const getNombaWithdrawalStatus = async (
+  reference: string,
+): Promise<NombaWithdrawal> => {
+  const response = await AxiosInstance.get(
+    `/wallets/withdraw/nomba/status/${reference}`,
+  );
+
+  return response.data.data;
 };
 
 export const fundFiatWalletSavedCard = async (
