@@ -2,6 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ActiveNetworksCrypto,
   addBankAcounts,
+  addFundingAccount,
+  getFundingAccounts,
+  getXbankaFundingAccount,
+  lookupAccountName,
   deleteFiatWalletSavedCard,
   executeConversion,
   fundFiatWallet,
@@ -37,6 +41,7 @@ import {
 import { toast } from "sonner";
 import {
   AddBankAccountPayload,
+  AddFundingAccountPayload,
   fundWalletBankPayload,
   fundWalletBankSavedCardPayload,
   fundWalletPayload,
@@ -489,5 +494,55 @@ export const useGetMarketPrices = (page = 1, limit = 10) => {
     refetchInterval: 15_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+  });
+};
+
+export const UseGetFundingAccounts = () => {
+  return useQuery({
+    queryKey: ["funding-accounts"],
+    queryFn: async () => {
+      try {
+        return await getFundingAccounts();
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const UseGetXbankaFundingAccount = () => {
+  return useQuery({
+    queryKey: ["xbanka-funding-account"],
+    queryFn: async () => {
+      try {
+        return await getXbankaFundingAccount();
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 30,
+    retry: false,
+  });
+};
+
+export const UseLookupAccountName = () => {
+  return useMutation({
+    mutationFn: async (data: { accountNumber: string; bankCode: string }) =>
+      lookupAccountName(data),
+  });
+};
+
+export const UseAddFundingAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: AddFundingAccountPayload) =>
+      addFundingAccount(data),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["funding-accounts"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
   });
 };
