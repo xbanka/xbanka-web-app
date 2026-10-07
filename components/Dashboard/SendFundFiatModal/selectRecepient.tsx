@@ -5,6 +5,7 @@ import { useState } from "react";
 import { XbankaTransferRecipient, XbankaUser } from "./types";
 import { UseGetActiveXbankaUsers } from "@/lib/services/send-fiat.service";
 import { AvatarCircle } from "./avatarCircle";
+import { xbankaUserName } from "@/lib/xbankaUserName";
 
 export function SelectRecipientStep({
   onSelectXbanka,
@@ -23,6 +24,7 @@ export function SelectRecipientStep({
 
     return (
       user.id?.toLowerCase().includes(value) ||
+      // user.username?.toLowerCase().includes(value) ||
       user.profile?.firstName?.toLowerCase().includes(value) ||
       user.profile?.lastName?.toLowerCase().includes(value) ||
       user.email?.toLowerCase().includes(value)
@@ -49,7 +51,7 @@ export function SelectRecipientStep({
                 onClick={() =>
                   onSelectXbanka({
                     id: user.id,
-                    name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                    name: xbankaUserName(user),
                     uid: user.id,
                   })
                 }
@@ -60,7 +62,7 @@ export function SelectRecipientStep({
 
                   <div className="text-left">
                     <p className="text-sm font-medium text-card-text">
-                      {user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.id}
+                      {xbankaUserName(user)}
                     </p>
 
                     <p className="text-xs text-text">{user.id}</p>

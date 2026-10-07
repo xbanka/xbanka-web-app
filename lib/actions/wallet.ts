@@ -7,6 +7,7 @@ import {
 } from "../types/crypto-types";
 import {
   AddBankAccountPayload,
+  AddFundingAccountPayload,
   DeleteFiatWalletBankSavedCardPayload,
   fundWalletBankPayload,
   fundWalletBankSavedCardPayload,
@@ -241,6 +242,46 @@ export const getAllBanks = async () => {
 export const resolveBankAccount = async (data: { accountNumber: string; bankCode: string }) => {
   const response = await AxiosInstance.post("/accounts/paystack/lookup", data);
   return response.data;
+};
+
+export const lookupAccountName = async (data: {
+  accountNumber: string;
+  bankCode: string;
+}) => {
+  const response = await AxiosInstance.post("/accounts/lookup", data);
+  return response.data;
+};
+
+export const getFundingAccounts = async () => {
+  const response = await AxiosInstance.get("/wallet/funding-accounts");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const addFundingAccount = async (data: AddFundingAccountPayload) => {
+  const response = await AxiosInstance.post("/wallet/funding-accounts", data);
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const getXbankaFundingAccount = async () => {
+  const response = await AxiosInstance.get(
+    "/wallet/funding-accounts/xbanka-account",
+  );
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
 };
 
 export const getBankAcountsList = async () => {

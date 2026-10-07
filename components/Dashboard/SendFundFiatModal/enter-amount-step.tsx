@@ -1,15 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Recipient } from "./types";
-import { BankLogo } from "@/components/ui/bank-logo";
-import { QUICK_AMOUNTS } from "./mockData";
-import { cn } from "@/lib/utils";
 import {
   UseGetFiatWallet,
   UseInitiateNombaWithdrawal,
 } from "@/lib/services/wallet.service";
-import { sumFiatBalances } from "@/lib/sumBalances";
 import { ErrorField } from "@/components/ui/field-error";
 import { NombaInitiateResponse } from "@/lib/types/wallet-types";
 import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
@@ -18,6 +13,11 @@ import {
   classifyWithdrawalError,
   traceWithdrawal,
 } from "@/lib/nomba-withdrawal";
+import { Recipient } from "./types";
+import { BankLogo } from "@/components/ui/bank-logo";
+import { QUICK_AMOUNTS } from "./mockData";
+import { cn } from "@/lib/utils";
+import { sumFiatBalances } from "@/lib/sumBalances";
 
 const NARRATION_MAX_LENGTH = 100;
 
@@ -140,6 +140,7 @@ export function EnterAmountStep({
             <span>Minimum transfer: ₦{minTransfer.toLocaleString()}</span>
             <span>
               Balance: ₦
+              {/* {balance.toLocaleString("en-NG", { minimumFractionDigits: 2 })} */}
               {data?.data
                 ? `${sumFiatBalances(wallets).toLocaleString()}`
                 : "₦0.00"}

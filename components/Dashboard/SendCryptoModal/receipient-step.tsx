@@ -10,6 +10,7 @@ import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { RecipientXbankaUsersTypes, XbankaUser } from "./types";
 import { UseGetActiveXbankaUsers } from "@/lib/services/send-fiat.service";
+import { xbankaUserName } from "@/lib/xbankaUserName";
 
 const recipientSchema = z.object({
   address: z.string().min(4, "Enter a valid wallet address or XBanka UID"),
@@ -54,6 +55,7 @@ export function RecipientStep({
 
     return (
       user.id?.toLowerCase()?.includes(value) ||
+      // user.username?.toLowerCase()?.includes(value) ||
       user.profile?.firstName?.toLowerCase()?.includes(value) ||
       user.profile?.lastName?.toLowerCase()?.includes(value) ||
       user.email?.toLowerCase()?.includes(value)
@@ -132,10 +134,10 @@ export function RecipientStep({
                       type: "xbanka-user",
                       user: {
                         id: user.id,
-                        name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                        name: xbankaUserName(user),
                         uid: user.id,
                       },
-                      name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+                      name: xbankaUserName(user),
                     })
                   }
                   className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-background transition-colors group"
@@ -145,9 +147,7 @@ export function RecipientStep({
 
                     <div className="text-left">
                       <p className="text-sm font-medium text-card-text">
-                        {user.profile
-                          ? `${user.profile.firstName} ${user.profile.lastName}`
-                          : user.id}
+                        {xbankaUserName(user)}
                       </p>
 
                       <p className="text-xs text-text">{user.id}</p>

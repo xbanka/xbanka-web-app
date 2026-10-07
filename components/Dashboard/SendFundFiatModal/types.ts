@@ -10,6 +10,7 @@ export type Step =
   | "enter_pin"
   | "processing-xbanka-users"
   | "withdrawal-result"
+  | "processing"
   | "success";
 
 export interface Recipient {
@@ -43,4 +44,6 @@ export interface XbankaUser {
   createdAt: string;
   profile: XbankaUserProfile | null;
   email: string;
+  /** Display name computed by the API — see `xbankaUserName`. */
+  username: string;
 }

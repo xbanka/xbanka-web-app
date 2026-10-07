@@ -1,4 +1,4 @@
-import { AppleIcon, ArrowDownCircle, ArrowLeftRight, ArrowUpCircle, BadgeCheck, BarChart2, Bell, Bitcoin, Clock, IdCard, Laptop, Repeat, ShieldCheck } from "lucide-react";
+import { AppleIcon, ArrowDownCircle, ArrowLeftRight, ArrowUpCircle, BadgeCheck, BarChart2, Bell, Bitcoin, CalendarDays, Dices, GraduationCap, IdCard, Landmark, Laptop, LayoutGrid, Repeat, ShieldCheck, Smartphone, Tv, Wifi, Zap } from "lucide-react";
 import { NotifGroup, Tab } from "./types/notification-types";
 
 // export const MARKET = [
@@ -156,91 +156,91 @@ export const CATEGORIES = [
     id: "airtime",
     name: "Airtime & Data",
     desc: "Top up your mobile phone & others",
-    icon: "📱",
+    icon: Smartphone,
     color: "bg-blue-500",
   },
   {
     id: "electricity",
     name: "Electricity",
     desc: "Pay your power bills",
-    icon: "⚡",
+    icon: Zap,
     color: "bg-green-500",
   },
   {
     id: "internet",
     name: "Internet",
     desc: "Renew your broadband",
-    icon: "🌐",
+    icon: Wifi,
     color: "bg-yellow-500",
   },
   {
     id: "cable",
     name: "Cable TV",
     desc: "Subscribe to your favorite channels",
-    icon: "📺",
+    icon: Tv,
     color: "bg-red-500",
   },
   {
     id: "betting",
     name: "Betting",
     desc: "Top up your betting account",
-    icon: "🎰",
-    color: "bg-purple-500",
+    icon: Dices,
+    color: "bg-indigo-500",
   },
   {
     id: "government",
     name: "Government",
     desc: "Taxes, licenses & permits",
-    icon: "🏛️",
-    color: "bg-pink-500",
+    icon: Landmark,
+    color: "bg-pink-600",
   },
   {
     id: "education",
     name: "Education",
     desc: "Pay for school fees & courses",
-    icon: "🎓",
-    color: "bg-teal-500",
+    icon: GraduationCap,
+    color: "bg-violet-500",
   },
   {
     id: "others",
     name: "Others",
     desc: "More services and billers",
-    icon: "⚙️",
+    icon: LayoutGrid,
     color: "bg-Green",
   },
 ];
- 
+
 export const RECENT_TRANSACTIONS = [
-  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
-  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
-  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
-  { name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+  { billerId: "mtn", name: "MTN Airtime", number: "080 123 45678", time: "Today, 2:30 PM", amount: "₦1,000.00", status: "Completed" },
+  { billerId: "dstv", name: "DStv Compact", number: "7023 456 789", time: "Today, 11:05 AM", amount: "₦19,000.00", status: "Completed" },
+  { billerId: "ikedc", name: "IKEDC Prepaid", number: "4512 0098 331", time: "Yesterday, 6:42 PM", amount: "₦10,000.00", status: "Completed" },
+  { billerId: "airtel", name: "Airtel Data", number: "080 223 45678", time: "Yesterday, 9:15 AM", amount: "₦2,500.00", status: "Pending" },
 ];
- 
+
 export const QUICK_ACTIONS = [
   {
     label: "Repeat Last Payment",
     sub: "MTN Airtime - ₦1,500",
     icon: Repeat,
-    color: "bg-blue-500/10 text-blue-500",
+    color: "bg-Green/15 text-Green",
   },
   {
     label: "Schedule Payment",
     sub: "Set up recurring bills",
-    icon: Clock,
-    color: "bg-green-500/10 text-green-500",
+    icon: CalendarDays,
+    color: "bg-green-500 text-white",
   },
   {
     label: "Set Reminders",
     sub: "Set reminders before due dates",
     icon: Bell,
-    color: "bg-Green/10 text-Green",
+    color: "bg-violet-500 text-white",
   },
   {
     label: "View Analytics",
     sub: "View spending patterns",
     icon: BarChart2,
-    color: "bg-pink-500/10 text-pink-500",
+    color: "bg-pink-500 text-white",
   },
 ];
 

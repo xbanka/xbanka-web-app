@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Recipient, Step } from "./types";
+import { bankOptions } from "@/lib/schema/bank-schema";
 import { FormField } from "@/components/ui/FormField";
 import z from "zod";
 import { useForm } from "react-hook-form";
