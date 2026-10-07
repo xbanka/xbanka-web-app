@@ -9,7 +9,7 @@ export type Step =
   | "enter_pin_xbanka"
   | "enter_pin"
   | "processing-xbanka-users"
-  | "processing"
+  | "withdrawal-result"
   | "success";
 
 export interface Recipient {

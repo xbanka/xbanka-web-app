@@ -125,7 +125,8 @@ export function ConfirmStep({
         <div className="flex items-center gap-3 text-xs text-text">
           <AlertTriangle className="w-4 h-4 text-Green shrink-0" />
           <span className="font-normal leading-4.6 max-sm:text-[11px]">
-            Funds will be debited directly from your selected bank account.
+            Funds will be debited from your Xbanka NGN wallet. Check the
+            account name before you continue.
           </span>
         </div>
       </div>
