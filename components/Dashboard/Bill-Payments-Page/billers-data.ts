@@ -1,6 +1,11 @@
-// Dummy biller catalogue for the Bill Payments page. Logos are local SVG brand
+// Biller catalogue for the Bill Payments page. Logos are local SVG brand
 // marks in public/billers/ — swap any file for official artwork (same name) and
 // the UI picks it up; a missing/broken logo falls back to an initials badge.
+//
+// Only the categories in LIVE_CATEGORIES are wired to the payments API; the
+// rest render as “Coming soon”. Entries here are display metadata only — the
+// payable catalogue (networks, data plans, prices) comes from the API and is
+// never hardcoded.
 
 export type BillerCategoryId =
   | "airtime"
@@ -397,6 +402,28 @@ export const billersByCategory = (category: BillerCategoryId) =>
   BILLERS.filter((b) => b.category === category);
 
 export const findBiller = (id: string) => BILLERS.find((b) => b.id === id);
+
+/** Categories wired to the payments API; the rest render as “Coming soon”. */
+export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime"];
+
+export const isCategoryLive = (category: BillerCategoryId) =>
+  LIVE_CATEGORIES.includes(category);
+
+/** Display metadata for a network code from the API ("MTN" → the mtn biller). */
+export const networkBiller = (network: string) =>
+  findBiller(network.toLowerCase());
+
+/** A row in the Recent Transactions list. `reference` ties a row back to a
+ *  real payment so status updates (PENDING → COMPLETED) can replace it. */
+export type BillTransaction = {
+  billerId: string;
+  name: string;
+  number: string;
+  time: string;
+  amount: string;
+  status: string;
+  reference?: string;
+};
 
 export const formatNaira = (amount: number) =>
   `₦${amount.toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
