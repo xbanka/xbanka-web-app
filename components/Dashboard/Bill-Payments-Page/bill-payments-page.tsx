@@ -3,23 +3,39 @@ import { useState } from "react";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search } from "lucide-react";
 import { CATEGORIES, QUICK_ACTIONS, RECENT_TRANSACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
+import { Button } from "@/components/ui/button";
+import { ErrorLayout } from "@/components/ui/error-layout";
+import { cn } from "@/lib/utils";
+import { useBillNetworks } from "@/lib/services/bills.service";
+import { BillPayment } from "@/lib/types/bills-types";
 import { BillerLogo } from "./biller-logo";
 import {
   Biller,
   BillerCategoryId,
   BILLERS,
-  billersByCategory,
+  BillTransaction,
   findBiller,
+  formatNaira,
+  isCategoryLive,
+  networkBiller,
 } from "./billers-data";
-import { BillTransaction, PayBillModal } from "./pay-bill-modal";
+import { BillCheckoutModal } from "./bill-checkout-modal";
+
+const STATUS_LABELS: Record<BillPayment["status"], string> = {
+  COMPLETED: "Completed",
+  PENDING: "Pending",
+  FAILED: "Failed",
+};
 
 export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<BillerCategoryId | null>(null);
-  const [payingBiller, setPayingBiller] = useState<Biller | null>(null);
+  const [payingNetwork, setPayingNetwork] = useState<string | null>(null);
   const [transactions, setTransactions] =
     useState<BillTransaction[]>(RECENT_TRANSACTIONS);
+
+  const networks = useBillNetworks();
 
   const query = search.trim().toLowerCase();
   const searchResults = query
@@ -33,28 +49,102 @@ export default function BillPaymentsPage() {
 
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
-  const billerTile = (biller: Biller) => (
-    <button
-      key={biller.id}
-      onClick={() => setPayingBiller(biller)}
-      className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
-    >
-      <BillerLogo
-        logo={biller.logo}
-        name={biller.name}
-        fallbackColor={biller.fallbackColor}
-        size={44}
-        rounded="rounded-xl"
-      />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors truncate">
-          {biller.name}
-        </p>
-        <p className="text-xs text-text truncate mt-0.5">{biller.desc}</p>
-      </div>
-      <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
-    </button>
-  );
+  /** Upserts a payment into the recent list by reference, so the PENDING →
+   *  COMPLETED/FAILED poll updates the row instead of adding a new one. */
+  const handlePayment = (payment: BillPayment) => {
+    setTransactions((prev) => {
+      const status = STATUS_LABELS[payment.status];
+      const existing = prev.findIndex((t) => t.reference === payment.reference);
+      if (existing >= 0) {
+        const next = [...prev];
+        next[existing] = { ...next[existing], status };
+        return next;
+      }
+      return [
+        {
+          billerId: payingNetwork?.toLowerCase() ?? "",
+          name: payment.note,
+          number: payment.reference.slice(0, 14),
+          time: "Just now",
+          amount: formatNaira(payment.amount),
+          status,
+          reference: payment.reference,
+        },
+        ...prev,
+      ];
+    });
+  };
+
+  const billerTile = (biller: Biller) => {
+    const live = isCategoryLive(biller.category);
+    return (
+      <button
+        key={biller.id}
+        onClick={
+          live ? () => setPayingNetwork(biller.id.toUpperCase()) : undefined
+        }
+        disabled={!live}
+        className={cn(
+          "group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
+          live ? "hover:border-border-active" : "opacity-60 cursor-not-allowed",
+        )}
+      >
+        <BillerLogo
+          logo={biller.logo}
+          name={biller.name}
+          fallbackColor={biller.fallbackColor}
+          size={44}
+          rounded="rounded-xl"
+        />
+        <div className="flex-1 min-w-0">
+          <p
+            className={cn(
+              "text-sm font-semibold text-card-text truncate",
+              live && "group-hover:text-Green transition-colors",
+            )}
+          >
+            {biller.name}
+          </p>
+          <p className="text-xs text-text truncate mt-0.5">{biller.desc}</p>
+        </div>
+        {live ? (
+          <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
+        ) : (
+          <span className="shrink-0 px-2 py-0.5 text-[10px] font-medium rounded-full border border-border text-text">
+            Coming soon
+          </span>
+        )}
+      </button>
+    );
+  };
+
+  const networkTile = (network: string) => {
+    const meta = networkBiller(network);
+    return (
+      <button
+        key={network}
+        onClick={() => setPayingNetwork(network)}
+        className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
+      >
+        <BillerLogo
+          logo={meta?.logo}
+          name={meta?.name ?? network}
+          fallbackColor={meta?.fallbackColor}
+          size={44}
+          rounded="rounded-xl"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors truncate">
+            {meta?.name ?? network}
+          </p>
+          <p className="text-xs text-text truncate mt-0.5">
+            Airtime & data bundles
+          </p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
+      </button>
+    );
+  };
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
@@ -114,12 +204,30 @@ export default function BillPaymentsPage() {
               <h3 className="font-semibold text-card-text text-sm">
                 {activeCategory.name}
               </h3>
-              <p className="text-xs text-text">Choose a biller to continue</p>
+              <p className="text-xs text-text">Choose a network to continue</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {billersByCategory(selectedCategory).map(billerTile)}
-          </div>
+          {networks.isPending ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-19.5 rounded-2xl border border-border bg-card-background animate-pulse"
+                />
+              ))}
+            </div>
+          ) : networks.error ? (
+            <div className="max-w-md space-y-3">
+              <ErrorLayout message={networks.error.message} />
+              <Button variant="outline" onClick={() => networks.refetch()}>
+                Try again
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {networks.data?.map(networkTile)}
+            </div>
+          )}
         </div>
       ) : (
         /* Browse by category */
@@ -133,11 +241,22 @@ export default function BillPaymentsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
+              const live = isCategoryLive(cat.id as BillerCategoryId);
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id as BillerCategoryId)}
-                  className="group flex flex-col gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
+                  onClick={
+                    live
+                      ? () => setSelectedCategory(cat.id as BillerCategoryId)
+                      : undefined
+                  }
+                  disabled={!live}
+                  className={cn(
+                    "group flex flex-col gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
+                    live
+                      ? "hover:border-border-active"
+                      : "opacity-60 cursor-not-allowed",
+                  )}
                 >
                   <div
                     className={`w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-white`}
@@ -145,16 +264,27 @@ export default function BillPaymentsPage() {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors leading-tight">
+                    <p
+                      className={cn(
+                        "text-sm font-semibold text-card-text leading-tight",
+                        live && "group-hover:text-Green transition-colors",
+                      )}
+                    >
                       {cat.name}
                     </p>
                     <p className="text-xs text-text mt-0.5 leading-relaxed">
                       {cat.desc}
                     </p>
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-Green font-medium">
-                    Select <ArrowUpRight className="w-3 h-3" />
-                  </div>
+                  {live ? (
+                    <div className="flex items-center gap-1 text-xs text-Green font-medium">
+                      Select <ArrowUpRight className="w-3 h-3" />
+                    </div>
+                  ) : (
+                    <div className="text-xs text-text font-medium">
+                      Coming soon
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -179,7 +309,7 @@ export default function BillPaymentsPage() {
               const biller = findBiller(tx.billerId);
               return (
                 <div
-                  key={i}
+                  key={tx.reference ?? i}
                   className="flex items-center gap-3 py-2 border-b border-border last:border-0 hover:bg-border/20 transition-colors rounded-lg px-1 cursor-pointer"
                 >
                   <BillerLogo
@@ -189,7 +319,7 @@ export default function BillPaymentsPage() {
                     size={36}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-card-text">
+                    <p className="text-sm font-medium text-card-text truncate">
                       {tx.name}
                     </p>
                     <p className="text-xs text-text truncate">
@@ -240,11 +370,11 @@ export default function BillPaymentsPage() {
         </div>
       </div>
 
-      {payingBiller && (
-        <PayBillModal
-          biller={payingBiller}
-          onClose={() => setPayingBiller(null)}
-          onSuccess={(tx) => setTransactions((prev) => [tx, ...prev])}
+      {payingNetwork && (
+        <BillCheckoutModal
+          network={payingNetwork}
+          onClose={() => setPayingNetwork(null)}
+          onPayment={handlePayment}
         />
       )}
     </div>
