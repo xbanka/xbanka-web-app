@@ -12,12 +12,14 @@ import { formatNaira } from "./billers-data";
 /** Checkout details the payment object doesn't carry itself — captured at the
  *  moment of payment so the receipt can name them later. */
 export type BillReceiptContext = {
-  /** Network for airtime/data, disco for electricity. */
+  /** Network for airtime/data; disco, cable or betting provider otherwise. */
   networkName?: string;
   phoneNumber?: string;
   planName?: string;
   meterNumber?: string;
   meterType?: MeterType;
+  /** Smartcard / IUC number for cable, account id for betting. */
+  customerId?: string;
 };
 
 const PRODUCT_LABELS: Record<BillPayment["product"], string> = {
@@ -45,12 +47,20 @@ export function buildBillReceipt(
 
   if (context.networkName)
     rows.push({
-      label: payment.product === "ELECTRICITY" ? "Provider" : "Network",
+      label:
+        payment.product === "AIRTIME" || payment.product === "DATA"
+          ? "Network"
+          : "Provider",
       value: context.networkName,
     });
   if (context.phoneNumber)
     rows.push({ label: "Phone number", value: context.phoneNumber });
   if (context.planName) rows.push({ label: "Plan", value: context.planName });
+  if (context.customerId)
+    rows.push({
+      label: payment.product === "CABLE_TV" ? "Smartcard / IUC" : "Account ID",
+      value: context.customerId,
+    });
   if (context.meterNumber)
     rows.push({ label: "Meter number", value: context.meterNumber });
   if (context.meterType)

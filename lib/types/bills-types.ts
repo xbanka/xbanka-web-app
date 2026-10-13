@@ -2,11 +2,7 @@
 // Amounts are plain NGN numbers (5000 = ₦5,000), never kobo.
 
 export type BillProduct =
-  | "AIRTIME"
-  | "DATA"
-  | "ELECTRICITY"
-  | "CABLE_TV"
-  | "BETTING";
+  "AIRTIME" | "DATA" | "ELECTRICITY" | "CABLE_TV" | "BETTING";
 
 /** Route 2 list item. Nomba passes these through; the backend reads
  *  `productId` when paying but also accepts `id` where Nomba names it that. */
@@ -17,12 +13,29 @@ export type DataPlan = {
   amount: number;
 };
 
-/** Electricity distribution company from /wallets/bills/electricity/discos.
- *  The API reference doesn't pin the raw list shape, so the action layer
- *  normalises each item to `code` (sent as `disco` on initiate) + `name`. */
-export type Disco = {
+/** A payable provider from one of the catalogue routes. The API reference
+ *  doesn't pin the raw list shapes, so the action layer normalises each item
+ *  to `code` (the value sent on initiate) + `name`. */
+export type BillProvider = {
   code: string;
   name: string;
+};
+
+/** /wallets/bills/electricity/discos — `code` is sent as `disco`. */
+export type Disco = BillProvider;
+
+/** /wallets/bills/betting/providers — `code` is sent as `bettingProvider`. */
+export type BettingProvider = BillProvider;
+
+/** dstv, gotv, startimes or ShowMax — sent as `cableTvType`. */
+export type CableProvider = BillProvider;
+
+/** /wallets/bills/cable/plans item. `code` is the plan's `subScriptionType`,
+ *  sent as `planCode` on initiate. */
+export type CablePlan = {
+  code: string;
+  name: string;
+  amount: number;
 };
 
 export type MeterType = "PREPAID" | "POSTPAID";
