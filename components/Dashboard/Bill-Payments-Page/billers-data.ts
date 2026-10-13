@@ -404,7 +404,7 @@ export const billersByCategory = (category: BillerCategoryId) =>
 export const findBiller = (id: string) => BILLERS.find((b) => b.id === id);
 
 /** Categories wired to the payments API; the rest render as “Coming soon”. */
-export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime"];
+export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime", "electricity"];
 
 export const isCategoryLive = (category: BillerCategoryId) =>
   LIVE_CATEGORIES.includes(category);
@@ -412,6 +412,20 @@ export const isCategoryLive = (category: BillerCategoryId) =>
 /** Display metadata for a network code from the API ("MTN" → the mtn biller). */
 export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
+
+/** Display metadata for a disco returned by the API. Codes aren't guaranteed to
+ *  match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall back to a
+ *  substring match; an unmatched disco just renders with an initials badge. */
+export const discoBiller = (code: string) => {
+  const key = code.toLowerCase();
+  const electricity = billersByCategory("electricity");
+  return (
+    electricity.find((b) => b.id === key) ??
+    electricity.find((b) => key.includes(b.id))
+  );
+};
+
+export const ELECTRICITY_QUICK_AMOUNTS = [1000, 2000, 5000, 10000, 20000];
 
 /** A row in the Recent Transactions list. `reference` ties a row back to a
  *  real payment so status updates (PENDING → COMPLETED) can replace it. */

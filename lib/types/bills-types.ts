@@ -17,6 +17,16 @@ export type DataPlan = {
   amount: number;
 };
 
+/** Electricity distribution company from /wallets/bills/electricity/discos.
+ *  The API reference doesn't pin the raw list shape, so the action layer
+ *  normalises each item to `code` (sent as `disco` on initiate) + `name`. */
+export type Disco = {
+  code: string;
+  name: string;
+};
+
+export type MeterType = "PREPAID" | "POSTPAID";
+
 export type InitiateAirtimePayload = {
   product: "AIRTIME";
   network: string;
@@ -35,7 +45,7 @@ export type InitiateElectricityPayload = {
   product: "ELECTRICITY";
   disco: string;
   customerId: string;
-  meterType: "PREPAID" | "POSTPAID";
+  meterType: MeterType;
   amount: number;
 };
 
