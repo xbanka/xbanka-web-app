@@ -131,7 +131,12 @@ export default function BillPaymentsPage() {
       }
       return [
         {
-          billerId: (payingDisco?.code ?? payingNetwork)?.toLowerCase() ?? "",
+          // Store the resolved biller id (not the raw disco code) so the row
+          // and its receipt can find the logo again later.
+          billerId: payingDisco
+            ? (discoBiller(payingDisco.code, payingDisco.name)?.id ??
+              payingDisco.code.toLowerCase())
+            : (payingNetwork?.toLowerCase() ?? ""),
           name: payment.note,
           number:
             context?.phoneNumber ??
@@ -251,7 +256,7 @@ export default function BillPaymentsPage() {
   };
 
   const discoTile = (disco: Disco) => {
-    const meta = discoBiller(disco.code);
+    const meta = discoBiller(disco.code, disco.name);
     return (
       <button
         key={disco.code}

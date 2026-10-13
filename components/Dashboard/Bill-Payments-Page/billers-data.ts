@@ -502,15 +502,35 @@ export const billerFromText = (text: string) => {
   );
 };
 
+/** City-style codes some providers use for discos ("EKO", "ABUJA") mapped to
+ *  our biller ids, since those contain no part of the acronym to match on. */
+const DISCO_ALIASES: [alias: string, id: string][] = [
+  ["ikeja", "ikedc"],
+  ["eko", "ekedc"],
+  ["abuja", "aedc"],
+  ["portharcourt", "phed"],
+  ["enugu", "eedc"],
+  ["ibadan", "ibedc"],
+  ["jos", "jed"],
+  ["kano", "kedco"],
+  ["benin", "bedc"],
+  ["yola", "yedc"],
+];
+
 /** Display metadata for a disco returned by the API. Codes aren't guaranteed to
- *  match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall back to a
- *  substring match; an unmatched disco just renders with an initials badge. */
-export const discoBiller = (code: string) => {
-  const key = code.toLowerCase();
+ *  match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC" vs "EKO"), so try the id,
+ *  a substring match, the city aliases, then the display name; an unmatched
+ *  disco just renders with an initials badge. */
+export const discoBiller = (code: string, name?: string) => {
+  const key = code.toLowerCase().replace(/[^a-z0-9]/g, "");
   const electricity = billersByCategory("electricity");
   return (
     electricity.find((b) => b.id === key) ??
-    electricity.find((b) => key.includes(b.id))
+    electricity.find((b) => key.includes(b.id)) ??
+    electricity.find((b) =>
+      DISCO_ALIASES.some(([alias, id]) => b.id === id && key.includes(alias)),
+    ) ??
+    (name ? billerFromText(name) : undefined)
   );
 };
 

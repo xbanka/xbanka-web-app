@@ -70,7 +70,7 @@ export function BillCheckoutModal({
 }) {
   const isElectricity = !!disco;
   const meta = disco
-    ? discoBiller(disco.code)
+    ? discoBiller(disco.code, disco.name)
     : networkBiller(network as string);
   const providerName = disco?.name ?? meta?.name ?? network ?? "";
 
