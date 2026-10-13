@@ -4,6 +4,7 @@ import {
   getBillNetworks,
   getBillPaymentStatus,
   getDataPlans,
+  getDiscos,
   initiateBillPayment,
 } from "../actions/bills";
 import { ApiError } from "../types/error-types";
@@ -11,6 +12,7 @@ import {
   BillPayment,
   ConfirmBillPayload,
   DataPlan,
+  Disco,
   InitiateBillPayload,
   InitiateBillResponse,
 } from "../types/bills-types";
@@ -19,10 +21,11 @@ import {
 // don't refetch lists that can't have changed.
 const CATALOGUE_STALE_TIME = 10 * 60 * 1000;
 
-export const useBillNetworks = () =>
+export const useBillNetworks = (enabled = true) =>
   useQuery<string[], ApiError>({
     queryKey: ["bill-networks"],
     queryFn: getBillNetworks,
+    enabled,
     staleTime: CATALOGUE_STALE_TIME,
   });
 
@@ -31,6 +34,14 @@ export const useDataPlans = (network: string | null) =>
     queryKey: ["bill-data-plans", network],
     queryFn: () => getDataPlans(network as string),
     enabled: !!network,
+    staleTime: CATALOGUE_STALE_TIME,
+  });
+
+export const useDiscos = (enabled = true) =>
+  useQuery<Disco[], ApiError>({
+    queryKey: ["bill-discos"],
+    queryFn: getDiscos,
+    enabled,
     staleTime: CATALOGUE_STALE_TIME,
   });
 
@@ -70,4 +81,4 @@ export const useBillPaymentStatus = (
       !query.state.data || query.state.data.status === "PENDING" ? 4000 : false,
   });
 
-export type { DataPlan };
+export type { DataPlan, Disco };
