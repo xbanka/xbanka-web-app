@@ -9,7 +9,8 @@ type TransactionType =
   | "DEPOSIT"
   | "TRANSFER_OUT"
   | "WITHDRAWAL"
-  | "TRANSFER_IN";
+  | "TRANSFER_IN"
+  | "BILL_PAYMENT";
 type TransactionStatus = "COMPLETED" | "PENDING" | "FAILED";
 
 export interface TransactionTypes {

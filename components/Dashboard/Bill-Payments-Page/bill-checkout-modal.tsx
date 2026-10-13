@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   CheckCircle2,
-  ChevronDown,
   Copy,
   LoaderCircle,
+  ReceiptText,
   XCircle,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -28,8 +28,11 @@ import {
   InitiateBillPayload,
   InitiateBillResponse,
 } from "@/lib/types/bills-types";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { BillerLogo } from "./biller-logo";
 import { formatNaira, networkBiller } from "./billers-data";
+import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
+import { DataPlanPicker, planKey } from "./data-plan-picker";
 
 const MIN_AIRTIME = 50;
 /** Stop polling a PENDING payment after this long; an in-app notification is
@@ -37,9 +40,6 @@ const MIN_AIRTIME = 50;
 const POLL_WINDOW_MS = 60 * 1000;
 
 type Step = "details" | "review" | "pin" | "result";
-
-/** Route 6 reads `productId`, but Nomba sometimes names the field `id`. */
-const planKey = (plan: DataPlan) => plan.productId ?? plan.id ?? plan.plan;
 
 const inputClasses =
   "w-full h-12 px-4 text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
@@ -51,8 +51,10 @@ export function BillCheckoutModal({
 }: {
   network: string;
   onClose: () => void;
-  /** Called with the payment object on confirm and on every status update. */
-  onPayment: (payment: BillPayment) => void;
+  /** Called with the payment object on confirm and on every status update.
+   *  `context` only comes with the confirm call — status updates reuse the
+   *  context stored at insert. */
+  onPayment: (payment: BillPayment, context?: BillReceiptContext) => void;
 }) {
   const meta = networkBiller(network);
 
@@ -67,6 +69,7 @@ export function BillCheckoutModal({
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
   const [pollTimedOut, setPollTimedOut] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
@@ -92,6 +95,13 @@ export function BillCheckoutModal({
   const detailsOk =
     phoneOk &&
     (product === "AIRTIME" ? Number(amount) >= MIN_AIRTIME : !!selectedPlan);
+
+  /** What the payment object itself can't say — captured for the receipt. */
+  const receiptContext = (): BillReceiptContext => ({
+    networkName: meta?.name ?? network,
+    phoneNumber,
+    planName: product === "DATA" ? selectedPlan?.plan : undefined,
+  });
 
   const buildPayload = (): InitiateBillPayload =>
     product === "AIRTIME"
@@ -139,7 +149,7 @@ export function BillCheckoutModal({
         onSuccess: (p) => {
           setPayment(p);
           setStep("result");
-          onPayment(p);
+          onPayment(p, receiptContext());
         },
         onError: (err) => {
           if (err.status === 409) {
@@ -333,31 +343,12 @@ export function BillCheckoutModal({
                     </Button>
                   </div>
                 ) : (
-                  <div className="relative">
-                    <select
-                      value={planId}
-                      onChange={(e) => setPlanId(e.target.value)}
-                      disabled={plans.isPending}
-                      className={cn(
-                        inputClasses,
-                        "appearance-none pr-10 cursor-pointer disabled:cursor-wait",
-                      )}
-                    >
-                      <option value="">
-                        {plans.isPending ? "Loading plans…" : "Choose a plan"}
-                      </option>
-                      {plans.data?.map((p) => (
-                        <option key={planKey(p)} value={planKey(p)}>
-                          {p.plan} — {formatNaira(p.amount)}
-                        </option>
-                      ))}
-                    </select>
-                    {plans.isPending ? (
-                      <LoaderCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder animate-spin" />
-                    ) : (
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
-                    )}
-                  </div>
+                  <DataPlanPicker
+                    plans={plans.data ?? []}
+                    loading={plans.isPending}
+                    value={planId}
+                    onChange={setPlanId}
+                  />
                 )}
               </div>
             )}
@@ -535,9 +526,32 @@ export function BillCheckoutModal({
 
             {referenceRow(current.reference)}
 
-            <Button className="w-full" onClick={onClose}>
-              Done
-            </Button>
+            {current.status === "PENDING" ? (
+              <Button className="w-full" onClick={onClose}>
+                Done
+              </Button>
+            ) : (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 text-card-text"
+                  onClick={() => setShowReceipt(true)}
+                >
+                  <ReceiptText className="w-4 h-4" />
+                  Receipt
+                </Button>
+                <Button className="flex-1" onClick={onClose}>
+                  Done
+                </Button>
+              </div>
+            )}
+
+            {showReceipt && (
+              <TransactionReceiptModal
+                {...buildBillReceipt(current, receiptContext())}
+                onClose={() => setShowReceipt(false)}
+              />
+            )}
           </div>
         )}
       </div>

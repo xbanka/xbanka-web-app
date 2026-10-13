@@ -7,6 +7,8 @@
 // payable catalogue (networks, data plans, prices) comes from the API and is
 // never hardcoded.
 
+import type { BillPayment } from "@/lib/types/bills-types";
+
 export type BillerCategoryId =
   | "airtime"
   | "electricity"
@@ -413,6 +415,16 @@ export const isCategoryLive = (category: BillerCategoryId) =>
 export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
 
+/** The biller a transaction description mentions ("MTN data 2.5GB…" → the mtn
+ *  biller) — for history rows whose metadata doesn't name the network. */
+export const billerFromText = (text: string) =>
+  BILLERS.find((b) =>
+    new RegExp(
+      `\\b${b.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+      "i",
+    ).test(text),
+  );
+
 /** A row in the Recent Transactions list. `reference` ties a row back to a
  *  real payment so status updates (PENDING → COMPLETED) can replace it. */
 export type BillTransaction = {
@@ -423,6 +435,10 @@ export type BillTransaction = {
   amount: string;
   status: string;
   reference?: string;
+  /** Set for payments made this session, so the row can open its receipt. */
+  payment?: BillPayment;
+  phoneNumber?: string;
+  planName?: string;
 };
 
 export const formatNaira = (amount: number) =>
