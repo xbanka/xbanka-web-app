@@ -1,15 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   confirmBillPayment,
+  getBettingProviders,
   getBillNetworks,
   getBillPaymentStatus,
+  getCablePlans,
   getDataPlans,
   getDiscos,
   initiateBillPayment,
 } from "../actions/bills";
 import { ApiError } from "../types/error-types";
 import {
+  BettingProvider,
   BillPayment,
+  CablePlan,
   ConfirmBillPayload,
   DataPlan,
   Disco,
@@ -34,6 +38,22 @@ export const useDataPlans = (network: string | null) =>
     queryKey: ["bill-data-plans", network],
     queryFn: () => getDataPlans(network as string),
     enabled: !!network,
+    staleTime: CATALOGUE_STALE_TIME,
+  });
+
+export const useBettingProviders = (enabled = true) =>
+  useQuery<BettingProvider[], ApiError>({
+    queryKey: ["bill-betting-providers"],
+    queryFn: getBettingProviders,
+    enabled,
+    staleTime: CATALOGUE_STALE_TIME,
+  });
+
+export const useCablePlans = (cableTvType: string | null) =>
+  useQuery<CablePlan[], ApiError>({
+    queryKey: ["bill-cable-plans", cableTvType],
+    queryFn: () => getCablePlans(cableTvType as string),
+    enabled: !!cableTvType,
     staleTime: CATALOGUE_STALE_TIME,
   });
 

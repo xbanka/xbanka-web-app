@@ -35,7 +35,7 @@ export type Biller = {
 };
 
 const AIRTIME_AMOUNTS = [100, 200, 500, 1000, 2000, 5000];
-const BETTING_AMOUNTS = [500, 1000, 2000, 5000, 10000, 20000];
+export const BETTING_AMOUNTS = [500, 1000, 2000, 5000, 10000, 20000];
 
 export const BILLERS: Biller[] = [
   // ── Airtime & Data ──
@@ -404,7 +404,12 @@ export const billersByCategory = (category: BillerCategoryId) =>
 export const findBiller = (id: string) => BILLERS.find((b) => b.id === id);
 
 /** Categories wired to the payments API; the rest render as “Coming soon”. */
-export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime", "electricity"];
+export const LIVE_CATEGORIES: BillerCategoryId[] = [
+  "airtime",
+  "electricity",
+  "cable",
+  "betting",
+];
 
 export const isCategoryLive = (category: BillerCategoryId) =>
   LIVE_CATEGORIES.includes(category);
@@ -413,17 +418,28 @@ export const isCategoryLive = (category: BillerCategoryId) =>
 export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
 
-/** Display metadata for a disco returned by the API. Codes aren't guaranteed to
- *  match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall back to a
- *  substring match; an unmatched disco just renders with an initials badge. */
-export const discoBiller = (code: string) => {
+/** Display metadata for a provider code returned by the API. Codes aren't
+ *  guaranteed to match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall
+ *  back to a substring match; an unmatched provider just renders with an
+ *  initials badge. */
+export const categoryBiller = (category: BillerCategoryId, code: string) => {
   const key = code.toLowerCase();
-  const electricity = billersByCategory("electricity");
+  const billers = billersByCategory(category);
   return (
-    electricity.find((b) => b.id === key) ??
-    electricity.find((b) => key.includes(b.id))
+    billers.find((b) => b.id === key) ?? billers.find((b) => key.includes(b.id))
   );
 };
+
+export const discoBiller = (code: string) =>
+  categoryBiller("electricity", code);
+
+/** The cable providers are fixed by the API reference, so they're listed here
+ *  rather than fetched. `code` is the `cableTvType` value — note ShowMax is the
+ *  only one the API wants in mixed case. */
+export const CABLE_PROVIDERS = billersByCategory("cable").map((b) => ({
+  code: b.id === "showmax" ? "ShowMax" : b.id,
+  name: b.name,
+}));
 
 export const ELECTRICITY_QUICK_AMOUNTS = [1000, 2000, 5000, 10000, 20000];
 

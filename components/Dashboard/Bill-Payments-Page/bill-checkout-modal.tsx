@@ -18,13 +18,15 @@ import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 import { cn } from "@/lib/utils";
 import {
   useBillPaymentStatus,
+  useCablePlans,
   useConfirmBill,
   useDataPlans,
   useInitiateBill,
 } from "@/lib/services/bills.service";
 import {
+  BettingProvider,
   BillPayment,
-  DataPlan,
+  CableProvider,
   Disco,
   InitiateBillPayload,
   InitiateBillResponse,
@@ -32,7 +34,8 @@ import {
 } from "@/lib/types/bills-types";
 import { BillerLogo } from "./biller-logo";
 import {
-  discoBiller,
+  BETTING_AMOUNTS,
+  categoryBiller,
   ELECTRICITY_QUICK_AMOUNTS,
   formatNaira,
   networkBiller,
@@ -40,6 +43,7 @@ import {
 
 const MIN_AIRTIME = 50;
 const MIN_ELECTRICITY = 500;
+const MIN_BETTING = 100;
 /** Stop polling a PENDING payment after this long; an in-app notification is
  *  sent when the status changes. */
 const POLL_WINDOW_MS = 60 * 1000;
@@ -47,50 +51,77 @@ const POLL_WINDOW_MS = 60 * 1000;
 type Step = "details" | "review" | "pin" | "result";
 
 /** Route 6 reads `productId`, but Nomba sometimes names the field `id`. */
-const planKey = (plan: DataPlan) => plan.productId ?? plan.id ?? plan.plan;
+const dataPlanKey = (plan: { productId?: string; id?: string; plan: string }) =>
+  plan.productId ?? plan.id ?? plan.plan;
+
+/** Data and cable plans both render as a "name — price" dropdown. */
+type PlanOption = { key: string; label: string; amount: number };
+
+/** What this checkout is paying for. */
+export type CheckoutTarget =
+  | { kind: "network"; network: string }
+  | { kind: "disco"; disco: Disco }
+  | { kind: "cable"; provider: CableProvider }
+  | { kind: "betting"; provider: BettingProvider };
 
 const inputClasses =
   "w-full h-12 px-4 text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
 
 export function BillCheckoutModal({
-  network,
-  disco,
+  target,
   onClose,
   onPayment,
 }: {
-  /** Airtime & data checkout for this network code. */
-  network?: string;
-  /** Electricity checkout for this disco. Exactly one of the two is set. */
-  disco?: Disco;
+  target: CheckoutTarget;
   onClose: () => void;
   /** Called with the payment object on confirm and on every status update. */
   onPayment: (payment: BillPayment) => void;
 }) {
-  const isElectricity = !!disco;
-  const meta = disco
-    ? discoBiller(disco.code)
-    : networkBiller(network as string);
-  const providerName = disco?.name ?? meta?.name ?? network ?? "";
+  const { kind } = target;
+  const isElectricity = kind === "disco";
+  const isCable = kind === "cable";
+  const isBetting = kind === "betting";
+  const isNetwork = kind === "network";
+
+  const meta =
+    target.kind === "network"
+      ? networkBiller(target.network)
+      : target.kind === "disco"
+        ? categoryBiller("electricity", target.disco.code)
+        : target.kind === "cable"
+          ? categoryBiller("cable", target.provider.code)
+          : categoryBiller("betting", target.provider.code);
+  const providerName =
+    target.kind === "network"
+      ? (meta?.name ?? target.network)
+      : target.kind === "disco"
+        ? target.disco.name
+        : target.provider.name;
 
   const [step, setStep] = useState<Step>("details");
   const [product, setProduct] = useState<"AIRTIME" | "DATA">("AIRTIME");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [amount, setAmount] = useState("");
+  const [customerId, setCustomerId] = useState("");
   const [planId, setPlanId] = useState("");
   const [pin, setPin] = useState("");
   const [quote, setQuote] = useState<InitiateBillResponse | null>(null);
   const [payment, setPayment] = useState<BillPayment | null>(null);
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
-  const [meterNumber, setMeterNumber] = useState("");
   const [meterType, setMeterType] = useState<MeterType>("PREPAID");
   const [pollTimedOut, setPollTimedOut] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
-  const plans = useDataPlans(
-    !isElectricity && product === "DATA" ? (network as string) : null,
+  const dataPlans = useDataPlans(
+    target.kind === "network" && product === "DATA" ? target.network : null,
   );
+  const cablePlans = useCablePlans(
+    target.kind === "cable" ? target.provider.code : null,
+  );
+  const hasPlans = isCable || (isNetwork && product === "DATA");
+  const plans = isCable ? cablePlans : dataPlans;
 
   const polling =
     step === "result" && payment?.status === "PENDING" && !pollTimedOut;
@@ -107,35 +138,72 @@ export function BillCheckoutModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [live.data]);
 
-  const selectedPlan = plans.data?.find((p) => planKey(p) === planId);
+  const planOptions: PlanOption[] | undefined = isCable
+    ? cablePlans.data?.map((p) => ({
+        key: p.code,
+        label: p.name,
+        amount: p.amount,
+      }))
+    : dataPlans.data?.map((p) => ({
+        key: dataPlanKey(p),
+        label: p.plan,
+        amount: p.amount,
+      }));
+  const selectedPlan = planOptions?.find((p) => p.key === planId);
   const phoneOk = phoneNumber.length >= 11 && phoneNumber.length <= 13;
-  const detailsOk = isElectricity
-    ? meterNumber.length >= 6 && Number(amount) >= MIN_ELECTRICITY
-    : phoneOk &&
-      (product === "AIRTIME" ? Number(amount) >= MIN_AIRTIME : !!selectedPlan);
+  const detailsOk =
+    target.kind === "disco"
+      ? customerId.length >= 6 && Number(amount) >= MIN_ELECTRICITY
+      : target.kind === "cable"
+        ? customerId.length >= 6 && !!selectedPlan
+        : target.kind === "betting"
+          ? customerId.length >= 3 && phoneOk && Number(amount) >= MIN_BETTING
+          : phoneOk &&
+            (product === "AIRTIME"
+              ? Number(amount) >= MIN_AIRTIME
+              : !!selectedPlan);
 
-  const buildPayload = (): InitiateBillPayload =>
-    disco
-      ? {
+  const buildPayload = (): InitiateBillPayload => {
+    switch (target.kind) {
+      case "disco":
+        return {
           product: "ELECTRICITY",
-          disco: disco.code,
-          customerId: meterNumber,
+          disco: target.disco.code,
+          customerId,
           meterType,
           amount: Number(amount),
-        }
-      : product === "AIRTIME"
-        ? {
-            product: "AIRTIME",
-            network: network as string,
-            phoneNumber,
-            amount: Number(amount),
-          }
-        : {
-            product: "DATA",
-            network: network as string,
-            phoneNumber,
-            productId: planKey(selectedPlan as DataPlan),
-          };
+        };
+      case "cable":
+        return {
+          product: "CABLE_TV",
+          cableTvType: target.provider.code,
+          customerId,
+          planCode: (selectedPlan as PlanOption).key,
+        };
+      case "betting":
+        return {
+          product: "BETTING",
+          bettingProvider: target.provider.code,
+          customerId,
+          phoneNumber,
+          amount: Number(amount),
+        };
+      case "network":
+        return product === "AIRTIME"
+          ? {
+              product: "AIRTIME",
+              network: target.network,
+              phoneNumber,
+              amount: Number(amount),
+            }
+          : {
+              product: "DATA",
+              network: target.network,
+              phoneNumber,
+              productId: (selectedPlan as PlanOption).key,
+            };
+    }
+  };
 
   const handleContinue = () => {
     if (!detailsOk || initiate.isPending) return;
@@ -181,7 +249,7 @@ export function BillCheckoutModal({
             setNotice(err.message);
             setPlanId("");
             setStep("details");
-            plans.refetch();
+            if (hasPlans) plans.refetch();
           } else if (
             err.status === 400 &&
             /payment (token|request)/i.test(err.message)
@@ -219,9 +287,12 @@ export function BillCheckoutModal({
   const headerByStep: Record<Step, { title: string; subtitle?: string }> = {
     details: {
       title: providerName,
-      subtitle: isElectricity
-        ? "Buy electricity units"
-        : "Buy airtime or a data bundle",
+      subtitle: {
+        network: "Buy airtime or a data bundle",
+        disco: "Buy electricity units",
+        cable: "Renew your subscription",
+        betting: "Fund your betting account",
+      }[kind],
     },
     review: {
       title: "Review payment",
@@ -242,6 +313,47 @@ export function BillCheckoutModal({
       </span>
     </div>
   );
+
+  const planSelect = hasPlans ? (
+    plans.error ? (
+      <div className="space-y-2.5">
+        <ErrorLayout message={plans.error.message} />
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => plans.refetch()}
+        >
+          Try again
+        </Button>
+      </div>
+    ) : (
+      <div className="relative">
+        <select
+          value={planId}
+          onChange={(e) => setPlanId(e.target.value)}
+          disabled={plans.isPending}
+          className={cn(
+            inputClasses,
+            "appearance-none pr-10 cursor-pointer disabled:cursor-wait",
+          )}
+        >
+          <option value="">
+            {plans.isPending ? "Loading plans…" : "Choose a plan"}
+          </option>
+          {planOptions?.map((p) => (
+            <option key={p.key} value={p.key}>
+              {p.label} — {formatNaira(p.amount)}
+            </option>
+          ))}
+        </select>
+        {plans.isPending ? (
+          <LoaderCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder animate-spin" />
+        ) : (
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
+        )}
+      </div>
+    )
+  ) : null;
 
   const referenceRow = (reference: string) => (
     <div className="flex items-center justify-center gap-2 text-xs text-text">
@@ -308,9 +420,9 @@ export function BillCheckoutModal({
                     Meter Number
                   </label>
                   <input
-                    value={meterNumber}
+                    value={customerId}
                     onChange={(e) =>
-                      setMeterNumber(e.target.value.replace(/[^\d]/g, ""))
+                      setCustomerId(e.target.value.replace(/[^\d]/g, ""))
                     }
                     placeholder="Enter your meter number"
                     inputMode="numeric"
@@ -353,7 +465,104 @@ export function BillCheckoutModal({
               </>
             )}
 
-            {!isElectricity && (
+            {isCable && (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    {meta?.inputLabel ?? "Smartcard / IUC Number"}
+                  </label>
+                  <input
+                    value={customerId}
+                    onChange={(e) =>
+                      setCustomerId(e.target.value.replace(/\s/g, ""))
+                    }
+                    placeholder={
+                      meta?.inputPlaceholder ?? "Enter your smartcard number"
+                    }
+                    maxLength={40}
+                    className={inputClasses}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Plan
+                  </label>
+                  {planSelect}
+                </div>
+              </>
+            )}
+
+            {isBetting && (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    {meta?.inputLabel ?? "Account ID"}
+                  </label>
+                  <input
+                    value={customerId}
+                    onChange={(e) =>
+                      setCustomerId(e.target.value.replace(/\s/g, ""))
+                    }
+                    placeholder={
+                      meta?.inputPlaceholder ?? "Enter your betting account ID"
+                    }
+                    maxLength={40}
+                    className={inputClasses}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Phone Number
+                  </label>
+                  <input
+                    value={phoneNumber}
+                    onChange={(e) =>
+                      setPhoneNumber(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder="0801 234 5678"
+                    inputMode="numeric"
+                    maxLength={13}
+                    className={inputClasses}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Amount (₦)
+                  </label>
+                  <input
+                    value={amount}
+                    onChange={(e) =>
+                      setAmount(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder={`Enter amount (min ₦${MIN_BETTING})`}
+                    inputMode="numeric"
+                    className={inputClasses}
+                  />
+                  <div className="flex flex-wrap gap-2 mt-2.5">
+                    {BETTING_AMOUNTS.map((qa) => (
+                      <button
+                        key={qa}
+                        type="button"
+                        onClick={() => setAmount(String(qa))}
+                        className={cn(
+                          "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                          amount === String(qa)
+                            ? "border-Green bg-Green/10 text-Green font-medium"
+                            : "border-border text-text hover:border-border-active",
+                        )}
+                      >
+                        ₦{qa.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {isNetwork && (
               <>
                 <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
                   {(["AIRTIME", "DATA"] as const).map((p) => (
@@ -431,46 +640,7 @@ export function BillCheckoutModal({
                     <label className="block text-xs font-medium text-text mb-1.5">
                       Data Plan
                     </label>
-                    {plans.error ? (
-                      <div className="space-y-2.5">
-                        <ErrorLayout message={plans.error.message} />
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => plans.refetch()}
-                        >
-                          Try again
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="relative">
-                        <select
-                          value={planId}
-                          onChange={(e) => setPlanId(e.target.value)}
-                          disabled={plans.isPending}
-                          className={cn(
-                            inputClasses,
-                            "appearance-none pr-10 cursor-pointer disabled:cursor-wait",
-                          )}
-                        >
-                          <option value="">
-                            {plans.isPending
-                              ? "Loading plans…"
-                              : "Choose a plan"}
-                          </option>
-                          {plans.data?.map((p) => (
-                            <option key={planKey(p)} value={planKey(p)}>
-                              {p.plan} — {formatNaira(p.amount)}
-                            </option>
-                          ))}
-                        </select>
-                        {plans.isPending ? (
-                          <LoaderCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder animate-spin" />
-                        ) : (
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
-                        )}
-                      </div>
-                    )}
+                    {planSelect}
                   </div>
                 )}
               </>
@@ -498,7 +668,7 @@ export function BillCheckoutModal({
           <div className="space-y-4">
             <div className="px-4 rounded-xl bg-card-secondary border border-border">
               {summaryRow(
-                isElectricity ? "Provider" : "Network",
+                isNetwork ? "Network" : "Provider",
                 <span className="flex items-center gap-2 justify-end">
                   <BillerLogo
                     logo={meta?.logo}
@@ -510,23 +680,25 @@ export function BillCheckoutModal({
                   {providerName}
                 </span>,
               )}
-              {isElectricity ? (
-                <>
-                  {summaryRow(
-                    "Meter Type",
-                    meterType === "PREPAID" ? "Prepaid" : "Postpaid",
-                  )}
-                  {summaryRow("Meter Number", meterNumber)}
-                  {quote.customerName &&
-                    summaryRow("Account Name", quote.customerName)}
-                </>
-              ) : (
-                summaryRow("Phone Number", phoneNumber)
-              )}
+              {isElectricity &&
+                summaryRow(
+                  "Meter Type",
+                  meterType === "PREPAID" ? "Prepaid" : "Postpaid",
+                )}
+              {isElectricity && summaryRow("Meter Number", customerId)}
+              {isCable &&
+                summaryRow(meta?.inputLabel ?? "Smartcard / IUC", customerId)}
+              {isBetting &&
+                summaryRow(meta?.inputLabel ?? "Account ID", customerId)}
               {!isElectricity &&
-                product === "DATA" &&
+                !isCable &&
+                phoneNumber &&
+                summaryRow("Phone Number", phoneNumber)}
+              {quote.customerName &&
+                summaryRow("Account Name", quote.customerName)}
+              {(isCable || (isNetwork && product === "DATA")) &&
                 selectedPlan &&
-                summaryRow("Plan", selectedPlan.plan)}
+                summaryRow("Plan", selectedPlan.label)}
               {summaryRow("Description", quote.description)}
             </div>
 
@@ -537,10 +709,17 @@ export function BillCheckoutModal({
               </span>
             </div>
 
-            {isElectricity && (
+            {!isNetwork && (
               <p className="text-xs text-text px-1">
-                Check that the account name matches your meter. Payments to the
-                wrong meter usually can&apos;t be recovered.
+                Check that the account name matches{" "}
+                {isElectricity
+                  ? "your meter"
+                  : isCable
+                    ? "your smartcard"
+                    : "your betting account"}
+                . Payments to the wrong{" "}
+                {isElectricity ? "meter" : isCable ? "card" : "account"} usually
+                can&apos;t be recovered.
               </p>
             )}
 

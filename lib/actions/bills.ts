@@ -1,6 +1,9 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
 import {
+  BettingProvider,
   BillPayment,
+  BillProvider,
+  CablePlan,
   ConfirmBillPayload,
   DataPlan,
   Disco,
@@ -23,26 +26,66 @@ export const getDataPlans = async (network: string): Promise<DataPlan[]> => {
   return response.data.data;
 };
 
-// Nomba doesn't fully specify the discos list shape: accept bare strings or
-// objects and pull out the code we send back as `disco`.
-const toDisco = (raw: unknown): Disco | null => {
+// Nomba doesn't fully specify the discos, betting-provider or cable-plan list
+// shapes: accept bare strings or objects and pull out the fields we send back.
+const pickString = (item: Record<string, unknown>, keys: string[]) =>
+  keys.map((k) => item[k]).find((v) => typeof v === "string" && v) as
+    string | undefined;
+
+const toProvider = (raw: unknown, codeKeys: string[]): BillProvider | null => {
   if (typeof raw === "string") return { code: raw, name: raw };
   if (!raw || typeof raw !== "object") return null;
   const item = raw as Record<string, unknown>;
-  const pick = (...keys: string[]) =>
-    keys.map((k) => item[k]).find((v) => typeof v === "string" && v) as
-      string | undefined;
-  const code = pick("disco", "code", "id", "name");
+  const code = pickString(item, [...codeKeys, "code", "id", "name"]);
   if (!code) return null;
-  return { code, name: pick("name", "label", "disco", "code") ?? code };
+  return {
+    code,
+    name: pickString(item, ["name", "label", ...codeKeys, "code"]) ?? code,
+  };
 };
+
+const toList = (data: unknown): unknown[] => (Array.isArray(data) ? data : []);
 
 export const getDiscos = async (): Promise<Disco[]> => {
   const response = await AxiosInstance.get("/wallets/bills/electricity/discos");
-  const list: unknown[] = Array.isArray(response.data.data)
-    ? response.data.data
-    : [];
-  return list.map(toDisco).filter((d): d is Disco => d !== null);
+  return toList(response.data.data)
+    .map((raw) => toProvider(raw, ["disco"]))
+    .filter((d): d is Disco => d !== null);
+};
+
+export const getBettingProviders = async (): Promise<BettingProvider[]> => {
+  const response = await AxiosInstance.get("/wallets/bills/betting/providers");
+  return toList(response.data.data)
+    .map((raw) => toProvider(raw, ["bettingProvider", "provider"]))
+    .filter((p): p is BettingProvider => p !== null);
+};
+
+export const getCablePlans = async (
+  cableTvType: string,
+): Promise<CablePlan[]> => {
+  const response = await AxiosInstance.get("/wallets/bills/cable/plans", {
+    params: { cableTvType },
+  });
+  return toList(response.data.data).flatMap((raw) => {
+    if (!raw || typeof raw !== "object") return [];
+    const item = raw as Record<string, unknown>;
+    const code = pickString(item, [
+      "subScriptionType",
+      "planCode",
+      "productId",
+      "id",
+    ]);
+    const amount = Number(item.amount);
+    if (!code || !Number.isFinite(amount)) return [];
+    return [
+      {
+        code,
+        name:
+          pickString(item, ["name", "plan", "description", "title"]) ?? code,
+        amount,
+      },
+    ];
+  });
 };
 
 /** Step 1: validates, prices and verifies the customer. No money moves. */
