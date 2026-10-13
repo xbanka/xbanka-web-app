@@ -6,9 +6,9 @@ import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
 import { ErrorLayout } from "@/components/ui/error-layout";
 import { cn } from "@/lib/utils";
-import { useBillNetworks } from "@/lib/services/bills.service";
+import { useBillNetworks, useDiscos } from "@/lib/services/bills.service";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
-import { BillPayment } from "@/lib/types/bills-types";
+import { BillPayment, Disco } from "@/lib/types/bills-types";
 import { TransactionTypes } from "@/lib/types/transaction-types";
 import {
   buildTransactionReceipt,
@@ -26,6 +26,7 @@ import {
   BillTransaction,
   findBiller,
   formatNaira,
+  discoBiller,
   isCategoryLive,
   networkBiller,
 } from "./billers-data";
@@ -47,12 +48,14 @@ export default function BillPaymentsPage() {
   const [selectedCategory, setSelectedCategory] =
     useState<BillerCategoryId | null>(null);
   const [payingNetwork, setPayingNetwork] = useState<string | null>(null);
+  const [payingDisco, setPayingDisco] = useState<Disco | null>(null);
   const [receipt, setReceipt] = useState<TransactionReceiptData | null>(null);
   /** Payments made this session — richer than their history rows (receipt
    *  context, live PENDING → COMPLETED status from the poll). */
   const [transactions, setTransactions] = useState<BillTransaction[]>([]);
 
-  const networks = useBillNetworks();
+  const networks = useBillNetworks(selectedCategory === "airtime");
+  const discos = useDiscos(selectedCategory === "electricity");
   const history = UseGetTransactionHistory(1, 25);
 
   /** The user's real bill payments from transaction history, newest first.
@@ -128,9 +131,12 @@ export default function BillPaymentsPage() {
       }
       return [
         {
-          billerId: payingNetwork?.toLowerCase() ?? "",
+          billerId: (payingDisco?.code ?? payingNetwork)?.toLowerCase() ?? "",
           name: payment.note,
-          number: context?.phoneNumber ?? payment.reference.slice(0, 14),
+          number:
+            context?.phoneNumber ??
+            context?.meterNumber ??
+            payment.reference.slice(0, 14),
           time: "Just now",
           amount: formatNaira(payment.amount),
           status,
@@ -138,6 +144,7 @@ export default function BillPaymentsPage() {
           payment,
           phoneNumber: context?.phoneNumber,
           planName: context?.planName,
+          meterNumber: context?.meterNumber,
         },
         ...prev,
       ];
@@ -150,9 +157,11 @@ export default function BillPaymentsPage() {
     if (row.payment) {
       setReceipt(
         buildBillReceipt(row.payment, {
-          networkName: findBiller(row.billerId)?.name,
+          networkName:
+            findBiller(row.billerId)?.name ?? discoBiller(row.billerId)?.name,
           phoneNumber: row.phoneNumber,
           planName: row.planName,
+          meterNumber: row.meterNumber,
         }),
       );
     } else if (row.historyTx) {
@@ -160,14 +169,24 @@ export default function BillPaymentsPage() {
     }
   };
 
+  /** Search results are display metadata only; airtime tiles open checkout
+   *  directly, electricity ones open the live disco list so the code we send
+   *  is the one the API returned. */
+  const openBiller = (biller: Biller) => {
+    if (biller.category === "electricity") {
+      setSearch("");
+      setSelectedCategory("electricity");
+      return;
+    }
+    setPayingNetwork(biller.id.toUpperCase());
+  };
+
   const billerTile = (biller: Biller) => {
     const live = isCategoryLive(biller.category);
     return (
       <button
         key={biller.id}
-        onClick={
-          live ? () => setPayingNetwork(biller.id.toUpperCase()) : undefined
-        }
+        onClick={live ? () => openBiller(biller) : undefined}
         disabled={!live}
         className={cn(
           "group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
@@ -231,6 +250,36 @@ export default function BillPaymentsPage() {
     );
   };
 
+  const discoTile = (disco: Disco) => {
+    const meta = discoBiller(disco.code);
+    return (
+      <button
+        key={disco.code}
+        onClick={() => setPayingDisco(disco)}
+        className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
+      >
+        <BillerLogo
+          logo={meta?.logo}
+          name={disco.name}
+          fallbackColor={meta?.fallbackColor}
+          size={44}
+          rounded="rounded-xl"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors truncate">
+            {disco.name}
+          </p>
+          <p className="text-xs text-text truncate mt-0.5">
+            {meta?.desc ?? "Prepaid & postpaid"}
+          </p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
+      </button>
+    );
+  };
+
+  const catalogue = selectedCategory === "electricity" ? discos : networks;
+
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header */}
@@ -289,10 +338,14 @@ export default function BillPaymentsPage() {
               <h3 className="font-semibold text-card-text text-sm">
                 {activeCategory.name}
               </h3>
-              <p className="text-xs text-text">Choose a network to continue</p>
+              <p className="text-xs text-text">
+                {selectedCategory === "electricity"
+                  ? "Choose your electricity provider"
+                  : "Choose a network to continue"}
+              </p>
             </div>
           </div>
-          {networks.isPending ? (
+          {catalogue.isPending ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
@@ -301,16 +354,18 @@ export default function BillPaymentsPage() {
                 />
               ))}
             </div>
-          ) : networks.error ? (
+          ) : catalogue.error ? (
             <div className="max-w-md space-y-3">
-              <ErrorLayout message={networks.error.message} />
-              <Button variant="outline" onClick={() => networks.refetch()}>
+              <ErrorLayout message={catalogue.error.message} />
+              <Button variant="outline" onClick={() => catalogue.refetch()}>
                 Try again
               </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {networks.data?.map(networkTile)}
+              {selectedCategory === "electricity"
+                ? discos.data?.map(discoTile)
+                : networks.data?.map(networkTile)}
             </div>
           )}
         </div>
@@ -473,10 +528,14 @@ export default function BillPaymentsPage() {
         </div>
       </div>
 
-      {payingNetwork && (
+      {(payingNetwork || payingDisco) && (
         <BillCheckoutModal
-          network={payingNetwork}
-          onClose={() => setPayingNetwork(null)}
+          network={payingNetwork ?? undefined}
+          disco={payingDisco ?? undefined}
+          onClose={() => {
+            setPayingNetwork(null);
+            setPayingDisco(null);
+          }}
           onPayment={handlePayment}
         />
       )}

@@ -1,26 +1,50 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Recipient, Step } from "./types";
+import {
+  UseGetFiatWallet,
+  UseInitiateNombaWithdrawal,
+} from "@/lib/services/wallet.service";
+import { ErrorField } from "@/components/ui/field-error";
+import { NombaInitiateResponse } from "@/lib/types/wallet-types";
+import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
+import { CreatePinModal } from "@/components/Dashboard/Account-Page/create-pin-modal";
+import {
+  classifyWithdrawalError,
+  traceWithdrawal,
+} from "@/lib/nomba-withdrawal";
+import { Recipient } from "./types";
 import { BankLogo } from "@/components/ui/bank-logo";
 import { QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
-import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
+
+const NARRATION_MAX_LENGTH = 100;
 
 export function EnterAmountStep({
   recipient,
+  notice,
   onBack,
+  onClose,
   onContinue,
 }: {
   recipient: Recipient;
+  /** Shown above the form, e.g. when an expired request sent the user back. */
+  notice?: string;
   onBack: () => void;
-  onContinue: (Recipient: Recipient) => void;
+  onClose: () => void;
+  onContinue: (recipient: Recipient, withdrawal: NombaInitiateResponse) => void;
 }) {
-  const [amount, setAmount] = useState("");
-  const [narration, setNarration] = useState("");
-  const { data, error, isPending } = UseGetFiatWallet();
+  const [amount, setAmount] = useState(
+    recipient.amount ? recipient.amount.toLocaleString() : "",
+  );
+  const [narration, setNarration] = useState(recipient.narration);
+  const { data } = UseGetFiatWallet();
   const wallets = data?.data?.data || [];
+  const { mutate: initiate, isPending, error, reset } = UseInitiateNombaWithdrawal();
+  const openBvn = useOnboardingModalStore((state) => state.openBvn);
+  const [openCreatePin, setOpenCreatePin] = useState(false);
+  const errorMessage = error ? classifyWithdrawalError(error).message : "";
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
   const minTransfer = 5000;
@@ -33,16 +57,39 @@ export function EnterAmountStep({
   const isValid = numericAmount >= minTransfer && numericAmount <= sumFiatBalances(wallets);
 
   const handleContinue = () => {
-    // We spread the existing recipient and add the new amount/narration
-    const updatedRecipient: Recipient = {
-      ...recipient,
-      amount: numericAmount,
-      narration: narration,
-    };
-
-    // If your parent's handleContinue only expects (amount, narration),
-    // you should change it to accept the whole object or just call a setter.
-    onContinue(updatedRecipient);
+    const trimmedNarration = narration.trim();
+    initiate(
+      {
+        bankCode: recipient.bankCode,
+        accountNumber: recipient.accountNumber,
+        amount: numericAmount,
+        ...(trimmedNarration && { narration: trimmedNarration }),
+      },
+      {
+        onSuccess: (withdrawal) => {
+          traceWithdrawal({ event: "initiate_succeeded" });
+          onContinue(
+            {
+              ...recipient,
+              accountName: withdrawal.accountName,
+              amount: numericAmount,
+              narration: trimmedNarration,
+            },
+            withdrawal,
+          );
+        },
+        onError: (err) => {
+          const { kind } = classifyWithdrawalError(err);
+          traceWithdrawal({ event: "initiate_failed", kind });
+          if (kind === "tier-required") {
+            onClose();
+            openBvn();
+          } else if (kind === "pin-setup-required") {
+            setOpenCreatePin(true);
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -57,17 +104,21 @@ export function EnterAmountStep({
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-card-text truncate">
-              {recipient.accountName}
+              {recipient.accountName || recipient.bankName}
             </p>
             <p className="text-xs text-text truncate">
               {recipient.accountNumber}
-              {recipient.bankName ? ` · ${recipient.bankName}` : ""}
+              {recipient.accountName && recipient.bankName
+                ? ` · ${recipient.bankName}`
+                : ""}
             </p>
           </div>
         </div>
       </div>
 
       <div className="px-8 pb-8 pt-4 space-y-8">
+        <ErrorField message={notice} />
+
         {/* Amount input */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-card-text">Amount</label>
@@ -78,7 +129,10 @@ export function EnterAmountStep({
             <input
               className="flex h-14 w-full rounded-lg border border-border-active bg-input-background pl-8 pr-4 text-2xl font-bold text-card-text focus:outline-none focus-visible:ring-2 focus-visible:ring-Green/30 focus-visible:border-Green transition-all"
               value={amount}
-              onChange={(e) => setAmount(formatAmount(e.target.value))}
+              onChange={(e) => {
+                setAmount(formatAmount(e.target.value));
+                reset();
+              }}
               placeholder="0"
             />
           </div>
@@ -99,7 +153,10 @@ export function EnterAmountStep({
           {QUICK_AMOUNTS.map((q) => (
             <button
               key={q}
-              onClick={() => setAmount(q.toLocaleString())}
+              onClick={() => {
+                setAmount(q.toLocaleString());
+                reset();
+              }}
               className={cn(
                 "px-3 py-1.5 rounded-md text-xs font-medium border transition-colors",
                 numericAmount === q
@@ -120,9 +177,13 @@ export function EnterAmountStep({
           <Input
             placeholder="What's this for?"
             value={narration}
+            maxLength={NARRATION_MAX_LENGTH}
             onChange={(e) => setNarration(e.target.value)}
           />
         </div>
+
+        {/* Bank verification / balance errors from the initiate call */}
+        <ErrorField message={errorMessage} />
 
         <div className="flex gap-4 pt-2">
           <Button variant="outline" className="flex-1" onClick={onBack}>
@@ -130,13 +191,19 @@ export function EnterAmountStep({
           </Button>
           <Button
             className="flex-3"
-            disabled={!isValid}
-            variant={isValid ? "default" : "disabled"}
+            disabled={!isValid || isPending}
+            variant={isValid && !isPending ? "default" : "disabled"}
             onClick={handleContinue}
           >
-            Continue
+            {isPending ? "Verifying account..." : "Continue"}
           </Button>
         </div>
+        {openCreatePin && (
+          <CreatePinModal
+            open={openCreatePin}
+            handleClose={() => setOpenCreatePin(false)}
+          />
+        )}
       </div>
     </div>
   );

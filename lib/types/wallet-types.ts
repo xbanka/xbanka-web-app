@@ -2,6 +2,38 @@ export interface fundWalletPayload {
   amount: number;
   saveCard: boolean;
 }
+export interface NombaInitiatePayload {
+  bankCode: string;
+  accountNumber: string;
+  amount: number;
+  narration?: string;
+}
+export interface NombaInitiateResponse {
+  withdrawalToken: string;
+  accountName: string;
+  accountNumber: string;
+  bankCode: string;
+  amount: number;
+  currency: string;
+  expiresAt: string;
+}
+export interface NombaConfirmPayload {
+  withdrawalToken: string;
+  pin: string;
+}
+export type NombaWithdrawalStatus = "PENDING" | "COMPLETED" | "FAILED";
+export interface NombaWithdrawal {
+  reference: string;
+  status: NombaWithdrawalStatus;
+  amount: number;
+  currency: string;
+  accountName: string;
+  accountNumber: string;
+  bankCode: string;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 export interface sendWalletPayload {
   accountNumber: string;
   bankCode: string;
@@ -64,6 +96,29 @@ export interface AddBankAccountPayload {
   accountNumber: string;
   accountName: string;
   bankCode: string;
+}
+
+export interface AddFundingAccountPayload {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+export interface FundingAccount {
+  id: string;
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
+  createdAt: string;
+}
+
+export interface XbankaFundingAccount {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountName: string;
 }
 
 export interface Wallet {

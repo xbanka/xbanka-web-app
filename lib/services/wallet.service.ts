@@ -2,6 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ActiveNetworksCrypto,
   addBankAcounts,
+  addFundingAccount,
+  getFundingAccounts,
+  getXbankaFundingAccount,
+  lookupAccountName,
   deleteFiatWalletSavedCard,
   executeConversion,
   fundFiatWallet,
@@ -12,7 +16,10 @@ import {
   generateDepositAddress,
   getAllWalletBalances,
   getBankAcounts,
+  confirmNombaWithdrawal,
   getAllBanks,
+  getNombaWithdrawalStatus,
+  initiateNombaWithdrawal,
   getBankAcountsList,
   getCryptoWallet,
   getCurrency,
@@ -37,13 +44,17 @@ import {
 import { toast } from "sonner";
 import {
   AddBankAccountPayload,
+  AddFundingAccountPayload,
   fundWalletBankPayload,
   fundWalletBankSavedCardPayload,
   fundWalletPayload,
   fundWalletSavedCardPayload,
+  NombaConfirmPayload,
+  NombaInitiatePayload,
   sendWalletPayload,
   WithdrawCryptoPayload,
 } from "../types/wallet-types";
+import { nextStatusPollInterval } from "../nomba-withdrawal";
 
 export const UseGetAllWalletBalances = () => {
   return useQuery({
@@ -345,6 +356,49 @@ export const UseGetAllBanks = () => {
   });
 };
 
+// Nomba bank withdrawal. Errors are not toasted here: the send-money steps
+// show them inline and some (expired token, KYC) redirect instead.
+export const UseInitiateNombaWithdrawal = () => {
+  return useMutation({
+    mutationFn: (data: NombaInitiatePayload) => initiateNombaWithdrawal(data),
+  });
+};
+
+const refreshAfterWithdrawal = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+  queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+  queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+  queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
+};
+
+export const UseConfirmNombaWithdrawal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: NombaConfirmPayload) => confirmNombaWithdrawal(data),
+    onSuccess: () => refreshAfterWithdrawal(queryClient),
+  });
+};
+
+/** Polls a withdrawal while it is PENDING, until `pollUntil` (epoch ms). */
+export const UseNombaWithdrawalStatus = (
+  reference: string | undefined,
+  pollUntil: number,
+) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["nomba-withdrawal-status", reference],
+    queryFn: async () => {
+      const withdrawal = await getNombaWithdrawalStatus(reference as string);
+      // A FAILED withdrawal is refunded, so balances change either way.
+      if (withdrawal.status !== "PENDING") refreshAfterWithdrawal(queryClient);
+      return withdrawal;
+    },
+    enabled: !!reference,
+    refetchInterval: (query) =>
+      nextStatusPollInterval(query.state.data?.status, Date.now(), pollUntil),
+  });
+};
+
 export const UseResolveBankAccount = () => {
   return useMutation({
     mutationFn: async (data: { accountNumber: string; bankCode: string }) => resolveBankAccount(data),
@@ -489,5 +543,55 @@ export const useGetMarketPrices = (page = 1, limit = 10) => {
     refetchInterval: 15_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+  });
+};
+
+export const UseGetFundingAccounts = () => {
+  return useQuery({
+    queryKey: ["funding-accounts"],
+    queryFn: async () => {
+      try {
+        return await getFundingAccounts();
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const UseGetXbankaFundingAccount = () => {
+  return useQuery({
+    queryKey: ["xbanka-funding-account"],
+    queryFn: async () => {
+      try {
+        return await getXbankaFundingAccount();
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    staleTime: 1000 * 60 * 30,
+    retry: false,
+  });
+};
+
+export const UseLookupAccountName = () => {
+  return useMutation({
+    mutationFn: async (data: { accountNumber: string; bankCode: string }) =>
+      lookupAccountName(data),
+  });
+};
+
+export const UseAddFundingAccount = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: AddFundingAccountPayload) =>
+      addFundingAccount(data),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["funding-accounts"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
   });
 };

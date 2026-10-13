@@ -25,16 +25,24 @@ import {
 import {
   BillPayment,
   DataPlan,
+  Disco,
   InitiateBillPayload,
   InitiateBillResponse,
+  MeterType,
 } from "@/lib/types/bills-types";
 import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { BillerLogo } from "./biller-logo";
-import { formatNaira, networkBiller } from "./billers-data";
+import {
+  discoBiller,
+  ELECTRICITY_QUICK_AMOUNTS,
+  formatNaira,
+  networkBiller,
+} from "./billers-data";
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { DataPlanPicker, planKey } from "./data-plan-picker";
 
 const MIN_AIRTIME = 50;
+const MIN_ELECTRICITY = 500;
 /** Stop polling a PENDING payment after this long; an in-app notification is
  *  sent when the status changes. */
 const POLL_WINDOW_MS = 60 * 1000;
@@ -46,17 +54,25 @@ const inputClasses =
 
 export function BillCheckoutModal({
   network,
+  disco,
   onClose,
   onPayment,
 }: {
-  network: string;
+  /** Airtime & data checkout for this network code. */
+  network?: string;
+  /** Electricity checkout for this disco. Exactly one of the two is set. */
+  disco?: Disco;
   onClose: () => void;
   /** Called with the payment object on confirm and on every status update.
    *  `context` only comes with the confirm call — status updates reuse the
    *  context stored at insert. */
   onPayment: (payment: BillPayment, context?: BillReceiptContext) => void;
 }) {
-  const meta = networkBiller(network);
+  const isElectricity = !!disco;
+  const meta = disco
+    ? discoBiller(disco.code)
+    : networkBiller(network as string);
+  const providerName = disco?.name ?? meta?.name ?? network ?? "";
 
   const [step, setStep] = useState<Step>("details");
   const [product, setProduct] = useState<"AIRTIME" | "DATA">("AIRTIME");
@@ -68,12 +84,16 @@ export function BillCheckoutModal({
   const [payment, setPayment] = useState<BillPayment | null>(null);
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
+  const [meterNumber, setMeterNumber] = useState("");
+  const [meterType, setMeterType] = useState<MeterType>("PREPAID");
   const [pollTimedOut, setPollTimedOut] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
-  const plans = useDataPlans(product === "DATA" ? network : null);
+  const plans = useDataPlans(
+    !isElectricity && product === "DATA" ? (network as string) : null,
+  );
 
   const polling =
     step === "result" && payment?.status === "PENDING" && !pollTimedOut;
@@ -92,26 +112,47 @@ export function BillCheckoutModal({
 
   const selectedPlan = plans.data?.find((p) => planKey(p) === planId);
   const phoneOk = phoneNumber.length >= 11 && phoneNumber.length <= 13;
-  const detailsOk =
-    phoneOk &&
-    (product === "AIRTIME" ? Number(amount) >= MIN_AIRTIME : !!selectedPlan);
+  const detailsOk = isElectricity
+    ? meterNumber.length >= 6 && Number(amount) >= MIN_ELECTRICITY
+    : phoneOk &&
+      (product === "AIRTIME" ? Number(amount) >= MIN_AIRTIME : !!selectedPlan);
 
   /** What the payment object itself can't say — captured for the receipt. */
-  const receiptContext = (): BillReceiptContext => ({
-    networkName: meta?.name ?? network,
-    phoneNumber,
-    planName: product === "DATA" ? selectedPlan?.plan : undefined,
-  });
+  const receiptContext = (): BillReceiptContext =>
+    isElectricity
+      ? {
+          networkName: providerName,
+          meterNumber,
+          meterType,
+        }
+      : {
+          networkName: providerName,
+          phoneNumber,
+          planName: product === "DATA" ? selectedPlan?.plan : undefined,
+        };
 
   const buildPayload = (): InitiateBillPayload =>
-    product === "AIRTIME"
-      ? { product: "AIRTIME", network, phoneNumber, amount: Number(amount) }
-      : {
-          product: "DATA",
-          network,
-          phoneNumber,
-          productId: planKey(selectedPlan as DataPlan),
-        };
+    disco
+      ? {
+          product: "ELECTRICITY",
+          disco: disco.code,
+          customerId: meterNumber,
+          meterType,
+          amount: Number(amount),
+        }
+      : product === "AIRTIME"
+        ? {
+            product: "AIRTIME",
+            network: network as string,
+            phoneNumber,
+            amount: Number(amount),
+          }
+        : {
+            product: "DATA",
+            network: network as string,
+            phoneNumber,
+            productId: planKey(selectedPlan as DataPlan),
+          };
 
   const handleContinue = () => {
     if (!detailsOk || initiate.isPending) return;
@@ -157,7 +198,8 @@ export function BillCheckoutModal({
             setNotice(err.message);
             setPlanId("");
             setStep("details");
-            plans.refetch();
+            // Only data checkouts have a plans query to refresh.
+            if (!isElectricity && product === "DATA") plans.refetch();
           } else if (
             err.status === 400 &&
             /payment (token|request)/i.test(err.message)
@@ -194,8 +236,10 @@ export function BillCheckoutModal({
 
   const headerByStep: Record<Step, { title: string; subtitle?: string }> = {
     details: {
-      title: meta?.name ?? network,
-      subtitle: "Buy airtime or a data bundle",
+      title: providerName,
+      subtitle: isElectricity
+        ? "Buy electricity units"
+        : "Buy airtime or a data bundle",
     },
     review: {
       title: "Review payment",
@@ -255,60 +299,59 @@ export function BillCheckoutModal({
       <div className="px-6 pb-6 pt-5">
         {step === "details" && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
-              {(["AIRTIME", "DATA"] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => {
-                    setProduct(p);
-                    setNotice("");
-                    initiate.reset();
-                  }}
-                  className={cn(
-                    "h-9 rounded-lg text-sm font-medium transition-colors",
-                    product === p
-                      ? "bg-card-background text-card-text shadow-sm"
-                      : "text-text hover:text-card-text",
-                  )}
-                >
-                  {p === "AIRTIME" ? "Airtime" : "Data"}
-                </button>
-              ))}
-            </div>
+            {isElectricity && (
+              <>
+                <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
+                  {(["PREPAID", "POSTPAID"] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        setMeterType(t);
+                        initiate.reset();
+                      }}
+                      className={cn(
+                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        meterType === t
+                          ? "bg-card-background text-card-text shadow-sm"
+                          : "text-text hover:text-card-text",
+                      )}
+                    >
+                      {t === "PREPAID" ? "Prepaid" : "Postpaid"}
+                    </button>
+                  ))}
+                </div>
 
-            <div>
-              <label className="block text-xs font-medium text-text mb-1.5">
-                Phone Number
-              </label>
-              <input
-                value={phoneNumber}
-                onChange={(e) =>
-                  setPhoneNumber(e.target.value.replace(/[^\d]/g, ""))
-                }
-                placeholder={meta?.inputPlaceholder ?? "0801 234 5678"}
-                inputMode="numeric"
-                maxLength={13}
-                className={inputClasses}
-              />
-            </div>
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Meter Number
+                  </label>
+                  <input
+                    value={meterNumber}
+                    onChange={(e) =>
+                      setMeterNumber(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder="Enter your meter number"
+                    inputMode="numeric"
+                    maxLength={20}
+                    className={inputClasses}
+                  />
+                </div>
 
-            {product === "AIRTIME" ? (
-              <div>
-                <label className="block text-xs font-medium text-text mb-1.5">
-                  Amount (₦)
-                </label>
-                <input
-                  value={amount}
-                  onChange={(e) =>
-                    setAmount(e.target.value.replace(/[^\d]/g, ""))
-                  }
-                  placeholder={`Enter amount (min ₦${MIN_AIRTIME})`}
-                  inputMode="numeric"
-                  className={inputClasses}
-                />
-                {meta?.quickAmounts && (
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Amount (₦)
+                  </label>
+                  <input
+                    value={amount}
+                    onChange={(e) =>
+                      setAmount(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder={`Enter amount (min ₦${MIN_ELECTRICITY})`}
+                    inputMode="numeric"
+                    className={inputClasses}
+                  />
                   <div className="flex flex-wrap gap-2 mt-2.5">
-                    {meta.quickAmounts.map((qa) => (
+                    {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
                       <button
                         key={qa}
                         type="button"
@@ -324,33 +367,110 @@ export function BillCheckoutModal({
                       </button>
                     ))}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                <label className="block text-xs font-medium text-text mb-1.5">
-                  Data Plan
-                </label>
-                {plans.error ? (
-                  <div className="space-y-2.5">
-                    <ErrorLayout message={plans.error.message} />
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => plans.refetch()}
+                </div>
+              </>
+            )}
+
+            {!isElectricity && (
+              <>
+                <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
+                  {(["AIRTIME", "DATA"] as const).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => {
+                        setProduct(p);
+                        setNotice("");
+                        initiate.reset();
+                      }}
+                      className={cn(
+                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        product === p
+                          ? "bg-card-background text-card-text shadow-sm"
+                          : "text-text hover:text-card-text",
+                      )}
                     >
-                      Try again
-                    </Button>
+                      {p === "AIRTIME" ? "Airtime" : "Data"}
+                    </button>
+                  ))}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-text mb-1.5">
+                    Phone Number
+                  </label>
+                  <input
+                    value={phoneNumber}
+                    onChange={(e) =>
+                      setPhoneNumber(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder={meta?.inputPlaceholder ?? "0801 234 5678"}
+                    inputMode="numeric"
+                    maxLength={13}
+                    className={inputClasses}
+                  />
+                </div>
+
+                {product === "AIRTIME" ? (
+                  <div>
+                    <label className="block text-xs font-medium text-text mb-1.5">
+                      Amount (₦)
+                    </label>
+                    <input
+                      value={amount}
+                      onChange={(e) =>
+                        setAmount(e.target.value.replace(/[^\d]/g, ""))
+                      }
+                      placeholder={`Enter amount (min ₦${MIN_AIRTIME})`}
+                      inputMode="numeric"
+                      className={inputClasses}
+                    />
+                    {meta?.quickAmounts && (
+                      <div className="flex flex-wrap gap-2 mt-2.5">
+                        {meta.quickAmounts.map((qa) => (
+                          <button
+                            key={qa}
+                            type="button"
+                            onClick={() => setAmount(String(qa))}
+                            className={cn(
+                              "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                              amount === String(qa)
+                                ? "border-Green bg-Green/10 text-Green font-medium"
+                                : "border-border text-text hover:border-border-active",
+                            )}
+                          >
+                            ₦{qa.toLocaleString()}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <DataPlanPicker
-                    plans={plans.data ?? []}
-                    loading={plans.isPending}
-                    value={planId}
-                    onChange={setPlanId}
-                  />
+                  <div>
+                    <label className="block text-xs font-medium text-text mb-1.5">
+                      Data Plan
+                    </label>
+                    {plans.error ? (
+                      <div className="space-y-2.5">
+                        <ErrorLayout message={plans.error.message} />
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => plans.refetch()}
+                        >
+                          Try again
+                        </Button>
+                      </div>
+                    ) : (
+                      <DataPlanPicker
+                        plans={plans.data ?? []}
+                        loading={plans.isPending}
+                        value={planId}
+                        onChange={setPlanId}
+                      />
+                    )}
+                  </div>
                 )}
-              </div>
+              </>
             )}
 
             <ErrorLayout message={notice || initiate.error?.message} />
@@ -375,20 +495,33 @@ export function BillCheckoutModal({
           <div className="space-y-4">
             <div className="px-4 rounded-xl bg-card-secondary border border-border">
               {summaryRow(
-                "Network",
+                isElectricity ? "Provider" : "Network",
                 <span className="flex items-center gap-2 justify-end">
                   <BillerLogo
                     logo={meta?.logo}
-                    name={meta?.name ?? network}
+                    name={providerName}
                     fallbackColor={meta?.fallbackColor}
                     size={22}
                     rounded="rounded-md"
                   />
-                  {meta?.name ?? network}
+                  {providerName}
                 </span>,
               )}
-              {summaryRow("Phone Number", phoneNumber)}
-              {product === "DATA" &&
+              {isElectricity ? (
+                <>
+                  {summaryRow(
+                    "Meter Type",
+                    meterType === "PREPAID" ? "Prepaid" : "Postpaid",
+                  )}
+                  {summaryRow("Meter Number", meterNumber)}
+                  {quote.customerName &&
+                    summaryRow("Account Name", quote.customerName)}
+                </>
+              ) : (
+                summaryRow("Phone Number", phoneNumber)
+              )}
+              {!isElectricity &&
+                product === "DATA" &&
                 selectedPlan &&
                 summaryRow("Plan", selectedPlan.plan)}
               {summaryRow("Description", quote.description)}
@@ -400,6 +533,13 @@ export function BillCheckoutModal({
                 {formatNaira(quote.amount)}
               </span>
             </div>
+
+            {isElectricity && (
+              <p className="text-xs text-text px-1">
+                Check that the account name matches your meter. Payments to the
+                wrong meter usually can&apos;t be recovered.
+              </p>
+            )}
 
             <ErrorLayout message={notice || initiate.error?.message} />
 
@@ -523,6 +663,17 @@ export function BillCheckoutModal({
                 )}
               </div>
             )}
+
+            {isElectricity &&
+              meterType === "PREPAID" &&
+              current.status === "COMPLETED" &&
+              !current.token && (
+                <p className="text-xs text-text px-2">
+                  Your token isn&apos;t ready yet. It will show in your
+                  transaction history shortly — contact support if it&apos;s
+                  missing.
+                </p>
+              )}
 
             {referenceRow(current.reference)}
 

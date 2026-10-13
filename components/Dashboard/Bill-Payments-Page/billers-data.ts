@@ -406,7 +406,7 @@ export const billersByCategory = (category: BillerCategoryId) =>
 export const findBiller = (id: string) => BILLERS.find((b) => b.id === id);
 
 /** Categories wired to the payments API; the rest render as “Coming soon”. */
-export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime"];
+export const LIVE_CATEGORIES: BillerCategoryId[] = ["airtime", "electricity"];
 
 export const isCategoryLive = (category: BillerCategoryId) =>
   LIVE_CATEGORIES.includes(category);
@@ -416,14 +416,28 @@ export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
 
 /** The biller a transaction description mentions ("MTN data 2.5GB…" → the mtn
- *  biller) — for history rows whose metadata doesn't name the network. */
-export const billerFromText = (text: string) =>
-  BILLERS.find((b) =>
-    new RegExp(
-      `\\b${b.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-      "i",
-    ).test(text),
+ *  biller, "IKEDC prepaid…" → ikedc) — for history rows whose metadata doesn't
+ *  name the network. Matches the display name or the id as a whole word. */
+export const billerFromText = (text: string) => {
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return BILLERS.find((b) =>
+    new RegExp(`\\b(?:${escape(b.name)}|${escape(b.id)})\\b`, "i").test(text),
   );
+};
+
+/** Display metadata for a disco returned by the API. Codes aren't guaranteed to
+ *  match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall back to a
+ *  substring match; an unmatched disco just renders with an initials badge. */
+export const discoBiller = (code: string) => {
+  const key = code.toLowerCase();
+  const electricity = billersByCategory("electricity");
+  return (
+    electricity.find((b) => b.id === key) ??
+    electricity.find((b) => key.includes(b.id))
+  );
+};
+
+export const ELECTRICITY_QUICK_AMOUNTS = [1000, 2000, 5000, 10000, 20000];
 
 /** A row in the Recent Transactions list. `reference` ties a row back to a
  *  real payment so status updates (PENDING → COMPLETED) can replace it. */
@@ -439,6 +453,7 @@ export type BillTransaction = {
   payment?: BillPayment;
   phoneNumber?: string;
   planName?: string;
+  meterNumber?: string;
 };
 
 export const formatNaira = (amount: number) =>
