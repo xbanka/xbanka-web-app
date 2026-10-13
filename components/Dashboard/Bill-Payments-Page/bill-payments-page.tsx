@@ -56,19 +56,51 @@ export default function BillPaymentsPage() {
   const [transactions, setTransactions] =
     useState<BillTransaction[]>(RECENT_TRANSACTIONS);
 
-  const networks = useBillNetworks(selectedCategory === "airtime");
-  const discos = useDiscos(selectedCategory === "electricity");
-  const bettingProviders = useBettingProviders(selectedCategory === "betting");
-
   const query = search.trim().toLowerCase();
+
+  // Electricity and betting providers come from the API, so search has to query
+  // the live data (cached for 10 minutes) rather than only the hardcoded
+  // billers
+  const networks = useBillNetworks(selectedCategory === "airtime");
+  const discos = useDiscos(selectedCategory === "electricity" || !!query);
+  const bettingProviders = useBettingProviders(
+    selectedCategory === "betting" || !!query,
+  );
+
+  const liveCatalogues = {
+    electricity: discos,
+    betting: bettingProviders,
+  } as const;
+
+  // Hardcoded billers stand in for a live category only until its list loads
+  // (or if it fails to load), so search still shows something.
   const searchResults = query
     ? BILLERS.filter(
         (b) =>
-          b.name.toLowerCase().includes(query) ||
-          b.desc.toLowerCase().includes(query) ||
-          b.category.includes(query),
+          !(
+            b.category in liveCatalogues &&
+            liveCatalogues[b.category as keyof typeof liveCatalogues].isSuccess
+          ) &&
+          (b.name.toLowerCase().includes(query) ||
+            b.desc.toLowerCase().includes(query) ||
+            b.category.includes(query)),
       )
     : [];
+
+  const liveSearchResults = query
+    ? (Object.keys(liveCatalogues) as (keyof typeof liveCatalogues)[]).flatMap(
+        (category) =>
+          (liveCatalogues[category].data ?? [])
+            .filter(
+              (p) =>
+                p.name.toLowerCase().includes(query) ||
+                p.code.toLowerCase().includes(query) ||
+                category.includes(query),
+            )
+            .map((provider) => ({ category, provider })),
+      )
+    : [];
+  const resultCount = searchResults.length + liveSearchResults.length;
 
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -270,12 +302,15 @@ export default function BillPaymentsPage() {
             Search Results
           </h3>
           <p className="text-xs text-text mb-4">
-            {searchResults.length} biller{searchResults.length === 1 ? "" : "s"}{" "}
-            matching “{search.trim()}”
+            {resultCount} biller{resultCount === 1 ? "" : "s"} matching “
+            {search.trim()}”
           </p>
-          {searchResults.length > 0 ? (
+          {resultCount > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {searchResults.map(billerTile)}
+              {liveSearchResults.map(({ category, provider }) =>
+                providerTile(category, provider),
+              )}
             </div>
           ) : (
             <div className="bg-card-background border border-border rounded-2xl p-8 text-center text-sm text-text">
