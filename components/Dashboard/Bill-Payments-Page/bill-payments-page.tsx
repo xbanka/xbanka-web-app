@@ -462,7 +462,9 @@ export default function BillPaymentsPage() {
           ) : (
           <div className="space-y-3">
             {recentRows.map((tx, i) => {
-              const biller = findBiller(tx.billerId);
+              // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids.
+              const biller =
+                findBiller(tx.billerId) ?? discoBiller(tx.billerId);
               return (
                 <div
                   key={tx.reference ?? i}
