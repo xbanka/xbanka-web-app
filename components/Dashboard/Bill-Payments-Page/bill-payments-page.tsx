@@ -6,21 +6,41 @@ import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
 import { ErrorLayout } from "@/components/ui/error-layout";
 import { cn } from "@/lib/utils";
-import { useBillNetworks, useDiscos } from "@/lib/services/bills.service";
-import { BillPayment, Disco } from "@/lib/types/bills-types";
+import {
+  useBettingProviders,
+  useBillNetworks,
+  useDiscos,
+} from "@/lib/services/bills.service";
+import { BillPayment, BillProvider } from "@/lib/types/bills-types";
 import { BillerLogo } from "./biller-logo";
 import {
   Biller,
   BillerCategoryId,
   BILLERS,
   BillTransaction,
+  CABLE_PROVIDERS,
+  categoryBiller,
   findBiller,
   formatNaira,
-  discoBiller,
   isCategoryLive,
   networkBiller,
 } from "./billers-data";
-import { BillCheckoutModal } from "./bill-checkout-modal";
+import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
+
+const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
+  electricity: "Choose your electricity provider",
+  cable: "Choose your TV provider",
+  betting: "Choose your betting provider",
+};
+
+/** The Recent Transactions row icon is looked up by this id. */
+const targetBillerId = (target: CheckoutTarget) =>
+  (target.kind === "network"
+    ? target.network
+    : target.kind === "disco"
+      ? target.disco.code
+      : target.provider.code
+  ).toLowerCase();
 
 const STATUS_LABELS: Record<BillPayment["status"], string> = {
   COMPLETED: "Completed",
@@ -32,23 +52,55 @@ export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<BillerCategoryId | null>(null);
-  const [payingNetwork, setPayingNetwork] = useState<string | null>(null);
-  const [payingDisco, setPayingDisco] = useState<Disco | null>(null);
+  const [checkout, setCheckout] = useState<CheckoutTarget | null>(null);
   const [transactions, setTransactions] =
     useState<BillTransaction[]>(RECENT_TRANSACTIONS);
 
-  const networks = useBillNetworks(selectedCategory === "airtime");
-  const discos = useDiscos(selectedCategory === "electricity");
-
   const query = search.trim().toLowerCase();
+
+  // Electricity and betting providers come from the API, so search has to query
+  // the live data (cached for 10 minutes) rather than only the hardcoded
+  // billers
+  const networks = useBillNetworks(selectedCategory === "airtime");
+  const discos = useDiscos(selectedCategory === "electricity" || !!query);
+  const bettingProviders = useBettingProviders(
+    selectedCategory === "betting" || !!query,
+  );
+
+  const liveCatalogues = {
+    electricity: discos,
+    betting: bettingProviders,
+  } as const;
+
+  // Hardcoded billers stand in for a live category only until its list loads
+  // (or if it fails to load), so search still shows something.
   const searchResults = query
     ? BILLERS.filter(
         (b) =>
-          b.name.toLowerCase().includes(query) ||
-          b.desc.toLowerCase().includes(query) ||
-          b.category.includes(query),
+          !(
+            b.category in liveCatalogues &&
+            liveCatalogues[b.category as keyof typeof liveCatalogues].isSuccess
+          ) &&
+          (b.name.toLowerCase().includes(query) ||
+            b.desc.toLowerCase().includes(query) ||
+            b.category.includes(query)),
       )
     : [];
+
+  const liveSearchResults = query
+    ? (Object.keys(liveCatalogues) as (keyof typeof liveCatalogues)[]).flatMap(
+        (category) =>
+          (liveCatalogues[category].data ?? [])
+            .filter(
+              (p) =>
+                p.name.toLowerCase().includes(query) ||
+                p.code.toLowerCase().includes(query) ||
+                category.includes(query),
+            )
+            .map((provider) => ({ category, provider })),
+      )
+    : [];
+  const resultCount = searchResults.length + liveSearchResults.length;
 
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -65,7 +117,7 @@ export default function BillPaymentsPage() {
       }
       return [
         {
-          billerId: (payingDisco?.code ?? payingNetwork)?.toLowerCase() ?? "",
+          billerId: checkout ? targetBillerId(checkout) : "",
           name: payment.note,
           number: payment.reference.slice(0, 14),
           time: "Just now",
@@ -78,16 +130,24 @@ export default function BillPaymentsPage() {
     });
   };
 
-  /** Search results are display metadata only; airtime tiles open checkout
-   *  directly, electricity ones open the live disco list so the code we send
-   *  is the one the API returned. */
+  /** Search results are display metadata only. Airtime and cable codes are
+   *  known up front so those open checkout directly; electricity and betting
+   *  open the live provider list so the code we send is the one the API
+   *  returned. */
   const openBiller = (biller: Biller) => {
-    if (biller.category === "electricity") {
-      setSearch("");
-      setSelectedCategory("electricity");
+    if (biller.category === "airtime") {
+      setCheckout({ kind: "network", network: biller.id.toUpperCase() });
       return;
     }
-    setPayingNetwork(biller.id.toUpperCase());
+    if (biller.category === "cable") {
+      const provider = CABLE_PROVIDERS.find((p) => p.name === biller.name);
+      if (provider) {
+        setCheckout({ kind: "cable", provider });
+        return;
+      }
+    }
+    setSearch("");
+    setSelectedCategory(biller.category);
   };
 
   const billerTile = (biller: Biller) => {
@@ -136,7 +196,7 @@ export default function BillPaymentsPage() {
     return (
       <button
         key={network}
-        onClick={() => setPayingNetwork(network)}
+        onClick={() => setCheckout({ kind: "network", network })}
         className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
       >
         <BillerLogo
@@ -159,27 +219,41 @@ export default function BillPaymentsPage() {
     );
   };
 
-  const discoTile = (disco: Disco) => {
-    const meta = discoBiller(disco.code);
+  const providerTile = (
+    category: "electricity" | "cable" | "betting",
+    provider: BillProvider,
+  ) => {
+    const meta = categoryBiller(category, provider.code);
+    const fallbackDesc = {
+      electricity: "Prepaid & postpaid",
+      cable: "TV subscriptions",
+      betting: "Fund your betting wallet",
+    }[category];
     return (
       <button
-        key={disco.code}
-        onClick={() => setPayingDisco(disco)}
+        key={provider.code}
+        onClick={() =>
+          setCheckout(
+            category === "electricity"
+              ? { kind: "disco", disco: provider }
+              : { kind: category === "cable" ? "cable" : "betting", provider },
+          )
+        }
         className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
       >
         <BillerLogo
           logo={meta?.logo}
-          name={disco.name}
+          name={provider.name}
           fallbackColor={meta?.fallbackColor}
           size={44}
           rounded="rounded-xl"
         />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors truncate">
-            {disco.name}
+            {provider.name}
           </p>
           <p className="text-xs text-text truncate mt-0.5">
-            {meta?.desc ?? "Prepaid & postpaid"}
+            {meta?.desc ?? fallbackDesc}
           </p>
         </div>
         <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
@@ -187,7 +261,16 @@ export default function BillPaymentsPage() {
     );
   };
 
-  const catalogue = selectedCategory === "electricity" ? discos : networks;
+  // Cable providers are fixed by the API reference, so that category has no
+  // query to wait on.
+  const catalogue =
+    selectedCategory === "electricity"
+      ? discos
+      : selectedCategory === "betting"
+        ? bettingProviders
+        : selectedCategory === "cable"
+          ? null
+          : networks;
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
@@ -219,12 +302,15 @@ export default function BillPaymentsPage() {
             Search Results
           </h3>
           <p className="text-xs text-text mb-4">
-            {searchResults.length} biller{searchResults.length === 1 ? "" : "s"}{" "}
-            matching “{search.trim()}”
+            {resultCount} biller{resultCount === 1 ? "" : "s"} matching “
+            {search.trim()}”
           </p>
-          {searchResults.length > 0 ? (
+          {resultCount > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {searchResults.map(billerTile)}
+              {liveSearchResults.map(({ category, provider }) =>
+                providerTile(category, provider),
+              )}
             </div>
           ) : (
             <div className="bg-card-background border border-border rounded-2xl p-8 text-center text-sm text-text">
@@ -248,13 +334,12 @@ export default function BillPaymentsPage() {
                 {activeCategory.name}
               </h3>
               <p className="text-xs text-text">
-                {selectedCategory === "electricity"
-                  ? "Choose your electricity provider"
-                  : "Choose a network to continue"}
+                {CATEGORY_PROMPTS[selectedCategory] ??
+                  "Choose a network to continue"}
               </p>
             </div>
           </div>
-          {catalogue.isPending ? (
+          {catalogue?.isPending ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
@@ -263,7 +348,7 @@ export default function BillPaymentsPage() {
                 />
               ))}
             </div>
-          ) : catalogue.error ? (
+          ) : catalogue && catalogue.error ? (
             <div className="max-w-md space-y-3">
               <ErrorLayout message={catalogue.error.message} />
               <Button variant="outline" onClick={() => catalogue.refetch()}>
@@ -273,8 +358,14 @@ export default function BillPaymentsPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {selectedCategory === "electricity"
-                ? discos.data?.map(discoTile)
-                : networks.data?.map(networkTile)}
+                ? discos.data?.map((d) => providerTile("electricity", d))
+                : selectedCategory === "betting"
+                  ? bettingProviders.data?.map((p) =>
+                      providerTile("betting", p),
+                    )
+                  : selectedCategory === "cable"
+                    ? CABLE_PROVIDERS.map((p) => providerTile("cable", p))
+                    : networks.data?.map(networkTile)}
             </div>
           )}
         </div>
@@ -419,14 +510,10 @@ export default function BillPaymentsPage() {
         </div>
       </div>
 
-      {(payingNetwork || payingDisco) && (
+      {checkout && (
         <BillCheckoutModal
-          network={payingNetwork ?? undefined}
-          disco={payingDisco ?? undefined}
-          onClose={() => {
-            setPayingNetwork(null);
-            setPayingDisco(null);
-          }}
+          target={checkout}
+          onClose={() => setCheckout(null)}
           onPayment={handlePayment}
         />
       )}

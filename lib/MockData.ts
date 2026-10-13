@@ -167,13 +167,6 @@ export const CATEGORIES = [
     color: "bg-green-500",
   },
   {
-    id: "internet",
-    name: "Internet",
-    desc: "Renew your broadband",
-    icon: Wifi,
-    color: "bg-yellow-500",
-  },
-  {
     id: "cable",
     name: "Cable TV",
     desc: "Subscribe to your favorite channels",
@@ -186,6 +179,13 @@ export const CATEGORIES = [
     desc: "Top up your betting account",
     icon: Dices,
     color: "bg-indigo-500",
+  },
+  {
+    id: "internet",
+    name: "Internet",
+    desc: "Renew your broadband",
+    icon: Wifi,
+    color: "bg-yellow-500",
   },
   {
     id: "government",
