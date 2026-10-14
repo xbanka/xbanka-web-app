@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   CheckCircle2,
-  ChevronDown,
   Copy,
   LoaderCircle,
   ReceiptText,
@@ -407,6 +406,9 @@ export function BillCheckoutModal({
     </div>
   );
 
+  /** Cable bouquets, as tappable rows. Names are long and carry no size or
+   *  validity to parse, so they list vertically rather than in the grid the
+   *  data plans use. */
   const planSelect = hasPlans ? (
     plans.error ? (
       <div className="space-y-2.5">
@@ -419,31 +421,49 @@ export function BillCheckoutModal({
           Try again
         </Button>
       </div>
+    ) : plans.isPending ? (
+      <div className="space-y-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-13 rounded-xl border border-border bg-card-secondary animate-pulse"
+          />
+        ))}
+      </div>
+    ) : !planOptions?.length ? (
+      <div className="rounded-xl border border-border bg-card-secondary p-4 text-center text-sm text-text">
+        No plans are available for this provider right now.
+      </div>
     ) : (
-      <div className="relative">
-        <select
-          value={planId}
-          onChange={(e) => setPlanId(e.target.value)}
-          disabled={plans.isPending}
-          className={cn(
-            inputClasses,
-            "appearance-none pr-10 cursor-pointer disabled:cursor-wait",
-          )}
-        >
-          <option value="">
-            {plans.isPending ? "Loading plans…" : "Choose a plan"}
-          </option>
-          {planOptions?.map((p) => (
-            <option key={p.key} value={p.key}>
-              {p.label} — {formatNaira(p.amount)}
-            </option>
-          ))}
-        </select>
-        {plans.isPending ? (
-          <LoaderCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder animate-spin" />
-        ) : (
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
-        )}
+      <div className="space-y-2 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5 pb-2">
+        {planOptions.map((p) => {
+          const selected = p.key === planId;
+          return (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => setPlanId(p.key)}
+              className={cn(
+                "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                selected
+                  ? "border-Green bg-Green/10"
+                  : "border-border bg-card-secondary hover:border-border-active",
+              )}
+            >
+              <span className="min-w-0 truncate text-sm font-medium text-card-text">
+                {p.label}
+              </span>
+              <span
+                className={cn(
+                  "shrink-0 text-sm font-semibold",
+                  selected ? "text-Green" : "text-card-text",
+                )}
+              >
+                {formatNaira(p.amount)}
+              </span>
+            </button>
+          );
+        })}
       </div>
     )
   ) : null;
