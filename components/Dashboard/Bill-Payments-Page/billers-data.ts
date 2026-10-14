@@ -7,6 +7,8 @@
 // payable catalogue (networks, data plans, prices) comes from the API and is
 // never hardcoded.
 
+import type { BillPayment } from "@/lib/types/bills-types";
+
 export type BillerCategoryId =
   | "airtime"
   | "electricity"
@@ -194,6 +196,83 @@ export const BILLERS: Biller[] = [
     category: "electricity",
     logo: "/billers/phed.svg",
     fallbackColor: "bg-rose-700",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "eedc",
+    name: "Enugu Electric (EEDC)",
+    desc: "Enugu & south-east disco",
+    category: "electricity",
+    logo: "/billers/eedc.svg",
+    fallbackColor: "bg-red-600",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "ibedc",
+    name: "Ibadan Electric (IBEDC)",
+    desc: "Oyo & south-west disco",
+    category: "electricity",
+    logo: "/billers/ibedc.svg",
+    fallbackColor: "bg-orange-500",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "jed",
+    name: "Jos Electric (JED)",
+    desc: "Plateau & environs disco",
+    category: "electricity",
+    logo: "/billers/jed.svg",
+    fallbackColor: "bg-blue-600",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "kaduna",
+    name: "Kaduna Electric",
+    desc: "Kaduna & north-west disco",
+    category: "electricity",
+    logo: "/billers/kaduna.svg",
+    fallbackColor: "bg-green-700",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "kedco",
+    name: "Kano Electric (KEDCO)",
+    desc: "Kano & environs disco",
+    category: "electricity",
+    logo: "/billers/kedco.svg",
+    fallbackColor: "bg-blue-800",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "bedc",
+    name: "Benin Electric (BEDC)",
+    desc: "Edo & south-south disco",
+    category: "electricity",
+    logo: "/billers/bedc.svg",
+    fallbackColor: "bg-yellow-600",
+    inputLabel: "Meter Number",
+    inputPlaceholder: "Enter your meter number",
+    quickAmounts: [1000, 2000, 5000, 10000, 20000],
+  },
+  {
+    id: "yedc",
+    name: "Yola Electric (YEDC)",
+    desc: "Adamawa & north-east disco",
+    category: "electricity",
+    logo: "/billers/yedc.svg",
+    fallbackColor: "bg-red-700",
     inputLabel: "Meter Number",
     inputPlaceholder: "Enter your meter number",
     quickAmounts: [1000, 2000, 5000, 10000, 20000],
@@ -418,20 +497,55 @@ export const isCategoryLive = (category: BillerCategoryId) =>
 export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
 
-/** Display metadata for a provider code returned by the API. Codes aren't
- *  guaranteed to match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC"), so fall
- *  back to a substring match; an unmatched provider just renders with an
- *  initials badge. */
-export const categoryBiller = (category: BillerCategoryId, code: string) => {
-  const key = code.toLowerCase();
-  const billers = billersByCategory(category);
-  return (
-    billers.find((b) => b.id === key) ?? billers.find((b) => key.includes(b.id))
+/** The biller a transaction description mentions ("MTN data 2.5GB…" → the mtn
+ *  biller, "IKEDC prepaid…" → ikedc) — for history rows whose metadata doesn't
+ *  name the network. Matches the display name or the id as a whole word. */
+export const billerFromText = (text: string) => {
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return BILLERS.find((b) =>
+    new RegExp(`\\b(?:${escape(b.name)}|${escape(b.id)})\\b`, "i").test(text),
   );
 };
 
-export const discoBiller = (code: string) =>
-  categoryBiller("electricity", code);
+/** City-style codes some providers use for discos ("EKO", "ABUJA") mapped to
+ *  our biller ids, since those contain no part of the acronym to match on. */
+const DISCO_ALIASES: [alias: string, id: string][] = [
+  ["ikeja", "ikedc"],
+  ["eko", "ekedc"],
+  ["abuja", "aedc"],
+  ["portharcourt", "phed"],
+  ["enugu", "eedc"],
+  ["ibadan", "ibedc"],
+  ["jos", "jed"],
+  ["kano", "kedco"],
+  ["benin", "bedc"],
+  ["yola", "yedc"],
+];
+
+/** Display metadata for a provider code returned by the API. Codes aren't
+ *  guaranteed to match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC" vs "EKO"),
+ *  so try the id, a substring match, the disco city aliases, then the display
+ *  name; an unmatched provider just renders with an initials badge. */
+export const categoryBiller = (
+  category: BillerCategoryId,
+  code: string,
+  name?: string,
+) => {
+  const key = code.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const billers = billersByCategory(category);
+  const fromName = name ? billerFromText(name) : undefined;
+  return (
+    billers.find((b) => b.id === key) ??
+    billers.find((b) => key.includes(b.id)) ??
+    billers.find((b) =>
+      DISCO_ALIASES.some(([alias, id]) => b.id === id && key.includes(alias)),
+    ) ??
+    (fromName?.category === category ? fromName : undefined)
+  );
+};
+
+export const discoBiller = (code: string, name?: string) =>
+  categoryBiller("electricity", code, name);
 
 /** The cable providers are fixed by the API reference, so they're listed here
  *  rather than fetched. `code` is the `cableTvType` value — note ShowMax is the
@@ -453,6 +567,11 @@ export type BillTransaction = {
   amount: string;
   status: string;
   reference?: string;
+  /** Set for payments made this session, so the row can open its receipt. */
+  payment?: BillPayment;
+  phoneNumber?: string;
+  planName?: string;
+  meterNumber?: string;
 };
 
 export const formatNaira = (amount: number) =>

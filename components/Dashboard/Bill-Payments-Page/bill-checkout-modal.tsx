@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Copy,
   LoaderCircle,
+  ReceiptText,
   XCircle,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -32,6 +33,7 @@ import {
   InitiateBillResponse,
   MeterType,
 } from "@/lib/types/bills-types";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { BillerLogo } from "./biller-logo";
 import {
   BETTING_AMOUNTS,
@@ -40,6 +42,8 @@ import {
   formatNaira,
   networkBiller,
 } from "./billers-data";
+import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
+import { DataPlanPicker, planKey } from "./data-plan-picker";
 
 const MIN_AIRTIME = 50;
 const MIN_ELECTRICITY = 500;
@@ -50,11 +54,7 @@ const POLL_WINDOW_MS = 60 * 1000;
 
 type Step = "details" | "review" | "pin" | "result";
 
-/** Route 6 reads `productId`, but Nomba sometimes names the field `id`. */
-const dataPlanKey = (plan: { productId?: string; id?: string; plan: string }) =>
-  plan.productId ?? plan.id ?? plan.plan;
-
-/** Data and cable plans both render as a "name — price" dropdown. */
+/** Data and cable plans both resolve to a key + "name — price" option. */
 type PlanOption = { key: string; label: string; amount: number };
 
 /** What this checkout is paying for. */
@@ -74,8 +74,10 @@ export function BillCheckoutModal({
 }: {
   target: CheckoutTarget;
   onClose: () => void;
-  /** Called with the payment object on confirm and on every status update. */
-  onPayment: (payment: BillPayment) => void;
+  /** Called with the payment object on confirm and on every status update.
+   *  `context` only comes with the confirm call — status updates reuse the
+   *  context stored at insert. */
+  onPayment: (payment: BillPayment, context?: BillReceiptContext) => void;
 }) {
   const { kind } = target;
   const isElectricity = kind === "disco";
@@ -87,10 +89,14 @@ export function BillCheckoutModal({
     target.kind === "network"
       ? networkBiller(target.network)
       : target.kind === "disco"
-        ? categoryBiller("electricity", target.disco.code)
+        ? categoryBiller("electricity", target.disco.code, target.disco.name)
         : target.kind === "cable"
-          ? categoryBiller("cable", target.provider.code)
-          : categoryBiller("betting", target.provider.code);
+          ? categoryBiller("cable", target.provider.code, target.provider.name)
+          : categoryBiller(
+              "betting",
+              target.provider.code,
+              target.provider.name,
+            );
   const providerName =
     target.kind === "network"
       ? (meta?.name ?? target.network)
@@ -111,6 +117,7 @@ export function BillCheckoutModal({
   const [openResetPin, setOpenResetPin] = useState(false);
   const [meterType, setMeterType] = useState<MeterType>("PREPAID");
   const [pollTimedOut, setPollTimedOut] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
@@ -145,7 +152,7 @@ export function BillCheckoutModal({
         amount: p.amount,
       }))
     : dataPlans.data?.map((p) => ({
-        key: dataPlanKey(p),
+        key: planKey(p),
         label: p.plan,
         amount: p.amount,
       }));
@@ -162,6 +169,32 @@ export function BillCheckoutModal({
             (product === "AIRTIME"
               ? Number(amount) >= MIN_AIRTIME
               : !!selectedPlan);
+
+  /** What the payment object itself can't say — captured for the receipt. */
+  const receiptContext = (): BillReceiptContext => {
+    switch (target.kind) {
+      case "disco":
+        return {
+          networkName: providerName,
+          meterNumber: customerId,
+          meterType,
+        };
+      case "cable":
+        return {
+          networkName: providerName,
+          customerId,
+          planName: selectedPlan?.label,
+        };
+      case "betting":
+        return { networkName: providerName, customerId, phoneNumber };
+      case "network":
+        return {
+          networkName: providerName,
+          phoneNumber,
+          planName: product === "DATA" ? selectedPlan?.label : undefined,
+        };
+    }
+  };
 
   const buildPayload = (): InitiateBillPayload => {
     switch (target.kind) {
@@ -241,7 +274,7 @@ export function BillCheckoutModal({
         onSuccess: (p) => {
           setPayment(p);
           setStep("result");
-          onPayment(p);
+          onPayment(p, receiptContext());
         },
         onError: (err) => {
           if (err.status === 409) {
@@ -640,7 +673,25 @@ export function BillCheckoutModal({
                     <label className="block text-xs font-medium text-text mb-1.5">
                       Data Plan
                     </label>
-                    {planSelect}
+                    {dataPlans.error ? (
+                      <div className="space-y-2.5">
+                        <ErrorLayout message={dataPlans.error.message} />
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => dataPlans.refetch()}
+                        >
+                          Try again
+                        </Button>
+                      </div>
+                    ) : (
+                      <DataPlanPicker
+                        plans={dataPlans.data ?? []}
+                        loading={dataPlans.isPending}
+                        value={planId}
+                        onChange={setPlanId}
+                      />
+                    )}
                   </div>
                 )}
               </>
@@ -859,9 +910,32 @@ export function BillCheckoutModal({
 
             {referenceRow(current.reference)}
 
-            <Button className="w-full" onClick={onClose}>
-              Done
-            </Button>
+            {current.status === "PENDING" ? (
+              <Button className="w-full" onClick={onClose}>
+                Done
+              </Button>
+            ) : (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 text-card-text"
+                  onClick={() => setShowReceipt(true)}
+                >
+                  <ReceiptText className="w-4 h-4" />
+                  Receipt
+                </Button>
+                <Button className="flex-1" onClick={onClose}>
+                  Done
+                </Button>
+              </div>
+            )}
+
+            {showReceipt && (
+              <TransactionReceiptModal
+                {...buildBillReceipt(current, receiptContext())}
+                onClose={() => setShowReceipt(false)}
+              />
+            )}
           </div>
         )}
       </div>

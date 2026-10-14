@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search } from "lucide-react";
-import { CATEGORIES, QUICK_ACTIONS, RECENT_TRANSACTIONS } from "@/lib/MockData";
+import { CATEGORIES, QUICK_ACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
 import { ErrorLayout } from "@/components/ui/error-layout";
@@ -11,20 +11,32 @@ import {
   useBillNetworks,
   useDiscos,
 } from "@/lib/services/bills.service";
+import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
 import { BillPayment, BillProvider } from "@/lib/types/bills-types";
+import { TransactionTypes } from "@/lib/types/transaction-types";
+import {
+  buildTransactionReceipt,
+  TransactionReceiptData,
+} from "@/lib/transactionReceipt";
+import { parseMetadata } from "@/lib/parsedMetadata";
+import { timeAgo } from "@/lib/formatDate";
+import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { BillerLogo } from "./biller-logo";
 import {
   Biller,
   BillerCategoryId,
   BILLERS,
+  billerFromText,
   BillTransaction,
   CABLE_PROVIDERS,
   categoryBiller,
+  discoBiller,
   findBiller,
   formatNaira,
   isCategoryLive,
   networkBiller,
 } from "./billers-data";
+import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
 
 const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
@@ -33,14 +45,21 @@ const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
   betting: "Choose your betting provider",
 };
 
-/** The Recent Transactions row icon is looked up by this id. */
-const targetBillerId = (target: CheckoutTarget) =>
-  (target.kind === "network"
-    ? target.network
-    : target.kind === "disco"
-      ? target.disco.code
-      : target.provider.code
-  ).toLowerCase();
+/** The Recent Transactions row icon is looked up by this id, so resolve the
+ *  provider code to one of our biller ids where possible ("EKO" → ekedc). */
+const targetBillerId = (target: CheckoutTarget) => {
+  if (target.kind === "network") return target.network.toLowerCase();
+  if (target.kind === "disco")
+    return (
+      categoryBiller("electricity", target.disco.code, target.disco.name)?.id ??
+      target.disco.code.toLowerCase()
+    );
+  const category = target.kind === "cable" ? "cable" : "betting";
+  return (
+    categoryBiller(category, target.provider.code, target.provider.name)?.id ??
+    target.provider.code.toLowerCase()
+  );
+};
 
 const STATUS_LABELS: Record<BillPayment["status"], string> = {
   COMPLETED: "Completed",
@@ -48,13 +67,68 @@ const STATUS_LABELS: Record<BillPayment["status"], string> = {
   FAILED: "Failed",
 };
 
+/** A row in the recent list: a payment made this session (carries `payment`)
+ *  or one from the user's transaction history (carries `historyTx`). */
+type RecentRow = BillTransaction & { historyTx?: TransactionTypes };
+
 export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<BillerCategoryId | null>(null);
   const [checkout, setCheckout] = useState<CheckoutTarget | null>(null);
-  const [transactions, setTransactions] =
-    useState<BillTransaction[]>(RECENT_TRANSACTIONS);
+  const [receipt, setReceipt] = useState<TransactionReceiptData | null>(null);
+  /** Payments made this session — richer than their history rows (receipt
+   *  context, live PENDING → COMPLETED status from the poll). */
+  const [transactions, setTransactions] = useState<BillTransaction[]>([]);
+
+  const history = UseGetTransactionHistory(1, 25);
+
+  /** The user's real bill payments from transaction history, newest first.
+   *  Confirming a payment invalidates this query, so new purchases appear
+   *  here on their own once the session rows are gone. */
+  const historyRows = useMemo<RecentRow[]>(() => {
+    const items: TransactionTypes[] = history.data?.data?.data?.items ?? [];
+    return items
+      .filter((tx) => tx.type === "BILL_PAYMENT")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .map((tx) => {
+        const meta = parseMetadata(tx.metadata) as Record<
+          string,
+          unknown
+        > | null;
+        const network = typeof meta?.network === "string" ? meta.network : "";
+        // The metadata doesn't always name the network, but the description
+        // does ("MTN data 2.5GB … for 0810…") — read both from it if needed.
+        const biller = network
+          ? networkBiller(network)
+          : billerFromText(tx.note ?? "");
+        const phone =
+          [meta?.phoneNumber, meta?.recipientId, meta?.customerId].find(
+            (v): v is string => typeof v === "string" && v !== "",
+          ) ?? tx.note?.match(/\b0\d{10}\b/)?.[0];
+        return {
+          billerId: biller?.id ?? network.toLowerCase(),
+          name: tx.note?.trim() || "Bill payment",
+          number: phone ?? tx.reference.slice(0, 14),
+          time: timeAgo(tx.createdAt) ?? "",
+          amount: formatNaira(tx.amount),
+          status: STATUS_LABELS[tx.status] ?? tx.status,
+          reference: tx.reference,
+          historyTx: tx,
+        };
+      });
+  }, [history.data]);
+
+  // Session rows first (newest payments), then history minus the payments
+  // already shown as session rows.
+  const sessionRefs = new Set(transactions.map((t) => t.reference));
+  const recentRows: RecentRow[] = [
+    ...transactions,
+    ...historyRows.filter((r) => !sessionRefs.has(r.reference)),
+  ].slice(0, 4);
 
   const query = search.trim().toLowerCase();
 
@@ -105,29 +179,55 @@ export default function BillPaymentsPage() {
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
   /** Upserts a payment into the recent list by reference, so the PENDING →
-   *  COMPLETED/FAILED poll updates the row instead of adding a new one. */
-  const handlePayment = (payment: BillPayment) => {
+   *  COMPLETED/FAILED poll updates the row instead of adding a new one. The
+   *  full payment rides along so the row can open its receipt later. */
+  const handlePayment = (payment: BillPayment, context?: BillReceiptContext) => {
     setTransactions((prev) => {
       const status = STATUS_LABELS[payment.status];
       const existing = prev.findIndex((t) => t.reference === payment.reference);
       if (existing >= 0) {
         const next = [...prev];
-        next[existing] = { ...next[existing], status };
+        next[existing] = { ...next[existing], status, payment };
         return next;
       }
       return [
         {
           billerId: checkout ? targetBillerId(checkout) : "",
           name: payment.note,
-          number: payment.reference.slice(0, 14),
+          number:
+            context?.phoneNumber ??
+            context?.meterNumber ??
+            payment.reference.slice(0, 14),
           time: "Just now",
           amount: formatNaira(payment.amount),
           status,
           reference: payment.reference,
+          payment,
+          phoneNumber: context?.phoneNumber,
+          planName: context?.planName,
+          meterNumber: context?.meterNumber,
         },
         ...prev,
       ];
     });
+  };
+
+  /** Session rows build their receipt from the live payment + checkout
+   *  context; history rows use the shared history-receipt builder. */
+  const openReceipt = (row: RecentRow) => {
+    if (row.payment) {
+      setReceipt(
+        buildBillReceipt(row.payment, {
+          networkName:
+            findBiller(row.billerId)?.name ?? discoBiller(row.billerId)?.name,
+          phoneNumber: row.phoneNumber,
+          planName: row.planName,
+          meterNumber: row.meterNumber,
+        }),
+      );
+    } else if (row.historyTx) {
+      setReceipt(buildTransactionReceipt(row.historyTx));
+    }
   };
 
   /** Search results are display metadata only. Airtime and cable codes are
@@ -223,7 +323,7 @@ export default function BillPaymentsPage() {
     category: "electricity" | "cable" | "betting",
     provider: BillProvider,
   ) => {
-    const meta = categoryBiller(category, provider.code);
+    const meta = categoryBiller(category, provider.code, provider.name);
     const fallbackDesc = {
       electricity: "Prepaid & postpaid",
       cable: "TV subscriptions",
@@ -444,13 +544,32 @@ export default function BillPaymentsPage() {
               See all <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
+          {history.isPending && recentRows.length === 0 ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-13 rounded-lg bg-border/40 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : recentRows.length === 0 ? (
+            <p className="py-8 text-center text-sm text-text">
+              {history.isError
+                ? "We couldn't load your recent transactions."
+                : "No bill payments yet — your purchases will show up here."}
+            </p>
+          ) : (
           <div className="space-y-3">
-            {transactions.slice(0, 4).map((tx, i) => {
-              const biller = findBiller(tx.billerId);
+            {recentRows.map((tx, i) => {
+              // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids.
+              const biller =
+                findBiller(tx.billerId) ?? discoBiller(tx.billerId);
               return (
                 <div
                   key={tx.reference ?? i}
-                  className="flex items-center gap-3 py-2 border-b border-border last:border-0 hover:bg-border/20 transition-colors rounded-lg px-1 cursor-pointer"
+                  onClick={() => openReceipt(tx)}
+                  className="flex items-center gap-3 py-2 border-b border-border last:border-0 transition-colors rounded-lg px-1 hover:bg-border/20 cursor-pointer"
                 >
                   <BillerLogo
                     logo={biller?.logo}
@@ -476,6 +595,7 @@ export default function BillPaymentsPage() {
               );
             })}
           </div>
+          )}
         </div>
 
         {/* Quick Actions */}
@@ -515,6 +635,13 @@ export default function BillPaymentsPage() {
           target={checkout}
           onClose={() => setCheckout(null)}
           onPayment={handlePayment}
+        />
+      )}
+
+      {receipt && (
+        <TransactionReceiptModal
+          {...receipt}
+          onClose={() => setReceipt(null)}
         />
       )}
     </div>
