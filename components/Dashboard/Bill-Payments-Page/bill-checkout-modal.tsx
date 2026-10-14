@@ -406,7 +406,7 @@ export function BillCheckoutModal({
 
   return (
     <Modal
-      className="max-w-110 p-0 max-sm:flex max-sm:min-h-[80dvh] max-sm:flex-col"
+      className="max-w-110 p-0 max-sm:flex max-sm:h-[90dvh] max-sm:max-h-[90dvh] max-sm:flex-col"
       onClose={safeClose}
     >
       {/* ModalHeader's own `max-sm:pb-8` is a separate key from `pb-0` to
