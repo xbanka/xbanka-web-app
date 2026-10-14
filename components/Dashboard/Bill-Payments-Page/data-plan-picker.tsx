@@ -147,20 +147,20 @@ export function DataPlanPicker({
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        <div className="flex gap-1.5">
+      <div className="space-y-3.5">
+        <div className="flex gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-7 w-16 rounded-full border border-border bg-card-secondary animate-pulse"
+              className="h-8 w-16 rounded-full border border-border bg-card-secondary animate-pulse"
             />
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2.5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-20 rounded-xl border border-border bg-card-secondary animate-pulse"
+              className="h-24 rounded-xl border border-border bg-card-secondary animate-pulse"
             />
           ))}
         </div>
@@ -177,9 +177,9 @@ export function DataPlanPicker({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3.5">
       <div
-        className="flex gap-1.5 overflow-x-auto pb-1 -mb-1"
+        className="flex gap-2 overflow-x-auto pb-1 -mb-1"
         role="tablist"
         aria-label="Plan categories"
       >
@@ -191,7 +191,7 @@ export function DataPlanPicker({
             aria-selected={tab.id === activeId}
             onClick={() => setPicked(tab.id)}
             className={cn(
-              "flex items-center gap-1 h-7 px-3 text-xs font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors",
+              "flex items-center gap-1.5 h-8 px-3.5 text-xs font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors",
               tab.id === activeId
                 ? "bg-Green border-Green text-white"
                 : "border-border text-text hover:text-card-text hover:border-border-active",
@@ -203,7 +203,9 @@ export function DataPlanPicker({
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 max-h-62 overflow-y-auto pr-0.5">
+      {/* The sheet is taller on mobile, so the grid gets more of it before
+          it starts scrolling. */}
+      <div className="grid grid-cols-3 gap-2.5 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5">
         {active.plans.map((p) => {
           const key = planKey(p);
           const meta = parsePlan(p.plan);
@@ -215,7 +217,7 @@ export function DataPlanPicker({
               title={p.plan}
               onClick={() => onChange(key)}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 min-h-20 p-2 rounded-xl border text-center transition-colors",
+                "flex flex-col items-center justify-center gap-1.5 min-h-24 px-2 py-3 rounded-xl border text-center transition-colors",
                 selected
                   ? "border-Green bg-Green/10"
                   : "border-border bg-card-secondary hover:border-border-active",
@@ -223,10 +225,10 @@ export function DataPlanPicker({
             >
               {meta.size ? (
                 <>
-                  <span className="text-sm font-bold text-card-text leading-tight">
+                  <span className="text-[15px] font-bold text-card-text leading-tight">
                     {meta.size}
                   </span>
-                  <span className="text-[10px] text-text leading-tight line-clamp-1">
+                  <span className="text-[11px] text-text leading-tight line-clamp-1">
                     {meta.validity ?? p.plan}
                   </span>
                 </>

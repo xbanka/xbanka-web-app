@@ -430,7 +430,7 @@ export function BillCheckoutModal({
 
       <div className="px-6 pb-6 pt-5 max-sm:flex-1 max-sm:pt-4">
         {step === "details" && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {isElectricity && (
               <>
                 <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
@@ -442,7 +442,7 @@ export function BillCheckoutModal({
                         initiate.reset();
                       }}
                       className={cn(
-                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        "h-10 rounded-lg text-sm font-medium transition-colors",
                         meterType === t
                           ? "bg-card-background text-card-text shadow-sm"
                           : "text-text hover:text-card-text",
@@ -454,7 +454,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Meter Number
                   </label>
                   <input
@@ -470,7 +470,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Amount (₦)
                   </label>
                   <input
@@ -482,14 +482,14 @@ export function BillCheckoutModal({
                     inputMode="numeric"
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2.5">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
                       <button
                         key={qa}
                         type="button"
                         onClick={() => setAmount(String(qa))}
                         className={cn(
-                          "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                           amount === String(qa)
                             ? "border-Green bg-Green/10 text-Green font-medium"
                             : "border-border text-text hover:border-border-active",
@@ -506,7 +506,7 @@ export function BillCheckoutModal({
             {isCable && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     {meta?.inputLabel ?? "Smartcard / IUC Number"}
                   </label>
                   <input
@@ -523,7 +523,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Plan
                   </label>
                   {planSelect}
@@ -534,7 +534,7 @@ export function BillCheckoutModal({
             {isBetting && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     {meta?.inputLabel ?? "Account ID"}
                   </label>
                   <input
@@ -551,7 +551,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Phone Number
                   </label>
                   <input
@@ -567,7 +567,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Amount (₦)
                   </label>
                   <input
@@ -579,14 +579,14 @@ export function BillCheckoutModal({
                     inputMode="numeric"
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2.5">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {BETTING_AMOUNTS.map((qa) => (
                       <button
                         key={qa}
                         type="button"
                         onClick={() => setAmount(String(qa))}
                         className={cn(
-                          "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                           amount === String(qa)
                             ? "border-Green bg-Green/10 text-Green font-medium"
                             : "border-border text-text hover:border-border-active",
@@ -612,7 +612,7 @@ export function BillCheckoutModal({
                         initiate.reset();
                       }}
                       className={cn(
-                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        "h-10 rounded-lg text-sm font-medium transition-colors",
                         product === p
                           ? "bg-card-background text-card-text shadow-sm"
                           : "text-text hover:text-card-text",
@@ -624,7 +624,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Phone Number
                   </label>
                   <input
@@ -641,7 +641,7 @@ export function BillCheckoutModal({
 
                 {product === "AIRTIME" ? (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-1.5">
+                    <label className="block text-xs font-medium text-text mb-2">
                       Amount (₦)
                     </label>
                     <input
@@ -654,14 +654,14 @@ export function BillCheckoutModal({
                       className={inputClasses}
                     />
                     {meta?.quickAmounts && (
-                      <div className="flex flex-wrap gap-2 mt-2.5">
+                      <div className="flex flex-wrap gap-2 mt-3">
                         {meta.quickAmounts.map((qa) => (
                           <button
                             key={qa}
                             type="button"
                             onClick={() => setAmount(String(qa))}
                             className={cn(
-                              "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                              "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                               amount === String(qa)
                                 ? "border-Green bg-Green/10 text-Green font-medium"
                                 : "border-border text-text hover:border-border-active",
@@ -675,7 +675,7 @@ export function BillCheckoutModal({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-1.5">
+                    <label className="block text-xs font-medium text-text mb-2">
                       Data Plan
                     </label>
                     {dataPlans.error ? (
@@ -721,7 +721,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "review" && quote && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="px-4 rounded-xl bg-card-secondary border border-border">
               {summaryRow(
                 isNetwork ? "Network" : "Provider",
@@ -848,7 +848,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "result" && current && (
-          <div className="space-y-4 text-center">
+          <div className="space-y-5 text-center">
             <div className="flex justify-center pt-2">
               {current.status === "COMPLETED" ? (
                 <CheckCircle2 className="w-14 h-14 text-Green" />
