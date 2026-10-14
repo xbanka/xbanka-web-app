@@ -405,9 +405,14 @@ export function BillCheckoutModal({
   );
 
   return (
-    <Modal className="max-w-110 p-0" onClose={safeClose}>
+    <Modal
+      className="max-w-110 p-0 max-sm:flex max-sm:min-h-[80dvh] max-sm:flex-col"
+      onClose={safeClose}
+    >
+      {/* ModalHeader's own `max-sm:pb-8` is a separate key from `pb-0` to
+          tailwind-merge, so mobile needs its paddings named explicitly. */}
       <ModalHeader
-        className="px-6 pt-5 pb-0 max-sm:px-6"
+        className="px-6 pt-5 pb-0 max-sm:px-6 max-sm:pt-5 max-sm:pb-0"
         title={headerByStep[step].title}
         subtitle={headerByStep[step].subtitle}
         onBack={
@@ -423,7 +428,7 @@ export function BillCheckoutModal({
         onClose={safeClose}
       />
 
-      <div className="px-6 pb-6 pt-5">
+      <div className="px-6 pb-6 pt-5 max-sm:flex-1 max-sm:pt-4">
         {step === "details" && (
           <div className="space-y-4">
             {isElectricity && (
