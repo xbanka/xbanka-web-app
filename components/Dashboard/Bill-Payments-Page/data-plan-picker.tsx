@@ -177,7 +177,7 @@ export function DataPlanPicker({
   }
 
   return (
-    <div className="space-y-3.5">
+    <div className="space-y-3.5 pb-1">
       <div
         className="flex gap-2 overflow-x-auto pb-1 -mb-1"
         role="tablist"
@@ -203,9 +203,10 @@ export function DataPlanPicker({
         ))}
       </div>
 
-      {/* The sheet is taller on mobile, so the grid gets more of it before
-          it starts scrolling. */}
-      <div className="grid grid-cols-3 gap-2.5 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5">
+      {/* The sheet is taller on mobile, so the grid gets more of it before it
+          starts scrolling. `pb-2` keeps the last row of cards off whatever
+          follows — a selected card's ring would otherwise touch it. */}
+      <div className="grid grid-cols-3 gap-2.5 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5 pb-2">
         {active.plans.map((p) => {
           const key = planKey(p);
           const meta = parsePlan(p.plan);

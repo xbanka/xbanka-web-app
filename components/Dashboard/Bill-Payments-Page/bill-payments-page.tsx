@@ -38,6 +38,7 @@ import {
 } from "./billers-data";
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
+import { FavouriteBill, useFavouriteBills } from "./use-favourite-bills";
 
 const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
   electricity: "Choose your electricity provider",
@@ -75,7 +76,12 @@ export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<BillerCategoryId | null>(null);
-  const [checkout, setCheckout] = useState<CheckoutTarget | null>(null);
+  /** `prefill` is set only when checkout was opened from a saved favourite. */
+  const [checkout, setCheckout] = useState<{
+    target: CheckoutTarget;
+    prefill?: FavouriteBill;
+  } | null>(null);
+  const { favourites, remove: removeFavourite } = useFavouriteBills();
   const [receipt, setReceipt] = useState<TransactionReceiptData | null>(null);
   /** Payments made this session — richer than their history rows (receipt
    *  context, live PENDING → COMPLETED status from the poll). */
@@ -195,7 +201,7 @@ export default function BillPaymentsPage() {
       }
       return [
         {
-          billerId: checkout ? targetBillerId(checkout) : "",
+          billerId: checkout ? targetBillerId(checkout.target) : "",
           name: payment.note,
           number:
             context?.phoneNumber ??
@@ -239,18 +245,74 @@ export default function BillPaymentsPage() {
    *  returned. */
   const openBiller = (biller: Biller) => {
     if (biller.category === "airtime") {
-      setCheckout({ kind: "network", network: biller.id.toUpperCase() });
+      setCheckout({
+        target: { kind: "network", network: biller.id.toUpperCase() },
+      });
       return;
     }
     if (biller.category === "cable") {
       const provider = CABLE_PROVIDERS.find((p) => p.name === biller.name);
       if (provider) {
-        setCheckout({ kind: "cable", provider });
+        setCheckout({ target: { kind: "cable", provider } });
         return;
       }
     }
     setSearch("");
     setSelectedCategory(biller.category);
+  };
+
+  /** Reopens checkout for a saved payment with its account already filled in.
+   *  The remove button is a sibling rather than a child, since a button can't
+   *  legally nest inside the tile's own button. */
+  const favouriteTile = (fav: FavouriteBill) => {
+    const biller = findBiller(fav.billerId);
+    return (
+      <div key={fav.id} className="relative">
+        <button
+          onClick={() =>
+            setCheckout({
+              target:
+                fav.kind === "network"
+                  ? { kind: "network", network: fav.code }
+                  : fav.kind === "disco"
+                    ? {
+                        kind: "disco",
+                        disco: { code: fav.code, name: fav.providerName },
+                      }
+                    : {
+                        kind: fav.kind,
+                        provider: { code: fav.code, name: fav.providerName },
+                      },
+              prefill: fav,
+            })
+          }
+          className="group flex w-full items-center gap-3 p-4 pr-11 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
+        >
+          <BillerLogo
+            logo={biller?.logo}
+            name={biller?.name ?? fav.providerName}
+            fallbackColor={biller?.fallbackColor}
+            size={44}
+            rounded="rounded-xl"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-card-text group-hover:text-Green transition-colors truncate">
+              {fav.providerName}
+            </p>
+            <p className="text-xs text-text truncate mt-0.5">
+              {fav.label} • {fav.account}
+            </p>
+          </div>
+        </button>
+        <button
+          onClick={() => removeFavourite(fav.id)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-placeholder hover:text-card-text hover:bg-border/50 transition-colors"
+          aria-label={`Remove ${fav.providerName} ${fav.label} from favourites`}
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    );
   };
 
   const billerTile = (biller: Biller) => {
@@ -299,7 +361,7 @@ export default function BillPaymentsPage() {
     return (
       <button
         key={network}
-        onClick={() => setCheckout({ kind: "network", network })}
+        onClick={() => setCheckout({ target: { kind: "network", network } })}
         className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
       >
         <BillerLogo
@@ -336,11 +398,15 @@ export default function BillPaymentsPage() {
       <button
         key={provider.code}
         onClick={() =>
-          setCheckout(
-            category === "electricity"
-              ? { kind: "disco", disco: provider }
-              : { kind: category === "cable" ? "cable" : "betting", provider },
-          )
+          setCheckout({
+            target:
+              category === "electricity"
+                ? { kind: "disco", disco: provider }
+                : {
+                    kind: category === "cable" ? "cable" : "betting",
+                    provider,
+                  },
+          })
         }
         className="group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background hover:border-border-active transition-colors text-left"
       >
@@ -493,8 +559,23 @@ export default function BillPaymentsPage() {
           )}
         </div>
       ) : (
-        /* Browse by category */
-        <div>
+        /* Browse by category, with saved payments above it */
+        <div className="space-y-5">
+          {favourites.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-card-text text-sm mb-1">
+                Favourites
+              </h3>
+              <p className="text-xs text-text mb-4">
+                Payments you saved — tap one to pay it again
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {favourites.map(favouriteTile)}
+              </div>
+            </div>
+          )}
+
+          <div>
           <h3 className="font-semibold text-card-text text-sm mb-1">
             Browse by Category
           </h3>
@@ -551,6 +632,7 @@ export default function BillPaymentsPage() {
                 </button>
               );
             })}
+          </div>
           </div>
         </div>
       )}
@@ -657,7 +739,8 @@ export default function BillPaymentsPage() {
 
       {checkout && (
         <BillCheckoutModal
-          target={checkout}
+          target={checkout.target}
+          prefill={checkout.prefill}
           onClose={() => setCheckout(null)}
           onPayment={handlePayment}
         />

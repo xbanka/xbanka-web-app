@@ -8,6 +8,7 @@ import {
   Copy,
   LoaderCircle,
   ReceiptText,
+  Star,
   XCircle,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -44,6 +45,11 @@ import {
 } from "./billers-data";
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { DataPlanPicker, planKey } from "./data-plan-picker";
+import {
+  FavouriteBill,
+  favouriteId,
+  useFavouriteBills,
+} from "./use-favourite-bills";
 
 const MIN_AIRTIME = 50;
 const MIN_ELECTRICITY = 500;
@@ -69,10 +75,14 @@ const inputClasses =
 
 export function BillCheckoutModal({
   target,
+  prefill,
   onClose,
   onPayment,
 }: {
   target: CheckoutTarget;
+  /** Set when checkout was opened from a saved favourite, so the account
+   *  fields start filled in. The amount or plan is always chosen afresh. */
+  prefill?: FavouriteBill;
   onClose: () => void;
   /** Called with the payment object on confirm and on every status update.
    *  `context` only comes with the confirm call — status updates reuse the
@@ -105,22 +115,35 @@ export function BillCheckoutModal({
         : target.provider.name;
 
   const [step, setStep] = useState<Step>("details");
-  const [product, setProduct] = useState<"AIRTIME" | "DATA">("AIRTIME");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [product, setProduct] = useState<"AIRTIME" | "DATA">(
+    prefill?.product ?? "AIRTIME",
+  );
+  // A network favourite saves a phone number; betting saves an account id and
+  // a phone number; the rest save the id the biller checks (meter, smartcard).
+  const [phoneNumber, setPhoneNumber] = useState(
+    prefill?.kind === "network"
+      ? prefill.account
+      : (prefill?.phoneNumber ?? ""),
+  );
   const [amount, setAmount] = useState("");
-  const [customerId, setCustomerId] = useState("");
+  const [customerId, setCustomerId] = useState(
+    prefill && prefill.kind !== "network" ? prefill.account : "",
+  );
   const [planId, setPlanId] = useState("");
   const [pin, setPin] = useState("");
   const [quote, setQuote] = useState<InitiateBillResponse | null>(null);
   const [payment, setPayment] = useState<BillPayment | null>(null);
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
-  const [meterType, setMeterType] = useState<MeterType>("PREPAID");
+  const [meterType, setMeterType] = useState<MeterType>(
+    prefill?.meterType ?? "PREPAID",
+  );
   const [pollTimedOut, setPollTimedOut] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
+  const { isFavourite, toggle: toggleFavourite } = useFavouriteBills();
   const dataPlans = useDataPlans(
     target.kind === "network" && product === "DATA" ? target.network : null,
   );
@@ -169,6 +192,43 @@ export function BillCheckoutModal({
             (product === "AIRTIME"
               ? Number(amount) >= MIN_AIRTIME
               : !!selectedPlan);
+
+  /** The code the API expects for this target, and the account just paid. */
+  const targetCode =
+    target.kind === "network"
+      ? target.network
+      : target.kind === "disco"
+        ? target.disco.code
+        : target.provider.code;
+  const account = isNetwork ? phoneNumber : customerId;
+
+  /** The saved-payment entry for what's on screen. Built from checkout state
+   *  rather than the payment object, which doesn't carry the account. */
+  const favouriteFor = (): FavouriteBill => ({
+    id: favouriteId(kind, targetCode, account),
+    kind,
+    code: targetCode,
+    providerName,
+    billerId: meta?.id ?? targetCode.toLowerCase(),
+    label: isNetwork
+      ? product === "DATA"
+        ? "Data bundle"
+        : "Airtime"
+      : isElectricity
+        ? meterType === "PREPAID"
+          ? "Prepaid meter"
+          : "Postpaid meter"
+        : isCable
+          ? "TV subscription"
+          : "Wallet top-up",
+    account,
+    phoneNumber: isBetting ? phoneNumber : undefined,
+    product: isNetwork ? product : undefined,
+    meterType: isElectricity ? meterType : undefined,
+    savedAt: new Date().toISOString(),
+  });
+
+  const favouriteSaved = isFavourite(favouriteId(kind, targetCode, account));
 
   /** What the payment object itself can't say — captured for the receipt. */
   const receiptContext = (): BillReceiptContext => {
@@ -914,6 +974,32 @@ export function BillCheckoutModal({
               )}
 
             {referenceRow(current.reference)}
+
+            {/* Offered once the payment has actually gone through — there's no
+                point saving a shortcut to something that just failed. */}
+            {current.status === "COMPLETED" && account && (
+              <button
+                onClick={() => {
+                  const saved = toggleFavourite(favouriteFor());
+                  toast.success(
+                    saved
+                      ? "Saved to favourites"
+                      : "Removed from favourites",
+                  );
+                }}
+                className={cn(
+                  "flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-sm font-medium transition-colors",
+                  favouriteSaved
+                    ? "border-Green text-Green"
+                    : "border-border text-text hover:border-border-active hover:text-card-text",
+                )}
+              >
+                <Star
+                  className={cn("w-4 h-4", favouriteSaved && "fill-Green")}
+                />
+                {favouriteSaved ? "Saved to favourites" : "Save to favourites"}
+              </button>
+            )}
 
             {current.status === "PENDING" ? (
               <Button className="w-full" onClick={onClose}>
