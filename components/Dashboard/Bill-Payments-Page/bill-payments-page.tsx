@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpRight, ChevronRight, Search } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES, QUICK_ACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
@@ -391,20 +391,40 @@ export default function BillPaymentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search for billers e.g MTN, IKEDC, DSTV"
-          className="w-full h-12 pl-11 pr-4 text-sm border border-input rounded-xl bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
+          className="w-full h-12 pl-11 pr-11 text-sm border border-input rounded-xl bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
         />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-placeholder hover:text-card-text transition-colors"
+            aria-label="Clear search"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {query ? (
         /* Search results across every category */
         <div>
-          <h3 className="font-semibold text-card-text text-sm mb-1">
-            Search Results
-          </h3>
-          <p className="text-xs text-text mb-4">
-            {resultCount} biller{resultCount === 1 ? "" : "s"} matching “
-            {search.trim()}”
-          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={() => setSearch("")}
+              className="p-2 rounded-lg border border-border text-text hover:text-card-text hover:border-border-active transition-colors"
+              aria-label="Back to categories"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div>
+              <h3 className="font-semibold text-card-text text-sm">
+                Search Results
+              </h3>
+              <p className="text-xs text-text">
+                {resultCount} biller{resultCount === 1 ? "" : "s"} matching “
+                {search.trim()}”
+              </p>
+            </div>
+          </div>
           {resultCount > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {searchResults.map(billerTile)}
