@@ -91,6 +91,9 @@ export type InitiateBillResponse = {
   description: string;
   /** Present for ELECTRICITY, CABLE_TV and BETTING. */
   customerName?: string;
+  /** Some discos return the service address alongside the name; it is shown
+   *  on the verification card when present and skipped when it isn't. */
+  customerAddress?: string;
   /** The exact amount that will be charged. */
   amount: number;
   currency: string;

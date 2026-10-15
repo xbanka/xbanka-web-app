@@ -69,6 +69,12 @@ export type CheckoutTarget =
   | { kind: "cable"; provider: CableProvider }
   | { kind: "betting"; provider: BettingProvider };
 
+/** Breaks a prepaid token into groups of four, the way meter keypads and the
+ *  slips from the disco show it, so it can be read without losing your place.
+ *  Tokens that aren't plain digits are left exactly as the provider sent them. */
+const groupToken = (token: string) =>
+  /^\d+$/.test(token) ? token.replace(/(\d{4})(?=\d)/g, "$1 ") : token;
+
 const inputClasses =
   "w-full h-12 px-4 text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
 
@@ -131,6 +137,10 @@ export function BillCheckoutModal({
   const [planId, setPlanId] = useState("");
   const [pin, setPin] = useState("");
   const [quote, setQuote] = useState<InitiateBillResponse | null>(null);
+  /** The serialised payload `quote` was fetched for — see `payloadKey`. */
+  const [quotedKey, setQuotedKey] = useState<string | null>(null);
+  /** The last payload a lookup was fired for, successful or not. */
+  const [attemptedKey, setAttemptedKey] = useState<string | null>(null);
   const [payment, setPayment] = useState<BillPayment | null>(null);
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
@@ -297,12 +307,55 @@ export function BillCheckoutModal({
     }
   };
 
+  // Billers that check the account and hand back whose it is. Airtime and data
+  // have nobody to look up, so they are never pre-verified.
+  const verifies = isElectricity || isCable || isBetting;
+  /** Identifies the inputs a quote belongs to; any edit invalidates it. */
+  const payloadKey = detailsOk ? JSON.stringify(buildPayload()) : null;
+  const quoteIsCurrent =
+    !!quote &&
+    payloadKey !== null &&
+    payloadKey === quotedKey &&
+    new Date(quote.expiresAt).getTime() > Date.now();
+
+  // There is no "validate customer" route — initiate is what verifies, and it
+  // needs the amount too, so this runs once the whole form is valid. The quote
+  // it returns is the one the payment then uses, so this costs no extra call.
+  //
+  // Keyed on what was *attempted*, not what succeeded: a meter the biller
+  // rejects must not be retried in a loop, and `isPending` is a dependency so
+  // an edit made mid-flight still gets looked up once the first call lands.
+  useEffect(() => {
+    if (!verifies || step !== "details" || !payloadKey) return;
+    if (payloadKey === attemptedKey || initiate.isPending) return;
+
+    const timer = setTimeout(() => {
+      setAttemptedKey(payloadKey);
+      setNotice("");
+      initiate.mutate(buildPayload(), {
+        onSuccess: (q) => {
+          setQuote(q);
+          setQuotedKey(payloadKey);
+        },
+      });
+    }, 600); // let typing settle before asking the biller
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payloadKey, attemptedKey, verifies, step, initiate.isPending]);
+
   const handleContinue = () => {
     if (!detailsOk || initiate.isPending) return;
     setNotice("");
+    // The verification above already priced these exact details.
+    if (quoteIsCurrent) {
+      setStep("review");
+      return;
+    }
     initiate.mutate(buildPayload(), {
       onSuccess: (q) => {
         setQuote(q);
+        setQuotedKey(payloadKey);
+        setAttemptedKey(payloadKey);
         setStep("review");
       },
     });
@@ -782,6 +835,46 @@ export function BillCheckoutModal({
               </>
             )}
 
+            {/* Who the account belongs to, looked up as soon as the details
+                are complete — so a wrong meter or smartcard is caught here
+                rather than after paying. */}
+            {verifies && initiate.isPending && (
+              <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card-secondary px-4 py-3">
+                <LoaderCircle className="w-4 h-4 text-Green animate-spin shrink-0" />
+                <span className="text-sm text-text">
+                  Checking {isElectricity ? "meter" : "account"}…
+                </span>
+              </div>
+            )}
+
+            {verifies && !initiate.isPending && quoteIsCurrent && (
+              <div className="rounded-xl border border-Green/40 bg-Green/10 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-Green shrink-0" />
+                  <span className="text-xs font-medium text-Green">
+                    {isElectricity
+                      ? "Meter verified"
+                      : isCable
+                        ? "Account verified"
+                        : "Account found"}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-base font-semibold text-card-text wrap-break-word">
+                  {quote?.customerName ?? providerName}
+                </p>
+                {quote?.customerAddress && (
+                  <p className="mt-0.5 text-sm text-text wrap-break-word">
+                    {quote.customerAddress}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-text">
+                  {isElectricity
+                    ? `${meterType === "PREPAID" ? "Prepaid" : "Postpaid"} • ${customerId}`
+                    : customerId}
+                </p>
+              </div>
+            )}
+
             <ErrorLayout message={notice || initiate.error?.message} />
 
             <Button
@@ -968,14 +1061,29 @@ export function BillCheckoutModal({
               </p>
             )}
 
+            {/* The token gets typed into a meter keypad digit by digit, often
+                by someone reading it off the phone at arm's length — so it is
+                set large, grouped in fours and copyable. */}
             {current.token && (
-              <div className="py-3 px-4 rounded-xl bg-card-secondary border border-border text-left">
-                <p className="text-xs text-text">Token</p>
-                <p className="text-sm font-semibold text-card-text break-all">
-                  {current.token}
+              <div className="py-4 px-4 rounded-xl bg-card-secondary border border-border text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-text">Token</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(current.token as string);
+                      toast.success("Token copied");
+                    }}
+                    className="flex items-center gap-1 text-xs text-Green hover:underline shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copy
+                  </button>
+                </div>
+                <p className="mt-1.5 text-2xl font-bold tracking-wide text-card-text break-all tabular-nums max-sm:text-[22px]">
+                  {groupToken(current.token)}
                 </p>
                 {current.units && (
-                  <p className="text-xs text-text mt-1">
+                  <p className="text-sm text-text mt-1.5">
                     {current.units} units
                   </p>
                 )}
