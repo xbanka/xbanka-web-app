@@ -37,6 +37,24 @@ export type Biller = {
 };
 
 const AIRTIME_AMOUNTS = [100, 200, 500, 1000, 2000, 5000];
+
+/** Betting providers only differ by name, logo and badge colour, so they're
+ *  expanded from a table rather than written out one by one. `fallbackColor`
+ *  is only ever seen if the logo file fails to load. */
+const betting = (
+  rows: [id: string, name: string, fallbackColor: string, ext: string][],
+): Biller[] =>
+  rows.map(([id, name, fallbackColor, ext]) => ({
+    id,
+    name,
+    desc: "Fund your betting wallet",
+    category: "betting",
+    logo: `/billers/${id}.${ext}`,
+    fallbackColor,
+    inputLabel: "Account ID",
+    inputPlaceholder: `Enter your ${name} account ID`,
+    quickAmounts: BETTING_AMOUNTS,
+  }));
 export const BETTING_AMOUNTS = [500, 1000, 2000, 5000, 10000, 20000];
 
 export const BILLERS: Biller[] = [
@@ -347,7 +365,7 @@ export const BILLERS: Biller[] = [
     name: "Bet9ja",
     desc: "Fund your betting wallet",
     category: "betting",
-    logo: "/billers/bet9ja.svg",
+    logo: "/billers/bet9ja.png",
     fallbackColor: "bg-green-700",
     inputLabel: "User ID",
     inputPlaceholder: "Enter your Bet9ja user ID",
@@ -358,7 +376,7 @@ export const BILLERS: Biller[] = [
     name: "SportyBet",
     desc: "Fund your betting wallet",
     category: "betting",
-    logo: "/billers/sportybet.svg",
+    logo: "/billers/sportybet.png",
     fallbackColor: "bg-red-600",
     inputLabel: "Phone Number / User ID",
     inputPlaceholder: "Enter your SportyBet ID",
@@ -386,6 +404,26 @@ export const BILLERS: Biller[] = [
     inputPlaceholder: "Enter your 1xBet account ID",
     quickAmounts: BETTING_AMOUNTS,
   },
+  ...betting([
+    ["nairabet", "NairaBet", "bg-emerald-600", "svg"],
+    ["betway", "Betway", "bg-neutral-900", "svg"],
+    ["betfarm", "Betfarm", "bg-amber-500", "svg"],
+    ["msport", "MSport", "bg-yellow-500", "png"],
+    ["1960bet", "1960Bet", "bg-red-700", "png"],
+    ["360bet", "360Bet", "bg-blue-800", "png"],
+    ["betbonanza", "BetBonanza", "bg-orange-500", "png"],
+    ["megabet", "MegaBet", "bg-lime-500", "png"],
+    ["konfambet", "KonfamBet", "bg-green-600", "png"],
+    ["surebet247", "Surebet247", "bg-red-600", "png"],
+    ["fortunebet", "FortuneBet", "bg-orange-600", "png"],
+    ["westernbet", "WesternBet", "bg-blue-900", "png"],
+    ["xtragoals", "XtraGoals", "bg-indigo-900", "png"],
+    ["nairapowerbet", "NairaPower Bet", "bg-green-700", "png"],
+    ["totiprima", "Toti Prima", "bg-amber-400", "png"],
+    ["crystalgaming", "Crystal Gaming", "bg-purple-700", "png"],
+    ["s2win", "S2Win", "bg-teal-700", "png"],
+    ["vouchernet", "Vouchernet", "bg-yellow-400", "png"],
+  ]),
 
   // ── Government ──
   {
