@@ -284,6 +284,19 @@ export const getXbankaFundingAccount = async () => {
   };
 };
 
+export const declareBankTransferIntent = async (amount: number) => {
+  const response = await AxiosInstance.post(
+    "/wallet/funding-accounts/declare-intent",
+    { amount },
+  );
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
 export const getBankAcountsList = async () => {
   const response = await AxiosInstance.get("/wallets/direct-debit-banks");
 

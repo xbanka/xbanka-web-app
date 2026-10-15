@@ -3,6 +3,7 @@ import {
   ActiveNetworksCrypto,
   addBankAcounts,
   addFundingAccount,
+  declareBankTransferIntent,
   getFundingAccounts,
   getXbankaFundingAccount,
   lookupAccountName,
@@ -572,6 +573,21 @@ export const UseGetXbankaFundingAccount = () => {
     },
     staleTime: 1000 * 60 * 30,
     retry: false,
+  });
+};
+
+export const UseDeclareBankTransferIntent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (amount: number) => declareBankTransferIntent(amount),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+      queryClient.invalidateQueries({ queryKey: ["all-wallet-balances"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-wallet"] });
+    },
+    onError: (err) => {
+      handleApiError(err);
+    },
   });
 };
 
