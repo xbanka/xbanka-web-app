@@ -535,16 +535,6 @@ export const isCategoryLive = (category: BillerCategoryId) =>
 export const networkBiller = (network: string) =>
   findBiller(network.toLowerCase());
 
-/** The biller a transaction description mentions ("MTN data 2.5GB…" → the mtn
- *  biller, "IKEDC prepaid…" → ikedc) — for history rows whose metadata doesn't
- *  name the network. Matches the display name or the id as a whole word. */
-export const billerFromText = (text: string) => {
-  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return BILLERS.find((b) =>
-    new RegExp(`\\b(?:${escape(b.name)}|${escape(b.id)})\\b`, "i").test(text),
-  );
-};
-
 /** City-style codes some providers use for discos ("EKO", "ABUJA") mapped to
  *  our biller ids, since those contain no part of the acronym to match on. */
 const DISCO_ALIASES: [alias: string, id: string][] = [
@@ -559,6 +549,34 @@ const DISCO_ALIASES: [alias: string, id: string][] = [
   ["benin", "bedc"],
   ["yola", "yedc"],
 ];
+
+/** Every spelling of a biller that can turn up in a transaction description:
+ *  the display name, that name without its parenthesised acronym, the acronym
+ *  on its own, the id, and the disco city aliases. Descriptions arrive as
+ *  "ikeja prepaid electricity for …", which names neither the id nor the full
+ *  display name, so matching on those two alone left the row with no logo. */
+const textAliases = (b: Biller) =>
+  [
+    ...new Set([
+      b.name,
+      b.name.replace(/\s*\([^)]*\)/g, "").trim(),
+      b.name.match(/\(([^)]+)\)/)?.[1] ?? "",
+      b.id,
+      ...DISCO_ALIASES.filter(([, id]) => id === b.id).map(([alias]) => alias),
+    ]),
+  ].filter(Boolean);
+
+/** The biller a transaction description mentions ("MTN data 2.5GB…" → the mtn
+ *  biller, "ikeja prepaid electricity…" → ikedc) — for history rows whose
+ *  metadata doesn't name the network. Matches any alias as a whole word. */
+export const billerFromText = (text: string) => {
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return BILLERS.find((b) =>
+    new RegExp(`\\b(?:${textAliases(b).map(escape).join("|")})\\b`, "i").test(
+      text,
+    ),
+  );
+};
 
 /** Display metadata for a provider code returned by the API. Codes aren't
  *  guaranteed to match our ids exactly ("IKEDC" vs "IKEJA_ELECTRIC" vs "EKO"),

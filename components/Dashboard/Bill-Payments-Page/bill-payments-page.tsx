@@ -668,9 +668,13 @@ export default function BillPaymentsPage() {
             ) : (
               <div className="space-y-3">
                 {recentRows.map((tx, i) => {
-                  // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids.
+                  // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids,
+                  // and rows built before a biller was known carry no id at
+                  // all — fall back to the description ("ikeja prepaid…").
                   const biller =
-                    findBiller(tx.billerId) ?? discoBiller(tx.billerId);
+                    findBiller(tx.billerId) ??
+                    discoBiller(tx.billerId) ??
+                    billerFromText(tx.name);
                   return (
                     <div
                       key={tx.reference ?? i}
