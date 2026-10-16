@@ -61,7 +61,7 @@ export function BillerLogo({
       height={size}
       unoptimized
       onError={() => setFailed(logo)}
-      className={cn("shrink-0 object-cover", rounded, className)}
+      className={cn("shrink-0 object-contain", rounded, className)}
       style={{ width: size, height: size }}
     />
   );

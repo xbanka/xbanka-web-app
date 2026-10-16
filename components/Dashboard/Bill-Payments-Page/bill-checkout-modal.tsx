@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   CheckCircle2,
-  ChevronDown,
   Copy,
   LoaderCircle,
   ReceiptText,
+  Star,
   XCircle,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -44,6 +44,11 @@ import {
 } from "./billers-data";
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { DataPlanPicker, planKey } from "./data-plan-picker";
+import {
+  FavouriteBill,
+  favouriteId,
+  useFavouriteBills,
+} from "./use-favourite-bills";
 
 const MIN_AIRTIME = 50;
 const MIN_ELECTRICITY = 500;
@@ -64,15 +69,25 @@ export type CheckoutTarget =
   | { kind: "cable"; provider: CableProvider }
   | { kind: "betting"; provider: BettingProvider };
 
+/** Breaks a prepaid token into groups of four, the way meter keypads and the
+ *  slips from the disco show it, so it can be read without losing your place.
+ *  Tokens that aren't plain digits are left exactly as the provider sent them. */
+const groupToken = (token: string) =>
+  /^\d+$/.test(token) ? token.replace(/(\d{4})(?=\d)/g, "$1 ") : token;
+
 const inputClasses =
   "w-full h-12 px-4 text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
 
 export function BillCheckoutModal({
   target,
+  prefill,
   onClose,
   onPayment,
 }: {
   target: CheckoutTarget;
+  /** Set when checkout was opened from a saved favourite, so the account
+   *  fields start filled in. The amount or plan is always chosen afresh. */
+  prefill?: FavouriteBill;
   onClose: () => void;
   /** Called with the payment object on confirm and on every status update.
    *  `context` only comes with the confirm call — status updates reuse the
@@ -105,22 +120,39 @@ export function BillCheckoutModal({
         : target.provider.name;
 
   const [step, setStep] = useState<Step>("details");
-  const [product, setProduct] = useState<"AIRTIME" | "DATA">("AIRTIME");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [product, setProduct] = useState<"AIRTIME" | "DATA">(
+    prefill?.product ?? "AIRTIME",
+  );
+  // A network favourite saves a phone number; betting saves an account id and
+  // a phone number; the rest save the id the biller checks (meter, smartcard).
+  const [phoneNumber, setPhoneNumber] = useState(
+    prefill?.kind === "network"
+      ? prefill.account
+      : (prefill?.phoneNumber ?? ""),
+  );
   const [amount, setAmount] = useState("");
-  const [customerId, setCustomerId] = useState("");
+  const [customerId, setCustomerId] = useState(
+    prefill && prefill.kind !== "network" ? prefill.account : "",
+  );
   const [planId, setPlanId] = useState("");
   const [pin, setPin] = useState("");
   const [quote, setQuote] = useState<InitiateBillResponse | null>(null);
+  /** The serialised payload `quote` was fetched for — see `payloadKey`. */
+  const [quotedKey, setQuotedKey] = useState<string | null>(null);
+  /** The last payload a lookup was fired for, successful or not. */
+  const [attemptedKey, setAttemptedKey] = useState<string | null>(null);
   const [payment, setPayment] = useState<BillPayment | null>(null);
   const [notice, setNotice] = useState("");
   const [openResetPin, setOpenResetPin] = useState(false);
-  const [meterType, setMeterType] = useState<MeterType>("PREPAID");
+  const [meterType, setMeterType] = useState<MeterType>(
+    prefill?.meterType ?? "PREPAID",
+  );
   const [pollTimedOut, setPollTimedOut] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
 
   const initiate = useInitiateBill();
   const confirm = useConfirmBill();
+  const { isFavourite, toggle: toggleFavourite } = useFavouriteBills();
   const dataPlans = useDataPlans(
     target.kind === "network" && product === "DATA" ? target.network : null,
   );
@@ -169,6 +201,43 @@ export function BillCheckoutModal({
             (product === "AIRTIME"
               ? Number(amount) >= MIN_AIRTIME
               : !!selectedPlan);
+
+  /** The code the API expects for this target, and the account just paid. */
+  const targetCode =
+    target.kind === "network"
+      ? target.network
+      : target.kind === "disco"
+        ? target.disco.code
+        : target.provider.code;
+  const account = isNetwork ? phoneNumber : customerId;
+
+  /** The saved-payment entry for what's on screen. Built from checkout state
+   *  rather than the payment object, which doesn't carry the account. */
+  const favouriteFor = (): FavouriteBill => ({
+    id: favouriteId(kind, targetCode, account),
+    kind,
+    code: targetCode,
+    providerName,
+    billerId: meta?.id ?? targetCode.toLowerCase(),
+    label: isNetwork
+      ? product === "DATA"
+        ? "Data bundle"
+        : "Airtime"
+      : isElectricity
+        ? meterType === "PREPAID"
+          ? "Prepaid meter"
+          : "Postpaid meter"
+        : isCable
+          ? "TV subscription"
+          : "Wallet top-up",
+    account,
+    phoneNumber: isBetting ? phoneNumber : undefined,
+    product: isNetwork ? product : undefined,
+    meterType: isElectricity ? meterType : undefined,
+    savedAt: new Date().toISOString(),
+  });
+
+  const favouriteSaved = isFavourite(favouriteId(kind, targetCode, account));
 
   /** What the payment object itself can't say — captured for the receipt. */
   const receiptContext = (): BillReceiptContext => {
@@ -238,12 +307,55 @@ export function BillCheckoutModal({
     }
   };
 
+  // Billers that check the account and hand back whose it is. Airtime and data
+  // have nobody to look up, so they are never pre-verified.
+  const verifies = isElectricity || isCable || isBetting;
+  /** Identifies the inputs a quote belongs to; any edit invalidates it. */
+  const payloadKey = detailsOk ? JSON.stringify(buildPayload()) : null;
+  const quoteIsCurrent =
+    !!quote &&
+    payloadKey !== null &&
+    payloadKey === quotedKey &&
+    new Date(quote.expiresAt).getTime() > Date.now();
+
+  // There is no "validate customer" route — initiate is what verifies, and it
+  // needs the amount too, so this runs once the whole form is valid. The quote
+  // it returns is the one the payment then uses, so this costs no extra call.
+  //
+  // Keyed on what was *attempted*, not what succeeded: a meter the biller
+  // rejects must not be retried in a loop, and `isPending` is a dependency so
+  // an edit made mid-flight still gets looked up once the first call lands.
+  useEffect(() => {
+    if (!verifies || step !== "details" || !payloadKey) return;
+    if (payloadKey === attemptedKey || initiate.isPending) return;
+
+    const timer = setTimeout(() => {
+      setAttemptedKey(payloadKey);
+      setNotice("");
+      initiate.mutate(buildPayload(), {
+        onSuccess: (q) => {
+          setQuote(q);
+          setQuotedKey(payloadKey);
+        },
+      });
+    }, 600); // let typing settle before asking the biller
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payloadKey, attemptedKey, verifies, step, initiate.isPending]);
+
   const handleContinue = () => {
     if (!detailsOk || initiate.isPending) return;
     setNotice("");
+    // The verification above already priced these exact details.
+    if (quoteIsCurrent) {
+      setStep("review");
+      return;
+    }
     initiate.mutate(buildPayload(), {
       onSuccess: (q) => {
         setQuote(q);
+        setQuotedKey(payloadKey);
+        setAttemptedKey(payloadKey);
         setStep("review");
       },
     });
@@ -347,6 +459,9 @@ export function BillCheckoutModal({
     </div>
   );
 
+  /** Cable bouquets, as tappable rows. Names are long and carry no size or
+   *  validity to parse, so they list vertically rather than in the grid the
+   *  data plans use. */
   const planSelect = hasPlans ? (
     plans.error ? (
       <div className="space-y-2.5">
@@ -359,31 +474,49 @@ export function BillCheckoutModal({
           Try again
         </Button>
       </div>
+    ) : plans.isPending ? (
+      <div className="space-y-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-13 rounded-xl border border-border bg-card-secondary animate-pulse"
+          />
+        ))}
+      </div>
+    ) : !planOptions?.length ? (
+      <div className="rounded-xl border border-border bg-card-secondary p-4 text-center text-sm text-text">
+        No plans are available for this provider right now.
+      </div>
     ) : (
-      <div className="relative">
-        <select
-          value={planId}
-          onChange={(e) => setPlanId(e.target.value)}
-          disabled={plans.isPending}
-          className={cn(
-            inputClasses,
-            "appearance-none pr-10 cursor-pointer disabled:cursor-wait",
-          )}
-        >
-          <option value="">
-            {plans.isPending ? "Loading plans…" : "Choose a plan"}
-          </option>
-          {planOptions?.map((p) => (
-            <option key={p.key} value={p.key}>
-              {p.label} — {formatNaira(p.amount)}
-            </option>
-          ))}
-        </select>
-        {plans.isPending ? (
-          <LoaderCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder animate-spin" />
-        ) : (
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder pointer-events-none" />
-        )}
+      <div className="space-y-2 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5 pb-2">
+        {planOptions.map((p) => {
+          const selected = p.key === planId;
+          return (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => setPlanId(p.key)}
+              className={cn(
+                "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                selected
+                  ? "border-Green bg-Green/10"
+                  : "border-border bg-card-secondary hover:border-border-active",
+              )}
+            >
+              <span className="min-w-0 truncate text-sm font-medium text-card-text">
+                {p.label}
+              </span>
+              <span
+                className={cn(
+                  "shrink-0 text-sm font-semibold",
+                  selected ? "text-Green" : "text-card-text",
+                )}
+              >
+                {formatNaira(p.amount)}
+              </span>
+            </button>
+          );
+        })}
       </div>
     )
   ) : null;
@@ -405,9 +538,14 @@ export function BillCheckoutModal({
   );
 
   return (
-    <Modal className="max-w-110 p-0" onClose={safeClose}>
+    <Modal
+      className="max-w-110 p-0 max-sm:flex max-sm:h-[90dvh] max-sm:max-h-[90dvh] max-sm:flex-col"
+      onClose={safeClose}
+    >
+      {/* ModalHeader's own `max-sm:pb-8` is a separate key from `pb-0` to
+          tailwind-merge, so mobile needs its paddings named explicitly. */}
       <ModalHeader
-        className="px-6 pt-5 pb-0 max-sm:px-6"
+        className="px-6 pt-5 pb-0 max-sm:px-6 max-sm:pt-5 max-sm:pb-0"
         title={headerByStep[step].title}
         subtitle={headerByStep[step].subtitle}
         onBack={
@@ -423,9 +561,9 @@ export function BillCheckoutModal({
         onClose={safeClose}
       />
 
-      <div className="px-6 pb-6 pt-5">
+      <div className="px-6 pb-6 pt-5 max-sm:flex-1 max-sm:pt-4">
         {step === "details" && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {isElectricity && (
               <>
                 <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
@@ -437,7 +575,7 @@ export function BillCheckoutModal({
                         initiate.reset();
                       }}
                       className={cn(
-                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        "h-10 rounded-lg text-sm font-medium transition-colors",
                         meterType === t
                           ? "bg-card-background text-card-text shadow-sm"
                           : "text-text hover:text-card-text",
@@ -449,7 +587,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Meter Number
                   </label>
                   <input
@@ -465,7 +603,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Amount (₦)
                   </label>
                   <input
@@ -477,14 +615,14 @@ export function BillCheckoutModal({
                     inputMode="numeric"
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2.5">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
                       <button
                         key={qa}
                         type="button"
                         onClick={() => setAmount(String(qa))}
                         className={cn(
-                          "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                           amount === String(qa)
                             ? "border-Green bg-Green/10 text-Green font-medium"
                             : "border-border text-text hover:border-border-active",
@@ -501,7 +639,7 @@ export function BillCheckoutModal({
             {isCable && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     {meta?.inputLabel ?? "Smartcard / IUC Number"}
                   </label>
                   <input
@@ -518,7 +656,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Plan
                   </label>
                   {planSelect}
@@ -529,7 +667,7 @@ export function BillCheckoutModal({
             {isBetting && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     {meta?.inputLabel ?? "Account ID"}
                   </label>
                   <input
@@ -546,7 +684,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Phone Number
                   </label>
                   <input
@@ -562,7 +700,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Amount (₦)
                   </label>
                   <input
@@ -574,14 +712,14 @@ export function BillCheckoutModal({
                     inputMode="numeric"
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2.5">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {BETTING_AMOUNTS.map((qa) => (
                       <button
                         key={qa}
                         type="button"
                         onClick={() => setAmount(String(qa))}
                         className={cn(
-                          "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                           amount === String(qa)
                             ? "border-Green bg-Green/10 text-Green font-medium"
                             : "border-border text-text hover:border-border-active",
@@ -607,7 +745,7 @@ export function BillCheckoutModal({
                         initiate.reset();
                       }}
                       className={cn(
-                        "h-9 rounded-lg text-sm font-medium transition-colors",
+                        "h-10 rounded-lg text-sm font-medium transition-colors",
                         product === p
                           ? "bg-card-background text-card-text shadow-sm"
                           : "text-text hover:text-card-text",
@@ -619,7 +757,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-1.5">
+                  <label className="block text-xs font-medium text-text mb-2">
                     Phone Number
                   </label>
                   <input
@@ -636,7 +774,7 @@ export function BillCheckoutModal({
 
                 {product === "AIRTIME" ? (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-1.5">
+                    <label className="block text-xs font-medium text-text mb-2">
                       Amount (₦)
                     </label>
                     <input
@@ -649,14 +787,14 @@ export function BillCheckoutModal({
                       className={inputClasses}
                     />
                     {meta?.quickAmounts && (
-                      <div className="flex flex-wrap gap-2 mt-2.5">
+                      <div className="flex flex-wrap gap-2 mt-3">
                         {meta.quickAmounts.map((qa) => (
                           <button
                             key={qa}
                             type="button"
                             onClick={() => setAmount(String(qa))}
                             className={cn(
-                              "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                              "px-3.5 py-2 text-xs rounded-lg border transition-colors",
                               amount === String(qa)
                                 ? "border-Green bg-Green/10 text-Green font-medium"
                                 : "border-border text-text hover:border-border-active",
@@ -670,7 +808,7 @@ export function BillCheckoutModal({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-1.5">
+                    <label className="block text-xs font-medium text-text mb-2">
                       Data Plan
                     </label>
                     {dataPlans.error ? (
@@ -697,6 +835,46 @@ export function BillCheckoutModal({
               </>
             )}
 
+            {/* Who the account belongs to, looked up as soon as the details
+                are complete — so a wrong meter or smartcard is caught here
+                rather than after paying. */}
+            {verifies && initiate.isPending && (
+              <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card-secondary px-4 py-3">
+                <LoaderCircle className="w-4 h-4 text-Green animate-spin shrink-0" />
+                <span className="text-sm text-text">
+                  Checking {isElectricity ? "meter" : "account"}…
+                </span>
+              </div>
+            )}
+
+            {verifies && !initiate.isPending && quoteIsCurrent && (
+              <div className="rounded-xl border border-Green/40 bg-Green/10 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-Green shrink-0" />
+                  <span className="text-xs font-medium text-Green">
+                    {isElectricity
+                      ? "Meter verified"
+                      : isCable
+                        ? "Account verified"
+                        : "Account found"}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-base font-semibold text-card-text wrap-break-word">
+                  {quote?.customerName ?? providerName}
+                </p>
+                {quote?.customerAddress && (
+                  <p className="mt-0.5 text-sm text-text wrap-break-word">
+                    {quote.customerAddress}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-text">
+                  {isElectricity
+                    ? `${meterType === "PREPAID" ? "Prepaid" : "Postpaid"} • ${customerId}`
+                    : customerId}
+                </p>
+              </div>
+            )}
+
             <ErrorLayout message={notice || initiate.error?.message} />
 
             <Button
@@ -716,7 +894,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "review" && quote && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="px-4 rounded-xl bg-card-secondary border border-border">
               {summaryRow(
                 isNetwork ? "Network" : "Provider",
@@ -843,7 +1021,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "result" && current && (
-          <div className="space-y-4 text-center">
+          <div className="space-y-5 text-center">
             <div className="flex justify-center pt-2">
               {current.status === "COMPLETED" ? (
                 <CheckCircle2 className="w-14 h-14 text-Green" />
@@ -883,14 +1061,29 @@ export function BillCheckoutModal({
               </p>
             )}
 
+            {/* The token gets typed into a meter keypad digit by digit, often
+                by someone reading it off the phone at arm's length — so it is
+                set large, grouped in fours and copyable. */}
             {current.token && (
-              <div className="py-3 px-4 rounded-xl bg-card-secondary border border-border text-left">
-                <p className="text-xs text-text">Token</p>
-                <p className="text-sm font-semibold text-card-text break-all">
-                  {current.token}
+              <div className="py-4 px-4 rounded-xl bg-card-secondary border border-border text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-text">Token</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(current.token as string);
+                      toast.success("Token copied");
+                    }}
+                    className="flex items-center gap-1 text-xs text-Green hover:underline shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copy
+                  </button>
+                </div>
+                <p className="mt-1.5 text-2xl font-bold tracking-wide text-card-text break-all tabular-nums max-sm:text-[22px]">
+                  {groupToken(current.token)}
                 </p>
                 {current.units && (
-                  <p className="text-xs text-text mt-1">
+                  <p className="text-sm text-text mt-1.5">
                     {current.units} units
                   </p>
                 )}
@@ -909,6 +1102,32 @@ export function BillCheckoutModal({
               )}
 
             {referenceRow(current.reference)}
+
+            {/* Offered once the payment has actually gone through — there's no
+                point saving a shortcut to something that just failed. */}
+            {current.status === "COMPLETED" && account && (
+              <button
+                onClick={() => {
+                  const saved = toggleFavourite(favouriteFor());
+                  toast.success(
+                    saved
+                      ? "Saved to favourites"
+                      : "Removed from favourites",
+                  );
+                }}
+                className={cn(
+                  "flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-sm font-medium transition-colors",
+                  favouriteSaved
+                    ? "border-Green text-Green"
+                    : "border-border text-text hover:border-border-active hover:text-card-text",
+                )}
+              >
+                <Star
+                  className={cn("w-4 h-4", favouriteSaved && "fill-Green")}
+                />
+                {favouriteSaved ? "Saved to favourites" : "Save to favourites"}
+              </button>
+            )}
 
             {current.status === "PENDING" ? (
               <Button className="w-full" onClick={onClose}>
