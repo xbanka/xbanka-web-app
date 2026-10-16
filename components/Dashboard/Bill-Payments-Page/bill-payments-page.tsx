@@ -460,7 +460,7 @@ export default function BillPaymentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search for billers e.g MTN, IKEDC, DSTV"
-          className="w-full h-12 pl-11 pr-11 text-sm border border-input rounded-xl bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
+          className="w-full h-12 pl-11 pr-11 text-base md:text-sm border border-input rounded-xl bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
         />
         {search && (
           <button

@@ -40,7 +40,7 @@ export function P2PPage({ embedded = false }: { embedded?: boolean }) {
 
         {/* Currency selectors */}
         <div className="relative">
-          <select className="h-9 pl-3 pr-7 text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
+          <select className="h-9 pl-3 pr-7 text-base md:text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
             <option>NGN</option>
             <option>USD</option>
             <option>GBP</option>
@@ -51,12 +51,12 @@ export function P2PPage({ embedded = false }: { embedded?: boolean }) {
         <div className="relative flex-1 min-w-36">
           <input
             placeholder="Enter amount"
-            className="w-full h-9 pl-3 pr-3 text-xs border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
+            className="w-full h-9 pl-3 pr-3 text-base md:text-xs border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
           />
         </div>
 
         <div className="relative">
-          <select className="h-9 pl-3 pr-7 text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
+          <select className="h-9 pl-3 pr-7 text-base md:text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
             <option>USDT</option>
             <option>BTC</option>
             <option>ETH</option>
@@ -66,7 +66,7 @@ export function P2PPage({ embedded = false }: { embedded?: boolean }) {
         </div>
 
         <div className="relative">
-          <select className="h-9 pl-3 pr-7 text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
+          <select className="h-9 pl-3 pr-7 text-base md:text-xs border border-input rounded-lg bg-card-background text-card-text appearance-none outline-none focus:border-border-active transition-colors">
             <option>Bank Transfer</option>
             <option>Card</option>
           </select>
