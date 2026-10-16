@@ -8,6 +8,7 @@ import { Label } from "./label";
 import { Input } from "./input";
 
 import { SelectFieldProps } from "@/lib/types/form-types";
+import { rankOptions } from "@/lib/rank-options";
 
 export const SearchSelectField = ({
   id,
@@ -29,11 +30,12 @@ export const SearchSelectField = ({
   // react-hook-form register
   const field = register ? register(id) : undefined;
 
-  const filteredOptions = useMemo(() => {
-    return options.filter((o) =>
-      o.label.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [options, search]);
+  // Ranked rather than merely filtered, so typing "gt" surfaces Guaranty
+  // Trust ahead of the other banks that happen to share those letters.
+  const filteredOptions = useMemo(
+    () => rankOptions(options, search),
+    [options, search],
+  );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
