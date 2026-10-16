@@ -76,7 +76,7 @@ const groupToken = (token: string) =>
   /^\d+$/.test(token) ? token.replace(/(\d{4})(?=\d)/g, "$1 ") : token;
 
 const inputClasses =
-  "w-full h-12 px-4 text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
+  "w-full h-12 px-4 text-base md:text-sm border border-input rounded-xl bg-input-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]";
 
 export function BillCheckoutModal({
   target,
