@@ -1,5 +1,5 @@
 import { DashboardCard } from "@/components/Layout/DashboardCard";
-import { ArrowUpRight, BlocksIcon, LucideGift } from "lucide-react";
+import { ArrowUpRight, BlocksIcon, LucideGift, Receipt } from "lucide-react";
 import Link from "next/link";
 
 export function QuickActions() {
@@ -15,6 +15,16 @@ export function QuickActions() {
       disabled: false,
     },
     {
+      title: "Bill Payments",
+      sub: "Airtime, Data, Electricity + more",
+      gradient: "bg-blue-light",
+      iconColor: "bg-blue-border",
+      iconTextColor: "text-blue-text",
+      page: "bill-payment",
+      icon: Receipt,
+      disabled: false,
+    },
+    {
       title: "Buy/Sell Gift Cards",
       sub: "Amazon, Visa, Starbucks + more",
       gradient: "bg-coral-light",
@@ -22,16 +32,6 @@ export function QuickActions() {
       iconTextColor: "text-coral-text",
       page: "gift-cards",
       icon: LucideGift,
-      disabled: true,
-    },
-    {
-      title: "Bill Payments",
-      sub: "Airtime, Data, Electricity + more",
-      gradient: "bg-blue-light",
-      iconColor: "bg-blue-border",
-      iconTextColor: "text-blue-text",
-      page: "bills",
-      icon: BlocksIcon,
       disabled: true,
     },
   ];
