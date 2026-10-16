@@ -72,7 +72,7 @@ export const CryptoBalance = () => {
               <select
                 value={view}
                 onChange={(e) => setView(e.target.value as "NGN" | "CRYPTO")}
-                className="bg-transparent text-white/60 text-xs outline-none max-sm:text-sm"
+                className="bg-transparent text-white/60 text-xs outline-none max-sm:text-base"
               >
                 <option value="NGN">NGN</option>
                 <option value="CRYPTO">USDT</option>

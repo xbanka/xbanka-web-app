@@ -111,7 +111,7 @@ export function SelectAssetStep({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search asset"
-            className="h-[52px] w-full rounded-xl border-2 border-input bg-transparent pl-[52px] pr-5 text-[16px] text-card-text outline-none transition-colors placeholder:text-placeholder focus:border-border-active max-sm:h-11 max-sm:pl-11 max-sm:text-[13px]"
+            className="h-[52px] w-full rounded-xl border-2 border-input bg-transparent pl-[52px] pr-5 text-[16px] text-card-text outline-none transition-colors placeholder:text-placeholder focus:border-border-active max-sm:h-11 max-sm:pl-11 max-sm:text-base"
           />
         </div>
 
