@@ -38,7 +38,12 @@ const handleCopy = (text: string, label: string) => {
   toast.success(`${label} copied to clipboard`);
 };
 
-type TransferStep = "overview" | "add";
+import { QUICK_AMOUNTS } from "@/lib/wallet-page";
+import { cn } from "@/lib/utils";
+import { CheckCircle2 } from "lucide-react";
+import { UseDeclareBankTransferIntent } from "@/lib/services/wallet.service";
+
+type TransferStep = "amount" | "add_account" | "details" | "submitted";
 
 export function BankTransferFlow({
   onBack,
@@ -47,58 +52,299 @@ export function BankTransferFlow({
   onBack?: () => void;
   onClose: () => void;
 }) {
-  const [step, setStep] = useState<TransferStep>("overview");
+  const [step, setStep] = useState<TransferStep>("amount");
+  const [amount, setAmount] = useState<string>("");
+  const { data: fundingData, isPending: fundingPending } =
+    UseGetFundingAccounts();
 
-  if (step === "add") {
+  const fundingAccounts: FundingAccount[] = fundingData?.data?.data ?? [];
+
+  if (step === "add_account") {
     return (
       <AddFundingAccountStep
-        onBack={() => setStep("overview")}
+        onBack={() => setStep(amount ? "details" : "amount")}
         onClose={onClose}
-        onAdded={() => setStep("overview")}
+        onAdded={() => setStep(amount ? "details" : "amount")}
+      />
+    );
+  }
+
+  if (step === "details") {
+    return (
+      <TransferDetailsStep
+        amount={amount}
+        fundingAccounts={fundingAccounts}
+        onBack={() => setStep("amount")}
+        onClose={onClose}
+        onAddAccount={() => setStep("add_account")}
+        onSuccess={() => setStep("submitted")}
+      />
+    );
+  }
+
+  if (step === "submitted") {
+    return (
+      <TransferSubmittedStep
+        amount={amount}
+        onClose={onClose}
       />
     );
   }
 
   return (
-    <OverviewStep
+    <EnterAmountStep
+      amount={amount}
+      setAmount={setAmount}
+      fundingAccounts={fundingAccounts}
+      fundingPending={fundingPending}
       onBack={onBack}
       onClose={onClose}
-      onAdd={() => setStep("add")}
+      onAddAccount={() => setStep("add_account")}
+      onContinue={() => setStep("details")}
     />
   );
 }
 
-function OverviewStep({
+function EnterAmountStep({
+  amount,
+  setAmount,
+  fundingAccounts,
+  fundingPending,
   onBack,
   onClose,
-  onAdd,
+  onAddAccount,
+  onContinue,
 }: {
+  amount: string;
+  setAmount: (v: string) => void;
+  fundingAccounts: FundingAccount[];
+  fundingPending: boolean;
   onBack?: () => void;
   onClose: () => void;
-  onAdd: () => void;
+  onAddAccount: () => void;
+  onContinue: () => void;
 }) {
-  const {
-    data: xbankaData,
-    isPending: xbankaPending,
-    error: xbankaError,
-  } = UseGetXbankaFundingAccount();
-  const { data: fundingData, isPending: fundingPending } =
-    UseGetFundingAccounts();
-
-  const xbanka = xbankaData?.data?.data;
-  const fundingAccounts: FundingAccount[] = fundingData?.data?.data ?? [];
+  const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
+  const isValid = numeric >= 1000;
+  const hasFundingAccount = fundingAccounts.length > 0;
 
   return (
     <Modal className="p-0" onClose={onClose}>
       <ModalHeader
         className="px-10 py-6 max-sm:px-5 max-sm:py-5"
         title="Bank Transfer"
-        subtitle="Send money from your own bank account to xBanka."
+        subtitle="Enter the amount you would like to transfer."
         onBack={onBack}
         onClose={onClose}
       />
 
       <div className="px-10 pb-10 pt-2 space-y-6 max-sm:px-5 max-sm:pb-6">
+        {/* Amount Input */}
+        <div className="space-y-3">
+          <label className="text-xs font-semibold text-text uppercase tracking-wide">
+            Amount to fund
+          </label>
+          <div className="flex items-center gap-2 py-3 px-4 border rounded-xl border-input h-17.5 max-sm:h-15 max-sm:px-3 bg-background">
+            <span className="text-2xl font-bold text-card-text max-sm:text-xl">
+              ₦
+            </span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={amount}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                setAmount(raw ? Number(raw).toLocaleString() : "");
+              }}
+              placeholder="0.00"
+              autoFocus
+              className="flex-1 bg-transparent text-2xl font-bold text-card-text outline-none placeholder:text-text/30 min-w-0 max-sm:text-xl"
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs text-text">
+            <span>Minimum transfer: ₦1,000</span>
+          </div>
+
+          {/* Quick amounts */}
+          <div className="flex gap-2 overflow-x-auto pb-1 max-sm:-mx-1 max-sm:px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {QUICK_AMOUNTS.map((q) => (
+              <button
+                type="button"
+                key={q}
+                onClick={() => setAmount(q.toLocaleString())}
+                className={cn(
+                  "px-4 py-2.5 rounded-lg text-xs font-normal border transition-colors shrink-0 max-sm:px-3 max-sm:py-2",
+                  amount === q.toLocaleString()
+                    ? "border-Green bg-Green/10 text-Green font-medium"
+                    : "border-input text-text hover:border-border-active",
+                )}
+              >
+                ₦{q.toLocaleString()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Funding accounts preview / warning */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-text uppercase tracking-wide">
+              Your funding accounts
+            </span>
+            {hasFundingAccount && (
+              <button
+                type="button"
+                onClick={onAddAccount}
+                className="text-xs text-Green hover:underline font-medium"
+              >
+                + Add another
+              </button>
+            )}
+          </div>
+
+          {fundingPending ? (
+            <div className="flex justify-center py-4">
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : !hasFundingAccount ? (
+            <div className="p-4 rounded-xl border border-dashed border-border bg-border/20 space-y-3">
+              <p className="text-xs text-text leading-relaxed">
+                You haven&apos;t linked a funding bank account yet. You must transfer from your verified account so we can match your deposit.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={onAddAccount}
+              >
+                <Plus className="w-4 h-4 text-Green" />
+                Add a funding account
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {fundingAccounts.slice(0, 2).map((account) => (
+                <div
+                  key={account.id}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background"
+                >
+                  <BankLogo
+                    bankName={account.bankName}
+                    bankCode={account.bankCode}
+                    size={32}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-card-text truncate">
+                      {account.bankName} - {maskAccount(account.accountNumber)}
+                    </p>
+                    <p className="text-[11px] text-text truncate">
+                      {account.accountName}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {fundingAccounts.length > 2 && (
+                <p className="text-[11px] text-text text-center">
+                  +{fundingAccounts.length - 2} more linked funding accounts
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-4 max-sm:gap-3 pt-2">
+          {onBack && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="flex-1"
+              onClick={onBack}
+            >
+              Back
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="lg"
+            className={onBack ? "flex-2" : "w-full"}
+            disabled={!isValid || !hasFundingAccount}
+            variant={isValid && hasFundingAccount ? "default" : "disabled"}
+            onClick={onContinue}
+          >
+            Continue
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function TransferDetailsStep({
+  amount,
+  fundingAccounts,
+  onBack,
+  onClose,
+  onAddAccount,
+  onSuccess,
+}: {
+  amount: string;
+  fundingAccounts: FundingAccount[];
+  onBack: () => void;
+  onClose: () => void;
+  onAddAccount: () => void;
+  onSuccess: () => void;
+}) {
+  const {
+    data: xbankaData,
+    isPending: xbankaPending,
+    error: xbankaError,
+  } = UseGetXbankaFundingAccount();
+
+  const { mutate: declareIntent, isPending: isDeclaring } =
+    UseDeclareBankTransferIntent();
+
+  const xbanka = xbankaData?.data?.data;
+  const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
+
+  const handleConfirmSent = () => {
+    declareIntent(numericAmount, {
+      onSuccess: () => {
+        toast.success("Transfer intent recorded");
+        onSuccess();
+      },
+    });
+  };
+
+  return (
+    <Modal className="p-0" onClose={onClose}>
+      <ModalHeader
+        className="px-10 py-6 max-sm:px-5 max-sm:py-5"
+        title="Bank Transfer"
+        subtitle="Transfer the exact amount to the account below."
+        onBack={onBack}
+        onClose={onClose}
+      />
+
+      <div className="px-10 pb-10 pt-2 space-y-6 max-sm:px-5 max-sm:pb-6">
+        {/* Amount to transfer banner */}
+        <div className="bg-border/40 rounded-2xl p-4 flex items-center justify-between border border-border">
+          <div>
+            <p className="text-xs text-text">Amount to send</p>
+            <p className="text-xl font-bold text-card-text mt-0.5">
+              ₦{amount}
+            </p>
+          </div>
+          <button
+            onClick={() => handleCopy(numericAmount.toString(), "Amount")}
+            className="flex items-center gap-1.5 text-xs text-Green hover:opacity-80 transition-opacity font-medium px-2.5 py-1.5 rounded-lg bg-Green/10"
+          >
+            <span>Copy</span>
+            <Copy className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         {/* xBanka account */}
         <div className="space-y-2">
           <p className="text-xs font-semibold text-text uppercase tracking-wide">
@@ -115,7 +361,7 @@ function OverviewStep({
             </p>
           ) : (
             <div className="bg-border rounded-2xl p-5 space-y-1">
-              <div className="flex items-center justify-between gap-3 px-1 py-3">
+              <div className="flex items-center justify-between gap-3 px-1 py-2.5">
                 <span className="text-xs font-normal text-text">Bank Name</span>
                 <span className="text-sm font-semibold text-card-text text-right">
                   {xbanka.bankName}
@@ -138,7 +384,7 @@ function OverviewStep({
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
-              <div className="flex items-center justify-between gap-3 px-1 py-3">
+              <div className="flex items-center justify-between gap-3 px-1 py-2.5">
                 <span className="text-xs font-normal text-text">
                   Account Name
                 </span>
@@ -150,71 +396,119 @@ function OverviewStep({
           )}
         </div>
 
-        {/* Linked funding accounts */}
+        {/* Linked funding accounts disclaimer */}
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-text uppercase tracking-wide">
-            Your funding accounts
-          </p>
-          <div className="space-y-3">
-            {fundingPending && (
-              <p className="text-sm text-text">Loading your accounts...</p>
-            )}
-            {!fundingPending && fundingAccounts.length === 0 && (
-              <p className="text-sm text-text">
-                You haven&apos;t added a funding account yet. Add the account
-                you&apos;ll send money from.
-              </p>
-            )}
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-text uppercase tracking-wide">
+              Your registered funding accounts
+            </p>
+            <button
+              type="button"
+              onClick={onAddAccount}
+              className="text-xs text-Green hover:underline font-medium"
+            >
+              + Add another
+            </button>
+          </div>
+          <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
             {fundingAccounts.map((account) => (
               <div
                 key={account.id}
-                className="flex items-center gap-3 p-3.5 rounded-xl border border-border"
+                className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background"
               >
                 <BankLogo
                   bankName={account.bankName}
                   bankCode={account.bankCode}
-                  size={40}
+                  size={32}
                 />
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-card-text truncate">
+                  <p className="text-xs font-semibold text-card-text truncate">
                     {account.bankName} - {maskAccount(account.accountNumber)}
                   </p>
-                  <p className="text-xs text-text truncate mt-1">
+                  <p className="text-[11px] text-text truncate">
                     {account.accountName}
                   </p>
                 </div>
               </div>
             ))}
-            <button
-              onClick={onAdd}
-              className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-dashed border-border hover:border-border-active transition-colors text-left"
-            >
-              <div className="w-10 h-10 rounded-full border-2 border-dashed border-Green/60 flex items-center justify-center shrink-0">
-                <Plus className="w-4 h-4 text-Green" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-card-text">
-                  Add a funding account
-                </p>
-                <p className="text-xs text-text mt-1">
-                  The bank account you send money from
-                </p>
-              </div>
-            </button>
           </div>
         </div>
 
         <div className="flex items-start gap-2.5 bg-Green/5 border border-Green/40 rounded-lg px-4 py-3">
           <Info className="w-4 h-4 text-Green shrink-0 mt-0.5" />
           <p className="text-xs font-normal leading-5 text-Green">
-            Transfer only from one of your funding accounts so we can match the
-            payment to you. Your wallet is credited once we confirm the
-            transfer.
+            Transfer only from <strong>any of your registered funding accounts</strong> listed above. We will match the payment and credit your wallet.
           </p>
         </div>
 
-        <Button variant="outline" size="lg" className="w-full" onClick={onClose}>
-          Close
+        <div className="flex gap-4 max-sm:gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="flex-1"
+            onClick={onBack}
+            disabled={isDeclaring}
+          >
+            Back
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            className="flex-2"
+            onClick={handleConfirmSent}
+            disabled={isDeclaring || !xbanka}
+          >
+            {isDeclaring ? "Submitting..." : "I have sent the money"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function TransferSubmittedStep({
+  amount,
+  onClose,
+}: {
+  amount: string;
+  onClose: () => void;
+}) {
+  return (
+    <Modal className="p-0" onClose={onClose}>
+      <ModalHeader
+        className="px-10 py-6 max-sm:px-5 max-sm:py-5"
+        title="Transfer Submitted"
+        onClose={onClose}
+      />
+
+      <div className="px-10 pb-10 pt-4 space-y-6 max-sm:px-5 max-sm:pb-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-Green/10 border border-Green/30 text-Green mx-auto flex items-center justify-center">
+          <CheckCircle2 className="w-8 h-8 text-Green" />
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-lg font-bold text-card-text">
+            ₦{amount} Pending Confirmation
+          </h3>
+          <p className="text-xs text-text leading-relaxed max-w-sm mx-auto">
+            We&apos;ve recorded your transfer notification. Once our team confirms the incoming deposit from your funding account, your NGN wallet will be credited automatically.
+          </p>
+        </div>
+
+        <div className="p-4 rounded-xl border border-border bg-border/20 text-left space-y-2 text-xs">
+          <div className="flex justify-between">
+            <span className="text-text">Status</span>
+            <span className="font-semibold text-amber-500">Pending</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-text">Expected Amount</span>
+            <span className="font-semibold text-card-text">₦{amount}</span>
+          </div>
+        </div>
+
+        <Button size="lg" className="w-full" onClick={onClose}>
+          Done
         </Button>
       </div>
     </Modal>
