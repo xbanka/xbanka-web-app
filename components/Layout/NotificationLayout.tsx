@@ -123,7 +123,7 @@ export function NotificationsModal({
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search notifications"
-                className="h-9 w-full rounded-lg border border-input bg-card-background pr-3 pl-8 text-[14px] text-card-text transition-colors outline-none placeholder:text-placeholder focus:border-border-active"
+                className="h-9 w-full rounded-lg border border-input bg-card-background pr-3 pl-8 text-base md:text-[14px] text-card-text transition-colors outline-none placeholder:text-placeholder focus:border-border-active"
               />
             </div>
             <button

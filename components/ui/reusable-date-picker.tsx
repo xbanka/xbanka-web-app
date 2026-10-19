@@ -11,7 +11,7 @@ export const DatePicker = ({ value, onChange }: Props) => {
       type="date"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-transparent border-b border-input text-card-text text-xs outline-none"
+      className="w-full bg-transparent border-b border-input text-card-text text-base md:text-xs outline-none"
     />
   );
 };

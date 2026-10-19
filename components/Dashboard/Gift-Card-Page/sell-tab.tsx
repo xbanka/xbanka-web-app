@@ -28,7 +28,7 @@ function SellTab() {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-card-text">Select card type</label>
             <div className="relative">
-              <select className="w-full h-10 pl-3 pr-8 text-sm border border-input rounded-lg bg-transparent text-card-text appearance-none outline-none focus:border-border-active transition-colors">
+              <select className="w-full h-10 pl-3 pr-8 text-base md:text-sm border border-input rounded-lg bg-transparent text-card-text appearance-none outline-none focus:border-border-active transition-colors">
                 <option>Amazon Gift Card</option>
                 <option>Apple Gift Card</option>
                 <option>Google Play</option>
@@ -43,7 +43,7 @@ function SellTab() {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-card-text">Region</label>
             <div className="relative">
-              <select className="w-full h-10 pl-3 pr-8 text-sm border border-input rounded-lg bg-transparent text-card-text appearance-none outline-none focus:border-border-active transition-colors">
+              <select className="w-full h-10 pl-3 pr-8 text-base md:text-sm border border-input rounded-lg bg-transparent text-card-text appearance-none outline-none focus:border-border-active transition-colors">
                 <option value="">Select Card region</option>
                 <option>United States</option>
                 <option>United Kingdom</option>
@@ -87,7 +87,7 @@ function SellTab() {
               type="number"
               value={cardValue}
               onChange={(e) => setCardValue(e.target.value)}
-              className="w-full h-10 pl-8 pr-4 text-sm border border-input rounded-lg bg-transparent text-card-text outline-none focus:border-border-active [&:not(:placeholder-shown)]:border-border-active transition-colors"
+              className="w-full h-10 pl-8 pr-4 text-base md:text-sm border border-input rounded-lg bg-transparent text-card-text outline-none focus:border-border-active [&:not(:placeholder-shown)]:border-border-active transition-colors"
             />
           </div>
         </div>
@@ -99,7 +99,7 @@ function SellTab() {
             <textarea
               placeholder="Enter gift card code here..."
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-input rounded-lg bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active resize-none transition-colors"
+              className="w-full px-3 py-2 text-base md:text-sm border border-input rounded-lg bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active resize-none transition-colors"
             />
           </div>
  

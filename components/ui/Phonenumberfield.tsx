@@ -147,7 +147,7 @@ export default function PhoneNumberField({
                     placeholder="Search country..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-input bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
+                    className="w-full h-9 pl-9 pr-3 text-base md:text-sm rounded-lg border border-input bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow]"
                   />
                 </div>
               </div>

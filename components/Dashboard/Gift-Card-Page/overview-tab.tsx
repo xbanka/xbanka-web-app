@@ -150,7 +150,7 @@ export function OverviewTab() {
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-placeholder max-sm:h-5 max-sm:w-5" />
               <input
                 placeholder="Search..."
-                className="pl-8 pr-3 h-8 text-xs border border-input rounded-lg bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active w-36 max-sm:h-12 max-sm:w-full max-sm:rounded-xl max-sm:pl-10 max-sm:text-[14px]"
+                className="pl-8 pr-3 h-8 text-xs border border-input rounded-lg bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active w-36 max-sm:h-12 max-sm:w-full max-sm:rounded-xl max-sm:pl-10 max-sm:text-base"
               />
             </div>
             <button className="flex items-center justify-center gap-1.5 h-8 px-3 text-xs border border-input rounded-lg text-card-text hover:border-border-active transition-colors max-sm:h-12 max-sm:w-full max-sm:rounded-xl max-sm:text-[14px]">

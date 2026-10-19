@@ -215,7 +215,7 @@ export function MarketPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search coin"
-              className="pl-8 pr-3 h-9 text-[14px] border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-full sm:w-40"
+              className="pl-8 pr-3 h-9 text-base md:text-[14px] border border-input rounded-lg bg-card-background text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors w-full sm:w-40"
             />
           </div>
         </div>
