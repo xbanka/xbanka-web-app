@@ -180,10 +180,8 @@ export function AccountInfoTab() {
           Deposit & Withdrawal Account
         </h3>
 
-        <div className="grid grid-cols-1 gap-6">
-          {/* Xbanka Funding Account (virtual account) hidden for now: virtual
-              account generation is failing. Restore this column and switch the
-              grid back to lg:grid-cols-2 when it is fixed.
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
+          {/* Xbanka Funding Account */}
           <div className="space-y-4 lg:pr-6">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -262,14 +260,13 @@ export function AccountInfoTab() {
               </>
             )}
           </div>
-          */}
 
           {/* Withdrawal Account */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:pl-6">
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium text-sm leading-5 text-card-text">
-                  Xbanka Funding Account
+                  Withdrawal Account
                 </p>
                 <p className="font-normal text-xs leading-5 text-text mt-0.5">
                   Transfer money to this account to fund your NGN Wallet
