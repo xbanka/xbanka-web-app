@@ -31,8 +31,8 @@ export function AccountPageSkeleton() {
           <Skeleton className="h-5 w-56" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
-          {/* Funding account */}
+        <div className="grid grid-cols-1 gap-6">
+          {/* Funding account column hidden to match account-info-tab.tsx
           <div className="space-y-4 lg:pr-6">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-2">
@@ -58,9 +58,10 @@ export function AccountPageSkeleton() {
 
             <Skeleton className="h-12 w-full rounded-lg" />
           </div>
+          */}
 
           {/* Withdrawal account */}
-          <div className="space-y-4 lg:pl-6">
+          <div className="space-y-4">
             <div className="space-y-2">
               <Skeleton className="h-4 w-40" />
               <Skeleton className="h-3 w-60" />
