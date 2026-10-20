@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { Upload, Trash2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { matchesAccept, prettyTypes } from "@/lib/file-validation";
 
 export interface AttachmentFile {
   file: File;
@@ -14,6 +16,8 @@ interface AttachmentUploadProps {
   onChange: (files: AttachmentFile[]) => void;
   maxSizeMB?: number;
   accept?: string;
+  /** Headline inside the upload box. */
+  title?: string;
   className?: string;
 }
 
@@ -22,17 +26,33 @@ export function AttachmentUpload({
   onChange,
   maxSizeMB = 5,
   accept = "image/*,application/pdf",
+  title = "Upload screenshot, receipt, or proof document",
   className,
 }: AttachmentUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [rejection, setRejection] = useState<string | null>(null);
+
+  const reject = (message: string) => {
+    setRejection(message);
+    toast.error(message);
+  };
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
 
     const newFiles: AttachmentFile[] = [];
+    let rejected: string | null = null;
 
     Array.from(files).forEach((file) => {
-      if (file.size > maxSizeMB * 1024 * 1024) return;
+      // Tell the person why a file was refused. It used to be dropped silently.
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        rejected = `"${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). The maximum size is ${maxSizeMB} MB.`;
+        return;
+      }
+      if (!matchesAccept(file, accept)) {
+        rejected = `"${file.name}" is not a supported file. Please upload ${prettyTypes(accept)}.`;
+        return;
+      }
 
       const isImage = file.type.startsWith("image/");
       newFiles.push({
@@ -41,7 +61,11 @@ export function AttachmentUpload({
       });
     });
 
-    onChange(newFiles.slice(0, 1));
+    if (rejected) reject(rejected);
+    else setRejection(null);
+
+    // Keep what was already chosen when the new file is refused.
+    if (newFiles.length > 0) onChange(newFiles.slice(0, 1));
 
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -68,10 +92,10 @@ export function AttachmentUpload({
       >
         <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2 max-sm:mb-3" />
         <p className="text-[12px] font-normal leading-4 text-gray-600 max-sm:text-[16px] max-sm:font-medium max-sm:leading-6 max-sm:text-card-text">
-          Upload screenshot, receipt, or proof document
+          {title}
         </p>
         <p className="text-xs text-gray-400 mt-1 max-sm:text-[13px] max-sm:leading-5">
-          JPG, PNG, OR PDF • Max {maxSizeMB}MB
+          {prettyTypes(accept).replace(" or ", ", OR ").toUpperCase()} • Max {maxSizeMB}MB
         </p>
 
         <input
@@ -82,6 +106,12 @@ export function AttachmentUpload({
           onChange={(e) => handleFiles(e.target.files)}
         />
       </div>
+
+      {rejection && (
+        <p role="alert" className="text-xs text-[#991B1B] font-medium">
+          {rejection}
+        </p>
+      )}
 
       {/* Preview list */}
       {value.length > 0 && (

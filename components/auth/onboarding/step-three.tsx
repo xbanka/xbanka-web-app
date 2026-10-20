@@ -7,7 +7,11 @@ import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
+import {
+  cleanIdNumber,
+  step3FormValues,
+  step3Schema,
+} from "@/lib/schema/onboarding-schema";
 import { Button } from "../../ui/button";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
@@ -48,12 +52,9 @@ function Step3({ setStep }: Step3Props) {
     const formData = new FormData();
 
     formData.append("userId", userId);
-    formData.append("idNumber", data.idNumber);
+    formData.append("idNumber", cleanIdNumber(data.idNumber));
     formData.append("idType", data.idType);
     formData.append("idImage", attachments[0].file);
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
 
     mutate(formData, {
       onSuccess: () => {
@@ -126,7 +127,13 @@ function Step3({ setStep }: Step3Props) {
                 Include receipt of transaction
               </p>
             </div>
-            <AttachmentUpload value={attachments} onChange={setAttachments} />
+            <AttachmentUpload
+                value={attachments}
+                onChange={setAttachments}
+                maxSizeMB={5}
+                accept="image/jpeg,image/png,application/pdf"
+                title="Upload a photo or PDF of your ID"
+              />
           </div>
           <ErrorField message={error?.message || skipError?.message} />
         </div>

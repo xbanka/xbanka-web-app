@@ -96,11 +96,22 @@ AxiosInstance.interceptors.response.use(
     let apiMessage = "Something went wrong";
     let status = error.response?.status || 500;
 
+    // File uploads: a server or proxy that refuses a big file often answers
+    // without CORS headers, which the browser reports as a bare "network error".
+    const isUpload =
+      typeof FormData !== "undefined" && error.config?.data instanceof FormData;
+
     if (error.code === "ECONNABORTED") {
-      apiMessage = "Network timeout. Please check your connection.";
+      apiMessage = isUpload
+        ? "The upload is taking too long. Please check your connection, or try a smaller file (max 5 MB)."
+        : "Network timeout. Please check your connection.";
       status = 408;
+    } else if (error.response?.status === 413) {
+      apiMessage = "That file is too large. The maximum size is 5 MB.";
     } else if (!error.response) {
-      apiMessage = "Network error. Please check your internet connection.";
+      apiMessage = isUpload
+        ? "We couldn't upload your file. Please check your connection and make sure it is a JPG, PNG or PDF under 5 MB, then try again."
+        : "Network error. Please check your internet connection.";
       status = 503;
     } else if (status === 500) {
       apiMessage = "Service currently unavailable. Please try again later.";
