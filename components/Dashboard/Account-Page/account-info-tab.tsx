@@ -29,6 +29,44 @@ import { WithdrawalAccountCard } from "./withdrawal-account-card";
 // /wallet/banks also returns the CBN bank code, used to look up the logo.
 type LinkedBankAccount = BankAccount & { bankCode?: string };
 
+function EmptyBankState({
+  title,
+  description,
+  buttonLabel,
+  onAdd,
+}: {
+  title: string;
+  description: string;
+  buttonLabel: string;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/withdrawal-empty.png"
+        alt={title}
+        width={48}
+        height={48}
+        className="mb-1 opacity-80"
+      />
+      <p className="text-sm font-medium leading-5 text-card-text">{title}</p>
+      <p className="text-xs font-normal leading-5 text-text max-w-xs">
+        {description}
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onAdd}
+        className="mt-2 gap-2 text-Green"
+      >
+        <Plus className="w-4 h-4" />
+        {buttonLabel}
+      </Button>
+    </div>
+  );
+}
+
 const maskEmail = (email?: string) => {
   if (!email) return "";
   const [user, domain] = email.split("@");
@@ -221,6 +259,15 @@ export function AccountInfoTab() {
 
             {bankAccountsPending && <BankAccountSkeleton />}
 
+            {!bankAccountsPending && bankAccounts.length === 0 && (
+              <EmptyBankState
+                title="No funding account added"
+                description="Add a bank account to fund your NGN wallet"
+                buttonLabel="Add funding account"
+                onAdd={() => setOpenAccountModal(true)}
+              />
+            )}
+
             {!bankAccountsPending && bankAccounts.length > 0 && (
               <div className="space-y-3">
                 {bankAccounts.map((bank: LinkedBankAccount) => (
@@ -326,31 +373,12 @@ export function AccountInfoTab() {
             {bankAccountsPending && <BankAccountSkeleton />}
 
             {!bankAccountsPending && bankAccounts.length === 0 && (
-              <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/withdrawal-empty.png"
-                  alt="No withdrawal account"
-                  width={48}
-                  height={48}
-                  className="mb-1 opacity-80"
-                />
-                <p className="text-sm font-medium leading-5 text-card-text">
-                  No Withdrawal account added
-                </p>
-                <p className="text-xs font-normal leading-5 text-text max-w-xs">
-                  Add a personal account to withdraw funds from your NGN wallet
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpenAccountModal(true)}
-                  className="mt-2 gap-2 text-Green"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add withdrawal account
-                </Button>
-              </div>
+              <EmptyBankState
+                title="No Withdrawal account added"
+                description="Add a personal account to withdraw funds from your NGN wallet"
+                buttonLabel="Add withdrawal account"
+                onAdd={() => setOpenAccountModal(true)}
+              />
             )}
 
             {!bankAccountsPending && bankAccounts.length > 0 && (
