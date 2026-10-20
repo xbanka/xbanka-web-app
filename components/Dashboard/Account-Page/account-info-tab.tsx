@@ -12,7 +12,12 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+import {
+  UseGetBankAcounts,
+  UseGetFundingAccounts,
+} from "@/lib/services/wallet.service";
+import { FundingAccount } from "@/lib/types/wallet-types";
+import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/bank-transfer-flow";
 import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
@@ -83,6 +88,7 @@ const maskPhone = (phone?: string) => {
 export function AccountInfoTab() {
   const [image, setImage] = useState<string | null>(null); // preview
   const [openAccountModal, setOpenAccountModal] = useState(false);
+  const [openFundingModal, setOpenFundingModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const [uidCopied, setUidCopied] = useState(false);
   const { mutate: updateAvatarMutate } = useUpdateAvatar();
@@ -99,6 +105,12 @@ export function AccountInfoTab() {
   const { data: bankAccountsResponse, isPending: bankAccountsPending } =
     UseGetBankAcounts();
   const bankAccounts = bankAccountsResponse?.data?.data || [];
+
+  // Same source as the bank transfer flow in the wallet Add Fund modal:
+  // GET /wallet/funding-accounts, added through POST /wallet/funding-accounts.
+  const { data: fundingResponse, isPending: fundingPending } =
+    UseGetFundingAccounts();
+  const fundingAccounts: FundingAccount[] = fundingResponse?.data?.data ?? [];
 
   const { data: verificationData } = UseVerificationStatus();
   const tierLevel = verificationData?.data?.tierLevel ?? 0;
@@ -236,11 +248,11 @@ export function AccountInfoTab() {
                   Transfer money to this account to fund your NGN Wallet
                 </p>
               </div>
-              {bankAccounts.length > 0 && (
+              {fundingAccounts.length > 0 && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setOpenAccountModal(true)}
+                  onClick={() => setOpenFundingModal(true)}
                   className="gap-2 text-Green shrink-0"
                 >
                   <Plus className="w-4 h-4" />
@@ -257,20 +269,20 @@ export function AccountInfoTab() {
               */}
             </div>
 
-            {bankAccountsPending && <BankAccountSkeleton />}
+            {fundingPending && <BankAccountSkeleton />}
 
-            {!bankAccountsPending && bankAccounts.length === 0 && (
+            {!fundingPending && fundingAccounts.length === 0 && (
               <EmptyBankState
                 title="No funding account added"
                 description="Add a bank account to fund your NGN wallet"
                 buttonLabel="Add funding account"
-                onAdd={() => setOpenAccountModal(true)}
+                onAdd={() => setOpenFundingModal(true)}
               />
             )}
 
-            {!bankAccountsPending && bankAccounts.length > 0 && (
+            {!fundingPending && fundingAccounts.length > 0 && (
               <div className="space-y-3">
-                {bankAccounts.map((bank: LinkedBankAccount) => (
+                {fundingAccounts.map((bank) => (
                   <WithdrawalAccountCard
                     key={bank.id}
                     bankName={bank.bankName}
@@ -486,6 +498,14 @@ export function AccountInfoTab() {
             action={<Lock className="w-3.5 h-3.5 text-text" />}
           />
         </div>
+
+        {openFundingModal && (
+          <AddFundingAccountStep
+            onBack={() => setOpenFundingModal(false)}
+            onClose={() => setOpenFundingModal(false)}
+            onAdded={() => setOpenFundingModal(false)}
+          />
+        )}
 
         {openAccountModal && (
           <AddBankModal
