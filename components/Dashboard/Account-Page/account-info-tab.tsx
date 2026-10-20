@@ -1,28 +1,33 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { Camera, Copy, Edit2, Lock, Info, Plus } from "lucide-react";
+import { Camera, Copy, Edit2, Lock, Plus } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
-import { toast } from "sonner";
 import {
   UseProfileUser,
   useUpdateAvatar,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import {
-  UseGetBankAcounts,
-  UseGetVirtualAccount,
-} from "@/lib/services/wallet.service";
-import { MapleradBankAccount } from "./types";
+import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+import { BankAccount } from "./types";
 import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
-import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
 import { WithdrawalAccountCard } from "./withdrawal-account-card";
+// Virtual account no longer used. Restore these with the commented-out
+// virtual account code below.
+// import { Info } from "lucide-react";
+// import { toast } from "sonner";
+// import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
+// import { MapleradBankAccount } from "./types";
+// import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
+
+// /wallet/banks also returns the CBN bank code, used to look up the logo.
+type LinkedBankAccount = BankAccount & { bankCode?: string };
 
 const maskEmail = (email?: string) => {
   if (!email) return "";
@@ -46,11 +51,12 @@ export function AccountInfoTab() {
   const { data: profileData } = UseProfileUser();
   const avatar = profileData?.data?.avatarUrl;
 
-  const {
-    data: virtualAccountData,
-    isPending: virtualAccountPending,
-    error: virtualAccountError,
-  } = UseGetVirtualAccount();
+  // Virtual account no longer used, so its request is not sent.
+  // const {
+  //   data: virtualAccountData,
+  //   isPending: virtualAccountPending,
+  //   error: virtualAccountError,
+  // } = UseGetVirtualAccount();
 
   const { data: bankAccountsResponse, isPending: bankAccountsPending } =
     UseGetBankAcounts();
@@ -60,10 +66,10 @@ export function AccountInfoTab() {
   const tierLevel = verificationData?.data?.tierLevel ?? 0;
   console.log("tierLevel", tierLevel)
 
-  const account: MapleradBankAccount =
-    virtualAccountData?.data?.data?.[0] ||
-    virtualAccountData?.data?.data ||
-    virtualAccountData?.data;
+  // const account: MapleradBankAccount =
+  //   virtualAccountData?.data?.data?.[0] ||
+  //   virtualAccountData?.data?.data ||
+  //   virtualAccountData?.data;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,24 +86,24 @@ export function AccountInfoTab() {
     setTimeout(() => setUidCopied(false), 1500);
   };
 
-  const copyAccountNumber = () => {
-    if (!account?.address) return;
-    navigator.clipboard?.writeText(String(account.address));
-    toast.success("Account number copied");
-  };
+  // const copyAccountNumber = () => {
+  //   if (!account?.address) return;
+  //   navigator.clipboard?.writeText(String(account.address));
+  //   toast.success("Account number copied");
+  // };
 
-  const copyAccountDetails = () => {
-    if (!account) return;
-    const details = [
-      `Bank Name: ${account.bankName}`,
-      `Account Name: ${account.accountName}`,
-      `Account Number: ${account.address}`,
-      `Account Type: Virtual Account`,
-      `Currency: NGN`,
-    ].join("\n");
-    navigator.clipboard?.writeText(details);
-    toast.success("Account details copied");
-  };
+  // const copyAccountDetails = () => {
+  //   if (!account) return;
+  //   const details = [
+  //     `Bank Name: ${account.bankName}`,
+  //     `Account Name: ${account.accountName}`,
+  //     `Account Number: ${account.address}`,
+  //     `Account Type: Virtual Account`,
+  //     `Currency: NGN`,
+  //   ].join("\n");
+  //   navigator.clipboard?.writeText(details);
+  //   toast.success("Account details copied");
+  // };
 
   return (
     <div className="space-y-4">
@@ -192,13 +198,33 @@ export function AccountInfoTab() {
                   Transfer money to this account to fund your NGN Wallet
                 </p>
               </div>
+              {/* Virtual account no longer used; funding shows the user's
+                  bank accounts below instead.
               {account && !virtualAccountError && (
                 <span className="text-[12px] font-normal px-2 py-0.5 rounded-md bg-green-success-light text-green-success-text border border-green-success-border shrink-0">
                   Active
                 </span>
               )}
+              */}
             </div>
 
+            {bankAccountsPending && <BankAccountSkeleton />}
+
+            {!bankAccountsPending && bankAccounts.length > 0 && (
+              <div className="space-y-3">
+                {bankAccounts.map((bank: LinkedBankAccount) => (
+                  <WithdrawalAccountCard
+                    key={bank.id}
+                    bankName={bank.bankName}
+                    bankCode={bank.bankCode}
+                    accountName={bank.accountName}
+                    accountNumber={bank.accountNumber}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Virtual account no longer used.
             {virtualAccountPending && <BankAccountSkeleton />}
 
             {!virtualAccountPending && !account && virtualAccountError && (
@@ -259,6 +285,7 @@ export function AccountInfoTab() {
                 </div>
               </>
             )}
+            */}
           </div>
 
           {/* Withdrawal Account */}
@@ -317,7 +344,7 @@ export function AccountInfoTab() {
 
             {!bankAccountsPending && bankAccounts.length > 0 && (
               <div className="space-y-3">
-                {bankAccounts.map((bank: any) => (
+                {bankAccounts.map((bank: LinkedBankAccount) => (
                   <WithdrawalAccountCard
                     key={bank.id}
                     bankName={bank.bankName}
