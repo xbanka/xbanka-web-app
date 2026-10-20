@@ -12,14 +12,9 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import {
-  UseGetBankAcounts,
-  UseGetFundingAccounts,
-} from "@/lib/services/wallet.service";
+import { UseGetFundingAccounts } from "@/lib/services/wallet.service";
 import { FundingAccount } from "@/lib/types/wallet-types";
 import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/bank-transfer-flow";
-import { BankAccount } from "./types";
-import { AddBankModal } from "./add-bank-modal";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
 import { WithdrawalAccountCard } from "./withdrawal-account-card";
@@ -29,10 +24,12 @@ import { WithdrawalAccountCard } from "./withdrawal-account-card";
 // import { toast } from "sonner";
 // import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
 // import { MapleradBankAccount } from "./types";
+// Withdrawal account column (hidden):
+// import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+// import { BankAccount } from "./types";
+// import { AddBankModal } from "./add-bank-modal";
+// type LinkedBankAccount = BankAccount & { bankCode?: string };
 // import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
-
-// /wallet/banks also returns the CBN bank code, used to look up the logo.
-type LinkedBankAccount = BankAccount & { bankCode?: string };
 
 function EmptyBankState({
   title,
@@ -87,7 +84,7 @@ const maskPhone = (phone?: string) => {
 
 export function AccountInfoTab() {
   const [image, setImage] = useState<string | null>(null); // preview
-  const [openAccountModal, setOpenAccountModal] = useState(false);
+  // const [openAccountModal, setOpenAccountModal] = useState(false);
   const [openFundingModal, setOpenFundingModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const [uidCopied, setUidCopied] = useState(false);
@@ -102,9 +99,9 @@ export function AccountInfoTab() {
   //   error: virtualAccountError,
   // } = UseGetVirtualAccount();
 
-  const { data: bankAccountsResponse, isPending: bankAccountsPending } =
-    UseGetBankAcounts();
-  const bankAccounts = bankAccountsResponse?.data?.data || [];
+  // const { data: bankAccountsResponse, isPending: bankAccountsPending } =
+  //   UseGetBankAcounts();
+  // const bankAccounts = bankAccountsResponse?.data?.data || [];
 
   // Same source as the bank transfer flow in the wallet Add Fund modal:
   // GET /wallet/funding-accounts, added through POST /wallet/funding-accounts.
@@ -236,9 +233,9 @@ export function AccountInfoTab() {
           Deposit & Withdrawal Account
         </h3>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
+        <div className="grid grid-cols-1 gap-6">
           {/* Xbanka Funding Account */}
-          <div className="space-y-4 lg:pr-6">
+          <div className="space-y-4">
             <div className="flex justify-between items-center gap-3">
               <div>
                 <p className="font-medium text-sm leading-5 text-card-text">
@@ -358,7 +355,9 @@ export function AccountInfoTab() {
             */}
           </div>
 
-          {/* Withdrawal Account */}
+          {/* Withdrawal Account column hidden: only the funding account is
+              used for now. Restore it with lg:grid-cols-2 on the grid, the
+              commented-out state, hook and AddBankModal around it.
           <div className="space-y-4 lg:pl-6">
             <div className="flex justify-between items-center">
               <div>
@@ -407,6 +406,7 @@ export function AccountInfoTab() {
               </div>
             )}
           </div>
+          */}
         </div>
       </DashboardCard>
 
@@ -507,12 +507,14 @@ export function AccountInfoTab() {
           />
         )}
 
+        {/* Withdrawal account modal (hidden with its column)
         {openAccountModal && (
           <AddBankModal
             onClose={() => setOpenAccountModal(false)}
             open={openAccountModal}
           />
         )}
+        */}
 
         {editProfileModal && (
           <EditProfileModal onClose={() => setEditProfileModal(false)} />
