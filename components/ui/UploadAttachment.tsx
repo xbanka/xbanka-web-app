@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Upload, Trash2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { matchesAccept, prettyTypes } from "@/lib/file-validation";
+import { MAX_UPLOAD_MB, fileProblem, prettyTypes } from "@/lib/file-validation";
 
 export interface AttachmentFile {
   file: File;
@@ -24,7 +24,7 @@ interface AttachmentUploadProps {
 export function AttachmentUpload({
   value = [],
   onChange,
-  maxSizeMB = 5,
+  maxSizeMB = MAX_UPLOAD_MB,
   accept = "image/*,application/pdf",
   title = "Upload screenshot, receipt, or proof document",
   className,
@@ -45,12 +45,9 @@ export function AttachmentUpload({
 
     Array.from(files).forEach((file) => {
       // Tell the person why a file was refused. It used to be dropped silently.
-      if (file.size > maxSizeMB * 1024 * 1024) {
-        rejected = `"${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). The maximum size is ${maxSizeMB} MB.`;
-        return;
-      }
-      if (!matchesAccept(file, accept)) {
-        rejected = `"${file.name}" is not a supported file. Please upload ${prettyTypes(accept)}.`;
+      const problem = fileProblem(file, { maxMB: maxSizeMB, accept });
+      if (problem) {
+        rejected = problem;
         return;
       }
 

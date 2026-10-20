@@ -2,6 +2,8 @@
 
 import { ChevronDown, Info, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { MAX_UPLOAD_MB, fileProblem } from "@/lib/file-validation";
 
 function SellTab() {
   const [category, setCategory] = useState<"ecode" | "physical">("ecode");
@@ -126,8 +128,25 @@ function SellTab() {
               >
                 <Upload className="w-5 h-5 text-Green" />
                 <p className="text-xs text-card-text font-medium text-center">Upload screenshot, receipt, or proof document</p>
-                <p className="text-[10px] text-text">JPG, PNG OR PDF • Max 5MB</p>
-                <input ref={fileRef} type="file" hidden accept="image/*,.pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                <p className="text-[10px] text-text">JPG, PNG OR PDF • Max {MAX_UPLOAD_MB}MB</p>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  hidden
+                  accept="image/*,.pdf"
+                  onChange={(e) => {
+                    const picked = e.target.files?.[0] ?? null;
+                    if (picked) {
+                      const problem = fileProblem(picked, { accept: "image/*,.pdf" });
+                      if (problem) {
+                        toast.error(problem);
+                        e.target.value = "";
+                        return;
+                      }
+                    }
+                    setFile(picked);
+                  }}
+                />
               </div>
             )}
           </div>

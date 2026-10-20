@@ -32,3 +32,26 @@ export const prettyTypes = (accept: string) => {
   if (list.length === 1) return list[0];
   return `${list.slice(0, -1).join(", ")} or ${list[list.length - 1]}`;
 };
+
+/** The largest file the app accepts anywhere. The server enforces the same 5 MB. */
+export const MAX_UPLOAD_MB = 5;
+
+const formatMB = (bytes: number) => (bytes / 1024 / 1024).toFixed(1);
+
+/**
+ * Why a file can't be uploaded, as a message for the user, or null if it is fine.
+ * One rule for every upload in the app: at most MAX_UPLOAD_MB, and the right type.
+ */
+export function fileProblem(
+  file: File,
+  opts: { maxMB?: number; accept?: string } = {},
+): string | null {
+  const maxMB = opts.maxMB ?? MAX_UPLOAD_MB;
+  if (file.size > maxMB * 1024 * 1024) {
+    return `"${file.name}" is too large (${formatMB(file.size)} MB). The maximum size is ${maxMB} MB.`;
+  }
+  if (opts.accept && !matchesAccept(file, opts.accept)) {
+    return `"${file.name}" is not a supported file. Please upload ${prettyTypes(opts.accept)}.`;
+  }
+  return null;
+}
