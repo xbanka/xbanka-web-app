@@ -23,7 +23,7 @@ const LittleCards = ({
       className="flex items-center justify-between px-3 py-2 bg-border gap-3 rounded-lg max-sm:items-start max-sm:gap-2"
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 max-sm:items-start max-sm:gap-2">
-        <div className="w-8 h-8 p-2 rounded-[36px] bg-[#042F2E] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 p-2 rounded-[36px] bg-teal-light flex items-center justify-center shrink-0">
           {Icon && <Icon className="w-4 h-4 text-Green" />}
         </div>
         <div className="min-w-0">
