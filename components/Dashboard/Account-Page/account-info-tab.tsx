@@ -189,7 +189,7 @@ export function AccountInfoTab() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
           {/* Xbanka Funding Account */}
           <div className="space-y-4 lg:pr-6">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex justify-between items-center gap-3">
               <div>
                 <p className="font-medium text-sm leading-5 text-card-text">
                   Xbanka Funding Account
@@ -198,6 +198,17 @@ export function AccountInfoTab() {
                   Transfer money to this account to fund your NGN Wallet
                 </p>
               </div>
+              {bankAccounts.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpenAccountModal(true)}
+                  className="gap-2 text-Green shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New
+                </Button>
+              )}
               {/* Virtual account no longer used; funding shows the user's
                   bank accounts below instead.
               {account && !virtualAccountError && (
