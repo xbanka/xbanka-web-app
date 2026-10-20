@@ -515,7 +515,7 @@ function TransferSubmittedStep({
   );
 }
 
-function AddFundingAccountStep({
+export function AddFundingAccountStep({
   onBack,
   onClose,
   onAdded,
