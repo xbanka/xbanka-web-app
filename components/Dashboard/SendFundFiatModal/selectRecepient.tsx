@@ -102,7 +102,7 @@ export function SelectRecipientStep({
                 </div>
               </button>
             ))} */}
-            No recent recipients
+            <p className="text-sm text-text">No recent recipients</p>
           </div>
         </div>
       </div>

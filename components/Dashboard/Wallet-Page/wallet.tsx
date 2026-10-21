@@ -11,12 +11,20 @@ import { Button } from "@/components/ui/button";
 import { VerifyBvnModal } from "./verify-bvn-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 
+// Fiat first, then crypto, then everything together. The "total" key stays
+// so existing /wallet?tab=total links keep working.
+const WALLET_TABS = [
+  { key: "fiat", label: "Fiat" },
+  { key: "crypto", label: "Crypto" },
+  { key: "total", label: "Asset" },
+] as const;
+
 export default function WalletPage() {
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentTab = searchParams.get("tab") || "total";
+  const currentTab = searchParams.get("tab") || "fiat";
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
@@ -33,18 +41,16 @@ export default function WalletPage() {
       {/* Tabs */}
       <DashboardCard className="space-y-3 ">
         <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5 ">
-          {["total", "fiat", "crypto"].map((t) => (
+          {WALLET_TABS.map(({ key, label }) => (
             <Button
               size="sm"
-              variant={currentTab === t ? "disabled" : "outline"}
-              key={t}
-              onClick={() => router.push(`/wallet?tab=${t}`)}
-              className={`h-9 capitalize shadow-none border-none transition-colors
-                ${currentTab === t ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
+              variant={currentTab === key ? "disabled" : "outline"}
+              key={key}
+              onClick={() => router.push(`/wallet?tab=${key}`)}
+              className={`h-9 shadow-none border-none transition-colors
+                ${currentTab === key ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
             >
-              {t === "total"
-                ? "Total Value"
-                : t.charAt(0).toUpperCase() + t.slice(1)}
+              {label}
             </Button>
           ))}
         </div>

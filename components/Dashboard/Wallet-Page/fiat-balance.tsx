@@ -39,14 +39,9 @@ export const FiatBalance = () => {
   const { data: verificationData } = UseVerificationStatus();
 
   const handleAddFund = () => {
-    // const isAllowed = validateUser();
-
-    // if (!isAllowed) return;
-    if (!hasTransactionPin) {
-      setOpenCreatePin(true);
-      return;
-    }
-
+    // A bank transfer deposit never needs the transaction PIN, so a first-time
+    // user can fund the wallet before they have set one up. Sending money out
+    // still asks for it (see handleSendFund).
     setAddFundsOpen(true);
   };
 
@@ -115,7 +110,7 @@ export const FiatBalance = () => {
             )}
             {isPending && (
               <span className="text-text text-xs font-normal leading-4.5">
-                "Calculating..."
+                Calculating...
               </span>
             )}
           </div>

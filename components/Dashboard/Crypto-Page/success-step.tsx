@@ -183,7 +183,7 @@ export function SuccessStep({
             <Button
               variant="outline"
               size="lg"
-              className="flex-1 bg-[#042F2E] border-[#0F766E] text-Green"
+              className="flex-1 bg-teal-light border-teal-border text-Green"
               onClick={onRepeat}
             >
               <RefreshCcw className="w-4 h-4" />

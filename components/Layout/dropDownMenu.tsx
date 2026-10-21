@@ -10,6 +10,9 @@ import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import { useLogoutStore } from "@/store/logout.store";
 import { cn } from "@/lib/utils";
+import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
+import { getWalletTotals } from "@/lib/walletTotals";
+import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
 interface UserDropdownProps {
   avatarInitials?: string;
@@ -25,6 +28,9 @@ export default function UserDropdown({}: UserDropdownProps) {
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
   const avatar = profile?.data?.avatarUrl;
+  const { data: balances } = UseGetAllWalletBalances();
+  const { hidden: balancesHidden } = useBalanceVisibility();
+  const totals = getWalletTotals(balances?.data?.data);
 
   const {
     data: verificationData,
@@ -154,6 +160,31 @@ export default function UserDropdown({}: UserDropdownProps) {
                       src={"/Tier3.svg"} unoptimized />
                   )}
                 </div>
+              </div>
+            </div>
+            {/* Totals under the UID: the whole portfolio, and the crypto part with its naira value */}
+            <div className="mt-3 space-y-1 text-xs">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-text">Total assets</span>
+                <span className="font-semibold text-card-text">
+                  {balancesHidden
+                    ? "₦•••••"
+                    : `₦${totals.totalNgn.toLocaleString()}`}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-text">Crypto assets</span>
+                <span className="text-card-text">
+                  {balancesHidden
+                    ? "$•••"
+                    : `$${totals.cryptoUsd.toLocaleString()}`}
+                  {!balancesHidden && (
+                    <span className="text-text">
+                      {" "}
+                      ≈ ₦{totals.cryptoNgn.toLocaleString()}
+                    </span>
+                  )}
+                </span>
               </div>
             </div>
           </div>

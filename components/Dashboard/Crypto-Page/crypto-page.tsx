@@ -60,7 +60,7 @@ export function CryptoPage() {
                       key={m}
                       onClick={handleModeChange(m)}
                       className={`flex-1 py-2 px-3 max-sm:py-1.5 max-sm:px-2 rounded-lg border-none text-sm max-sm:text-xs font-semibold capitalize transition-colors
-                  ${tradeMode === m ? "bg-[#042F2E] text-white" : "text-text hover:text-card-text"}`}
+                  ${tradeMode === m ? "bg-teal-light text-teal-text" : "text-text hover:text-card-text"}`}
                     >
                       {m}
                     </Button>
