@@ -78,7 +78,12 @@ export function CryptoAddressesColumn() {
       )}
 
       {!isPending && rows.length > 0 && (
-        <div className="space-y-3">
+        // Capped height so many addresses scroll inside the column instead of
+        // stretching the page. Roughly four rows are visible.
+        <div
+          data-testid="crypto-address-list"
+          className="max-h-80 space-y-3 overflow-y-auto pr-1"
+        >
           {rows.map((row) => (
             <AddressRow key={row.id} {...row} />
           ))}

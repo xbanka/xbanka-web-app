@@ -43,6 +43,21 @@ describe("CryptoAddressesColumn", () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(FULL);
   });
 
+  it("keeps many addresses inside a scrollable, height capped list", () => {
+    const wallets = Array.from({ length: 10 }, (_, i) =>
+      wallet({
+        currency: `C${i}`,
+        addresses: [{ id: `a${i}`, network: "NET", address: `ADDRESS${i}XXXXXXXXXXXX` }],
+      }),
+    );
+    give(wallets);
+    render(<CryptoAddressesColumn />);
+    const list = screen.getByTestId("crypto-address-list");
+    expect(list.children.length).toBe(10);
+    expect(list.className).toContain("overflow-y-auto");
+    expect(list.className).toContain("max-h-80");
+  });
+
   it("hides wallets with no balance and fiat wallets", () => {
     give([wallet({ balance: 0 }), wallet({ type: "FIAT", currency: "NGN" })]);
     render(<CryptoAddressesColumn />);
