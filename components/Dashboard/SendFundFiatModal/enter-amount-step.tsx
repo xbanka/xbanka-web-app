@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { MIN_SEND_AMOUNT } from "@/lib/wallet-page";
 import {
   UseGetFiatWallet,
   UseInitiateNombaWithdrawal,
@@ -47,7 +48,7 @@ export function EnterAmountStep({
   const errorMessage = error ? classifyWithdrawalError(error).message : "";
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const minTransfer = 5000;
+  const minTransfer = MIN_SEND_AMOUNT;
 
   const formatAmount = (val: string) => {
     const digits = val.replace(/\D/g, "");

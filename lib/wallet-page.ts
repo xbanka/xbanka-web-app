@@ -8,6 +8,9 @@ export const SAVED_CARDS = [
   { id: "uba_card", bank: "UBA", masked: "·· ·· ·· ··123", name: "Joseph Eyebiokin", color: "bg-red-600", isDefault: false, expiry: "08/26", type: "Mastercard" },
 ];
  
+/** The smallest Naira amount a customer can send. The server enforces the same 500. */
+export const MIN_SEND_AMOUNT = 500;
+
 export const QUICK_AMOUNTS = [5_000, 10_000, 50_000, 100_000, 150_000];
  
 const BANK_AVATAR_COLORS = [

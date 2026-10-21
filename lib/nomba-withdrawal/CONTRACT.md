@@ -62,7 +62,7 @@ Use the existing `GET /accounts/banks` to populate the bank picker. Send the sel
 |---|---|
 | `bankCode` | required, string |
 | `accountNumber` | required, exactly 10 digits |
-| `amount` | required, number, minimum 100 (NGN) |
+| `amount` | required, number, minimum 500 (NGN) |
 | `narration` | optional, max 100 characters |
 
 **Success `data`:**
@@ -150,7 +150,7 @@ A reference that doesn't belong to the user returns 404.
 |---|---|---|---|
 | 400 | `Insufficient NGN balance` | Wallet balance below amount | Show balance and amount, offer top-up |
 | 400 | `Could not verify bank account...` | Bad account number or bank | Let the user correct it |
-| 400 | `Invalid amount` / validation messages | Amount under 100 or bad fields | Inline field errors |
+| 400 | `Invalid amount` / validation messages | Amount under 500 or bad fields | Inline field errors |
 | 400 | `Withdrawal request expired...` | Token older than 10 minutes | Restart from step 1 |
 | 400 | `Invalid withdrawal token` | Token missing or altered | Restart from step 1 |
 | 400 | `Transaction PIN not set` | User has no PIN | Send them to PIN setup |

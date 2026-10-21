@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { MIN_SEND_AMOUNT } from "@/lib/wallet-page";
 import { Recipient, Step, XbankaTransferRecipient } from "./types";
 import { AvatarCircle } from "./avatarCircle";
 import { QUICK_AMOUNTS } from "./mockData";
@@ -25,7 +26,7 @@ export function EnterAmountXbankaStep({
   const wallets = data?.data?.data || [];
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const minTransfer = 5000;
+  const minTransfer = MIN_SEND_AMOUNT;
 
   const formatAmount = (val: string) => {
     const digits = val.replace(/\D/g, "");
