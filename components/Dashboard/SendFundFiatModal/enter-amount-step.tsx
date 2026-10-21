@@ -15,7 +15,7 @@ import {
 } from "@/lib/nomba-withdrawal";
 import { Recipient } from "./types";
 import { BankLogo } from "@/components/ui/bank-logo";
-import { QUICK_AMOUNTS } from "./mockData";
+import { MIN_SEND_AMOUNT, QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { sumFiatBalances } from "@/lib/sumBalances";
 
@@ -47,14 +47,13 @@ export function EnterAmountStep({
   const errorMessage = error ? classifyWithdrawalError(error).message : "";
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const minTransfer = 5000;
 
   const formatAmount = (val: string) => {
     const digits = val.replace(/\D/g, "");
     return digits ? Number(digits).toLocaleString() : "";
   };
 
-  const isValid = numericAmount >= minTransfer && numericAmount <= sumFiatBalances(wallets);
+  const isValid = numericAmount >= MIN_SEND_AMOUNT && numericAmount <= sumFiatBalances(wallets);
 
   const handleContinue = () => {
     const trimmedNarration = narration.trim();
@@ -137,7 +136,7 @@ export function EnterAmountStep({
             />
           </div>
           <div className="flex justify-between text-xs text-text">
-            <span>Minimum transfer: ₦{minTransfer.toLocaleString()}</span>
+            <span>Minimum send amount: ₦{MIN_SEND_AMOUNT.toLocaleString()}</span>
             <span>
               Balance: ₦
               {/* {balance.toLocaleString("en-NG", { minimumFractionDigits: 2 })} */}

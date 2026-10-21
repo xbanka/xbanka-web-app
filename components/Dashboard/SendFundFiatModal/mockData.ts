@@ -11,7 +11,10 @@ export const NIGERIAN_BANKS = [
   { value: "stanbic", label: "Stanbic IBTC Bank" },
 ];
  
-export const QUICK_AMOUNTS = [5000, 10000, 50000, 100000, 150000];
+// Smallest NGN amount a Send Fiat transfer accepts (bank and Xbanka users).
+export const MIN_SEND_AMOUNT = 500;
+
+export const QUICK_AMOUNTS = [MIN_SEND_AMOUNT, 1000, 5000, 10000, 50000, 100000];
 
 export const SEND_STEPS = {
   "select-recipient": 1,
