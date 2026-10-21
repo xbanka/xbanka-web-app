@@ -44,7 +44,7 @@ export function EnterPinStep({
 
       <div className="px-10 pb-10 pt-6 space-y-8">
         <div className="space-y-2">
-          <OtpInput length={4} onChange={setPin} />
+          <OtpInput length={4} mask onChange={setPin} />
           <div className="text-left">
             <button onClick={() => setOpenResetPin(true)} className="text-xs font-normal leading-4.5 text-Green hover:underline transition-colors">
               Forgot PIN?

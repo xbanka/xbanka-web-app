@@ -20,6 +20,7 @@ import {
   UseLookupAccountName,
 } from "@/lib/services/wallet.service";
 import { FundingAccount } from "@/lib/types/wallet-types";
+import { maskAccountNumber as maskAccount } from "@/lib/mask";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { accountNameMatchesProfile } from "@/lib/accountNameMatch";
 
@@ -28,11 +29,6 @@ const fundingAccountSchema = z.object({
   accountNumber: z.string().regex(/^\d{10}$/, "Account number must be 10 digits"),
 });
 type FundingAccountForm = z.infer<typeof fundingAccountSchema>;
-
-const maskAccount = (accountNumber: string) =>
-  accountNumber?.length > 4
-    ? `${"*".repeat(accountNumber.length - 4)}${accountNumber.slice(-4)}`
-    : accountNumber;
 
 const handleCopy = (text: string, label: string) => {
   if (!text) return;
