@@ -87,7 +87,7 @@ export function AssetValueCard() {
           </div>
 
           {/* Add Fund on the same row as the total, with the fiat balance under it */}
-          <div className="flex w-full flex-col gap-2 rounded-xl border border-border bg-card-background px-4 py-3 sm:w-auto sm:min-w-44">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-44">
             <Button
               size="sm"
               className="w-full"
