@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/UploadAttachment";
 import { useEffect, useState } from "react";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
-import { step3FormValues, step3Schema } from "@/lib/schema/onboarding-schema";
+import {
+  cleanIdNumber,
+  step3FormValues,
+  step3Schema,
+} from "@/lib/schema/onboarding-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LivenessDetector, {
@@ -104,12 +108,9 @@ export function IdSelfieModal({
     const formData = new FormData();
 
     formData.append("userId", userId);
-    formData.append("idNumber", data.idNumber);
+    formData.append("idNumber", cleanIdNumber(data.idNumber));
     formData.append("idType", data.idType);
     formData.append("idImage", attachments[0].file);
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
 
     mutate(formData, {
       onSuccess: () => {
@@ -164,7 +165,13 @@ export function IdSelfieModal({
                 register={register}
                 id="idNumber"
               />
-              <AttachmentUpload value={attachments} onChange={setAttachments} />
+              <AttachmentUpload
+                value={attachments}
+                onChange={setAttachments}
+                maxSizeMB={5}
+                accept="image/jpeg,image/png,application/pdf"
+                title="Upload a photo or PDF of your ID"
+              />
               <ErrorLayout message={error?.message || skipError?.message} />
             </div>
             <div className="space-y-3.25">
