@@ -120,6 +120,7 @@ export function EnterPinStep({
           <OtpInput
             key={pinInputKey}
             length={PIN_LENGTH}
+            mask
             onChange={setPin}
             disabled={submitting || locked}
           />

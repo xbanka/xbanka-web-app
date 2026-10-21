@@ -18,6 +18,7 @@ import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/b
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
 import { WithdrawalAccountCard } from "./withdrawal-account-card";
+import { CryptoAddressesColumn } from "./crypto-addresses-column";
 // Virtual account no longer used. Restore these with the commented-out
 // virtual account code below.
 // import { Info } from "lucide-react";
@@ -242,9 +243,9 @@ export function AccountInfoTab() {
           Deposit & Withdrawal Account
         </h3>
 
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
           {/* Xbanka Funding Account */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:pr-6">
             <div className="flex justify-between items-center gap-3">
               <div>
                 <p className="font-medium text-sm leading-5 text-card-text">
@@ -295,6 +296,7 @@ export function AccountInfoTab() {
                     bankCode={bank.bankCode}
                     accountName={bank.accountName}
                     accountNumber={bank.accountNumber}
+                    label="Funding account"
                   />
                 ))}
               </div>
@@ -363,6 +365,8 @@ export function AccountInfoTab() {
             )}
             */}
           </div>
+
+          <CryptoAddressesColumn />
 
           {/* Withdrawal Account column hidden: only the funding account is
               used for now. Restore it with lg:grid-cols-2 on the grid, the

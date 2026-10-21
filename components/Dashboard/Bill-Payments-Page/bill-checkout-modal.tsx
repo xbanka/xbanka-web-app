@@ -972,7 +972,7 @@ export function BillCheckoutModal({
 
         {step === "pin" && quote && (
           <div className="space-y-5">
-            <OtpInput length={4} onChange={setPin} />
+            <OtpInput length={4} mask onChange={setPin} />
 
             <ErrorLayout message={confirmErrorMessage} />
 
