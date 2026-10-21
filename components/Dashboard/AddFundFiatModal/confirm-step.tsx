@@ -34,7 +34,7 @@ export function ConfirmStep({
       <div className="space-y-5 max-sm:space-y-4">
         {/* Icon */}
         <div className="flex justify-center mb-3 max-sm:mb-1">
-          <div className="w-15 h-15 max-sm:w-12 max-sm:h-12 rounded-full border p-2 bg-[#042F2E] border-[#0F766E] flex items-center justify-center">
+          <div className="w-15 h-15 max-sm:w-12 max-sm:h-12 rounded-full border p-2 bg-teal-light border-teal-border flex items-center justify-center">
             <ArrowLeftRight className="w-8 h-8 text-Green max-sm:w-6 max-sm:h-6" />
           </div>
         </div>

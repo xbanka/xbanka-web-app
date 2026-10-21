@@ -20,6 +20,8 @@ import {
   UseLookupAccountName,
 } from "@/lib/services/wallet.service";
 import { FundingAccount } from "@/lib/types/wallet-types";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { accountNameMatchesProfile } from "@/lib/accountNameMatch";
 
 const fundingAccountSchema = z.object({
   bankCode: z.string().min(1, "Please select a bank"),
@@ -556,6 +558,16 @@ export function AddFundingAccountStep({
   const [resolvedName, setResolvedName] = useState<string | null>(null);
   const [resolveFailed, setResolveFailed] = useState(false);
 
+  // Only the user's own bank accounts may fund the wallet: a transfer from
+  // someone else's account cannot be matched to them, so it is refused here
+  // rather than left pending after the money has moved.
+  const { data: profileData } = UseProfileUser();
+  const nameCheck = accountNameMatchesProfile(resolvedName, {
+    firstName: profileData?.data?.firstName,
+    lastName: profileData?.data?.lastName,
+  });
+  const isThirdParty = nameCheck === "mismatch";
+
   // Resolve the account name whenever bank + 10-digit number are present.
   useEffect(() => {
     setResolvedName(null);
@@ -581,7 +593,7 @@ export function AddFundingAccountStep({
   }, [bankCode, accountNumber, lookupName]);
 
   const onSubmit = async (data: FundingAccountForm) => {
-    if (!resolvedName) return;
+    if (!resolvedName || isThirdParty) return;
     const bankName =
       bankOptions.find((b) => b.value === data.bankCode)?.label ?? "";
     try {
@@ -598,7 +610,8 @@ export function AddFundingAccountStep({
     }
   };
 
-  const canSubmit = isValid && !!resolvedName && !isResolving && !isAdding;
+  const canSubmit =
+    isValid && !!resolvedName && !isThirdParty && !isResolving && !isAdding;
 
   return (
     <Modal className="p-0" onClose={onClose}>
@@ -651,9 +664,17 @@ export function AddFundingAccountStep({
                   <p className="text-sm font-semibold text-card-text">
                     {resolvedName}
                   </p>
-                  <p className="text-xs text-text pt-1">
-                    Confirm this is your account before adding it.
-                  </p>
+                  {isThirdParty ? (
+                    <p className="text-xs text-error-text pt-1">
+                      This account is not in your name. Only a bank account in
+                      your own name can be added, so that a transfer from it
+                      can be matched to you.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-text pt-1">
+                      Confirm this is your account before adding it.
+                    </p>
+                  )}
                 </>
               )}
               {resolveFailed && !isResolving && (

@@ -95,7 +95,7 @@ export function SelectNetworkStep({
                   className={cn(
                     "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
                     active
-                      ? "border-border-active bg-[#042F2E]"
+                      ? "border-border-active bg-teal-light"
                       : "border-border hover:border-border-active",
                   )}
                 >

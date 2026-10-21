@@ -1,17 +1,8 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { ErrorField } from "@/components/ui/field-error";
-import {
-  UseGetAllWalletBalances,
-  UseGetCryptoWallet,
-  UseGetFiatWallet,
-} from "@/lib/services/wallet.service";
-import {
-  sumCryptoFiatEquivalent,
-  sumFiatBalances,
-  sumWallets,
-  sumWalletsEquivalent,
-} from "@/lib/sumBalances";
+import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
+import { getWalletTotals } from "@/lib/walletTotals";
 import { Eye, EyeOff } from "lucide-react";
 import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 
@@ -25,8 +16,11 @@ export const ValueBalance = () => {
 
   const mainWallet = getAllWalletBalance?.data?.data || [];
 
-  const totalBalance = sumWallets(mainWallet);
-  const totalCryptoEquivalent = sumWalletsEquivalent(mainWallet);
+  // Fiat is the naira wallets; crypto is the CRYPTO wallets' naira value.
+  // The naira wallet's own dollar figure is not a crypto holding, which is
+  // what used to make a fresh deposit show up on the crypto side.
+  const { fiatNgn, cryptoUsd, cryptoNgn, totalNgn } =
+    getWalletTotals(mainWallet);
 
   return (
     <div>
@@ -57,25 +51,21 @@ export const ValueBalance = () => {
               <p className="text-3xl sm:text-4xl font-bold text-card-text ">
                 {hidden
                   ? "₦•••••••"
-                  : totalBalance
-                    ? `₦${totalBalance.toLocaleString()}`
+                  : totalNgn
+                    ? `₦${totalNgn.toLocaleString()}`
                     : "₦0"}
               </p>
             )}
-            {(getAllWalletBalanceError) && (
-              <ErrorField
-                message={getAllWalletBalanceError?.message}
-              />
+            {getAllWalletBalanceError && (
+              <ErrorField message={getAllWalletBalanceError?.message} />
             )}
 
-            {!getAllWalletBalancePending && !getAllWalletBalancePending && (
+            {!getAllWalletBalancePending && (
               <span className="text-text text-xs font-normal leading-4.5">
-                {hidden
-                  ? "₦•••••••"
-                  : `≈ ₦${totalBalance.toLocaleString()} today`}
+                {hidden ? "₦•••••••" : `≈ ₦${totalNgn.toLocaleString()} today`}
               </span>
             )}
-            {getAllWalletBalancePending && getAllWalletBalancePending && (
+            {getAllWalletBalancePending && (
               <span className="text-text text-xs font-normal leading-4.5">
                 Calculating...
               </span>
@@ -89,8 +79,8 @@ export const ValueBalance = () => {
               <p className="font-medium leading-5 text-sm text-card-text">
                 {hidden
                   ? "₦•••••••"
-                  : totalBalance
-                    ? `₦${totalBalance.toLocaleString()}`
+                  : fiatNgn
+                    ? `₦${fiatNgn.toLocaleString()}`
                     : "₦0.00"}
               </p>
             </div>
@@ -101,10 +91,15 @@ export const ValueBalance = () => {
               <p className="font-medium leading-5 text-sm text-card-text">
                 {hidden
                   ? "₦•••"
-                  : totalCryptoEquivalent
-                    ? `₦${totalCryptoEquivalent.toLocaleString()}`
+                  : cryptoNgn
+                    ? `₦${cryptoNgn.toLocaleString()}`
                     : "₦0"}
               </p>
+              {!hidden && cryptoUsd > 0 && (
+                <p className="text-text font-normal leading-4 text-[11px]">
+                  ≈ ${cryptoUsd.toLocaleString()}
+                </p>
+              )}
             </div>
           </div>
         </div>

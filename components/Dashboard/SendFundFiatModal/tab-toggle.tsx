@@ -17,7 +17,7 @@ export function TabToggle({
           className={cn(
             "flex-1 rounded-md py-2 px-3 text-sm font-medium leading-5 transition-all duration-150",
             active === tab
-              ? "bg-[#042F2E] text-card-text rounded-sm shadow-sm"
+              ? "bg-teal-light text-teal-text border border-teal-border rounded-sm shadow-sm"
               : "text-text hover:text-card-text"
           )}
         >
