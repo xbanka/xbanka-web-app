@@ -1,7 +1,9 @@
 import { isOnboardingStepCompleted } from "./verificationProgress";
 
 type ProfileLike =
-  | { kycStatus?: { bvnVerified?: unknown } | null }
+  | {
+      kycStatus?: { bvnVerified?: unknown; idStatus?: unknown } | null;
+    }
   | null
   | undefined;
 
@@ -18,27 +20,58 @@ type VerificationLike =
   | null
   | undefined;
 
+const APPROVED_ID_STATUSES = new Set([
+  "APPROVED",
+  "VERIFIED",
+  "COMPLETED",
+  "SUCCESS",
+  "DONE",
+]);
+
+const stepCompleted = (verification: VerificationLike, id: string) =>
+  (verification?.completedOnboardingSteps ?? []).includes(id) ||
+  isOnboardingStepCompleted(verification?.progress?.find((s) => s.id === id));
+
 /**
  * Has this user really verified their BVN?
  *
- * The name fields lock once the BVN is verified, because from then on the
- * name has to match the bank record. Testers found accounts locked with no
- * BVN ever entered, so the profile's bvnVerified flag is no longer trusted
- * on its own: it must be exactly true AND, once the verification status has
- * loaded, that status must show the BVN step completed.
+ * Testers found accounts locked with no BVN ever entered, so the profile's
+ * bvnVerified flag is not trusted on its own: it must be exactly true AND,
+ * once the verification status has loaded, that status must show the BVN
+ * step completed.
  */
 export const isBvnVerified = (
   profile: ProfileLike,
   verification: VerificationLike,
 ) => {
-  const flag = profile?.kycStatus?.bvnVerified === true;
-  if (!flag) return false;
+  if (profile?.kycStatus?.bvnVerified !== true) return false;
   if (!verification) return true;
-
-  const step = verification.progress?.find((s) => s.id === "BVN");
-  const stepDone =
-    (verification.completedOnboardingSteps ?? []).includes("BVN") ||
-    isOnboardingStepCompleted(step);
-
-  return stepDone;
+  return stepCompleted(verification, "BVN");
 };
+
+/**
+ * Has this user's identity document (NIN, passport, licence or voter's card)
+ * been verified? The verification status must show the IDENTITY step
+ * completed, and when the profile carries an idStatus it must be an approved
+ * one, so a document still under review does not count.
+ */
+export const isIdentityVerified = (
+  profile: ProfileLike,
+  verification: VerificationLike,
+) => {
+  if (!stepCompleted(verification, "IDENTITY")) return false;
+  const idStatus = String(profile?.kycStatus?.idStatus ?? "")
+    .trim()
+    .toUpperCase();
+  return idStatus === "" || APPROVED_ID_STATUSES.has(idStatus);
+};
+
+/**
+ * First and last name lock once the user's identity is established, by BVN
+ * or by an ID document, because from then on the name has to match the
+ * record. Until one of those is done the name stays editable.
+ */
+export const isNameLocked = (
+  profile: ProfileLike,
+  verification: VerificationLike,
+) => isBvnVerified(profile, verification) || isIdentityVerified(profile, verification);

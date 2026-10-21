@@ -23,7 +23,7 @@ import {
   useUpdateAvatar,
   useUpdateProfile,
 } from "@/lib/services/profile.service";
-import { isBvnVerified } from "@/lib/nameLock";
+import { isNameLocked } from "@/lib/nameLock";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
@@ -76,8 +76,9 @@ export function EditProfileModal({
   const avatar = profileData?.data?.avatarUrl;
   const profile = profileData?.data;
   const { data: verificationData } = UseVerificationStatus();
-  // Names lock only after a real BVN verification, never before.
-  const bvnVerified = isBvnVerified(profile, verificationData?.data);
+  // Names lock once identity is established by BVN or an ID document (NIN,
+  // passport, licence, voter's card), never before.
+  const bvnVerified = isNameLocked(profile, verificationData?.data);
 
   const {
     register,
@@ -256,7 +257,7 @@ export function EditProfileModal({
             {bvnVerified && (
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3 shrink-0" />
-                Name is locked after BVN verification
+                Name is locked after identity verification
               </span>
             )}
           </div>
