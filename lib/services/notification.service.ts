@@ -19,6 +19,9 @@ export const UseGetNotifications = () => {
         handleApiError(err);
       }
     },
+    // Deposits are confirmed server-side after the user has left the Add Fund
+    // flow, so keep the feed fresh; useDepositAlerts toasts what arrives.
+    refetchInterval: 30_000,
   });
 };
 
