@@ -13,6 +13,8 @@ interface OtpInputProps {
   onComplete?: (otp: string) => void;
   onChange?: (otp: string) => void;
   disabled?: boolean;
+  /** Hide the digits (PINs). Leave off for codes the user reads from an email or app. */
+  mask?: boolean;
   error?: string;
   label?: string;
   hint?: string;
@@ -24,6 +26,7 @@ export function OtpInput({
   onComplete,
   onChange,
   disabled = false,
+  mask = false,
   error,
   label,
   hint,
@@ -137,9 +140,9 @@ export function OtpInput({
             ref={(el) => {
               inputRefs.current[i] = el;
             }}
-            type="text"
+            type={mask ? "password" : "text"}
             inputMode="numeric"
-            autoComplete={i === 0 ? "one-time-code" : undefined}
+            autoComplete={mask ? "off" : i === 0 ? "one-time-code" : undefined}
             pattern="\d*"
             maxLength={1}
             value={values[i]}
