@@ -16,7 +16,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 const WALLET_TABS = [
   { key: "fiat", label: "Fiat" },
   { key: "crypto", label: "Crypto" },
-  { key: "total", label: "Asset" },
+  { key: "total", label: "History" },
 ] as const;
 
 export default function WalletPage() {
