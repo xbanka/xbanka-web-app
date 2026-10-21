@@ -8,17 +8,7 @@ export const SAVED_CARDS = [
   { id: "uba_card", bank: "UBA", masked: "·· ·· ·· ··123", name: "Joseph Eyebiokin", color: "bg-red-600", isDefault: false, expiry: "08/26", type: "Mastercard" },
 ];
  
-// Smallest NGN amount the Add Fund flows accept.
-export const MIN_FUND_AMOUNT = 1_000;
-
-export const QUICK_AMOUNTS = [
-  MIN_FUND_AMOUNT,
-  5_000,
-  10_000,
-  50_000,
-  100_000,
-  150_000,
-];
+export const QUICK_AMOUNTS = [5_000, 10_000, 50_000, 100_000, 150_000];
  
 const BANK_AVATAR_COLORS = [
   "bg-orange-500",
