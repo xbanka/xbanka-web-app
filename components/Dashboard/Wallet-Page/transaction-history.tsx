@@ -229,8 +229,8 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
               placeholder="Transaction Type"
               options={[
                 { value: "ALL", label: "All" },
-                { value: "DEPOSIT", label: "DEPOSIT" },
-                { value: "WITHDRAWAL", label: "WITHDRAWAL" },
+                { value: "DEPOSIT", label: "Deposit" },
+                { value: "WITHDRAWAL", label: "Withdrawal" },
               ]}
               value={selectedType}
               onChange={(value) => {
