@@ -40,7 +40,7 @@ const handleCopy = (text: string, label: string) => {
   toast.success(`${label} copied to clipboard`);
 };
 
-import { QUICK_AMOUNTS } from "@/lib/wallet-page";
+import { MIN_FUND_AMOUNT, QUICK_AMOUNTS } from "@/lib/wallet-page";
 import { cn } from "@/lib/utils";
 import { CheckCircle2 } from "lucide-react";
 import { UseDeclareBankTransferIntent } from "@/lib/services/wallet.service";
@@ -127,7 +127,7 @@ function EnterAmountStep({
   onContinue: () => void;
 }) {
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
-  const isValid = numeric >= 1000;
+  const isValid = numeric >= MIN_FUND_AMOUNT;
   const hasFundingAccount = fundingAccounts.length > 0;
 
   return (
@@ -164,7 +164,7 @@ function EnterAmountStep({
             />
           </div>
           <div className="flex items-center justify-between text-xs text-text">
-            <span>Minimum transfer: ₦1,000</span>
+            <span>Minimum transfer: ₦{MIN_FUND_AMOUNT.toLocaleString()}</span>
           </div>
 
           {/* Quick amounts */}
@@ -517,7 +517,7 @@ function TransferSubmittedStep({
   );
 }
 
-function AddFundingAccountStep({
+export function AddFundingAccountStep({
   onBack,
   onClose,
   onAdded,

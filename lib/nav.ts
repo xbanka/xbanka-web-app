@@ -28,6 +28,7 @@ export const NAV: NavSection[] = [
     items: [
       { id: "wallet", label: "Wallet", icon: Wallet },
       { id: "account", label: "Account", icon: User },
+      { id: "bill-payment", label: "Bill Payments", icon: Receipt },
       {
         id: "gift-cards",
         label: "Gift Cards",
@@ -37,7 +38,6 @@ export const NAV: NavSection[] = [
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
-      { id: "bill-payment", label: "Bill Payments", icon: Receipt },
     ],
   },
   {
