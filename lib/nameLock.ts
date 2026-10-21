@@ -67,11 +67,10 @@ export const isIdentityVerified = (
 };
 
 /**
- * First and last name lock once the user's identity is established, by BVN
- * or by an ID document, because from then on the name has to match the
- * record. Until one of those is done the name stays editable.
+ * First and last name lock only once KYC is complete: a verified BVN AND an
+ * approved ID document. Until both are done the name stays editable.
  */
 export const isNameLocked = (
   profile: ProfileLike,
   verification: VerificationLike,
-) => isBvnVerified(profile, verification) || isIdentityVerified(profile, verification);
+) => isBvnVerified(profile, verification) && isIdentityVerified(profile, verification);

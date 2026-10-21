@@ -66,14 +66,24 @@ describe("isIdentityVerified", () => {
 });
 
 describe("isNameLocked", () => {
-  it("locks after BVN or after ID verification", () => {
-    expect(isNameLocked(bvnDone, statusWith({ BVN: "completed" }))).toBe(true);
+  const fullKyc = { kycStatus: { bvnVerified: true, idStatus: "VERIFIED" } };
+
+  it("locks only once both BVN and ID are verified", () => {
+    expect(
+      isNameLocked(fullKyc, statusWith({ BVN: "completed", IDENTITY: "completed" })),
+    ).toBe(true);
+  });
+
+  it("stays unlocked with only one of them done", () => {
+    expect(
+      isNameLocked(bvnDone, statusWith({ BVN: "completed", IDENTITY: "pending" })),
+    ).toBe(false);
     expect(
       isNameLocked(
         { kycStatus: { bvnVerified: false, idStatus: "VERIFIED" } },
         statusWith({ BVN: "pending", IDENTITY: "completed" }),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("stays unlocked while neither is done", () => {

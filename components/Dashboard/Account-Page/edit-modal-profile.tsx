@@ -76,8 +76,8 @@ export function EditProfileModal({
   const avatar = profileData?.data?.avatarUrl;
   const profile = profileData?.data;
   const { data: verificationData } = UseVerificationStatus();
-  // Names lock once identity is established by BVN or an ID document (NIN,
-  // passport, licence, voter's card), never before.
+  // Names lock only once KYC is complete: BVN verified and an ID document
+  // (NIN, passport, licence, voter's card) approved. Never before.
   const bvnVerified = isNameLocked(profile, verificationData?.data);
 
   const {
@@ -257,7 +257,7 @@ export function EditProfileModal({
             {bvnVerified && (
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3 shrink-0" />
-                Name is locked after identity verification
+                Name is locked after KYC verification
               </span>
             )}
           </div>
