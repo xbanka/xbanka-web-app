@@ -10,9 +10,6 @@ import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
 import { VerifyBvnModal } from "./verify-bvn-modal";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Download, Plus } from "lucide-react";
-import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
-import { DepositSidebar } from "./deposit-crypto-sidebar";
 
 // Fiat first, then crypto, then the history of everything. The "total" key
 // stays so existing /wallet?tab=total links keep working.
@@ -24,8 +21,6 @@ const WALLET_TABS = [
 
 export default function WalletPage() {
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
-  const [addFundsOpen, setAddFundsOpen] = useState(false);
-  const [depositOpen, setDepositOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,35 +28,14 @@ export default function WalletPage() {
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
-      {/* Header, with Add Fund and Deposit on the right whatever tab is open */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
-            My Wallets
-          </h1>
-          <p className="text-sm font-normal leading-6 text-text">
-            Manage your balances and actions across all your XBanka wallets
-          </p>
-        </div>
-        <div className="flex items-center gap-3 max-sm:w-full">
-          <Button
-            size="sm"
-            className="max-sm:flex-1"
-            onClick={() => setAddFundsOpen(true)}
-          >
-            <Plus className="w-5 h-5" />
-            Add Fund
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="max-sm:flex-1"
-            onClick={() => setDepositOpen(true)}
-          >
-            <Download className="w-5 h-5" />
-            Deposit
-          </Button>
-        </div>
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
+          My Wallets
+        </h1>
+        <p className="text-sm font-normal leading-6 text-text">
+          Manage your balances and actions across all your XBanka wallets
+        </p>
       </div>
 
       {/* Tabs */}
@@ -94,10 +68,6 @@ export default function WalletPage() {
         open={verifyModalOpen}
         onClose={() => setVerifyModalOpen(false)}
       />
-      {addFundsOpen && (
-        <BankTransferFlow onClose={() => setAddFundsOpen(false)} />
-      )}
-      <DepositSidebar open={depositOpen} onClose={() => setDepositOpen(false)} />
     </div>
   );
 }
