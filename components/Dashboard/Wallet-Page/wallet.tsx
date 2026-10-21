@@ -10,41 +10,73 @@ import { CryptoBalance } from "./crypto-balance";
 import { Button } from "@/components/ui/button";
 import { VerifyBvnModal } from "./verify-bvn-modal";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Download, Plus } from "lucide-react";
+import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
+import { DepositSidebar } from "./deposit-crypto-sidebar";
+
+// Fiat first, then crypto, then the history of everything. The "total" key
+// stays so existing /wallet?tab=total links keep working.
+const WALLET_TABS = [
+  { key: "fiat", label: "Fiat" },
+  { key: "crypto", label: "Crypto" },
+  { key: "total", label: "Transaction History" },
+] as const;
 
 export default function WalletPage() {
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+  const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentTab = searchParams.get("tab") || "total";
+  const currentTab = searchParams.get("tab") || "fiat";
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
-          My Wallets
-        </h1>
-        <p className="text-sm font-normal leading-6 text-text">
-          Manage your balances and actions across all your XBanka wallets
-        </p>
+      {/* Header, with Add Fund and Deposit on the right whatever tab is open */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
+            My Wallets
+          </h1>
+          <p className="text-sm font-normal leading-6 text-text">
+            Manage your balances and actions across all your XBanka wallets
+          </p>
+        </div>
+        <div className="flex items-center gap-3 max-sm:w-full">
+          <Button
+            size="sm"
+            className="max-sm:flex-1"
+            onClick={() => setAddFundsOpen(true)}
+          >
+            <Plus className="w-5 h-5" />
+            Add Fund
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="max-sm:flex-1"
+            onClick={() => setDepositOpen(true)}
+          >
+            <Download className="w-5 h-5" />
+            Deposit
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
       <DashboardCard className="space-y-3 ">
         <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5 ">
-          {["total", "fiat", "crypto"].map((t) => (
+          {WALLET_TABS.map(({ key, label }) => (
             <Button
               size="sm"
-              variant={currentTab === t ? "disabled" : "outline"}
-              key={t}
-              onClick={() => router.push(`/wallet?tab=${t}`)}
-              className={`h-9 capitalize shadow-none border-none transition-colors
-                ${currentTab === t ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
+              variant={currentTab === key ? "disabled" : "outline"}
+              key={key}
+              onClick={() => router.push(`/wallet?tab=${key}`)}
+              className={`h-9 shadow-none border-none transition-colors
+                ${currentTab === key ? "bg-border text-card-text max-sm:text-[14px]" : "border-transparent text-text hover:text-card-text hover:bg-border/60 "}`}
             >
-              {t === "total"
-                ? "Total Value"
-                : t.charAt(0).toUpperCase() + t.slice(1)}
+              {label}
             </Button>
           ))}
         </div>
@@ -62,6 +94,10 @@ export default function WalletPage() {
         open={verifyModalOpen}
         onClose={() => setVerifyModalOpen(false)}
       />
+      {addFundsOpen && (
+        <BankTransferFlow onClose={() => setAddFundsOpen(false)} />
+      )}
+      <DepositSidebar open={depositOpen} onClose={() => setDepositOpen(false)} />
     </div>
   );
 }

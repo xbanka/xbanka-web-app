@@ -5,8 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const TABLE_ROWS = 5;
 
 /**
- * Placeholder for {@link WalletPage}. Mirrors the "Total Value" tab, which is
- * where /wallet lands when no `?tab=` is set.
+ * Placeholder for {@link WalletPage}: the tabs, a balance card and the
+ * transaction history that every tab shows.
  */
 export function WalletPageSkeleton() {
   return (
