@@ -11,12 +11,12 @@ import { Button } from "@/components/ui/button";
 import { VerifyBvnModal } from "./verify-bvn-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 
-// Fiat first, then crypto, then the history of everything. The "total" key
-// stays so existing /wallet?tab=total links keep working.
+// Fiat first, then crypto, then everything together. The "total" key stays
+// so existing /wallet?tab=total links keep working.
 const WALLET_TABS = [
   { key: "fiat", label: "Fiat" },
   { key: "crypto", label: "Crypto" },
-  { key: "total", label: "Transaction History" },
+  { key: "total", label: "Asset" },
 ] as const;
 
 export default function WalletPage() {
