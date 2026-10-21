@@ -79,7 +79,8 @@ afterEach(cleanup);
 
 describe("EnterAmountStep", () => {
   it.each([
-    ["4999", false],
+    ["499", false],
+    ["500", true],
     ["5000", true],
     ["200000", true],
     ["200001", false],

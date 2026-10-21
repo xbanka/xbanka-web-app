@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Recipient, Step, XbankaTransferRecipient } from "./types";
 import { AvatarCircle } from "./avatarCircle";
-import { QUICK_AMOUNTS } from "./mockData";
+import { MIN_SEND_AMOUNT, QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
@@ -25,7 +25,6 @@ export function EnterAmountXbankaStep({
   const wallets = data?.data?.data || [];
 
   const numericAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const minTransfer = 5000;
 
   const formatAmount = (val: string) => {
     const digits = val.replace(/\D/g, "");
@@ -33,7 +32,7 @@ export function EnterAmountXbankaStep({
   };
 
   const isValid =
-    numericAmount >= minTransfer && numericAmount <= sumFiatBalances(wallets);
+    numericAmount >= MIN_SEND_AMOUNT && numericAmount <= sumFiatBalances(wallets);
 
   const handleContinue = () => {
     // We spread the existing recipient and add the new amount/narration
@@ -88,7 +87,7 @@ export function EnterAmountXbankaStep({
               />
             </div>
             <div className="flex justify-between items-center text-xs text-text font-normal leading-4.5">
-              <span className="font-normal text-xs leading-4.5">Minimum transfer: ₦{minTransfer.toLocaleString()}</span>
+              <span className="font-normal text-xs leading-4.5">Minimum send amount: ₦{MIN_SEND_AMOUNT.toLocaleString()}</span>
               <span className="bg-input-background py-2.5 px-4 rounded-lg">
                 Balance: ₦
                 {/* {balance.toLocaleString("en-NG", { minimumFractionDigits: 2 })} */}
