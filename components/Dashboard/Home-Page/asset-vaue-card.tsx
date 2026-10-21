@@ -34,7 +34,7 @@ export function AssetValueCard() {
 
   return (
     <>
-      <DashboardCard className="border border-teal-border bg-teal-light space-y-4">
+      <DashboardCard className="border border-teal-border bg-teal-light">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-text text-sm">
@@ -85,24 +85,24 @@ export function AssetValueCard() {
                 : `≈ $${totalCryptoEquivalent.toLocaleString()} USD`}
             </p>
           </div>
-        </div>
 
-        {/* Fiat balance with Add Fund; the transfer flow takes it from here */}
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card-background px-4 py-3">
-          <div className="min-w-0">
-            <p className="text-xs text-text leading-5">Fiat balance</p>
-            <p className="text-base font-semibold text-card-text truncate">
-              {getAllWalletBalancePending ? "…" : money("₦", fiatNgn)}
-            </p>
+          {/* Add Fund on the same row as the total, with the fiat balance under it */}
+          <div className="flex w-full flex-col gap-2 rounded-xl border border-border bg-card-background px-4 py-3 sm:w-auto sm:min-w-44">
+            <Button
+              size="sm"
+              className="w-full"
+              onClick={() => setAddFundsOpen(true)}
+            >
+              <Plus className="w-4 h-4" />
+              Add Fund
+            </Button>
+            <div className="min-w-0">
+              <p className="text-xs text-text leading-5">Fiat balance</p>
+              <p className="text-base font-semibold text-card-text truncate">
+                {getAllWalletBalancePending ? "…" : money("₦", fiatNgn)}
+              </p>
+            </div>
           </div>
-          <Button
-            size="sm"
-            className="shrink-0"
-            onClick={() => setAddFundsOpen(true)}
-          >
-            <Plus className="w-4 h-4" />
-            Add Fund
-          </Button>
         </div>
       </DashboardCard>
 
