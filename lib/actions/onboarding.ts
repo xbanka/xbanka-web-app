@@ -1,5 +1,8 @@
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
 
+// Upload + provider lookups (BVN, ID) can take well over the 10s default.
+export const KYC_TIMEOUT_MS = 60000;
+
 export const profile = async (
   userId: string,
   firstName: string,
@@ -41,6 +44,7 @@ export const identity = async (formData: FormData) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: KYC_TIMEOUT_MS,
   });
   return {
     success: true,
@@ -86,10 +90,12 @@ export const getLivenessSessionStatus = async (sessionId: string) => {
 };
 
 export const verifyBvn = async (userId: string, bvn: string) => {
-  const response = await AxiosInstance.post("/kyc/verify-bvn", {
-    userId,
-    bvn,
-  });
+  const response = await AxiosInstance.post(
+    "/kyc/verify-bvn",
+    { userId, bvn },
+    // The BVN lookup at the provider can take up to ~30s on the server.
+    { timeout: KYC_TIMEOUT_MS },
+  );
   return {
     success: true,
     data: response.data,

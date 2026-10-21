@@ -22,6 +22,8 @@ import { WithdrawalAccountCard } from "./withdrawal-account-card";
 // virtual account code below.
 // import { Info } from "lucide-react";
 // import { toast } from "sonner";
+import { toast } from "sonner";
+import { fileProblem } from "@/lib/file-validation";
 // import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
 // import { MapleradBankAccount } from "./types";
 // Withdrawal account column (hidden):
@@ -121,6 +123,13 @@ export function AccountInfoTab() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Same 5 MB rule as every other upload; say why instead of failing later.
+    const problem = fileProblem(file, { accept: "image/*" });
+    if (problem) {
+      toast.error(problem);
+      e.target.value = "";
+      return;
+    }
     setImage(URL.createObjectURL(file));
     updateAvatarMutate(file);
   };
