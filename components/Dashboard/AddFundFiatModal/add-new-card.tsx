@@ -4,7 +4,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { UseFundFiatWallet } from "@/lib/services/wallet.service";
 import { cn } from "@/lib/utils";
-import { MIN_FUND_AMOUNT, QUICK_AMOUNTS } from "@/lib/wallet-page";
+import { QUICK_AMOUNTS } from "@/lib/wallet-page";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,7 +29,7 @@ export function AddNewCardStep({
   const [amount, setAmount] = useState<number | null>(null);
   const [saveCard, setSaveCard] = useState(false);
 
-  const isValid = (amount ?? 0) >= MIN_FUND_AMOUNT;
+  const isValid = (amount ?? 0) >= 1000;
 
   const { mutate, error, isPending } = UseFundFiatWallet();
 
@@ -72,7 +72,7 @@ export function AddNewCardStep({
               </div>
               <div className="flex items-center justify-between text-[10px] text-text mt-2">
                 <span className="font-normal text-xs leading-4.5">
-                  Minimum transfer: ₦{MIN_FUND_AMOUNT.toLocaleString()}
+                  Minimum transfer: ₦1,000
                 </span>
                 <span className="font-normal text-xs leading-4.5 bg-input-background py-2.5 px-4 rounded-lg">
                   ₦30,000 remaining today

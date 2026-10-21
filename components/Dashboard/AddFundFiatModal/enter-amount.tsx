@@ -3,7 +3,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ModalHeader } from "@/components/ui/modal-header";
 import { cn } from "@/lib/utils";
 import { BankLogo } from "@/components/ui/bank-logo";
-import { MIN_FUND_AMOUNT, QUICK_AMOUNTS } from "@/lib/wallet-page";
+import { QUICK_AMOUNTS } from "@/lib/wallet-page";
 import { ChevronRight } from "lucide-react";
 
 export function EnterAmountStep({
@@ -24,7 +24,7 @@ export function EnterAmountStep({
   onContinue: () => void;
 }) {
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
-  const isValid = numeric >= MIN_FUND_AMOUNT;
+  const isValid = numeric >= 1000;
   const sourceBankName = sourceLabel?.split(/\s+/)[0] || sourceLabel || "";
 
   return (
@@ -83,7 +83,7 @@ export function EnterAmountStep({
               </div>
               <div className="flex items-center justify-between gap-2 text-[10px] text-text mt-2 max-sm:mt-1">
                 <span className="font-normal text-xs leading-4.5 max-sm:text-[11px]">
-                  Minimum transfer: ₦{MIN_FUND_AMOUNT.toLocaleString()}
+                  Minimum transfer: ₦1,000
                 </span>
                 <span className="font-normal text-xs leading-4.5 bg-input-background py-2.5 px-4 rounded-lg shrink-0 max-sm:py-1.5 max-sm:px-2.5 max-sm:text-[11px]">
                   ₦30,000 remaining today
