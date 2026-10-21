@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
-import { getWalletTotals } from "@/lib/walletTotals";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
 import { Eye, EyeOff, Plus } from "lucide-react";
 import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
@@ -26,12 +25,6 @@ export function AssetValueCard() {
 
   const totalBalance = sumWallets(mainWallet);
   const totalCryptoEquivalent = sumWalletsEquivalent(mainWallet);
-  // The fiat balance for the Add Fund row below; only FIAT wallets count.
-  const { fiatNgn } = getWalletTotals(mainWallet);
-
-  const money = (symbol: string, value: number) =>
-    hidden ? `${symbol}•••••••` : `${symbol}${value.toLocaleString()}`;
-
   return (
     <>
       <DashboardCard className="border border-teal-border bg-teal-light">
@@ -86,23 +79,15 @@ export function AssetValueCard() {
             </p>
           </div>
 
-          {/* Add Fund on the same row as the total, with the fiat balance under it */}
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-44">
-            <Button
-              size="sm"
-              className="w-full"
-              onClick={() => setAddFundsOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              Add Fund
-            </Button>
-            <div className="min-w-0">
-              <p className="text-xs text-text leading-5">Fiat balance</p>
-              <p className="text-base font-semibold text-card-text truncate">
-                {getAllWalletBalancePending ? "…" : money("₦", fiatNgn)}
-              </p>
-            </div>
-          </div>
+          {/* Add Fund on the same row as the total; the transfer flow takes it from here */}
+          <Button
+            size="sm"
+            className="w-full sm:w-auto"
+            onClick={() => setAddFundsOpen(true)}
+          >
+            <Plus className="w-4 h-4" />
+            Add Fund
+          </Button>
         </div>
       </DashboardCard>
 
