@@ -21,9 +21,11 @@ import PhoneNumberField from "@/components/ui/Phonenumberfield";
 import z from "zod";
 import {
   UseProfileUser,
+  UseVerificationStatus,
   useUpdateAvatar,
   useUpdateProfile,
 } from "@/lib/services/profile.service";
+import { isNameLocked } from "@/lib/nameLock";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
@@ -75,7 +77,10 @@ export function EditProfileModal({
     useUpdateAvatar();
   const avatar = profileData?.data?.avatarUrl;
   const profile = profileData?.data;
-  const bvnVerified = profile?.kycStatus?.bvnVerified;
+  const { data: verificationData } = UseVerificationStatus();
+  // Names lock only once KYC is complete: BVN verified and an ID document
+  // (NIN, passport, licence, voter's card) approved. Never before.
+  const bvnVerified = isNameLocked(profile, verificationData?.data);
 
   const {
     register,
@@ -261,7 +266,7 @@ export function EditProfileModal({
             {bvnVerified && (
               <span className="flex items-center gap-1 text-[11px] text-disabled-text">
                 <Lock className="w-3 h-3 shrink-0" />
-                Name is locked after BVN verification
+                Name is locked after KYC verification
               </span>
             )}
           </div>
