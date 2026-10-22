@@ -34,6 +34,7 @@ import {
   MeterType,
 } from "@/lib/types/bills-types";
 import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
+import { availableUnits } from "@/lib/transactionReceipt";
 import { BillerLogo } from "./biller-logo";
 import {
   BETTING_AMOUNTS,
@@ -1082,9 +1083,9 @@ export function BillCheckoutModal({
                 <p className="mt-1.5 text-2xl font-bold tracking-wide text-card-text break-all tabular-nums max-sm:text-[22px]">
                   {groupToken(current.token)}
                 </p>
-                {current.units && (
+                {availableUnits(current.units) && (
                   <p className="text-sm text-text mt-1.5">
-                    {current.units} units
+                    {availableUnits(current.units)} units
                   </p>
                 )}
               </div>
