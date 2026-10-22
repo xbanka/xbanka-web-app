@@ -85,7 +85,7 @@ export const SelectFieldWithValue = ({
         {open && (
           <div
             role="listbox"
-            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-input bg-input-background shadow-md"
+            className="absolute right-0 z-50 mt-1 max-h-60 w-max min-w-full max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-input bg-input-background shadow-md"
           >
             {options.length > 0 ? (
               options.map((o) => (
