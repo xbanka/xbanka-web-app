@@ -12,6 +12,7 @@ import { buildTransactionReceipt } from "@/lib/transactionReceipt";
 import { TransactionReceiptModal } from "@/components/ui/transaction-receipt-modal";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export interface TransactionHistoryProps {
   isCrypto?: boolean;
@@ -20,7 +21,11 @@ export interface TransactionHistoryProps {
 
 export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   const [filter, setFilter] = useState("All");
-  const [selectedType, setSelectedType] = useState("ALL");
+  // Other pages can deep-link a pre-filtered list, e.g. ?type=BILL_PAYMENT.
+  const searchParams = useSearchParams();
+  const [selectedType, setSelectedType] = useState(
+    () => searchParams.get("type")?.toUpperCase() || "ALL",
+  );
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -231,6 +236,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
                 { value: "ALL", label: "All" },
                 { value: "DEPOSIT", label: "Deposit" },
                 { value: "WITHDRAWAL", label: "Withdrawal" },
+                { value: "BILL_PAYMENT", label: "Bill payment" },
               ]}
               value={selectedType}
               onChange={(value) => {

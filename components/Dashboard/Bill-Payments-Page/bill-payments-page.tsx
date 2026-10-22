@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES, QUICK_ACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
@@ -646,9 +647,12 @@ export default function BillPaymentsPage() {
               <h3 className="font-semibold text-card-text text-sm">
                 Recent Transaction
               </h3>
-              <button className="text-xs text-Green flex items-center gap-1 hover:underline">
+              <Link
+                href="/wallet?tab=fiat&type=BILL_PAYMENT"
+                className="text-xs text-Green flex items-center gap-1 hover:underline"
+              >
                 See all <ArrowUpRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
             {history.isPending && recentRows.length === 0 ? (
               <div className="space-y-3">
