@@ -723,7 +723,8 @@ export default function BillPaymentsPage() {
                 return (
                   <button
                     key={action.label}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-border-active transition-colors text-left group"
+                    disabled
+                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border text-left cursor-not-allowed"
                   >
                     <div
                       className={`w-9 h-9 rounded-xl ${action.color} flex items-center justify-center shrink-0`}
@@ -736,7 +737,9 @@ export default function BillPaymentsPage() {
                       </p>
                       <p className="text-xs text-text">{action.sub}</p>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-placeholder group-hover:text-Green transition-colors shrink-0" />
+                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-medium rounded-full border border-border text-text">
+                      Coming soon
+                    </span>
                   </button>
                 );
               })}
