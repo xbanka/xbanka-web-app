@@ -562,9 +562,9 @@ export function BillCheckoutModal({
         onClose={safeClose}
       />
 
-      <div className="px-6 pb-6 pt-5 max-sm:flex-1 max-sm:pt-4">
+      <div className="px-6 pb-6 pt-5 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:pt-4">
         {step === "details" && (
-          <div className="space-y-5">
+          <div className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col">
             {isElectricity && (
               <>
                 <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-card-secondary border border-border">
@@ -879,7 +879,7 @@ export function BillCheckoutModal({
             <ErrorLayout message={notice || initiate.error?.message} />
 
             <Button
-              className="w-full"
+              className="w-full max-sm:mt-auto"
               disabled={!detailsOk || initiate.isPending}
               onClick={handleContinue}
             >
@@ -895,7 +895,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "review" && quote && (
-          <div className="space-y-5">
+          <div className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col">
             <div className="px-4 rounded-xl bg-card-secondary border border-border">
               {summaryRow(
                 isNetwork ? "Network" : "Provider",
@@ -956,7 +956,7 @@ export function BillCheckoutModal({
             <ErrorLayout message={notice || initiate.error?.message} />
 
             <Button
-              className="w-full"
+              className="w-full max-sm:mt-auto"
               disabled={initiate.isPending}
               onClick={handleReviewContinue}
             >
@@ -972,7 +972,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "pin" && quote && (
-          <div className="space-y-5">
+          <div className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col">
             <OtpInput length={4} mask onChange={setPin} />
 
             <ErrorLayout message={confirmErrorMessage} />
@@ -984,7 +984,7 @@ export function BillCheckoutModal({
               Forgot PIN?
             </button>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 max-sm:mt-auto">
               <Button
                 variant="outline"
                 className="flex-1"
@@ -1022,7 +1022,7 @@ export function BillCheckoutModal({
         )}
 
         {step === "result" && current && (
-          <div className="space-y-5 text-center">
+          <div className="space-y-5 text-center max-sm:flex max-sm:flex-1 max-sm:flex-col">
             <div className="flex justify-center pt-2">
               {current.status === "COMPLETED" ? (
                 <CheckCircle2 className="w-14 h-14 text-Green" />
@@ -1131,11 +1131,11 @@ export function BillCheckoutModal({
             )}
 
             {current.status === "PENDING" ? (
-              <Button className="w-full" onClick={onClose}>
+              <Button className="w-full max-sm:mt-auto" onClick={onClose}>
                 Done
               </Button>
             ) : (
-              <div className="flex gap-3">
+              <div className="flex gap-3 max-sm:mt-auto">
                 <Button
                   variant="outline"
                   className="flex-1 text-card-text"
