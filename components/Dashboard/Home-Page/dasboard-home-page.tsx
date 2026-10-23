@@ -15,7 +15,14 @@ export default function DashboardPage() {
       {/* Welcome */}
       <div>
         <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">
-          Welcome to Xbanka, {profileData?.data?.firstName ?? ""} 👋
+          Welcome to Xbanka, {profileData?.data?.firstName ?? ""}{" "}
+          <span
+            role="img"
+            aria-label="waving hand"
+            className="inline-block origin-[70%_70%] motion-safe:animate-wave"
+          >
+            👋
+          </span>
         </h1>
       </div>
 
