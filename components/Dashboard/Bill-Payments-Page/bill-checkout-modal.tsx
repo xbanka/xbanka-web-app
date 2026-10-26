@@ -52,7 +52,7 @@ import {
 } from "./use-favourite-bills";
 
 const MIN_AIRTIME = 50;
-const MIN_ELECTRICITY = 500;
+const MIN_ELECTRICITY = 1000;
 const MIN_BETTING = 100;
 /** Stop polling a PENDING payment after this long; an in-app notification is
  *  sent when the status changes. */
@@ -616,6 +616,11 @@ export function BillCheckoutModal({
                     inputMode="numeric"
                     className={inputClasses}
                   />
+                  {amount !== "" && Number(amount) < MIN_ELECTRICITY && (
+                    <p className="mt-2 text-xs text-error-text">
+                      Minimum amount is ₦{MIN_ELECTRICITY.toLocaleString()}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
                       <button
