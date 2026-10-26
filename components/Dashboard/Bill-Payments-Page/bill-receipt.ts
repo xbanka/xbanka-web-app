@@ -3,7 +3,10 @@
 // other transaction.
 
 import type { ReceiptRow } from "@/components/ui/transaction-receipt-modal";
-import type { TransactionReceiptData } from "@/lib/transactionReceipt";
+import {
+  availableUnits,
+  type TransactionReceiptData,
+} from "@/lib/transactionReceipt";
 import { formatDateTime } from "@/lib/formatDate";
 import { humanise } from "@/lib/humanise";
 import { BillPayment, MeterType } from "@/lib/types/bills-types";
@@ -71,7 +74,8 @@ export function buildBillReceipt(
   if (payment.customerName)
     rows.push({ label: "Customer", value: payment.customerName });
   if (payment.token) rows.push({ label: "Token", value: payment.token });
-  if (payment.units) rows.push({ label: "Units", value: payment.units });
+  const units = availableUnits(payment.units);
+  if (units) rows.push({ label: "Units", value: units });
   if (payment.note?.trim())
     rows.push({ label: "Description", value: payment.note });
 

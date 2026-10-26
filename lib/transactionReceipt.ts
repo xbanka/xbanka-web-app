@@ -39,6 +39,10 @@ const METADATA_FIELDS: { key: string; label: string }[] = [
   { key: "network", label: "Network" },
   { key: "walletAddress", label: "Wallet address" },
   { key: "txHash", label: "Transaction hash" },
+  // Electricity bill payments
+  { key: "meterNumber", label: "Meter number" },
+  { key: "customerName", label: "Customer" },
+  { key: "token", label: "Token" },
   { key: "rate", label: "Rate" },
   { key: "fee", label: "Fee" },
   { key: "channel", label: "Channel" },
@@ -47,6 +51,17 @@ const METADATA_FIELDS: { key: string; label: string }[] = [
 const isPrintable = (value: unknown): value is string | number =>
   (typeof value === "string" && value.trim() !== "") ||
   (typeof value === "number" && Number.isFinite(value));
+
+/** Electricity units as issued by the disco, or undefined when they aren't —
+ *  providers send placeholders like 0, "0" or "null" before units are known. */
+export const availableUnits = (value: unknown): string | undefined => {
+  if (!isPrintable(value)) return undefined;
+  const units = String(value).trim();
+  if (/^(null|undefined|n\/a)$/i.test(units)) return undefined;
+  const numeric = Number(units);
+  if (!Number.isNaN(numeric) && numeric <= 0) return undefined;
+  return units;
+};
 
 /**
  * Builds the receipt for a transaction already in the user's history, so a
@@ -86,6 +101,9 @@ export function buildTransactionReceipt(
           : String(value),
     });
   });
+
+  const units = availableUnits(metadata?.units);
+  if (units) rows.push({ label: "Units", value: units });
 
   if (tx.note?.trim()) {
     rows.push({ label: "Note", value: tx.note });

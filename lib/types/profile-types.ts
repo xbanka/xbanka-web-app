@@ -14,6 +14,10 @@ export interface UserProfileTypes {
   country: string;
   state: string;
   avatarUrl: string | null;
+  /** True once a NIN is saved. The NIN itself is never returned. */
+  hasNin?: boolean;
+  /** Last 4 digits of the saved NIN, for display only. */
+  ninMasked?: string | null;
 
   completedOnboardingSteps: string[];
 

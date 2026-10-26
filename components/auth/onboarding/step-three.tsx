@@ -9,9 +9,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   cleanIdNumber,
+  idTypeOptions,
   step3FormValues,
   step3Schema,
 } from "@/lib/schema/onboarding-schema";
+import { UseProfileUser } from "@/lib/services/profile.service";
+import { useSavedNinChoice } from "@/hooks/use-saved-nin-choice";
+import { SavedNinNotice } from "@/components/ui/saved-nin-notice";
 import { Button } from "../../ui/button";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
@@ -32,6 +36,9 @@ function Step3({ setStep }: Step3Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const { mutate, isPending, error } = useIdentity();
   const userId = useUserIdStore((s) => s.userId);
+  // Passport verification needs the NIN saved at the basic info step.
+  const { data: profileData } = UseProfileUser();
+  const hasNin = !!profileData?.data?.hasNin;
   const {
     isPending: skipPending,
     error: skipError,
@@ -41,18 +48,28 @@ function Step3({ setStep }: Step3Props) {
   const {
     register,
     reset,
+    watch,
+    setValue,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<step3FormValues>({
     resolver: zodResolver(step3Schema),
     mode: "onTouched",
   });
+  // A NIN saved at basic info is reused: no need to type it again.
+  const { usingSavedNin, changeNin } = useSavedNinChoice(
+    watch("idType"),
+    hasNin,
+    setValue,
+  );
 
   const onSubmit = (data: step3FormValues) => {
     const formData = new FormData();
 
     formData.append("userId", userId);
-    formData.append("idNumber", cleanIdNumber(data.idNumber));
+    if (!data.useSavedNin) {
+      formData.append("idNumber", cleanIdNumber(data.idNumber));
+    }
     formData.append("idType", data.idType);
     formData.append("idImage", attachments[0].file);
 
@@ -98,26 +115,25 @@ function Step3({ setStep }: Step3Props) {
             icon={IdCard}
             placeholder="Select ID type"
             error={errors.idType}
-            options={[
-              { value: "nin", label: "NIN" },
-              {
-                value: "international_passport",
-                label: "International Passport",
-              },
-              { value: "drivers_license", label: "Driver's License" },
-              { value: "voters_card", label: "Voter's Card" },
-            ]}
+            options={idTypeOptions(hasNin)}
             register={register}
             className={mobileSelectClass}
           />
-          <FormField
-            icon={IdCard}
-            placeholder="Enter ID number"
-            error={errors.idNumber}
-            register={register}
-            id="idNumber"
-            className={mobileFieldClass}
-          />
+          {usingSavedNin ? (
+            <SavedNinNotice
+              ninMasked={profileData?.data?.ninMasked}
+              onChange={changeNin}
+            />
+          ) : (
+            <FormField
+              icon={IdCard}
+              placeholder="Enter ID number"
+              error={errors.idNumber}
+              register={register}
+              id="idNumber"
+              className={mobileFieldClass}
+            />
+          )}
           <div className="space-y-2">
             <div className="space-y-1 text-left">
               <h1 className="font-medium text-sm leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">

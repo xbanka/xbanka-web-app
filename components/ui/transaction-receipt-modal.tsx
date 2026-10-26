@@ -353,7 +353,7 @@ export function TransactionReceiptModal({
 
   return (
     <Modal
-      className="pb-8 px-8 pt-6 max-sm:pb-6 max-sm:px-5 max-sm:pt-4"
+      className="pb-8 px-8 pt-6 max-h-[calc(100dvh-2rem)] overflow-y-auto max-sm:pb-6 max-sm:px-5 max-sm:pt-4"
       onClose={onClose}
     >
       <div className="no-print flex items-center justify-between mb-4">

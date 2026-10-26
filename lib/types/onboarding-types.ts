@@ -18,4 +18,5 @@ export interface profilePayload {
   phoneNumber: string;
   gender: string;
   country: string;
+  nin?: string;
 }

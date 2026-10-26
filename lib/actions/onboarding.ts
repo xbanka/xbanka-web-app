@@ -11,6 +11,7 @@ export const profile = async (
   phoneNumber: string,
   gender: string,
   country: string,
+  nin?: string,
 ) => {
   const response = await AxiosInstance.post("/users/profile", {
     userId,
@@ -20,6 +21,8 @@ export const profile = async (
     gender,
     country,
     phoneNumber,
+    // Only sent when filled, so a NIN already saved is never overwritten by blank.
+    ...(nin?.trim() ? { nin: nin.replace(/[\s-]+/g, "") } : {}),
   });
   return {
     success: true,

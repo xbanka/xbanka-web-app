@@ -1,4 +1,4 @@
-import { Calendar, Lock, Phone, User } from "lucide-react";
+import { Calendar, IdCard, Lock, Phone, User } from "lucide-react";
 import { FormField } from "../../ui/FormField";
 import { SelectField } from "../../ui/select";
 import { FormHeader } from "../../ui/FormHeader";
@@ -8,7 +8,7 @@ import { countryOptions } from "@/lib/countries";
 import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserIdStore } from "@/store/verify-id.store";
-import { useSkipStep, useUserProfile } from "@/lib/services/onboarding.service";
+import { useUserProfile } from "@/lib/services/onboarding.service";
 import { Button } from "../../ui/button";
 import { ErrorField } from "@/components/ui/field-error";
 
@@ -30,11 +30,6 @@ function Step1({ setStep }: StepOneProps) {
 
   const { isPending, error, mutate } = useUserProfile();
   const {
-    isPending: skipPending,
-    error: skipError,
-    mutate: skipMutate,
-  } = useSkipStep();
-  const {
     register,
     reset,
     setValue,
@@ -54,6 +49,7 @@ function Step1({ setStep }: StepOneProps) {
       phoneNumber: data.phoneNumber,
       gender: data.gender,
       country: data.country,
+      nin: data.nin,
     };
     mutate(payload, {
       onSuccess: () => {
@@ -78,16 +74,6 @@ function Step1({ setStep }: StepOneProps) {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
-    });
-  };
-
-  const handleSkip = () => {
-    skipMutate(userId, {
-      onSuccess: () => {
-        reset();
-        setFullName("");
-        setStep(1);
-      },
     });
   };
 
@@ -167,7 +153,19 @@ function Step1({ setStep }: StepOneProps) {
             register={register}
             className={mobileSelectClass}
           />
-          <ErrorField message={error?.message || skipError?.message} />
+          <FormField
+            id="nin"
+            icon={IdCard}
+            placeholder="NIN (optional)"
+            error={errors.nin}
+            register={register}
+            className={mobileFieldClass}
+          />
+          <p className="-mt-2 text-xs text-text">
+            Optional. Add your 11-digit NIN if you want to verify with an
+            international passport later.
+          </p>
+          <ErrorField message={error?.message} />
         </div>
         <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
           <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
@@ -199,12 +197,6 @@ function Step1({ setStep }: StepOneProps) {
               {isPending ? "Submitting..." : "Continue"}
             </Button>
           </div>
-          <h1
-            onClick={handleSkip}
-            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
-          >
-            {skipPending ? "Skipping..." : "Skip for later"}
-          </h1>
         </div>
       </form>
     </div>
