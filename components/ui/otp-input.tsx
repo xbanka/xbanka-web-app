@@ -51,19 +51,27 @@ export function OtpInput({
   };
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, ""); // digits only
+    let raw = e.target.value.replace(/\D/g, ""); // digits only
     if (!raw) return;
 
-    // If user typed/pasted multiple digits into one box, fill forward
+    // The box has no maxLength, so typing into an already-filled box yields
+    // two characters: keep only the new one.
+    if (raw.length === 2 && values[index]) {
+      raw = raw.replace(values[index], "");
+    }
+
+    // Pasted or autofilled code (IME / keyboard suggestions skip the paste
+    // event): spread it across the boxes. A full code always starts at the
+    // first box; a partial one fills forward from the current box.
     if (raw.length > 1) {
-      const next = [...values];
-      let i = index;
+      const next = raw.length >= length ? Array(length).fill("") : [...values];
+      let i = raw.length >= length ? 0 : index;
       for (const char of raw) {
         if (i >= length) break;
         next[i++] = char;
       }
       updateValues(next);
-      focusIndex(Math.min(index + raw.length, length - 1));
+      focusIndex(Math.min(i, length - 1));
       return;
     }
 
@@ -144,7 +152,7 @@ export function OtpInput({
             inputMode="numeric"
             autoComplete={mask ? "off" : i === 0 ? "one-time-code" : undefined}
             pattern="\d*"
-            maxLength={1}
+            maxLength={length}
             value={values[i]}
             disabled={disabled}
             onChange={(e) => handleChange(i, e)}
@@ -158,7 +166,7 @@ export function OtpInput({
               "w-11 h-13 sm:w-18.5 sm:h-16 rounded-lg border bg-transparent text-center text-xl font-bold text-card-text",
               "outline-none transition-[border-color,box-shadow,background-color] duration-150",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "caret-transparent select-none",
+              "caret-transparent",
               // States
               error
                 ? "border-error-text focus:border-error-text focus:ring-[3px] focus:ring-error-text/20"
