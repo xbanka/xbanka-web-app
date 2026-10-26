@@ -11,9 +11,30 @@ export const step1Schema = z.object({
     message: "Gender is required",
   }),
   country: z.string().min(1, { message: "Country is required" }),
+  // Optional. When filled it must be exactly 11 digits (spaces and hyphens are
+  // ignored). It unlocks the international passport option at the ID step.
+  nin: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\d{11}$/.test(v.replace(/[\s-]+/g, "")), {
+      message: "NIN must be exactly 11 digits",
+    }),
 });
 
 export type step1FormValues = z.infer<typeof step1Schema>;
+
+/**
+ * ID types offered at the identity step. The passport lookup needs the holder's
+ * NIN, so International Passport is only offered once a NIN is saved.
+ */
+export const idTypeOptions = (hasNin: boolean) => [
+  { value: "nin", label: "NIN" },
+  ...(hasNin
+    ? [{ value: "international_passport", label: "International Passport" }]
+    : []),
+  { value: "drivers_license", label: "Driver's License" },
+  { value: "voters_card", label: "Voter's Card" },
+];
 
 export const step2Schema = z.object({
   bvn: z.string().length(11, { message: "BVN must be 11 characters long" }),
@@ -32,7 +53,10 @@ export const step3Schema = z
         message: "Please select a valid ID type",
       },
     ),
-    idNumber: z.string().min(1, { message: "Enter your ID number" }),
+    idNumber: z.string(),
+    // True while a NIN already saved on the profile is being reused, so no
+    // number is typed. Only meaningful for the NIN ID type.
+    useSavedNin: z.boolean().optional(),
     document: z.any(),
   })
   // The same rules the server applies, so people see the problem while typing
@@ -41,6 +65,13 @@ export const step3Schema = z
     const number = cleanIdNumber(data.idNumber);
     const fail = (message: string, path: "idNumber" | "idType" = "idNumber") =>
       ctx.addIssue({ code: "custom", path: [path], message });
+
+    // The saved NIN is verified by the server; there is no number to check here.
+    if (data.idType === "nin" && data.useSavedNin) return;
+    if (data.idType !== "voters_card" && !number) {
+      fail("Enter your ID number");
+      return;
+    }
 
     switch (data.idType) {
       case "nin":

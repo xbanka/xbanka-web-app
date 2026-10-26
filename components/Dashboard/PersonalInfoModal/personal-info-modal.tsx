@@ -10,7 +10,7 @@ import { step1FormValues, step1Schema } from "@/lib/schema/onboarding-schema";
 import { useSkipStep, useUserProfile } from "@/lib/services/onboarding.service";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Calendar, Lock, User } from "lucide-react";
+import { Calendar, IdCard, Lock, User } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SuccessState } from "../Onboarding-Journey-Modal/success-state";
@@ -42,6 +42,7 @@ export const PersonalInfoModal = ({ onClose }: { onClose: () => void }) => {
       phoneNumber: data.phoneNumber,
       gender: data.gender,
       country: data.country,
+      nin: data.nin,
     };
     mutate(payload, {
       onSuccess: () => {
@@ -119,6 +120,18 @@ export const PersonalInfoModal = ({ onClose }: { onClose: () => void }) => {
               options={countryOptions}
               register={register}
             />
+
+            <FormField
+              id="nin"
+              icon={IdCard}
+              placeholder="NIN (optional)"
+              error={errors.nin}
+              register={register}
+            />
+            <p className="-mt-2 text-xs text-text">
+              Optional. Add your 11-digit NIN if you want to verify with an
+              international passport later.
+            </p>
 
             <ErrorLayout message={error?.message} />
 
