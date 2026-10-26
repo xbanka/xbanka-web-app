@@ -10,11 +10,14 @@ import {
   AttachmentUpload,
 } from "@/components/ui/UploadAttachment";
 import { useEffect, useState } from "react";
+import { useSavedNinChoice } from "@/hooks/use-saved-nin-choice";
+import { SavedNinNotice } from "@/components/ui/saved-nin-notice";
 import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import {
   cleanIdNumber,
   step3FormValues,
   step3Schema,
+  idTypeOptions,
 } from "@/lib/schema/onboarding-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -93,22 +96,34 @@ export function IdSelfieModal({
   } = useSkipStep();
   const { data: profileData } = UseProfileUser();
   const userId = profileData?.data?.userId;
+  // Passport verification needs the NIN saved at the basic info step.
+  const hasNin = !!profileData?.data?.hasNin;
 
   const {
     register,
     reset,
+    watch,
+    setValue,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<step3FormValues>({
     resolver: zodResolver(step3Schema),
     mode: "onTouched",
   });
+  // A NIN saved at basic info is reused: no need to type it again.
+  const { usingSavedNin, changeNin } = useSavedNinChoice(
+    watch("idType"),
+    hasNin,
+    setValue,
+  );
 
   const onSubmit = (data: step3FormValues) => {
     const formData = new FormData();
 
     formData.append("userId", userId);
-    formData.append("idNumber", cleanIdNumber(data.idNumber));
+    if (!data.useSavedNin) {
+      formData.append("idNumber", cleanIdNumber(data.idNumber));
+    }
     formData.append("idType", data.idType);
     formData.append("idImage", attachments[0].file);
 
@@ -147,24 +162,23 @@ export function IdSelfieModal({
                 icon={IdCard}
                 placeholder="Select ID type"
                 error={errors.idType}
-                options={[
-                  { value: "nin", label: "NIN" },
-                  {
-                    value: "international_passport",
-                    label: "International Passport",
-                  },
-                  { value: "drivers_license", label: "Driver's License" },
-                  { value: "voters_card", label: "Voter's Card" },
-                ]}
+                options={idTypeOptions(hasNin)}
                 register={register}
               />
-              <FormField
-                icon={IdCard}
-                placeholder="Enter ID number"
-                error={errors.idNumber}
-                register={register}
-                id="idNumber"
-              />
+              {usingSavedNin ? (
+                <SavedNinNotice
+              ninMasked={profileData?.data?.ninMasked}
+              onChange={changeNin}
+            />
+              ) : (
+                <FormField
+                  icon={IdCard}
+                  placeholder="Enter ID number"
+                  error={errors.idNumber}
+                  register={register}
+                  id="idNumber"
+                />
+              )}
               <AttachmentUpload
                 value={attachments}
                 onChange={setAttachments}

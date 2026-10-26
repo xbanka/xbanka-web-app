@@ -26,6 +26,7 @@ export const useUserProfile = () => {
         data.phoneNumber,
         data.gender,
         data.country,
+        data.nin,
       ),
     onSuccess: (result) => {
       toast.success(apiMessage(result, "Profile saved"));
