@@ -55,17 +55,23 @@ export function SidebarWrapper({
       ghost.style.pointerEvents = "none";
       overlay.style.animation = "none";
       ghostPanel.style.animation = "none";
-      document.body.appendChild(ghost);
 
-      const opts = { duration: OUT_MS, fill: "forwards" as const };
-      overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
-        ...opts,
-        easing: "ease-in",
+      requestAnimationFrame(() => {
+        // Still on the page: this was React's development-mode remount, not
+        // a close, and the real drawer is sliding in. No snapshot then.
+        if (root.isConnected) return;
+        document.body.appendChild(ghost);
+
+        const opts = { duration: OUT_MS, fill: "forwards" as const };
+        overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
+          ...opts,
+          easing: "ease-in",
+        });
+        ghostPanel.animate(
+          [{ transform: "translateX(0)" }, { transform: "translateX(100%)" }],
+          { ...opts, easing: EASE_OUT_PANEL },
+        ).onfinish = () => ghost.remove();
       });
-      ghostPanel.animate(
-        [{ transform: "translateX(0)" }, { transform: "translateX(100%)" }],
-        { ...opts, easing: EASE_OUT_PANEL },
-      ).onfinish = () => ghost.remove();
     };
   }, []);
 
