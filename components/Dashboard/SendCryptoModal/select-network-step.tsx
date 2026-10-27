@@ -77,7 +77,7 @@ export function SelectNetworkStep({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search asset"
-              className="w-full h-10 pl-9 pr-4 text-sm border border-input rounded-xl bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
+              className="w-full h-10 pl-9 pr-4 text-base md:text-sm border border-input rounded-xl bg-transparent text-card-text placeholder:text-placeholder outline-none focus:border-border-active transition-colors"
             />
           </div>
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -95,7 +95,7 @@ export function SelectNetworkStep({
                   className={cn(
                     "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
                     active
-                      ? "border-border-active bg-[#042F2E]"
+                      ? "border-border-active bg-teal-light"
                       : "border-border hover:border-border-active",
                   )}
                 >

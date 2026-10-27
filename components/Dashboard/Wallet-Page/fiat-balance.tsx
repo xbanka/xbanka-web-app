@@ -10,6 +10,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { VirtualAccountModal } from "../AddFundFiatModal/virtual-account-modal";
+import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
 import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
 import {
   UseProfileUser,
@@ -38,14 +39,9 @@ export const FiatBalance = () => {
   const { data: verificationData } = UseVerificationStatus();
 
   const handleAddFund = () => {
-    // const isAllowed = validateUser();
-
-    // if (!isAllowed) return;
-    if (!hasTransactionPin) {
-      setOpenCreatePin(true);
-      return;
-    }
-
+    // A bank transfer deposit never needs the transaction PIN, so a first-time
+    // user can fund the wallet before they have set one up. Sending money out
+    // still asks for it (see handleSendFund).
     setAddFundsOpen(true);
   };
 
@@ -114,7 +110,7 @@ export const FiatBalance = () => {
             )}
             {isPending && (
               <span className="text-text text-xs font-normal leading-4.5">
-                "Calculating..."
+                Calculating...
               </span>
             )}
           </div>
@@ -162,10 +158,7 @@ export const FiatBalance = () => {
           </div>
         </div>
         {addFundsOpen && (
-          <VirtualAccountModal
-            open={addFundsOpen}
-            onClose={() => setAddFundsOpen(false)}
-          />
+          <BankTransferFlow onClose={() => setAddFundsOpen(false)} />
         )}
         {sendFundsOpen && (
           <SendMoneyModal

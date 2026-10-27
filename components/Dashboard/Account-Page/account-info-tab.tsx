@@ -1,28 +1,76 @@
 "use client";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
-import { Camera, Copy, Edit2, Lock, Info, Plus } from "lucide-react";
+import { Camera, Copy, Edit2, Lock, Plus } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { PersonalInfoTab } from "./personal-info-tab";
 import Image from "next/image";
-import { toast } from "sonner";
 import {
   UseProfileUser,
   useUpdateAvatar,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
-import {
-  UseGetBankAcounts,
-  UseGetVirtualAccount,
-} from "@/lib/services/wallet.service";
-import { MapleradBankAccount } from "./types";
-import { AddBankModal } from "./add-bank-modal";
+import { UseGetFundingAccounts } from "@/lib/services/wallet.service";
+import { FundingAccount } from "@/lib/types/wallet-types";
+import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/bank-transfer-flow";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
-import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
 import { WithdrawalAccountCard } from "./withdrawal-account-card";
+import { CryptoAddressesColumn } from "./crypto-addresses-column";
+// Virtual account no longer used. Restore these with the commented-out
+// virtual account code below.
+// import { Info } from "lucide-react";
+// import { toast } from "sonner";
+import { toast } from "sonner";
+import { fileProblem } from "@/lib/file-validation";
+// import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
+// import { MapleradBankAccount } from "./types";
+// Withdrawal account column (hidden):
+// import { UseGetBankAcounts } from "@/lib/services/wallet.service";
+// import { BankAccount } from "./types";
+// import { AddBankModal } from "./add-bank-modal";
+// type LinkedBankAccount = BankAccount & { bankCode?: string };
+// import { FundingAccountDetailsLayout } from "./funding-account-details-layout";
+
+function EmptyBankState({
+  title,
+  description,
+  buttonLabel,
+  onAdd,
+}: {
+  title: string;
+  description: string;
+  buttonLabel: string;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/withdrawal-empty.png"
+        alt={title}
+        width={48}
+        height={48}
+        className="mb-1 opacity-80"
+      />
+      <p className="text-sm font-medium leading-5 text-card-text">{title}</p>
+      <p className="text-xs font-normal leading-5 text-text max-w-xs">
+        {description}
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onAdd}
+        className="mt-2 gap-2 text-Green"
+      >
+        <Plus className="w-4 h-4" />
+        {buttonLabel}
+      </Button>
+    </div>
+  );
+}
 
 const maskEmail = (email?: string) => {
   if (!email) return "";
@@ -39,35 +87,50 @@ const maskPhone = (phone?: string) => {
 
 export function AccountInfoTab() {
   const [image, setImage] = useState<string | null>(null); // preview
-  const [openAccountModal, setOpenAccountModal] = useState(false);
+  // const [openAccountModal, setOpenAccountModal] = useState(false);
+  const [openFundingModal, setOpenFundingModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const [uidCopied, setUidCopied] = useState(false);
   const { mutate: updateAvatarMutate } = useUpdateAvatar();
   const { data: profileData } = UseProfileUser();
   const avatar = profileData?.data?.avatarUrl;
 
-  const {
-    data: virtualAccountData,
-    isPending: virtualAccountPending,
-    error: virtualAccountError,
-  } = UseGetVirtualAccount();
+  // Virtual account no longer used, so its request is not sent.
+  // const {
+  //   data: virtualAccountData,
+  //   isPending: virtualAccountPending,
+  //   error: virtualAccountError,
+  // } = UseGetVirtualAccount();
 
-  const { data: bankAccountsResponse, isPending: bankAccountsPending } =
-    UseGetBankAcounts();
-  const bankAccounts = bankAccountsResponse?.data?.data || [];
+  // const { data: bankAccountsResponse, isPending: bankAccountsPending } =
+  //   UseGetBankAcounts();
+  // const bankAccounts = bankAccountsResponse?.data?.data || [];
+
+  // Same source as the bank transfer flow in the wallet Add Fund modal:
+  // GET /wallet/funding-accounts, added through POST /wallet/funding-accounts.
+  const { data: fundingResponse, isPending: fundingPending } =
+    UseGetFundingAccounts();
+  const fundingAccounts: FundingAccount[] = fundingResponse?.data?.data ?? [];
 
   const { data: verificationData } = UseVerificationStatus();
   const tierLevel = verificationData?.data?.tierLevel ?? 0;
   console.log("tierLevel", tierLevel)
 
-  const account: MapleradBankAccount =
-    virtualAccountData?.data?.data?.[0] ||
-    virtualAccountData?.data?.data ||
-    virtualAccountData?.data;
+  // const account: MapleradBankAccount =
+  //   virtualAccountData?.data?.data?.[0] ||
+  //   virtualAccountData?.data?.data ||
+  //   virtualAccountData?.data;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Same 5 MB rule as every other upload; say why instead of failing later.
+    const problem = fileProblem(file, { accept: "image/*" });
+    if (problem) {
+      toast.error(problem);
+      e.target.value = "";
+      return;
+    }
     setImage(URL.createObjectURL(file));
     updateAvatarMutate(file);
   };
@@ -80,24 +143,24 @@ export function AccountInfoTab() {
     setTimeout(() => setUidCopied(false), 1500);
   };
 
-  const copyAccountNumber = () => {
-    if (!account?.address) return;
-    navigator.clipboard?.writeText(String(account.address));
-    toast.success("Account number copied");
-  };
+  // const copyAccountNumber = () => {
+  //   if (!account?.address) return;
+  //   navigator.clipboard?.writeText(String(account.address));
+  //   toast.success("Account number copied");
+  // };
 
-  const copyAccountDetails = () => {
-    if (!account) return;
-    const details = [
-      `Bank Name: ${account.bankName}`,
-      `Account Name: ${account.accountName}`,
-      `Account Number: ${account.address}`,
-      `Account Type: Virtual Account`,
-      `Currency: NGN`,
-    ].join("\n");
-    navigator.clipboard?.writeText(details);
-    toast.success("Account details copied");
-  };
+  // const copyAccountDetails = () => {
+  //   if (!account) return;
+  //   const details = [
+  //     `Bank Name: ${account.bankName}`,
+  //     `Account Name: ${account.accountName}`,
+  //     `Account Number: ${account.address}`,
+  //     `Account Type: Virtual Account`,
+  //     `Currency: NGN`,
+  //   ].join("\n");
+  //   navigator.clipboard?.writeText(details);
+  //   toast.success("Account details copied");
+  // };
 
   return (
     <div className="space-y-4">
@@ -183,7 +246,7 @@ export function AccountInfoTab() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
           {/* Xbanka Funding Account */}
           <div className="space-y-4 lg:pr-6">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex justify-between items-center gap-3">
               <div>
                 <p className="font-medium text-sm leading-5 text-card-text">
                   Xbanka Funding Account
@@ -192,13 +255,54 @@ export function AccountInfoTab() {
                   Transfer money to this account to fund your NGN Wallet
                 </p>
               </div>
+              {fundingAccounts.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpenFundingModal(true)}
+                  className="gap-2 text-Green shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New
+                </Button>
+              )}
+              {/* Virtual account no longer used; funding shows the user's
+                  bank accounts below instead.
               {account && !virtualAccountError && (
                 <span className="text-[12px] font-normal px-2 py-0.5 rounded-md bg-green-success-light text-green-success-text border border-green-success-border shrink-0">
                   Active
                 </span>
               )}
+              */}
             </div>
 
+            {fundingPending && <BankAccountSkeleton />}
+
+            {!fundingPending && fundingAccounts.length === 0 && (
+              <EmptyBankState
+                title="No funding account added"
+                description="Add a bank account to fund your NGN wallet"
+                buttonLabel="Add funding account"
+                onAdd={() => setOpenFundingModal(true)}
+              />
+            )}
+
+            {!fundingPending && fundingAccounts.length > 0 && (
+              <div className="space-y-3">
+                {fundingAccounts.map((bank) => (
+                  <WithdrawalAccountCard
+                    key={bank.id}
+                    bankName={bank.bankName}
+                    bankCode={bank.bankCode}
+                    accountName={bank.accountName}
+                    accountNumber={bank.accountNumber}
+                    label="Funding account"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Virtual account no longer used.
             {virtualAccountPending && <BankAccountSkeleton />}
 
             {!virtualAccountPending && !account && virtualAccountError && (
@@ -259,9 +363,14 @@ export function AccountInfoTab() {
                 </div>
               </>
             )}
+            */}
           </div>
 
-          {/* Withdrawal Account */}
+          <CryptoAddressesColumn />
+
+          {/* Withdrawal Account column hidden: only the funding account is
+              used for now. Restore it with lg:grid-cols-2 on the grid, the
+              commented-out state, hook and AddBankModal around it.
           <div className="space-y-4 lg:pl-6">
             <div className="flex justify-between items-center">
               <div>
@@ -288,36 +397,17 @@ export function AccountInfoTab() {
             {bankAccountsPending && <BankAccountSkeleton />}
 
             {!bankAccountsPending && bankAccounts.length === 0 && (
-              <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/withdrawal-empty.png"
-                  alt="No withdrawal account"
-                  width={48}
-                  height={48}
-                  className="mb-1 opacity-80"
-                />
-                <p className="text-sm font-medium leading-5 text-card-text">
-                  No Withdrawal account added
-                </p>
-                <p className="text-xs font-normal leading-5 text-text max-w-xs">
-                  Add a personal account to withdraw funds from your NGN wallet
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpenAccountModal(true)}
-                  className="mt-2 gap-2 text-Green"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add withdrawal account
-                </Button>
-              </div>
+              <EmptyBankState
+                title="No Withdrawal account added"
+                description="Add a personal account to withdraw funds from your NGN wallet"
+                buttonLabel="Add withdrawal account"
+                onAdd={() => setOpenAccountModal(true)}
+              />
             )}
 
             {!bankAccountsPending && bankAccounts.length > 0 && (
               <div className="space-y-3">
-                {bankAccounts.map((bank: any) => (
+                {bankAccounts.map((bank: LinkedBankAccount) => (
                   <WithdrawalAccountCard
                     key={bank.id}
                     bankName={bank.bankName}
@@ -329,6 +419,7 @@ export function AccountInfoTab() {
               </div>
             )}
           </div>
+          */}
         </div>
       </DashboardCard>
 
@@ -421,12 +512,22 @@ export function AccountInfoTab() {
           />
         </div>
 
+        {openFundingModal && (
+          <AddFundingAccountStep
+            onBack={() => setOpenFundingModal(false)}
+            onClose={() => setOpenFundingModal(false)}
+            onAdded={() => setOpenFundingModal(false)}
+          />
+        )}
+
+        {/* Withdrawal account modal (hidden with its column)
         {openAccountModal && (
           <AddBankModal
             onClose={() => setOpenAccountModal(false)}
             open={openAccountModal}
           />
         )}
+        */}
 
         {editProfileModal && (
           <EditProfileModal onClose={() => setEditProfileModal(false)} />

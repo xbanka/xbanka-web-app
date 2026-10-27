@@ -55,7 +55,7 @@ export function RecipientStep({
 
     return (
       user.id?.toLowerCase()?.includes(value) ||
-      user.username?.toLowerCase()?.includes(value) ||
+      // user.username?.toLowerCase()?.includes(value) ||
       user.profile?.firstName?.toLowerCase()?.includes(value) ||
       user.profile?.lastName?.toLowerCase()?.includes(value) ||
       user.email?.toLowerCase()?.includes(value)

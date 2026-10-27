@@ -29,6 +29,10 @@ const WATCHED = [
   "tailwind.config.ts",
   "tailwind.config.js",
   "eslint.config.mjs",
+  // Test tooling: runs on every commit via .githooks/pre-commit.
+  "vitest.config.mts",
+  "vitest.eval.config.mts",
+  "vitest.setup.ts",
 ];
 
 const RULES = [

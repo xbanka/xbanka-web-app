@@ -45,7 +45,7 @@ export function EnterPinXbankaStep({
 
       <div className="pt-6 px-10 pb-10">
         <div className="py-4 space-y-5">
-          <OtpInput length={4} onChange={setPin} />
+          <OtpInput length={4} mask onChange={setPin} />
           <div className="text-center flex justify-center">
             <ErrorLayout message={error?.message} />
           </div>

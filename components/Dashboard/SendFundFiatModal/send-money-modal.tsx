@@ -14,7 +14,7 @@ import { SelectRecipientStep } from "./selectRecepient";
 import { TabToggle } from "./tab-toggle";
 import { ConfirmStep } from "./confirm-step";
 import { EnterPinStep } from "./enter-pin-step";
-import { ProcessingStep } from "./processing-step";
+import { WithdrawalResultStep } from "./withdrawal-result-step";
 import { SuccessStep } from "./success-step";
 import { EnterAmountXbankaStep } from "./enter-amount-xbanka-users";
 import { ConfirmXbankaUserStep } from "./confirm-step-xbanka-users";
@@ -22,6 +22,11 @@ import { EnterPinXbankaStep } from "./enter-pin-xbanka-users";
 import { ProcessingXbankaStep } from "./processing-xbanka-users-step";
 import { formatTransactionDate } from "@/lib/formatDate";
 import { truncateMiddle } from "@/lib/truncate";
+import {
+  NombaInitiateResponse,
+  NombaWithdrawal,
+} from "@/lib/types/wallet-types";
+import { isWithdrawalExpired } from "@/lib/nomba-withdrawal";
 
 export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [step, setStep] = useState<Step>("select-recipient");
@@ -31,6 +36,16 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [recipient, setRecipient] = useState<Recipient | null>(null);
   const [xbankaRecipient, setXbankaRecipient] =
     useState<XbankaTransferRecipient | null>(null);
+  // Bank withdrawal: the initiate response (holds the withdrawalToken, kept in
+  // memory only) and the confirmed withdrawal.
+  const [withdrawal, setWithdrawal] = useState<NombaInitiateResponse | null>(
+    null,
+  );
+  // Local time the token arrived; expiry is measured from here (see flow.ts).
+  const [withdrawalReceivedAt, setWithdrawalReceivedAt] = useState(0);
+  const [withdrawalResult, setWithdrawalResult] =
+    useState<NombaWithdrawal | null>(null);
+  const [amountNotice, setAmountNotice] = useState("");
 
   const showTabs = step === "select-recipient";
 
@@ -55,14 +70,41 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
     setStep("select-recipient");
   };
 
-  const handleContinue = (updatedRecipient: Recipient) => {
+  const handleInitiated = (
+    updatedRecipient: Recipient,
+    initiated: NombaInitiateResponse,
+  ) => {
     setRecipient(updatedRecipient);
+    setWithdrawal(initiated);
+    setWithdrawalReceivedAt(Date.now());
+    setAmountNotice("");
     setStep("confirm_bank");
+  };
+
+  // The withdrawal token lasts 10 minutes; once it is gone, initiate again
+  // from the amount step (the entered amount and narration are kept).
+  const restartWithdrawal = (notice: string) => {
+    setWithdrawal(null);
+    setAmountNotice(notice);
+    setStep("enter-amount");
+  };
+
+  const handleConfirmBank = () => {
+    if (!withdrawal || isWithdrawalExpired(withdrawalReceivedAt, Date.now())) {
+      restartWithdrawal(
+        "This request has expired. Please continue again to refresh it.",
+      );
+      return;
+    }
+    setStep("enter_pin");
   };
 
   const reset = () => {
     setStep("select-recipient");
     setTab("select-recipient");
+    setWithdrawal(null);
+    setWithdrawalResult(null);
+    setAmountNotice("");
   };
 
   const handleClose = () => {
@@ -70,11 +112,6 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
     onClose();
   };
 
-  const startProcessing = async () => {
-    setStep("processing");
-    // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
-    // setStep("success");
-  };
   const startXbankaUsersProcessing = async () => {
     setStep("processing-xbanka-users");
     // await new Promise((r) => setTimeout(r, 2500)); // replace with real mutate()
@@ -129,14 +166,14 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
         {step === "enter-amount" && recipient && (
           <EnterAmountStep
             recipient={recipient}
+            notice={amountNotice}
             onBack={() => {
-              if (tab === "bank-form") {
-                setStep("select-recipient");
-              } else {
-                setStep("select-recipient");
-              }
+              setWithdrawal(null);
+              setAmountNotice("");
+              setStep("select-recipient");
             }}
-            onContinue={handleContinue} // This now receives the full object
+            onClose={handleClose}
+            onContinue={handleInitiated}
           />
         )}
         {step === "enter-amount-xbanka" && xbankaRecipient && (
@@ -162,7 +199,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             bankCode={recipient.bankCode}
             onBack={() => setStep("enter-amount")}
             onClose={handleClose}
-            onConfirm={() => setStep("enter_pin")}
+            onConfirm={handleConfirmBank}
           />
         )}
         {step === "confirm-xbanka" && xbankaRecipient && (
@@ -176,11 +213,16 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             onConfirm={() => setStep("enter_pin_xbanka")}
           />
         )}
-        {step === "enter_pin" && recipient && (
+        {step === "enter_pin" && recipient && withdrawal && (
           <EnterPinStep
+            withdrawalToken={withdrawal.withdrawalToken}
             onBack={() => setStep("confirm_bank")}
             onClose={handleClose}
-            onConfirm={startProcessing}
+            onExpired={restartWithdrawal}
+            onConfirmed={(result) => {
+              setWithdrawalResult(result);
+              setStep("withdrawal-result");
+            }}
           />
         )}
         {step === "enter_pin_xbanka" && xbankaRecipient && (
@@ -190,15 +232,12 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             onConfirm={startXbankaUsersProcessing}
           />
         )}
-        {step === "processing" && recipient && (
-          <ProcessingStep
+        {step === "withdrawal-result" && recipient && withdrawalResult && (
+          <WithdrawalResultStep
+            withdrawal={withdrawalResult}
             recipient={recipient}
-            amount={
-              recipient?.amount.toString() ? recipient?.amount.toString() : "0"
-            }
-            mandateId={recipient.accountNumber}
-            accountName={recipient.accountName}
-            handleStep={setStep}
+            onDone={handleClose}
+            onAddMore={reset}
           />
         )}
         {step === "processing-xbanka-users" && xbankaRecipient && (

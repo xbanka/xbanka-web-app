@@ -34,43 +34,24 @@ export function AccountPageSkeleton() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:divide-x lg:divide-border">
           {/* Funding account */}
           <div className="space-y-4 lg:pr-6">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center justify-between gap-3">
               <div className="space-y-2">
                 <Skeleton className="h-4 w-44" />
                 <Skeleton className="h-3 w-60" />
               </div>
-              <Skeleton className="h-5 w-14 rounded-md" />
+              <Skeleton className="h-9 w-24 rounded-md" />
             </div>
 
-            <div className="bg-border rounded-lg p-5 space-y-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-3 w-32" />
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Skeleton className="h-10 w-44 rounded-md" />
-              <Skeleton className="h-10 w-44 rounded-md" />
-            </div>
-
-            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-24 w-full rounded-lg" />
           </div>
 
-          {/* Withdrawal account */}
+          {/* Crypto wallet addresses */}
           <div className="space-y-4 lg:pl-6">
             <div className="space-y-2">
-              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-44" />
               <Skeleton className="h-3 w-60" />
             </div>
-            <div className="flex flex-col items-center justify-center gap-3 py-10">
-              <Skeleton className="w-12 h-12 rounded-lg" />
-              <Skeleton className="h-4 w-48" />
-              <Skeleton className="h-3 w-64" />
-              <Skeleton className="h-10 w-48 rounded-md mt-2" />
-            </div>
+            <Skeleton className="h-16 w-full rounded-lg" />
           </div>
         </div>
       </DashboardCard>

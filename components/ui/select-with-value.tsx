@@ -85,7 +85,10 @@ export const SelectFieldWithValue = ({
         {open && (
           <div
             role="listbox"
-            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-input bg-input-background shadow-md"
+            // At least as wide as the trigger, wider when an option needs it,
+            // and anchored to the right so a narrow trigger at the screen edge
+            // never pushes the menu off screen.
+            className="absolute right-0 z-50 mt-1 max-h-60 w-max min-w-full max-w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-input bg-input-background shadow-md"
           >
             {options.length > 0 ? (
               options.map((o) => (
@@ -97,10 +100,13 @@ export const SelectFieldWithValue = ({
                     onChange(o.value);
                     setOpen(false);
                   }}
-                  className="flex cursor-pointer items-center gap-2 px-4 py-2 text-[14px] hover:bg-muted"
+                  className={cn(
+                    "flex cursor-pointer items-center gap-2 px-4 py-2 text-[14px] text-card-text hover:bg-border",
+                    o.value === value && "font-medium text-Green",
+                  )}
                 >
                   {renderIcon && renderIcon(o.value)}
-                  <span className="min-w-0 truncate">{o.label}</span>
+                  <span className="min-w-0 whitespace-nowrap">{o.label}</span>
                 </div>
               ))
             ) : (

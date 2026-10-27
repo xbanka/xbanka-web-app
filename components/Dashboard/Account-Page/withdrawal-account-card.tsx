@@ -1,6 +1,7 @@
 "use client";
 
 import { BankLogo } from "@/components/ui/bank-logo";
+import { maskAccountNumber } from "@/lib/mask";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,12 +18,14 @@ export function WithdrawalAccountCard({
   accountNumber,
   bankCode,
   currency = "NGN",
+  label = "Withdrawal account",
 }: {
   bankName: string;
   accountName: string;
   accountNumber: string;
   bankCode?: string;
   currency?: string;
+  label?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -45,7 +48,7 @@ export function WithdrawalAccountCard({
             {bankName}
           </p>
           <p className="mt-0.5 text-xs font-normal leading-5 text-text">
-            Withdrawal account
+            {label}
           </p>
         </div>
 
@@ -62,7 +65,7 @@ export function WithdrawalAccountCard({
           </dt>
           <dd className="flex min-w-0 items-center gap-2">
             <span className="truncate font-mono text-sm font-semibold tracking-wide text-card-text">
-              {accountNumber}
+              {maskAccountNumber(accountNumber)}
             </span>
             <button
               type="button"

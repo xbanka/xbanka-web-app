@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchSelectField } from "@/components/ui/search-select-field";
 import { BankLogo } from "@/components/ui/bank-logo";
+import { UseGetAllBanks } from "@/lib/services/wallet.service";
 
 const addBankSchema = z.object({
   bankName: z.string().min(1, "Please select a bank"),
@@ -34,23 +35,37 @@ export function BankAccountStep({
     mode: "onTouched",
   });
 
+  // Codes from /accounts/banks are sent to the withdrawal API as `bankCode`.
+  const { data: banksResponse } = UseGetAllBanks();
+  const rawBanks = banksResponse?.data?.data;
+  const bankOptions: { label: string; value: string }[] = Array.isArray(rawBanks)
+    ? [...rawBanks]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((bank: { name: string; code: string }) => ({
+          label: bank.name,
+          value: bank.code,
+        }))
+    : [];
+
   const onSubmit = (data: AddBankForm) => {
-    // Find the selected bank object using the value from the form
+    // `bankName` holds the selected bank's code
     const selectedBank = bankOptions.find((b) => b.value === data.bankName);
     if (!selectedBank) return;
-    if (selectedBank) {
-      const newRecipient: Recipient = {
-        accountNumber: data.accountNumber,
-        bankCode: data.bankName,
-        bankName: selectedBank.label,
-        accountName: "John Doe", // Usually this comes from your "Resolve" API
-        amount: 0,
-        narration: "",
-      };
 
-      setRecipient(newRecipient);
-      setStep("enter-amount");
-    }
+    // The account name is resolved by the withdrawal initiate call, after the
+    // amount is entered, so start each new account without one.
+    const sameAccount =
+      recipient?.accountNumber === data.accountNumber &&
+      recipient?.bankCode === selectedBank.value;
+    setRecipient({
+      accountNumber: data.accountNumber,
+      bankCode: selectedBank.value,
+      bankName: selectedBank.label,
+      accountName: "",
+      amount: sameAccount ? recipient.amount : 0,
+      narration: sameAccount ? recipient.narration : "",
+    });
+    setStep("enter-amount");
   };
 
   // const selectedBankLabel =

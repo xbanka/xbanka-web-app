@@ -24,7 +24,7 @@ export function SelectRecipientStep({
 
     return (
       user.id?.toLowerCase().includes(value) ||
-      user.username?.toLowerCase().includes(value) ||
+      // user.username?.toLowerCase().includes(value) ||
       user.profile?.firstName?.toLowerCase().includes(value) ||
       user.profile?.lastName?.toLowerCase().includes(value) ||
       user.email?.toLowerCase().includes(value)
@@ -102,7 +102,7 @@ export function SelectRecipientStep({
                 </div>
               </button>
             ))} */}
-            No recent recipients
+            <p className="text-sm text-text">No recent recipients</p>
           </div>
         </div>
       </div>

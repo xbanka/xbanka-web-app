@@ -7,12 +7,17 @@ import {
 } from "../types/crypto-types";
 import {
   AddBankAccountPayload,
+  AddFundingAccountPayload,
   DeleteFiatWalletBankSavedCardPayload,
   fundWalletBankPayload,
   fundWalletBankSavedCardPayload,
   fundWalletPayload,
   fundWalletSavedCardPayload,
   GenerateDepositAddressPayload,
+  NombaConfirmPayload,
+  NombaInitiatePayload,
+  NombaInitiateResponse,
+  NombaWithdrawal,
   sendWalletPayload,
   WithdrawCryptoPayload,
 } from "../types/wallet-types";
@@ -102,6 +107,41 @@ export const sendFiatWallet = async (data: sendWalletPayload) => {
   const response = await AxiosInstance.post("/wallets/withdraw/fiat", data);
 
   return response.data;
+};
+
+export const initiateNombaWithdrawal = async (
+  data: NombaInitiatePayload,
+): Promise<NombaInitiateResponse> => {
+  const response = await AxiosInstance.post(
+    "/wallets/withdraw/nomba/initiate",
+    data,
+  );
+
+  return response.data.data;
+};
+
+export const confirmNombaWithdrawal = async (
+  data: NombaConfirmPayload,
+): Promise<NombaWithdrawal> => {
+  // Longer than the default 10s: the transfer is sent to Nomba inside this
+  // request, and a timeout here does not mean the withdrawal failed.
+  const response = await AxiosInstance.post(
+    "/wallets/withdraw/nomba/confirm",
+    data,
+    { timeout: 30000 },
+  );
+
+  return response.data.data;
+};
+
+export const getNombaWithdrawalStatus = async (
+  reference: string,
+): Promise<NombaWithdrawal> => {
+  const response = await AxiosInstance.get(
+    `/wallets/withdraw/nomba/status/${reference}`,
+  );
+
+  return response.data.data;
 };
 
 export const fundFiatWalletSavedCard = async (
@@ -202,6 +242,59 @@ export const getAllBanks = async () => {
 export const resolveBankAccount = async (data: { accountNumber: string; bankCode: string }) => {
   const response = await AxiosInstance.post("/accounts/paystack/lookup", data);
   return response.data;
+};
+
+export const lookupAccountName = async (data: {
+  accountNumber: string;
+  bankCode: string;
+}) => {
+  const response = await AxiosInstance.post("/accounts/lookup", data);
+  return response.data;
+};
+
+export const getFundingAccounts = async () => {
+  const response = await AxiosInstance.get("/wallet/funding-accounts");
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const addFundingAccount = async (data: AddFundingAccountPayload) => {
+  const response = await AxiosInstance.post("/wallet/funding-accounts", data);
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const getXbankaFundingAccount = async () => {
+  const response = await AxiosInstance.get(
+    "/wallet/funding-accounts/xbanka-account",
+  );
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
+};
+
+export const declareBankTransferIntent = async (amount: number) => {
+  const response = await AxiosInstance.post(
+    "/wallet/funding-accounts/declare-intent",
+    { amount },
+  );
+
+  return {
+    success: true,
+    data: response.data,
+    status: response.status,
+  };
 };
 
 export const getBankAcountsList = async () => {

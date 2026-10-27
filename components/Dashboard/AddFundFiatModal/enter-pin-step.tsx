@@ -44,7 +44,7 @@ export function EnterPinStep({
 
       <div className="pt-6 px-10 pb-10 max-sm:px-5 max-sm:pb-6 max-sm:pt-2">
         <div className="py-4 space-y-5 max-sm:py-2 max-sm:space-y-4">
-          <OtpInput length={PIN_LENGTH} onChange={setPin} />
+          <OtpInput length={PIN_LENGTH} mask onChange={setPin} />
           <div className="text-center flex justify-center">
             <ErrorField message={error?.message} />
           </div>

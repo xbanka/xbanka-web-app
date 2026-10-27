@@ -44,7 +44,7 @@ export function SelectCardStep({
                 className={cn(
                   "w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-colors",
                   active
-                    ? "border-border-active bg-[#042F2E]"
+                    ? "border-border-active bg-teal-light"
                     : "border-border hover:border-border-active",
                 )}
               >
@@ -88,10 +88,10 @@ export function SelectCardStep({
           {/* Add new card */}
           <button
             onClick={onAddNew}
-            className="w-full flex items-center gap-3 p-4 rounded-xl border border-dashed border-[#0F766E] bg-card-background hover:border-border-active transition-colors text-left"
+            className="w-full flex items-center gap-3 p-4 rounded-xl border border-dashed border-teal-border bg-card-background hover:border-border-active transition-colors text-left"
           >
-            <div className="w-8 h-8 rounded-full border border-[#0F766E] bg-[#042F2E] p-2 text-[#5EEAD4] flex items-center justify-center shrink-0">
-              <Plus className="w-4 h-4 text-[#5EEAD4]" />
+            <div className="w-8 h-8 rounded-full border border-teal-border bg-teal-light p-2 text-teal-text flex items-center justify-center shrink-0">
+              <Plus className="w-4 h-4 text-teal-text" />
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium leading-5 text-card-text">

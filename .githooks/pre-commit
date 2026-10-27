@@ -10,3 +10,11 @@ node scripts/check-config-integrity.mjs || {
   echo ""
   exit 1
 }
+
+# Gate tests: deterministic, offline, ~1-2s. Fix failures; never --no-verify.
+node_modules/.bin/vitest run --reporter=dot || {
+  echo ""
+  echo "  Commit blocked: gate tests failed (npm test)."
+  echo ""
+  exit 1
+}
