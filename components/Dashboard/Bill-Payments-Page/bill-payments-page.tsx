@@ -496,7 +496,7 @@ export default function BillPaymentsPage() {
             </div>
           </div>
           {resultCount > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
               {searchResults.map(billerTile)}
               {liveSearchResults.map(({ category, provider }) =>
                 providerTile(category, provider),
@@ -546,7 +546,7 @@ export default function BillPaymentsPage() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
               {selectedCategory === "electricity"
                 ? discos.data?.map((d) => providerTile("electricity", d))
                 : selectedCategory === "betting"
@@ -570,7 +570,7 @@ export default function BillPaymentsPage() {
               <p className="text-xs text-text mb-4">
                 Payments you saved — tap one to pay it again
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
                 {favourites.map(favouriteTile)}
               </div>
             </div>
@@ -583,7 +583,7 @@ export default function BillPaymentsPage() {
           <p className="text-xs text-text mb-4">
             Select a service below to get started
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 stagger">
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
               const live = isCategoryLive(cat.id as BillerCategoryId);
@@ -670,7 +670,7 @@ export default function BillPaymentsPage() {
                   : "No bill payments yet — your purchases will show up here."}
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 stagger">
                 {recentRows.map((tx, i) => {
                   // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids,
                   // and rows built before a biller was known carry no id at
@@ -717,7 +717,7 @@ export default function BillPaymentsPage() {
             <h3 className="font-semibold text-card-text text-sm mb-4">
               Quick Action
             </h3>
-            <div className="space-y-2.5">
+            <div className="space-y-2.5 stagger">
               {QUICK_ACTIONS.map((action) => {
                 const Icon = action.icon;
                 return (

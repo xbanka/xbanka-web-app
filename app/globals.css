@@ -159,6 +159,9 @@
   --animate-modal-backdrop-in: fade-in 200ms ease-out;
   --animate-modal-card-in: modal-card-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-modal-sheet-in: modal-sheet-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  /* Each dashboard section fades in as it is opened. Opacity only, so the
+     wrapper never becomes the containing block for a fixed modal. */
+  --animate-page-in: page-in 300ms ease-out backwards;
 
   @keyframes fade-out {
     to {
@@ -167,6 +170,12 @@
   }
 
   @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes page-in {
     from {
       opacity: 0;
     }
@@ -249,6 +258,37 @@
     75% {
       transform: rotate(12deg);
     }
+  }
+}
+
+/* Children rise in one after another: the tiles, rows and cards that take a
+   skeleton's place. Delays cap at the 12th child so a long list arrives
+   together rather than trickling in. */
+@keyframes stagger-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.stagger > * {
+  animation: stagger-up 450ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(7) { animation-delay: 240ms; }
+.stagger > *:nth-child(8) { animation-delay: 280ms; }
+.stagger > *:nth-child(9) { animation-delay: 320ms; }
+.stagger > *:nth-child(10) { animation-delay: 360ms; }
+.stagger > *:nth-child(11) { animation-delay: 400ms; }
+.stagger > *:nth-child(n + 12) { animation-delay: 440ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > * {
+    animation: none;
   }
 }
 

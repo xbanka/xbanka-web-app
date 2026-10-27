@@ -288,7 +288,7 @@ export function AccountInfoTab() {
             )}
 
             {!fundingPending && fundingAccounts.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3 stagger">
                 {fundingAccounts.map((bank) => (
                   <WithdrawalAccountCard
                     key={bank.id}
@@ -406,7 +406,7 @@ export function AccountInfoTab() {
             )}
 
             {!bankAccountsPending && bankAccounts.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3 stagger">
                 {bankAccounts.map((bank: LinkedBankAccount) => (
                   <WithdrawalAccountCard
                     key={bank.id}
