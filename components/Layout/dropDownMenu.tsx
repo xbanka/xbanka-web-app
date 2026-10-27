@@ -166,7 +166,10 @@ export default function UserDropdown({}: UserDropdownProps) {
             <div className="mt-3 space-y-1 text-xs">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text">Total assets</span>
-                <span className="font-semibold text-card-text">
+                <span
+                  key={balancesHidden ? "hidden" : "shown"}
+                  className="font-semibold text-card-text motion-safe:animate-reveal"
+                >
                   {balancesHidden
                     ? "₦•••••"
                     : `₦${totals.totalNgn.toLocaleString()}`}
@@ -174,7 +177,10 @@ export default function UserDropdown({}: UserDropdownProps) {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text">Crypto assets</span>
-                <span className="text-card-text">
+                <span
+                  key={balancesHidden ? "hidden" : "shown"}
+                  className="text-card-text motion-safe:animate-reveal"
+                >
                   {balancesHidden
                     ? "$•••"
                     : `$${totals.cryptoUsd.toLocaleString()}`}

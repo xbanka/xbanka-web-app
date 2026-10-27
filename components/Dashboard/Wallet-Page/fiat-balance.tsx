@@ -94,7 +94,10 @@ export const FiatBalance = () => {
               </div>
             )}
             {!isPending && !error && (
-              <p className="text-3xl sm:text-4xl font-bold text-card-text">
+              <p
+                key={hidden ? "balance-hidden" : "balance-shown"}
+                className="text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "₦•••••••"
                   : data?.data
@@ -104,7 +107,10 @@ export const FiatBalance = () => {
             )}
             {(error || !isPending) && <ErrorField message={error?.message} />}
             {!isPending && !error && (
-              <span className="text-text text-xs font-normal leading-4.5">
+              <span
+                key={hidden ? "today-hidden" : "today-shown"}
+                className="text-text text-xs font-normal leading-4.5 motion-safe:animate-reveal"
+              >
                 {hidden ? "₦•••••••" : `≈ ₦${latestWallet?.balance ?? 0} today`}
               </span>
             )}

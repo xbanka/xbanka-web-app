@@ -9,6 +9,7 @@ import { sumWallets, sumWalletsEquivalent } from "@/lib/sumBalances";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
 import { Eye, EyeOff, Plus } from "lucide-react";
 import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
+import { useCountUp } from "@/hooks/use-count-up";
 import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
 
 export function AssetValueCard() {
@@ -25,6 +26,12 @@ export function AssetValueCard() {
 
   const totalBalance = sumWallets(mainWallet);
   const totalCryptoEquivalent = sumWalletsEquivalent(mainWallet);
+  // Count the headline from the old figure to the new one, including when
+  // the NGN/USDT view is switched.
+  const countedTotal = useCountUp(
+    view === "NGN" ? totalBalance : totalCryptoEquivalent,
+  );
+  const countedUsd = useCountUp(totalCryptoEquivalent);
   return (
     <>
       <DashboardCard className="border border-teal-border bg-teal-light">
@@ -47,17 +54,20 @@ export function AssetValueCard() {
             </div>
             <div className="flex items-center gap-2">
               {getAllWalletBalancePending && (
-                <div className="text-sm text-card-text font-bold leading-11">
-                  Your balance might have changed
+                <div className="h-11 flex items-center">
+                  <span className="sr-only">Loading balance</span>
+                  <div className="h-8 w-40 sm:w-48 rounded-md bg-card-text/10 animate-pulse" />
                 </div>
               )}
               {!getAllWalletBalancePending && (
-                <span className="text-3xl sm:text-4xl text-card-text font-bold leading-11">
+                <span
+                  // Remount on toggle so the figure blurs in each time it is shown or hidden.
+                  key={hidden ? "hidden" : "shown"}
+                  className="text-3xl sm:text-4xl text-card-text font-bold leading-11 tabular-nums motion-safe:animate-reveal"
+                >
                   {hidden
                     ? "•••••••"
-                    : view === "NGN"
-                      ? `₦${totalBalance.toLocaleString()}`
-                      : `$${totalCryptoEquivalent.toLocaleString()}`}
+                    : `${view === "NGN" ? "₦" : "$"}${countedTotal.toLocaleString()}`}
                 </span>
               )}
               {getAllWalletBalanceError && (
@@ -75,7 +85,7 @@ export function AssetValueCard() {
             <p className="text-text text-xs font-normal leading-4.5">
               {hidden
                 ? "≈ ••••••"
-                : `≈ $${totalCryptoEquivalent.toLocaleString()} USD`}
+                : `≈ $${countedUsd.toLocaleString()} USD`}
             </p>
           </div>
 

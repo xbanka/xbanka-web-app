@@ -1,4 +1,8 @@
 "use client";
+import { Check } from "lucide-react";
+import { ScrollFade } from "@/components/ui/scroll-fade";
+import { humanizePlanName } from "@/lib/plan-names";
+import { AmountField } from "./amount-field";
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -181,12 +185,12 @@ export function BillCheckoutModal({
   const planOptions: PlanOption[] | undefined = isCable
     ? cablePlans.data?.map((p) => ({
         key: p.code,
-        label: p.name,
+        label: humanizePlanName(p.name),
         amount: p.amount,
       }))
     : dataPlans.data?.map((p) => ({
         key: planKey(p),
-        label: p.plan,
+        label: humanizePlanName(p.plan),
         amount: p.amount,
       }));
   const selectedPlan = planOptions?.find((p) => p.key === planId);
@@ -476,11 +480,11 @@ export function BillCheckoutModal({
         </Button>
       </div>
     ) : plans.isPending ? (
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="h-13 rounded-xl border border-border bg-card-secondary animate-pulse"
+            className="h-14 rounded-2xl border border-border bg-card-secondary animate-pulse"
           />
         ))}
       </div>
@@ -489,36 +493,50 @@ export function BillCheckoutModal({
         No plans are available for this provider right now.
       </div>
     ) : (
-      <div className="space-y-2 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5 pb-2">
-        {planOptions.map((p) => {
-          const selected = p.key === planId;
-          return (
-            <button
-              key={p.key}
-              type="button"
-              onClick={() => setPlanId(p.key)}
-              className={cn(
-                "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                selected
-                  ? "border-Green bg-Green/10"
-                  : "border-border bg-card-secondary hover:border-border-active",
-              )}
-            >
-              <span className="min-w-0 truncate text-sm font-medium text-card-text">
-                {p.label}
-              </span>
-              <span
+      <ScrollFade className="max-h-66 max-sm:max-h-88">
+        <div className="space-y-2.5 p-0.5 pb-3 stagger">
+          {planOptions.map((p) => {
+            const selected = p.key === planId;
+            return (
+              <button
+                key={p.key}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setPlanId(p.key)}
                 className={cn(
-                  "shrink-0 text-sm font-semibold",
-                  selected ? "text-Green" : "text-card-text",
+                  "flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors",
+                  selected
+                    ? "border-Green bg-Green/10 ring-1 ring-Green/40"
+                    : "border-border bg-card-secondary hover:border-border-active",
                 )}
               >
-                {formatNaira(p.amount)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+                    selected
+                      ? "border-Green bg-Green text-white"
+                      : "border-border-active/60",
+                  )}
+                >
+                  {selected && <Check className="size-3" strokeWidth={3} />}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-card-text">
+                  {p.label}
+                </span>
+                <span
+                  className={cn(
+                    "shrink-0 text-sm font-semibold tabular-nums",
+                    selected ? "text-Green" : "text-card-text",
+                  )}
+                >
+                  {formatNaira(p.amount)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </ScrollFade>
     )
   ) : null;
 
@@ -549,6 +567,15 @@ export function BillCheckoutModal({
         className="px-6 pt-5 pb-0 max-sm:px-6 max-sm:pt-5 max-sm:pb-0"
         title={headerByStep[step].title}
         subtitle={headerByStep[step].subtitle}
+        leading={
+          <BillerLogo
+            logo={meta?.logo}
+            name={providerName}
+            fallbackColor={meta?.fallbackColor}
+            size={40}
+            rounded="rounded-xl"
+          />
+        }
         onBack={
           step === "review"
             ? () => {
@@ -588,7 +615,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     Meter Number
                   </label>
                   <input
@@ -604,40 +631,16 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
-                    Amount (₦)
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
+                    Amount
                   </label>
-                  <input
+                  <AmountField
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value.replace(/[^\d]/g, ""))
-                    }
-                    placeholder={`Enter amount (min ₦${MIN_ELECTRICITY})`}
-                    inputMode="numeric"
+                    onChange={setAmount}
+                    min={MIN_ELECTRICITY}
+                    quickAmounts={ELECTRICITY_QUICK_AMOUNTS}
                     className={inputClasses}
                   />
-                  {amount !== "" && Number(amount) < MIN_ELECTRICITY && (
-                    <p className="mt-2 text-xs text-error-text">
-                      Minimum amount is ₦{MIN_ELECTRICITY.toLocaleString()}
-                    </p>
-                  )}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
-                      <button
-                        key={qa}
-                        type="button"
-                        onClick={() => setAmount(String(qa))}
-                        className={cn(
-                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
-                          amount === String(qa)
-                            ? "border-Green bg-Green/10 text-Green font-medium"
-                            : "border-border text-text hover:border-border-active",
-                        )}
-                      >
-                        ₦{qa.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </>
             )}
@@ -645,7 +648,7 @@ export function BillCheckoutModal({
             {isCable && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     {meta?.inputLabel ?? "Smartcard / IUC Number"}
                   </label>
                   <input
@@ -662,7 +665,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     Plan
                   </label>
                   {planSelect}
@@ -673,7 +676,7 @@ export function BillCheckoutModal({
             {isBetting && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     {meta?.inputLabel ?? "Account ID"}
                   </label>
                   <input
@@ -690,7 +693,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     Phone Number
                   </label>
                   <input
@@ -706,35 +709,16 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
-                    Amount (₦)
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
+                    Amount
                   </label>
-                  <input
+                  <AmountField
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value.replace(/[^\d]/g, ""))
-                    }
-                    placeholder={`Enter amount (min ₦${MIN_BETTING})`}
-                    inputMode="numeric"
+                    onChange={setAmount}
+                    min={MIN_BETTING}
+                    quickAmounts={BETTING_AMOUNTS}
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {BETTING_AMOUNTS.map((qa) => (
-                      <button
-                        key={qa}
-                        type="button"
-                        onClick={() => setAmount(String(qa))}
-                        className={cn(
-                          "px-3.5 py-2 text-xs rounded-lg border transition-colors",
-                          amount === String(qa)
-                            ? "border-Green bg-Green/10 text-Green font-medium"
-                            : "border-border text-text hover:border-border-active",
-                        )}
-                      >
-                        ₦{qa.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </>
             )}
@@ -763,7 +747,7 @@ export function BillCheckoutModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-text mb-2">
+                  <label className="block text-[13px] font-medium text-text mb-2.5">
                     Phone Number
                   </label>
                   <input
@@ -780,41 +764,20 @@ export function BillCheckoutModal({
 
                 {product === "AIRTIME" ? (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-2">
-                      Amount (₦)
+                    <label className="block text-[13px] font-medium text-text mb-2.5">
+                      Amount
                     </label>
-                    <input
+                    <AmountField
                       value={amount}
-                      onChange={(e) =>
-                        setAmount(e.target.value.replace(/[^\d]/g, ""))
-                      }
-                      placeholder={`Enter amount (min ₦${MIN_AIRTIME})`}
-                      inputMode="numeric"
+                      onChange={setAmount}
+                      min={MIN_AIRTIME}
+                      quickAmounts={meta?.quickAmounts}
                       className={inputClasses}
                     />
-                    {meta?.quickAmounts && (
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {meta.quickAmounts.map((qa) => (
-                          <button
-                            key={qa}
-                            type="button"
-                            onClick={() => setAmount(String(qa))}
-                            className={cn(
-                              "px-3.5 py-2 text-xs rounded-lg border transition-colors",
-                              amount === String(qa)
-                                ? "border-Green bg-Green/10 text-Green font-medium"
-                                : "border-border text-text hover:border-border-active",
-                            )}
-                          >
-                            ₦{qa.toLocaleString()}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs font-medium text-text mb-2">
+                    <label className="block text-[13px] font-medium text-text mb-2.5">
                       Data Plan
                     </label>
                     {dataPlans.error ? (
@@ -854,7 +817,7 @@ export function BillCheckoutModal({
             )}
 
             {verifies && !initiate.isPending && quoteIsCurrent && (
-              <div className="rounded-xl border border-Green/40 bg-Green/10 px-4 py-3">
+              <div className="rounded-2xl border border-Green/40 bg-Green/10 px-4 py-3.5">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-Green shrink-0" />
                   <span className="text-xs font-medium text-Green">

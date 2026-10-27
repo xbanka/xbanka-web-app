@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "../ui/FormCard";
 import Image from "next/image";
 import { Confetti } from "@/components/ui/confetti";
+import { requestSplashGreeting } from "@/lib/splash";
 
 export function WelcomeScreen() {
   const router = useRouter();
@@ -84,7 +85,11 @@ export function WelcomeScreen() {
           variant="default"
           size="default"
           className="w-full"
-          onClick={() => router.push("/")}
+          onClick={() => {
+            // First visit to the dashboard: greet them as new, not returning.
+            requestSplashGreeting("new");
+            router.push("/");
+          }}
         >
           Go to Dashboard
         </Button>

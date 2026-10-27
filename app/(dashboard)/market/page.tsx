@@ -1,11 +1,14 @@
 import { MarketPage } from "@/components/Dashboard/Crypto-Page/market-page";
 import { MarketPageSkeleton } from "@/components/Dashboard/Crypto-Page/market-page-skeleton";
 import { Suspense } from "react";
+import { Reveal } from "@/components/ui/reveal";
 
 const page = () => {
   return (
     <Suspense fallback={<MarketPageSkeleton />}>
-      <MarketPage />
+      <Reveal>
+        <MarketPage />
+      </Reveal>
     </Suspense>
   );
 };
