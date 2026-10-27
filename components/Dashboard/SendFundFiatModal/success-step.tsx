@@ -8,6 +8,7 @@ import { Confetti } from "@/components/ui/confetti";
 import { formatDateTime } from "@/lib/formatDate";
 import { Receipt } from "lucide-react";
 import { useState } from "react";
+import { useCountUp } from "@/hooks/use-count-up";
 
 const formatAmount = (raw: string) => {
   const numeric = parseFloat(raw.replace(/,/g, ""));
@@ -37,6 +38,14 @@ export function SuccessStep({
   message: string;
 }) {
   const displayAmount = formatAmount(amount);
+  // The amount ticks up from zero as the success screen opens.
+  const numericAmount = parseFloat(amount.replace(/,/g, ""));
+  const countedAmount = useCountUp(
+    Number.isNaN(numericAmount) ? 0 : numericAmount,
+  );
+  const liveAmount = Number.isNaN(numericAmount)
+    ? displayAmount
+    : countedAmount.toLocaleString();
   const [receiptOpen, setReceiptOpen] = useState(false);
 
   if (receiptOpen) {
@@ -78,7 +87,7 @@ export function SuccessStep({
             {message || (
               <>
                 You&apos;ve sent{" "}
-                <span className="text-card-text">₦{displayAmount}</span>
+                <span className="text-card-text tabular-nums">₦{liveAmount}</span>
                 {name ? <> to {name}</> : null}
               </>
             )}
@@ -92,7 +101,7 @@ export function SuccessStep({
           {amount && (
             <TransactionDescriptionField
               label="Amount"
-              value={`₦${displayAmount}.00`}
+              value={`₦${liveAmount}.00`}
             />
           )}
           {fee && <TransactionDescriptionField label="Fee" value={fee} />}

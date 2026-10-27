@@ -5,6 +5,21 @@ import { MarketOverview } from "./market-overview";
 import { OnboardingJourney } from "./onboarding-journey";
 import { QuickActions } from "./quick-actions";
 import { useUserStore } from "@/store/user.store";
+import type { ReactNode } from "react";
+
+// Each dashboard section rises in a beat after the one above it. `empty:hidden`
+// keeps a section that renders nothing (e.g. a finished onboarding) from
+// leaving a gap in the spacing.
+function RiseIn({ index, children }: { index: number; children: ReactNode }) {
+  return (
+    <div
+      className="empty:hidden motion-safe:animate-fade-up"
+      style={{ animationDelay: `${index * 70}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { data: profileData } = UseProfileUser();
@@ -13,7 +28,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}
-      <div>
+      <RiseIn index={0}>
         <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">
           Welcome to Xbanka, {profileData?.data?.firstName ?? ""}{" "}
           <span
@@ -24,23 +39,31 @@ export default function DashboardPage() {
             👋
           </span>
         </h1>
-      </div>
+      </RiseIn>
 
       {/* Asset value */}
-      <AssetValueCard />
+      <RiseIn index={1}>
+        <AssetValueCard />
+      </RiseIn>
 
       {/* Onboarding */}
-      <OnboardingJourney />
+      <RiseIn index={2}>
+        <OnboardingJourney />
+      </RiseIn>
 
       {/* Quick actions */}
-      <QuickActions />
+      <RiseIn index={3}>
+        <QuickActions />
+      </RiseIn>
 
       {/* Bottom grid */}
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-4">
         <MarketOverview />
         <TopGiftCards />
       </div> */}
-      <MarketOverview />
+      <RiseIn index={4}>
+        <MarketOverview />
+      </RiseIn>
     </div>
   );
 }
