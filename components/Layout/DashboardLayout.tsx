@@ -5,6 +5,7 @@ import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { useUserProfile } from "@/lib/services/onboarding.service";
 import { useDepositAlerts } from "@/hooks/use-deposit-alerts";
+import { SplashGate } from "./splash-gate";
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>("dashboard");
@@ -14,6 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
  
   return (
+    <SplashGate>
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
         activePage={activePage}
@@ -30,5 +32,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
       </div>
     </div>
+    </SplashGate>
   );
 }
