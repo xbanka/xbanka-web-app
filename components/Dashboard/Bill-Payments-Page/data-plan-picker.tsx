@@ -7,7 +7,9 @@
 // rather than disappearing.
 
 import { useMemo, useState } from "react";
-import { Flame } from "lucide-react";
+import { Check, Flame } from "lucide-react";
+import { ScrollFade } from "@/components/ui/scroll-fade";
+import { humanizePlanName } from "@/lib/plan-names";
 import { cn } from "@/lib/utils";
 import { DataPlan } from "@/lib/types/bills-types";
 
@@ -147,20 +149,20 @@ export function DataPlanPicker({
 
   if (loading) {
     return (
-      <div className="space-y-3.5">
-        <div className="flex gap-2">
+      <div className="space-y-5">
+        <div className="flex gap-2.5">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-8 w-16 rounded-full border border-border bg-card-secondary animate-pulse"
+              className="h-9 w-18 rounded-full border border-border bg-card-secondary animate-pulse"
             />
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-24 rounded-xl border border-border bg-card-secondary animate-pulse"
+              className="h-26 rounded-2xl border border-border bg-card-secondary animate-pulse"
             />
           ))}
         </div>
@@ -177,9 +179,9 @@ export function DataPlanPicker({
   }
 
   return (
-    <div className="space-y-3.5 pb-1">
+    <div className="space-y-5">
       <div
-        className="flex gap-2 overflow-x-auto pb-1 -mb-1"
+        className="flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="Plan categories"
       >
@@ -191,65 +193,74 @@ export function DataPlanPicker({
             aria-selected={tab.id === activeId}
             onClick={() => setPicked(tab.id)}
             className={cn(
-              "flex items-center gap-1.5 h-8 px-3.5 text-xs font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors",
+              "flex items-center gap-1.5 h-9 px-4 text-[13px] font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors",
               tab.id === activeId
                 ? "bg-Green border-Green text-white"
                 : "border-border text-text hover:text-card-text hover:border-border-active",
             )}
           >
-            {tab.id === "hot" && <Flame className="w-3 h-3" />}
+            {tab.id === "hot" && <Flame className="w-3.5 h-3.5" />}
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* The sheet is taller on mobile, so the grid gets more of it before it
-          starts scrolling. `pb-2` keeps the last row of cards off whatever
-          follows — a selected card's ring would otherwise touch it. */}
-      <div className="grid grid-cols-3 gap-2.5 max-h-62 max-sm:max-h-84 overflow-y-auto pr-0.5 pb-2">
-        {active.plans.map((p) => {
-          const key = planKey(p);
-          const meta = parsePlan(p.plan);
-          const selected = key === value;
-          return (
-            <button
-              key={key}
-              type="button"
-              title={p.plan}
-              onClick={() => onChange(key)}
-              className={cn(
-                "flex flex-col items-center justify-center gap-1.5 min-h-24 px-2 py-3 rounded-xl border text-center transition-colors",
-                selected
-                  ? "border-Green bg-Green/10"
-                  : "border-border bg-card-secondary hover:border-border-active",
-              )}
-            >
-              {meta.size ? (
-                <>
-                  <span className="text-[15px] font-bold text-card-text leading-tight">
-                    {meta.size}
-                  </span>
-                  <span className="text-[11px] text-text leading-tight line-clamp-1">
-                    {meta.validity ?? p.plan}
-                  </span>
-                </>
-              ) : (
-                <span className="text-xs font-semibold text-card-text leading-tight line-clamp-2">
-                  {p.plan}
-                </span>
-              )}
-              <span
+      {/* Keyed by category so switching starts at the top and the new cards
+          rise in. The sheet is taller on mobile, so the grid gets more of it
+          before it scrolls. */}
+      <ScrollFade key={activeId} className="max-h-66 max-sm:max-h-88">
+        <div className="grid grid-cols-3 gap-3 p-0.5 pb-3 stagger">
+          {active.plans.map((p) => {
+            const key = planKey(p);
+            const meta = parsePlan(p.plan);
+            const selected = key === value;
+            const name = humanizePlanName(p.plan);
+            return (
+              <button
+                key={key}
+                type="button"
+                title={name}
+                aria-pressed={selected}
+                onClick={() => onChange(key)}
                 className={cn(
-                  "text-xs font-semibold",
-                  selected ? "text-Green" : "text-card-text",
+                  "relative flex flex-col items-center justify-center gap-2 min-h-26 px-2.5 py-3.5 rounded-2xl border text-center transition-colors",
+                  selected
+                    ? "border-Green bg-Green/10 ring-1 ring-Green/40"
+                    : "border-border bg-card-secondary hover:border-border-active",
                 )}
               >
-                {naira(p.amount)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                {selected && (
+                  <span className="absolute top-2 right-2 flex size-4 items-center justify-center rounded-full bg-Green text-white">
+                    <Check className="size-2.5" strokeWidth={3} />
+                  </span>
+                )}
+                {meta.size ? (
+                  <>
+                    <span className="text-base font-bold text-card-text leading-tight">
+                      {meta.size}
+                    </span>
+                    <span className="text-xs text-text leading-tight line-clamp-1">
+                      {meta.validity ?? name}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs font-semibold text-card-text leading-snug line-clamp-2">
+                    {name}
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "text-[13px] font-semibold",
+                    selected ? "text-Green" : "text-card-text",
+                  )}
+                >
+                  {naira(p.amount)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </ScrollFade>
     </div>
   );
 }
