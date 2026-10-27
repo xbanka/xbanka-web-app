@@ -49,7 +49,7 @@ export const ValueBalance = () => {
             )}
             {!getAllWalletBalancePending && !getAllWalletBalanceError && (
               <p
-                key={hidden ? "hidden" : "shown"}
+                key={hidden ? "balance-hidden" : "balance-shown"}
                 className="text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
               >
                 {hidden
@@ -65,7 +65,7 @@ export const ValueBalance = () => {
 
             {!getAllWalletBalancePending && (
               <span
-                key={hidden ? "hidden" : "shown"}
+                key={hidden ? "today-hidden" : "today-shown"}
                 className="text-text text-xs font-normal leading-4.5 motion-safe:animate-reveal"
               >
                 {hidden ? "₦•••••••" : `≈ ₦${totalNgn.toLocaleString()} today`}
