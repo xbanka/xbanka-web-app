@@ -39,4 +39,20 @@ describe("OtpInput mask", () => {
     fireEvent.paste(boxes()[0], { clipboardData: { getData: () => "9876" } });
     expect(onChange).toHaveBeenLastCalledWith("9876");
   });
+
+  it("spreads a full code inserted without a paste event (autofill, IME)", () => {
+    const onChange = vi.fn();
+    render(<OtpInput length={4} onChange={onChange} />);
+    fireEvent.change(boxes()[0], { target: { value: "9876" } });
+    expect(onChange).toHaveBeenLastCalledWith("9876");
+    expect(boxes().map((box) => box.value)).toEqual(["9", "8", "7", "6"]);
+  });
+
+  it("replaces the digit when typing into a filled box", () => {
+    const onChange = vi.fn();
+    render(<OtpInput length={4} onChange={onChange} />);
+    fireEvent.change(boxes()[0], { target: { value: "1" } });
+    fireEvent.change(boxes()[0], { target: { value: "12" } });
+    expect(onChange).toHaveBeenLastCalledWith("2");
+  });
 });

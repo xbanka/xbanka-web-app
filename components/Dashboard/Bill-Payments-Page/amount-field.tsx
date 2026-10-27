@@ -44,6 +44,12 @@ export function AmountField({
         />
       </div>
 
+      {min !== undefined && value !== "" && Number(value) < min && (
+        <p className="mt-2 text-xs text-error-text">
+          Minimum amount is ₦{min.toLocaleString("en-NG")}
+        </p>
+      )}
+
       {quickAmounts && quickAmounts.length > 0 && (
         <div className="mt-3.5 flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
           {quickAmounts.map((amount) => {

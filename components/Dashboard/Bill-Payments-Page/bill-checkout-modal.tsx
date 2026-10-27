@@ -56,7 +56,7 @@ import {
 } from "./use-favourite-bills";
 
 const MIN_AIRTIME = 50;
-const MIN_ELECTRICITY = 500;
+const MIN_ELECTRICITY = 1000;
 const MIN_BETTING = 100;
 /** Stop polling a PENDING payment after this long; an in-app notification is
  *  sent when the status changes. */
