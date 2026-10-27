@@ -19,6 +19,10 @@ function AddressRow({
   address: string;
 }) {
   const [copied, setCopied] = useState(false);
+  // BTC on "BTC" and SOL on "SOL" would read as a repeated word; the network
+  // only adds information when it differs from the coin (USDT on TRC20).
+  const showNetwork = network.toUpperCase() !== currency.toUpperCase();
+  const label = showNetwork ? `${currency} ${network}` : currency;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
@@ -34,7 +38,9 @@ function AddressRow({
         <div className="min-w-0">
           <p className="text-sm font-medium leading-5 text-card-text">
             {currency}
-            <span className="ml-2 text-xs font-normal text-text">{network}</span>
+            {showNetwork && (
+              <span className="ml-2 text-xs font-normal text-text">{network}</span>
+            )}
           </p>
           <p className="mt-0.5 truncate font-mono text-sm font-semibold tracking-wide text-card-text">
             {maskAddress(address)}
@@ -44,7 +50,7 @@ function AddressRow({
       <button
         type="button"
         onClick={handleCopy}
-        aria-label={`Copy ${currency} ${network} wallet address`}
+        aria-label={`Copy ${label} wallet address`}
         className="shrink-0 rounded p-1 text-text transition-colors hover:bg-card-background hover:text-card-text"
       >
         {copied ? (
