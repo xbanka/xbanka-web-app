@@ -2,6 +2,7 @@
 import { Check } from "lucide-react";
 import { ScrollFade } from "@/components/ui/scroll-fade";
 import { humanizePlanName } from "@/lib/plan-names";
+import { AmountField } from "./amount-field";
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -566,6 +567,15 @@ export function BillCheckoutModal({
         className="px-6 pt-5 pb-0 max-sm:px-6 max-sm:pt-5 max-sm:pb-0"
         title={headerByStep[step].title}
         subtitle={headerByStep[step].subtitle}
+        leading={
+          <BillerLogo
+            logo={meta?.logo}
+            name={providerName}
+            fallbackColor={meta?.fallbackColor}
+            size={40}
+            rounded="rounded-xl"
+          />
+        }
         onBack={
           step === "review"
             ? () => {
@@ -622,34 +632,15 @@ export function BillCheckoutModal({
 
                 <div>
                   <label className="block text-[13px] font-medium text-text mb-2.5">
-                    Amount (₦)
+                    Amount
                   </label>
-                  <input
+                  <AmountField
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value.replace(/[^\d]/g, ""))
-                    }
-                    placeholder={`Enter amount (min ₦${MIN_ELECTRICITY})`}
-                    inputMode="numeric"
+                    onChange={setAmount}
+                    min={MIN_ELECTRICITY}
+                    quickAmounts={ELECTRICITY_QUICK_AMOUNTS}
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {ELECTRICITY_QUICK_AMOUNTS.map((qa) => (
-                      <button
-                        key={qa}
-                        type="button"
-                        onClick={() => setAmount(String(qa))}
-                        className={cn(
-                          "h-9 px-4 text-[13px] rounded-full border transition-colors",
-                          amount === String(qa)
-                            ? "border-Green bg-Green/10 text-Green font-medium"
-                            : "border-border text-text hover:border-border-active",
-                        )}
-                      >
-                        ₦{qa.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </>
             )}
@@ -719,34 +710,15 @@ export function BillCheckoutModal({
 
                 <div>
                   <label className="block text-[13px] font-medium text-text mb-2.5">
-                    Amount (₦)
+                    Amount
                   </label>
-                  <input
+                  <AmountField
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value.replace(/[^\d]/g, ""))
-                    }
-                    placeholder={`Enter amount (min ₦${MIN_BETTING})`}
-                    inputMode="numeric"
+                    onChange={setAmount}
+                    min={MIN_BETTING}
+                    quickAmounts={BETTING_AMOUNTS}
                     className={inputClasses}
                   />
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {BETTING_AMOUNTS.map((qa) => (
-                      <button
-                        key={qa}
-                        type="button"
-                        onClick={() => setAmount(String(qa))}
-                        className={cn(
-                          "h-9 px-4 text-[13px] rounded-full border transition-colors",
-                          amount === String(qa)
-                            ? "border-Green bg-Green/10 text-Green font-medium"
-                            : "border-border text-text hover:border-border-active",
-                        )}
-                      >
-                        ₦{qa.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </>
             )}
@@ -793,36 +765,15 @@ export function BillCheckoutModal({
                 {product === "AIRTIME" ? (
                   <div>
                     <label className="block text-[13px] font-medium text-text mb-2.5">
-                      Amount (₦)
+                      Amount
                     </label>
-                    <input
+                    <AmountField
                       value={amount}
-                      onChange={(e) =>
-                        setAmount(e.target.value.replace(/[^\d]/g, ""))
-                      }
-                      placeholder={`Enter amount (min ₦${MIN_AIRTIME})`}
-                      inputMode="numeric"
+                      onChange={setAmount}
+                      min={MIN_AIRTIME}
+                      quickAmounts={meta?.quickAmounts}
                       className={inputClasses}
                     />
-                    {meta?.quickAmounts && (
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {meta.quickAmounts.map((qa) => (
-                          <button
-                            key={qa}
-                            type="button"
-                            onClick={() => setAmount(String(qa))}
-                            className={cn(
-                              "h-9 px-4 text-[13px] rounded-full border transition-colors",
-                              amount === String(qa)
-                                ? "border-Green bg-Green/10 text-Green font-medium"
-                                : "border-border text-text hover:border-border-active",
-                            )}
-                          >
-                            ₦{qa.toLocaleString()}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div>
@@ -866,7 +817,7 @@ export function BillCheckoutModal({
             )}
 
             {verifies && !initiate.isPending && quoteIsCurrent && (
-              <div className="rounded-xl border border-Green/40 bg-Green/10 px-4 py-3">
+              <div className="rounded-2xl border border-Green/40 bg-Green/10 px-4 py-3.5">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-Green shrink-0" />
                   <span className="text-xs font-medium text-Green">

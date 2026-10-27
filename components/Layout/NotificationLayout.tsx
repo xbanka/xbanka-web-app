@@ -63,7 +63,7 @@ export function NotificationsModal({
   return (
     <div
       className={cn(
-        "flex w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-sm:rounded-2xl max-sm:border-4",
+        "flex w-full max-w-150 flex-col overflow-hidden rounded-[20px] border-8 border-border bg-card-background shadow-2xl max-sm:rounded-2xl max-sm:border-4",
         "max-h-[calc(100vh-96px)] max-sm:max-h-[calc(100dvh-24px)]",
         expanded
           ? "h-[calc(100vh-96px)]"
@@ -189,7 +189,7 @@ export function NotificationsModal({
                       {label}
                     </p>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 stagger">
                       {items.map((notification) => (
                         <NotifItem
                           key={notification.id}
