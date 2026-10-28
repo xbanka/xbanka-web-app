@@ -46,18 +46,11 @@ const VerifyPage = ({ token }: { token?: string }) => {
             Kindly complete your KYC to start trading without limits on xbanka
           </p>
         </div>
-        <div>
         <Link href="/onboarding">
           <Button type="submit" className="w-full p-2.5">
             Start KYC
           </Button>
         </Link>
-        <Link href="/welcome">
-          <Button type="submit" className="w-full p-2.5 bg-transparent border-none hover:bg-Green/10 text-Green">
-            I’ll do this later
-          </Button>
-        </Link>
-        </div>
       </Card>
     );
   }
