@@ -1,4 +1,4 @@
-import { isOnboardingStepCompleted } from "./verificationProgress";
+import { isStepDone } from "./verificationProgress";
 
 type ProfileLike =
   | {
@@ -28,10 +28,6 @@ const APPROVED_ID_STATUSES = new Set([
   "DONE",
 ]);
 
-const stepCompleted = (verification: VerificationLike, id: string) =>
-  (verification?.completedOnboardingSteps ?? []).includes(id) ||
-  isOnboardingStepCompleted(verification?.progress?.find((s) => s.id === id));
-
 /**
  * Has this user really verified their BVN?
  *
@@ -46,7 +42,7 @@ export const isBvnVerified = (
 ) => {
   if (profile?.kycStatus?.bvnVerified !== true) return false;
   if (!verification) return true;
-  return stepCompleted(verification, "BVN");
+  return isStepDone(verification, "BVN");
 };
 
 /**
@@ -59,7 +55,7 @@ export const isIdentityVerified = (
   profile: ProfileLike,
   verification: VerificationLike,
 ) => {
-  if (!stepCompleted(verification, "IDENTITY")) return false;
+  if (!isStepDone(verification, "IDENTITY")) return false;
   const idStatus = String(profile?.kycStatus?.idStatus ?? "")
     .trim()
     .toUpperCase();

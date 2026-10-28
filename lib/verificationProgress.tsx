@@ -27,7 +27,20 @@ export const isOnboardingStepCompleted = (step?: RawOnboardingStep) => {
   );
 };
 
-export const ONBOARDING_STEPS = (data?: VerificationProgressData) => {
+type StepSource =
+  | Pick<VerificationProgressData, "completedOnboardingSteps" | "progress">
+  | null
+  | undefined;
+
+/**
+ * Has the backend recorded this onboarding step (e.g. "IDENTITY", "SELFIE")
+ * as done? Either list can carry it, so both are checked.
+ */
+export const isStepDone = (verification: StepSource, id: string) =>
+  (verification?.completedOnboardingSteps ?? []).includes(id) ||
+  isOnboardingStepCompleted(verification?.progress?.find((s) => s.id === id));
+
+export const ONBOARDING_STEPS =(data?: VerificationProgressData) => {
   if (!data?.progress) return [];
 
   const completedStepIds = new Set(data.completedOnboardingSteps ?? []);
