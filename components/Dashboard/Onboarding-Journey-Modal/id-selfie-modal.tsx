@@ -265,10 +265,12 @@ export function IdSelfieModal({
       {/* ── SELFIE SUCCESS ──────────────────────────────── */}
       {step === "selfie-success" && (
         <SuccessState
-          title="Selfie Captured"
-          subtitle="Great shot! Your selfie has been matched with your ID. You can now proceed to verify your address."
+          title="Verification Complete"
+          // Proof of Address: at launch, restore "You can now proceed to
+          // verify your address." and the "Move to Proof of Address" CTA.
+          subtitle="Great shot! Your selfie has been matched with your ID."
           badge="verified"
-          ctaLabel="Move to Proof of Address"
+          ctaLabel="Done"
           onCta={() => {
             onCompleted();
           }}

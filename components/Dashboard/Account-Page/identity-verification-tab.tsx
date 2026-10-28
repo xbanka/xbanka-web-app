@@ -4,13 +4,17 @@ import {
   Check,
 } from "lucide-react";
 import { OnboardingJourneyCard } from "../Home-Page/onboarding-journey-card";
-import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
+import {
+  ONBOARDING_STEP_COUNT,
+  ONBOARDING_STEPS,
+} from "@/lib/verificationProgress";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
 import { ModalType } from "../Home-Page/types";
 import { useState } from "react";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
 import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
-import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
+// Proof of Address: re-enable at launch.
+// import { AddressModal } from "../Onboarding-Journey-Modal/address-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorLayout } from "@/components/ui/error-layout";
 
@@ -90,7 +94,7 @@ export function IdentityVerificationTab() {
                 Verification Status
               </h2>
               <p className="text-xs font-normal leading-5.5 text-text mt-1">
-                Complete all 4 tiers to unlock the full XBanka platform
+                Complete all {ONBOARDING_STEP_COUNT} tiers to unlock the full XBanka platform
               </p>
             </div>
             <span className="text-xs font-normal leading-5.5 text-text">
@@ -112,8 +116,8 @@ export function IdentityVerificationTab() {
                 </div>
 
                 {/* Grid skeleton */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Array.from({ length: ONBOARDING_STEP_COUNT }).map((_, i) => (
                     <div
                       key={i}
                       className="p-4 rounded-lg border border-border space-y-3"
@@ -143,7 +147,7 @@ export function IdentityVerificationTab() {
                 <ErrorLayout message={error?.message} />
               </DashboardCard>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {!isPending &&
                 !error &&
                 progress.map((s, i) => (
@@ -249,11 +253,13 @@ export function IdentityVerificationTab() {
         {openModal === "id-selfie" && (
           <IdSelfieModal
             onClose={() => setOpenModal(null)}
+            // Proof of Address: at launch, open "address" here instead.
             onCompleted={() => {
-              setOpenModal("address");
+              setOpenModal(null);
             }}
           />
         )}
+        {/* Proof of Address: re-enable at launch.
         {openModal === "address" && (
           <AddressModal
             onClose={() => setOpenModal(null)}
@@ -261,7 +267,7 @@ export function IdentityVerificationTab() {
               setOpenModal(null);
             }}
           />
-        )}
+        )} */}
       </div>
     </div>
   );
