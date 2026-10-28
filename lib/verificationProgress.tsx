@@ -27,6 +27,58 @@ export const isOnboardingStepCompleted = (step?: RawOnboardingStep) => {
   );
 };
 
+type StepSource =
+  | Pick<VerificationProgressData, "completedOnboardingSteps" | "progress">
+  | null
+  | undefined;
+
+/**
+ * Has the backend recorded this onboarding step (e.g. "IDENTITY", "SELFIE")
+ * as done? Either list can carry it, so both are checked.
+ */
+export const isStepDone = (verification: StepSource, id: string) =>
+  (verification?.completedOnboardingSteps ?? []).includes(id) ||
+  isOnboardingStepCompleted(verification?.progress?.find((s) => s.id === id));
+
+const STEP_GROUPS = [
+  {
+    key: "EMAIL",
+    modalKey: null,
+    title: "Email Verification",
+    ids: ["EMAIL_VERIFIED"],
+    desc: "Basic account features unlocked",
+    label: "Account created",
+  },
+  {
+    key: "BVN",
+    modalKey: "bvn",
+    title: "Verify BVN",
+    ids: ["BVN"],
+    desc: "Unlocks gift cards & bill payments",
+    label: "Gift cards & bill payments unlocked",
+  },
+  {
+    key: "IDENTITY",
+    modalKey: "id-selfie",
+    title: "ID & Selfie",
+    ids: ["IDENTITY", "SELFIE"],
+    desc: "Unlocks crypto & withdrawals",
+    label: "Crypto & withdrawals unlocked",
+  },
+  // Proof of Address: re-enable at launch.
+  // {
+  //   key: "ADDRESS",
+  //   modalKey: "address",
+  //   title: "Proof of Address",
+  //   ids: ["ADDRESS"],
+  //   desc: "Unlocks full platform access",
+  //   label: "Full platform access unlocked",
+  // },
+];
+
+/** How many verification tiers the user sees (skeletons, copy, grids). */
+export const ONBOARDING_STEP_COUNT = STEP_GROUPS.length;
+
 export const ONBOARDING_STEPS = (data?: VerificationProgressData) => {
   if (!data?.progress) return [];
 
@@ -49,44 +101,9 @@ export const ONBOARDING_STEPS = (data?: VerificationProgressData) => {
     ]),
   );
 
-  const stepGroups = [
-    {
-      key: "EMAIL",
-      modalKey: null,
-      title: "Email Verification",
-      ids: ["EMAIL_VERIFIED"],
-      desc: "Basic account features unlocked",
-      label: "Account created",
-    },
-    {
-      key: "BVN",
-      modalKey: "bvn",
-      title: "Verify BVN",
-      ids: ["BVN"],
-      desc: "Unlocks gift cards & bill payments",
-      label: "Gift cards & bill payments unlocked",
-    },
-    {
-      key: "IDENTITY",
-      modalKey: "id-selfie",
-      title: "ID & Selfie",
-      ids: ["IDENTITY", "SELFIE"],
-      desc: "Unlocks crypto & withdrawals",
-      label: "Crypto & withdrawals unlocked",
-    },
-    // {
-    //   key: "ADDRESS",
-    //   modalKey: "address",
-    //   title: "Proof of Address",
-    //   ids: ["ADDRESS"],
-    //   desc: "Unlocks full platform access",
-    //   label: "Full platform access unlocked",
-    // },
-  ];
-
   let activeStepFound = false;
 
-  return stepGroups.map((group, index) => {
+  return STEP_GROUPS.map((group, index) => {
     const groupSteps = group.ids.map((id) => progressMap[id]);
 
     const isCompleted = groupSteps.every(isOnboardingStepCompleted);

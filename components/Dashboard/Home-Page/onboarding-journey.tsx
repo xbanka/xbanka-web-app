@@ -1,7 +1,10 @@
 import { OnboardingJourneyCard } from "./onboarding-journey-card";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { UseVerificationStatus } from "@/lib/services/profile.service";
-import { ONBOARDING_STEPS } from "@/lib/verificationProgress";
+import {
+  ONBOARDING_STEP_COUNT,
+  ONBOARDING_STEPS,
+} from "@/lib/verificationProgress";
 import { ErrorField } from "@/components/ui/field-error";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
 import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
@@ -38,8 +41,8 @@ export function OnboardingJourney() {
         </div>
 
         {/* Grid skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: ONBOARDING_STEP_COUNT }).map((_, i) => (
             <div
               key={i}
               className="p-4 rounded-lg border border-border space-y-3"
@@ -93,7 +96,7 @@ export function OnboardingJourney() {
           {completedCount} of {totalSteps} completed
         </span>
       </div>
-      <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
+      <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
         {progress.map((s, i) => (
           <OnboardingJourneyCard
             key={i}

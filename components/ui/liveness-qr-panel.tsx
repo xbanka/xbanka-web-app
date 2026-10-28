@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import { useQueryClient } from "@tanstack/react-query";
 import { QrCode } from "lucide-react";
 import { Button } from "./button";
 import { ErrorLayout } from "./error-layout";
@@ -18,6 +19,7 @@ export function LivenessQrPanel({
   onCompleted: () => void;
 }) {
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const {
     mutate: initiate,
@@ -47,9 +49,13 @@ export function LivenessQrPanel({
 
   useEffect(() => {
     if (status === "COMPLETED") {
+      // The selfie was sent from the phone, so this browser's cached status
+      // is stale. Refresh it, or crypto send asks for liveness again.
+      queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       onCompleted();
     }
-  }, [status, onCompleted]);
+  }, [status, onCompleted, queryClient]);
 
   const qrUrl =
     sessionId && typeof window !== "undefined"

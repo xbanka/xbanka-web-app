@@ -30,6 +30,7 @@ import {
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
 import { ErrorLayout } from "@/components/ui/error-layout";
+import { isStepDone } from "@/lib/verificationProgress";
 
 export type IdSelfieStep =
   | "id-form"
@@ -51,13 +52,8 @@ export function IdSelfieModal({
 
   const verification = verificationStatus?.data;
 
-  const identityCompleted = verification?.progress?.find(
-    (s: any) => s.id === "IDENTITY",
-  )?.isCompleted;
-
-  const selfieCompleted = verification?.progress?.find(
-    (s: any) => s.id === "SELFIE",
-  )?.isCompleted;
+  const identityCompleted = isStepDone(verification, "IDENTITY");
+  const selfieCompleted = isStepDone(verification, "SELFIE");
 
   useEffect(() => {
     if (identityCompleted && !selfieCompleted) {
@@ -269,10 +265,12 @@ export function IdSelfieModal({
       {/* ── SELFIE SUCCESS ──────────────────────────────── */}
       {step === "selfie-success" && (
         <SuccessState
-          title="Selfie Captured"
-          subtitle="Great shot! Your selfie has been matched with your ID. You can now proceed to verify your address."
+          title="Verification Complete"
+          // Proof of Address: at launch, restore "You can now proceed to
+          // verify your address." and the "Move to Proof of Address" CTA.
+          subtitle="Great shot! Your selfie has been matched with your ID."
           badge="verified"
-          ctaLabel="Move to Proof of Address"
+          ctaLabel="Done"
           onCta={() => {
             onCompleted();
           }}
