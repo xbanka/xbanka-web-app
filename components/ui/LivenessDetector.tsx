@@ -163,12 +163,14 @@ const LivenessDetector = forwardRef<
     startCamera,
   }));
 
-  const handleCapture = useCallback(async (base64Image: string) => {
-    if (!userId) return;
+  // Only the user's "Next" click sends the selfie. Taking the photo just shows
+  // the preview, so the user can retake it before anything is submitted.
+  const submitSelfie = useCallback(() => {
+    if (!userId || !captured || isPending) return;
     const formData = new FormData();
 
     formData.append("userId", userId);
-    formData.append("selfieImage", base64ToFile(base64Image, "selfie.jpg"));
+    formData.append("selfieImage", base64ToFile(captured, "selfie.jpg"));
 
     if (sessionId) {
       formData.append("sessionId", sessionId);
@@ -179,7 +181,7 @@ const LivenessDetector = forwardRef<
         onSuccess();
       },
     });
-  }, [onSuccess, sessionId, userId, verifySelfie]);
+  }, [captured, isPending, onSuccess, sessionId, userId, verifySelfie]);
 
   const captureImage = useCallback(async () => {
     if (hasCapturedRef.current) return;
@@ -209,9 +211,7 @@ const LivenessDetector = forwardRef<
     setCaptured(dataUrl);
 
     streamRef.current?.getTracks().forEach((t) => t.stop());
-
-    handleCapture(dataUrl);
-  }, [handleCapture]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -352,13 +352,14 @@ const LivenessDetector = forwardRef<
   // };
 
   const handleRetry = () => {
+    hasCapturedRef.current = false;
+    prevLandmarks.current = null;
     setCaptured(null);
     setCurrentAction("turnLeft");
     setCountdown(null);
     setError(null);
-    startCamera();
-    setCameraStarted(false);
     setIsReady(false);
+    startCamera();
   };
 
   const instruction = () => {
@@ -495,7 +496,12 @@ const LivenessDetector = forwardRef<
         <div>
           <img alt="Captured selfie" src={captured} style={{ width: "100%" }} />
 
-          <Button className="w-full" onClick={handleRetry}>
+          <Button
+            type="button"
+            className="w-full"
+            onClick={handleRetry}
+            disabled={isPending}
+          >
             Retake
           </Button>
         </div>
@@ -542,9 +548,11 @@ const LivenessDetector = forwardRef<
 
           {captured && (
             <Button
+              type="button"
               size="lg"
               className="flex-3 max-sm:h-[50px] max-sm:text-[16px]"
               disabled={isPending}
+              onClick={submitSelfie}
             >
               {isPending ? "Verifying..." : "Next"}
             </Button>
