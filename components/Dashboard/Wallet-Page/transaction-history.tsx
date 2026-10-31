@@ -195,7 +195,7 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
   }, [tableType, searchQuery, filter, selectedType]);
 
   return (
-    <DashboardCard className="">
+    <DashboardCard data-tour="wallet-history" className="">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="font-medium text-card-text text-[16px] leading-6">
           Transaction History

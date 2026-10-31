@@ -40,7 +40,10 @@ export default function WalletPage() {
 
       {/* Tabs */}
       <DashboardCard className="space-y-3 ">
-        <div className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5 ">
+        <div
+          data-tour="wallet-tabs"
+          className="border border-border p-1 flex items-center justify-start rounded-lg w-fit gap-0.5 "
+        >
           {WALLET_TABS.map(({ key, label }) => (
             <Button
               size="sm"

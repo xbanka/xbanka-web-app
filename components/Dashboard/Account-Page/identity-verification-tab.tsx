@@ -83,7 +83,7 @@ export function IdentityVerificationTab() {
         )}
 
         {/* Header */}
-        <DashboardCard>
+        <DashboardCard data-tour="account-identity">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-base font-medium leading-6 text-card-text">

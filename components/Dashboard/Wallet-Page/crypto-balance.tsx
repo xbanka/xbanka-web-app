@@ -43,7 +43,10 @@ export const CryptoBalance = () => {
   };
   return (
     <div>
-      <DashboardCard className="border-teal-border bg-teal-light max-sm:p-4">
+      <DashboardCard
+        data-tour="wallet-crypto-balance"
+        className="border-teal-border bg-teal-light max-sm:p-4"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-text text-xs mb-2 max-sm:text-sm">

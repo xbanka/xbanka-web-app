@@ -165,7 +165,7 @@ export function AccountInfoTab() {
   return (
     <div className="space-y-4">
       {/* Profile header */}
-      <DashboardCard>
+      <DashboardCard data-tour="account-profile">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <label className="relative w-17.5 h-17.5 rounded-full bg-Green flex items-center justify-center text-white text-xl font-bold shrink-0 cursor-pointer overflow-hidden">
@@ -238,7 +238,7 @@ export function AccountInfoTab() {
       </DashboardCard>
 
       {/* Deposit & Withdrawal Account */}
-      <DashboardCard className="space-y-4">
+      <DashboardCard data-tour="account-funding" className="space-y-4">
         <h3 className="text-[16px] leading-6 font-medium text-card-text pb-4 border-b border-border">
           Deposit & Withdrawal Account
         </h3>

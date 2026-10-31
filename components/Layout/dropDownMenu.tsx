@@ -9,9 +9,10 @@ import {
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLogoutStore } from "@/store/logout.store";
 import { useProductTourStore } from "@/store/product-tour.store";
+import { tourForPath } from "@/lib/tours";
 import { cn } from "@/lib/utils";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { getWalletTotals } from "@/lib/walletTotals";
@@ -31,6 +32,7 @@ export default function UserDropdown({}: UserDropdownProps) {
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
   const router = useRouter();
+  const pathname = usePathname();
   const requestTour = useProductTourStore((state) => state.request);
   const avatar = profile?.data?.avatarUrl;
   const { data: balances } = UseGetAllWalletBalances();
@@ -249,13 +251,14 @@ export default function UserDropdown({}: UserDropdownProps) {
                 );
               },
             )}
-            {/* Replays the dashboard tour; the home page picks up the request. */}
+            {/* Replays this section's tour, or the dashboard's where the
+                section has none; the layout's ProductTour picks it up. */}
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
                 requestTour();
-                router.push("/");
+                if (!tourForPath(pathname)) router.push("/");
               }}
               className="flex w-full items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm text-card-text transition-colors hover:text-text hover:bg-border"
             >

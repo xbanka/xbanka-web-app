@@ -440,69 +440,173 @@ body {
 }
 
 /* ── Product tour (driver.js) ──────────────────────────────────────────────
-   driver.js ships a white popover. These rules follow the app's theme tokens
-   so the tour matches light and dark mode. The class comes from
-   `popoverClass: "xb-tour"` in components/Dashboard/Home-Page/product-tour.tsx. */
+   driver.js ships a plain white popover. These rules restyle it with the
+   app's theme tokens (light and dark) and lay out the extra elements that
+   components/Layout/product-tour.tsx adds: a progress bar, a numbered badge
+   with an eyebrow beside the title, and a "Skip tour" link. The class comes
+   from `popoverClass: "xb-tour"`. */
+@keyframes xb-tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 .driver-popover.xb-tour {
   font-family: inherit;
   color: var(--card-text);
   background-color: var(--card-background);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  max-width: 320px;
-  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+  border-radius: 18px;
+  padding: 22px 20px 16px;
+  width: min(360px, calc(100vw - 32px));
+  min-width: 0;
+  max-width: none;
+  box-shadow:
+    0 24px 56px -16px rgb(0 0 0 / 0.4),
+    0 0 0 1px rgb(0 0 0 / 0.04);
+}
+.driver-fade .driver-popover.xb-tour {
+  animation: xb-tour-in 0.3s cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+.xb-tour .driver-popover-close-btn {
+  display: none;
+}
+/* Progress along the top edge, inset so it clears the rounded corners. */
+.xb-tour .xb-tour-progress {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+.xb-tour .xb-tour-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--Green);
+}
+.xb-tour .xb-tour-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.xb-tour .xb-tour-step {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--Green);
+  background: color-mix(in srgb, var(--Green) 14%, transparent);
+}
+.xb-tour .xb-tour-text {
+  flex: 1;
+  min-width: 0;
+}
+.xb-tour .xb-tour-eyebrow {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--Green);
 }
 .xb-tour .driver-popover-title {
   font-size: 16px;
-  line-height: 1.4;
+  font-weight: 600;
+  line-height: 1.35;
   color: var(--card-text);
 }
 .xb-tour .driver-popover-description {
-  margin-top: 6px;
+  margin-top: 8px;
+  padding-left: 42px;
+  font-size: 13.5px;
+  line-height: 1.55;
   color: var(--text);
 }
-.xb-tour .driver-popover-close-btn {
-  top: 6px;
-  right: 6px;
-  color: var(--text);
+.xb-tour .driver-popover-footer {
+  margin-top: 18px;
+  align-items: center;
+  gap: 8px;
 }
-.xb-tour .driver-popover-close-btn:hover,
-.xb-tour .driver-popover-close-btn:focus-visible {
-  color: var(--card-text);
+.xb-tour .driver-popover-navigation-btns {
+  display: flex;
+  gap: 8px;
 }
-.xb-tour .driver-popover-progress-text {
-  font-size: 12px;
-  color: var(--text);
+.xb-tour .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+.xb-tour .driver-popover-prev-btn {
+  order: -1;
+}
+/* driver.js disables Back on the first stop; hide it instead of greying it. */
+.xb-tour .driver-popover-prev-btn.driver-popover-btn-disabled {
+  display: none;
 }
 .xb-tour .driver-popover-footer-btn {
   font-size: 13px;
-  font-weight: 500;
-  padding: 7px 14px;
-  border-radius: 8px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 9px 14px;
+  border-radius: 10px;
   text-shadow: none;
   color: var(--card-text);
-  background-color: var(--card-background);
+  background-color: transparent;
   border: 1px solid var(--input);
+  transition:
+    background-color 0.15s,
+    box-shadow 0.15s;
 }
 .xb-tour .driver-popover-footer-btn:hover,
 .xb-tour .driver-popover-footer-btn:focus {
   background-color: var(--border);
 }
+.xb-tour .driver-popover-footer-btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--Green) 30%, transparent);
+}
 .xb-tour .driver-popover-footer-btn.driver-popover-next-btn {
   color: #fff;
   background-color: var(--Green);
-  border-color: var(--abstract-green);
+  border-color: var(--Green);
 }
 .xb-tour .driver-popover-footer-btn.driver-popover-next-btn:hover,
 .xb-tour .driver-popover-footer-btn.driver-popover-next-btn:focus {
   background-color: color-mix(in srgb, var(--Green) 88%, #000);
 }
-.xb-tour .driver-popover-navigation-btns button + button {
-  margin-left: 8px;
+.xb-tour .xb-tour-skip {
+  all: unset;
+  order: -1;
+  margin-right: auto;
+  cursor: pointer;
+  padding: 6px 2px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.xb-tour .xb-tour-skip:hover {
+  color: var(--card-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.xb-tour .xb-tour-skip:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--Green) 30%, transparent);
 }
 /* The arrow is drawn with borders and only the side facing the popover is
    coloured, so each side needs its own rule to pick up the card colour. */
+.xb-tour .driver-popover-arrow {
+  border-width: 6px;
+}
 .xb-tour .driver-popover-arrow-side-left {
   border-left-color: var(--card-background);
 }
