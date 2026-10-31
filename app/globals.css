@@ -438,3 +438,80 @@ body {
   background: transparent;
   opacity: 1;
 }
+
+/* ── Product tour (driver.js) ──────────────────────────────────────────────
+   driver.js ships a white popover. These rules follow the app's theme tokens
+   so the tour matches light and dark mode. The class comes from
+   `popoverClass: "xb-tour"` in components/Dashboard/Home-Page/product-tour.tsx. */
+.driver-popover.xb-tour {
+  font-family: inherit;
+  color: var(--card-text);
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+}
+.xb-tour .driver-popover-title {
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--card-text);
+}
+.xb-tour .driver-popover-description {
+  margin-top: 6px;
+  color: var(--text);
+}
+.xb-tour .driver-popover-close-btn {
+  top: 6px;
+  right: 6px;
+  color: var(--text);
+}
+.xb-tour .driver-popover-close-btn:hover,
+.xb-tour .driver-popover-close-btn:focus-visible {
+  color: var(--card-text);
+}
+.xb-tour .driver-popover-progress-text {
+  font-size: 12px;
+  color: var(--text);
+}
+.xb-tour .driver-popover-footer-btn {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  text-shadow: none;
+  color: var(--card-text);
+  background-color: var(--card-background);
+  border: 1px solid var(--input);
+}
+.xb-tour .driver-popover-footer-btn:hover,
+.xb-tour .driver-popover-footer-btn:focus {
+  background-color: var(--border);
+}
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn {
+  color: #fff;
+  background-color: var(--Green);
+  border-color: var(--abstract-green);
+}
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn:hover,
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn:focus {
+  background-color: color-mix(in srgb, var(--Green) 88%, #000);
+}
+.xb-tour .driver-popover-navigation-btns button + button {
+  margin-left: 8px;
+}
+/* The arrow is drawn with borders and only the side facing the popover is
+   coloured, so each side needs its own rule to pick up the card colour. */
+.xb-tour .driver-popover-arrow-side-left {
+  border-left-color: var(--card-background);
+}
+.xb-tour .driver-popover-arrow-side-right {
+  border-right-color: var(--card-background);
+}
+.xb-tour .driver-popover-arrow-side-top {
+  border-top-color: var(--card-background);
+}
+.xb-tour .driver-popover-arrow-side-bottom {
+  border-bottom-color: var(--card-background);
+}

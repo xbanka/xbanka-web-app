@@ -11,6 +11,7 @@ import { UseProfileUser } from "@/lib/services/profile.service";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { consumeSplashGreeting, type SplashGreeting } from "@/lib/splash";
 import { cn } from "@/lib/utils";
+import { useSplashStore } from "@/store/splash.store";
 
 // The logo needs this long to finish drawing in and show the welcome line.
 const MIN_HOLD_MS = 1400;
@@ -39,6 +40,14 @@ export function SplashGate({ children }: { children: ReactNode }) {
   const [greeting] = useState<SplashGreeting>(() =>
     typeof window === "undefined" ? "back" : consumeSplashGreeting(),
   );
+
+  // Anything that must not paint over the logo (the product tour) waits for
+  // this; it is cleared again when the layout unmounts, e.g. on logout.
+  const setSplashDone = useSplashStore((state) => state.setDone);
+  useEffect(() => {
+    setSplashDone(splash === "done");
+    return () => setSplashDone(false);
+  }, [splash, setSplashDone]);
 
   return (
     <>

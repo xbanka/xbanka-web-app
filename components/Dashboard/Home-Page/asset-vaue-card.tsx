@@ -34,7 +34,10 @@ export function AssetValueCard() {
   const countedUsd = useCountUp(totalCryptoEquivalent);
   return (
     <>
-      <DashboardCard className="border border-teal-border bg-teal-light">
+      <DashboardCard
+        data-tour="balance"
+        className="border border-teal-border bg-teal-light"
+      >
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-text text-sm">
@@ -92,6 +95,7 @@ export function AssetValueCard() {
           {/* Add Fund on the same row as the total; the transfer flow takes it from here */}
           <Button
             size="sm"
+            data-tour="add-funds"
             className="w-full sm:w-auto"
             onClick={() => setAddFundsOpen(true)}
           >

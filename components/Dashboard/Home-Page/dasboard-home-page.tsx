@@ -4,6 +4,7 @@ import { AssetValueCard } from "./asset-vaue-card";
 import { MarketOverview } from "./market-overview";
 import { OnboardingJourney } from "./onboarding-journey";
 import { QuickActions } from "./quick-actions";
+import { ProductTour } from "./product-tour";
 import { useUserStore } from "@/store/user.store";
 import type { ReactNode } from "react";
 
@@ -27,6 +28,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
+      <ProductTour />
+
       {/* Welcome */}
       <RiseIn index={0}>
         <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">

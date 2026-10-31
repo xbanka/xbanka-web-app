@@ -36,7 +36,7 @@ export function QuickActions() {
     },
   ];
   return (
-    <DashboardCard>
+    <DashboardCard data-tour="quick-actions">
       <h3 className="text-[16px] max-sm:text-[14px] max-sm:leading-7 font-medium leading-6 text-card-text">
         Quick Actions
       </h3>

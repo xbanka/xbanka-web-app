@@ -49,6 +49,8 @@ export function Topbar({
         <ThemeToggle />
         <button
           onClick={openNotifications}
+          data-tour="notifications"
+          aria-label="Notifications"
           className="relative border border-input rounded-lg p-3 bg-border text-card-text hover:bg-border/40 transition-colors"
         >
           <Bell className="w-3 h-3" />

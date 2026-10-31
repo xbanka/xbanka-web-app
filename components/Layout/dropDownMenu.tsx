@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Compass } from "lucide-react";
 import { MENU_ITEMS } from "@/lib/nav";
 import {
   UseProfileUser,
@@ -9,7 +9,9 @@ import {
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLogoutStore } from "@/store/logout.store";
+import { useProductTourStore } from "@/store/product-tour.store";
 import { cn } from "@/lib/utils";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { getWalletTotals } from "@/lib/walletTotals";
@@ -28,6 +30,8 @@ export default function UserDropdown({}: UserDropdownProps) {
     error: profileDataError,
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
+  const router = useRouter();
+  const requestTour = useProductTourStore((state) => state.request);
   const avatar = profile?.data?.avatarUrl;
   const { data: balances } = UseGetAllWalletBalances();
   const { hidden: balancesHidden } = useBalanceVisibility();
@@ -67,6 +71,7 @@ export default function UserDropdown({}: UserDropdownProps) {
         className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-border transition-colors cursor-pointer"
         aria-expanded={open}
         aria-haspopup="true"
+        data-tour="profile-menu"
       >
         {/* Avatar */}
         <div className="relative shrink-0">
@@ -244,6 +249,19 @@ export default function UserDropdown({}: UserDropdownProps) {
                 );
               },
             )}
+            {/* Replays the dashboard tour; the home page picks up the request. */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                requestTour();
+                router.push("/");
+              }}
+              className="flex w-full items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm text-card-text transition-colors hover:text-text hover:bg-border"
+            >
+              <Compass className="w-6 h-6 shrink-0" />
+              <span>Take a tour</span>
+            </button>
           </nav>
 
           {/* Divider + Logout */}

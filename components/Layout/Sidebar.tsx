@@ -241,7 +241,11 @@ export function Sidebar({
                 }
 
                 return (
-                  <Link href={route} key={item.id}>
+                  <Link
+                    href={route}
+                    key={item.id}
+                    data-tour={`nav-${item.id}`}
+                  >
                     {content}
                   </Link>
                 );
@@ -372,6 +376,7 @@ export function Sidebar({
             <Link
               key={id}
               href={route}
+              data-tour={`tab-${id}`}
               onClick={() => setShowMore(false)}
               className="flex flex-col items-center gap-1 flex-1 py-1"
             >
