@@ -1,4 +1,5 @@
 import type { DriveStep } from "driver.js";
+import type { TourIconName } from "./tour-icons";
 
 /**
  * One short tour per main section of the app. Each runs once per user (see
@@ -29,12 +30,21 @@ export type Tour = {
   steps: (ctx: TourContext) => DriveStep[];
 };
 
-const stop = (
-  element: string,
-  title: string,
-  description: string,
-  popover: Omit<NonNullable<DriveStep["popover"]>, "title" | "description"> = {},
-): DriveStep => ({ element, popover: { title, description, ...popover } });
+type Stop = {
+  element: string;
+  icon: TourIconName;
+  title: string;
+  description: string;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+};
+
+/** The icon rides along in `data`, which driver.js hands back to the popover renderer. */
+const stop = ({ element, icon, title, description, side, align }: Stop): DriveStep => ({
+  element,
+  popover: { title, description, side, align },
+  data: { icon },
+});
 
 export const TOURS: Record<TourId, Tour> = {
   dashboard: {
@@ -44,52 +54,68 @@ export const TOURS: Record<TourId, Tour> = {
     // mobile tab bar are both in the DOM, one hidden by CSS, so a shared
     // selector would match the invisible one.
     steps: ({ desktop }) => [
-      stop(
-        "[data-tour=balance]",
-        "Your total asset value",
-        "Naira and crypto balances in one figure. Switch between NGN and USDT, or tap the eye to hide it.",
-      ),
-      stop(
-        "[data-tour=add-funds]",
-        "Add funds",
-        "Top up your naira wallet by bank transfer. Deposits land here within minutes.",
-        { side: desktop ? "left" : "bottom" },
-      ),
-      stop(
-        "[data-tour=verification]",
-        "Complete verification",
-        "Finish these steps to unlock higher limits and transfers to other banks and wallets.",
-      ),
-      stop(
-        "[data-tour=quick-actions]",
-        "Quick actions",
-        "Buy or sell crypto, and pay for airtime, data and electricity from here.",
-        { side: "top" },
-      ),
-      stop(
-        desktop ? "[data-tour=nav-wallet]" : "[data-tour=tab-wallet]",
-        "Your wallet",
-        "Every balance, deposit and withdrawal lives here. It has its own short tour.",
-        { side: desktop ? "right" : "top" },
-      ),
-      stop(
-        desktop ? "[data-tour=nav-crypto]" : "[data-tour=tab-crypto]",
-        "Trade crypto",
-        "Buy and sell BTC, ETH, USDT and USDC at live rates.",
-        { side: desktop ? "right" : "top" },
-      ),
-      stop(
-        "[data-tour=notifications]",
-        "Notifications",
-        "Deposit confirmations and security alerts land here.",
-        { side: "bottom", align: "end" },
-      ),
-      stop(
-        "[data-tour=profile-menu]",
-        "Your profile",
-        "Manage your details, security settings and verification status. You can replay any tour from here.",
-        { side: "bottom", align: "end" },
-      ),
+      stop({
+        element: "[data-tour=balance]",
+        icon: "wallet",
+        title: "Your total asset value",
+        description:
+          "Naira and crypto balances in one figure. Switch between NGN and USDT, or tap the eye to hide it.",
+      }),
+      stop({
+        element: "[data-tour=add-funds]",
+        icon: "banknote",
+        title: "Add funds",
+        description:
+          "Top up your naira wallet by bank transfer. Deposits land here within minutes.",
+        side: desktop ? "left" : "bottom",
+      }),
+      stop({
+        element: "[data-tour=verification]",
+        icon: "shield-check",
+        title: "Complete verification",
+        description:
+          "Finish these steps to unlock higher limits and transfers to other banks and wallets.",
+      }),
+      stop({
+        element: "[data-tour=quick-actions]",
+        icon: "zap",
+        title: "Quick actions",
+        description:
+          "Buy or sell crypto, and pay for airtime, data and electricity from here.",
+        side: "top",
+      }),
+      stop({
+        element: desktop ? "[data-tour=nav-wallet]" : "[data-tour=tab-wallet]",
+        icon: "wallet",
+        title: "Your wallet",
+        description:
+          "Every balance, deposit and withdrawal lives here. It has its own short tour.",
+        side: desktop ? "right" : "top",
+      }),
+      stop({
+        element: desktop ? "[data-tour=nav-crypto]" : "[data-tour=tab-crypto]",
+        icon: "bitcoin",
+        title: "Trade crypto",
+        description: "Buy and sell BTC, ETH, USDT and USDC at live rates.",
+        side: desktop ? "right" : "top",
+      }),
+      stop({
+        element: "[data-tour=notifications]",
+        icon: "bell",
+        title: "Notifications",
+        description: "Deposit confirmations and security alerts land here.",
+        side: "bottom",
+        align: "end",
+      }),
+      stop({
+        element: "[data-tour=profile-menu]",
+        icon: "user-round",
+        title: "Your profile",
+        description:
+          "Manage your details, security settings and verification status. You can replay any tour from here.",
+        side: "bottom",
+        align: "end",
+      }),
     ],
   },
 
@@ -97,42 +123,54 @@ export const TOURS: Record<TourId, Tour> = {
     id: "wallet",
     label: "Wallet tour",
     steps: () => [
-      stop(
-        "[data-tour=wallet-tabs]",
-        "Three views of your money",
-        "Fiat is your naira wallet, Crypto is your coin holdings, and History lists every transaction across both.",
-      ),
-      stop(
-        "[data-tour=wallet-fiat-balance]",
-        "Available naira balance",
-        "What you can spend or send right now. Tap the eye to hide it.",
-      ),
-      stop(
-        "[data-tour=wallet-add-fund]",
-        "Add funds",
-        "Top up by bank transfer to your Xbanka funding account.",
-      ),
-      stop(
-        "[data-tour=wallet-send]",
-        "Send money",
-        "Transfer naira to any bank account or Xbanka user. You will set a transaction PIN the first time.",
-      ),
-      stop(
-        "[data-tour=wallet-crypto-balance]",
-        "Crypto balance",
-        "Deposit coins to your Xbanka address, send them out, or convert between assets.",
-      ),
-      stop(
-        "[data-tour=wallet-holdings]",
-        "Your holdings",
-        "Every coin you hold, with its balance and quick actions.",
-      ),
-      stop(
-        "[data-tour=wallet-history]",
-        "Transaction history",
-        "Search, filter by status or type, and tap any row for a receipt.",
-        { side: "top" },
-      ),
+      stop({
+        element: "[data-tour=wallet-tabs]",
+        icon: "layout-grid",
+        title: "Three views of your money",
+        description:
+          "Fiat is your naira wallet, Crypto is your coin holdings, and History lists every transaction across both.",
+      }),
+      stop({
+        element: "[data-tour=wallet-fiat-balance]",
+        icon: "banknote",
+        title: "Available naira balance",
+        description:
+          "What you can spend or send right now. Tap the eye to hide it.",
+      }),
+      stop({
+        element: "[data-tour=wallet-add-fund]",
+        icon: "plus",
+        title: "Add funds",
+        description: "Top up by bank transfer to your Xbanka funding account.",
+      }),
+      stop({
+        element: "[data-tour=wallet-send]",
+        icon: "send",
+        title: "Send money",
+        description:
+          "Transfer naira to any bank account or Xbanka user. You will set a transaction PIN the first time.",
+      }),
+      stop({
+        element: "[data-tour=wallet-crypto-balance]",
+        icon: "bitcoin",
+        title: "Crypto balance",
+        description:
+          "Deposit coins to your Xbanka address, send them out, or convert between assets.",
+      }),
+      stop({
+        element: "[data-tour=wallet-holdings]",
+        icon: "coins",
+        title: "Your holdings",
+        description: "Every coin you hold, with its balance and quick actions.",
+      }),
+      stop({
+        element: "[data-tour=wallet-history]",
+        icon: "history",
+        title: "Transaction history",
+        description:
+          "Search, filter by status or type, and tap any row for a receipt.",
+        side: "top",
+      }),
     ],
   },
 
@@ -140,38 +178,50 @@ export const TOURS: Record<TourId, Tour> = {
     id: "crypto",
     label: "Crypto tour",
     steps: () => [
-      stop(
-        "[data-tour=crypto-tabs]",
-        "Buy & Sell, or Convert",
-        "Trade crypto with naira here, or swap one coin for another under Convert.",
-      ),
-      stop(
-        "[data-tour=crypto-mode]",
-        "Buying or selling?",
-        "Buy spends naira from your wallet. Sell turns crypto back into naira.",
-      ),
-      stop(
-        "[data-tour=crypto-form]",
-        "Set your amount",
-        "Enter what you pay and pick the coin. What you receive updates with the live rate.",
-      ),
-      stop(
-        "[data-tour=crypto-quote]",
-        "Lock in a quote",
-        "Get Quote freezes the rate for a short window while you confirm with your transaction PIN.",
-        { side: "top" },
-      ),
-      stop(
-        "[data-tour=crypto-convert-form]",
-        "Convert between coins",
-        "Pick what you have and what you want. Conversions carry no fee.",
-      ),
-      stop(
-        "[data-tour=crypto-how-to]",
-        "How a trade works",
-        "A quick refresher on each step, from quote to confirmation.",
-        { side: "top" },
-      ),
+      stop({
+        element: "[data-tour=crypto-tabs]",
+        icon: "arrow-left-right",
+        title: "Buy & Sell, or Convert",
+        description:
+          "Trade crypto with naira here, or swap one coin for another under Convert.",
+      }),
+      stop({
+        element: "[data-tour=crypto-mode]",
+        icon: "arrow-up-down",
+        title: "Buying or selling?",
+        description:
+          "Buy spends naira from your wallet. Sell turns crypto back into naira.",
+      }),
+      stop({
+        element: "[data-tour=crypto-form]",
+        icon: "sliders-horizontal",
+        title: "Set your amount",
+        description:
+          "Enter what you pay and pick the coin. What you receive updates with the live rate.",
+      }),
+      stop({
+        element: "[data-tour=crypto-quote]",
+        icon: "lock",
+        title: "Lock in a quote",
+        description:
+          "Get Quote freezes the rate for a short window while you confirm with your transaction PIN.",
+        side: "top",
+      }),
+      stop({
+        element: "[data-tour=crypto-convert-form]",
+        icon: "refresh-cw",
+        title: "Convert between coins",
+        description:
+          "Pick what you have and what you want. Conversions carry no fee.",
+      }),
+      stop({
+        element: "[data-tour=crypto-how-to]",
+        icon: "list-checks",
+        title: "How a trade works",
+        description:
+          "A quick refresher on each step, from quote to confirmation.",
+        side: "top",
+      }),
     ],
   },
 
@@ -179,27 +229,35 @@ export const TOURS: Record<TourId, Tour> = {
     id: "bills",
     label: "Bill payments tour",
     steps: () => [
-      stop(
-        "[data-tour=bills-search]",
-        "Find a biller fast",
-        "Search by name, like MTN, IKEDC or DSTV, across every category.",
-      ),
-      stop(
-        "[data-tour=bills-categories]",
-        "Browse by category",
-        "Airtime, data, electricity, cable TV and betting. Pick one to see its providers.",
-      ),
-      stop(
-        "[data-tour=bills-favourites]",
-        "Your favourites",
-        "Bills you save come back here with the details prefilled.",
-      ),
-      stop(
-        "[data-tour=bills-recent]",
-        "Recent payments",
-        "Your latest bills with their status. Tap one for the receipt or to pay it again.",
-        { side: "top" },
-      ),
+      stop({
+        element: "[data-tour=bills-search]",
+        icon: "search",
+        title: "Find a biller fast",
+        description:
+          "Search by name, like MTN, IKEDC or DSTV, across every category.",
+      }),
+      stop({
+        element: "[data-tour=bills-categories]",
+        icon: "layout-grid",
+        title: "Browse by category",
+        description:
+          "Airtime, data, electricity, cable TV and betting. Pick one to see its providers.",
+      }),
+      stop({
+        element: "[data-tour=bills-favourites]",
+        icon: "star",
+        title: "Your favourites",
+        description:
+          "Bills you save come back here with the details prefilled.",
+      }),
+      stop({
+        element: "[data-tour=bills-recent]",
+        icon: "receipt",
+        title: "Recent payments",
+        description:
+          "Your latest bills with their status. Tap one for the receipt or to pay it again.",
+        side: "top",
+      }),
     ],
   },
 
@@ -207,32 +265,41 @@ export const TOURS: Record<TourId, Tour> = {
     id: "account",
     label: "Account tour",
     steps: () => [
-      stop(
-        "[data-tour=account-tabs]",
-        "Your account, in three tabs",
-        "Account Info holds your details, Security your password, PIN and devices, and Identity Verification your KYC.",
-      ),
-      stop(
-        "[data-tour=account-profile]",
-        "Profile",
-        "Update your photo and personal details. Your UID is what other Xbanka users send money to.",
-      ),
-      stop(
-        "[data-tour=account-funding]",
-        "Deposit and withdrawal accounts",
-        "Your Xbanka funding account for top-ups, and the bank accounts you withdraw to.",
-        { side: "top" },
-      ),
-      stop(
-        "[data-tour=account-security]",
-        "Security controls",
-        "Change your password, set a transaction PIN and turn on two-factor authentication.",
-      ),
-      stop(
-        "[data-tour=account-identity]",
-        "Verification progress",
-        "Each completed step raises your tier and your limits.",
-      ),
+      stop({
+        element: "[data-tour=account-tabs]",
+        icon: "layout-grid",
+        title: "Your account, in three tabs",
+        description:
+          "Account Info holds your details, Security your password, PIN and devices, and Identity Verification your KYC.",
+      }),
+      stop({
+        element: "[data-tour=account-profile]",
+        icon: "user-round",
+        title: "Profile",
+        description:
+          "Update your photo and personal details. Your UID is what other Xbanka users send money to.",
+      }),
+      stop({
+        element: "[data-tour=account-funding]",
+        icon: "landmark",
+        title: "Deposit and withdrawal accounts",
+        description:
+          "Your Xbanka funding account for top-ups, and the bank accounts you withdraw to.",
+        side: "top",
+      }),
+      stop({
+        element: "[data-tour=account-security]",
+        icon: "shield",
+        title: "Security controls",
+        description:
+          "Change your password, set a transaction PIN and turn on two-factor authentication.",
+      }),
+      stop({
+        element: "[data-tour=account-identity]",
+        icon: "badge-check",
+        title: "Verification progress",
+        description: "Each completed step raises your tier and your limits.",
+      }),
     ],
   },
 
@@ -240,16 +307,20 @@ export const TOURS: Record<TourId, Tour> = {
     id: "market",
     label: "Market tour",
     steps: () => [
-      stop(
-        "[data-tour=market-controls]",
-        "Browse the market",
-        "Switch between Spot and Futures, filter new listings, or search for a coin.",
-      ),
-      stop(
-        "[data-tour=market-table]",
-        "Live prices",
-        "Prices update in real time. Star a coin to pin it under Favorites, or tap Buy to trade it straight away.",
-      ),
+      stop({
+        element: "[data-tour=market-controls]",
+        icon: "sliders-horizontal",
+        title: "Browse the market",
+        description:
+          "Switch between Spot and Futures, filter new listings, or search for a coin.",
+      }),
+      stop({
+        element: "[data-tour=market-table]",
+        icon: "trending-up",
+        title: "Live prices",
+        description:
+          "Prices update in real time. Star a coin to pin it under Favorites, or tap Buy to trade it straight away.",
+      }),
     ],
   },
 };

@@ -6,6 +6,7 @@ import { driver, type Driver, type PopoverDOM } from "driver.js";
 import "driver.js/dist/driver.css";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { hasSeenTour, markTourSeen } from "@/lib/productTour";
+import { tourIconSvg, type TourIconName } from "@/lib/tour-icons";
 import { tourForPath } from "@/lib/tours";
 import { useProductTourStore } from "@/store/product-tour.store";
 import { useSplashStore } from "@/store/splash.store";
@@ -64,26 +65,29 @@ export function ProductTour() {
       instance = driver({
         steps,
         popoverClass: "xb-tour",
-        // The close "×" is replaced by a "Skip tour" link (see decoratePopover).
+        // The close "×" is replaced by a "Skip" link (see decoratePopover).
         showButtons: ["next", "previous"],
         showProgress: false,
         nextBtnText: "Next",
         prevBtnText: "Back",
         doneBtnText: "Finish",
         animate: !reduceMotion,
-        overlayColor: "#0f172a",
-        overlayOpacity: 0.62,
+        overlayColor: "#0b1220",
+        overlayOpacity: 0.58,
         // A stray tap outside must not end (and silence) a once-only tour.
         overlayClickBehavior: "none",
-        stagePadding: 8,
-        stageRadius: 14,
+        stagePadding: 10,
+        stageRadius: 16,
+        // The popover has no arrow; sit it a little clear of the spotlight.
+        popoverOffset: 14,
         // Safety net for a target removed while the tour is running.
         skipMissingElement: true,
         // Keep buttons and links from being triggered mid-tour.
         disableActiveInteraction: true,
-        onPopoverRender: (popover, { driver: active, index }) =>
+        onPopoverRender: (popover, { driver: active, state, index }) =>
           decoratePopover(popover, {
             label: tour.label,
+            icon: state.activeStep?.data?.icon,
             index: index ?? 0,
             total: steps.length,
             last: active.isLastStep(),
@@ -111,55 +115,65 @@ export function ProductTour() {
 }
 
 /**
- * Reshapes driver.js's popover into the app's design: a progress bar along
- * the top, a numbered badge and eyebrow beside the title, Back before Next,
- * and a "Skip tour" link in place of the close "×". Styles live under
+ * Reshapes driver.js's popover into the app's design: an icon tile and a
+ * "Skip" link on top, an eyebrow above the title, progress dots beside Back
+ * and Next, and an arrow on Next (a check on Finish). Styles live under
  * `.xb-tour` in app/globals.css. driver.js rebuilds the popover for every
  * stop, so this runs once per stop.
  */
 function decoratePopover(
   popover: PopoverDOM,
-  opts: { label: string; index: number; total: number; last: boolean },
+  opts: {
+    label: string;
+    icon?: TourIconName;
+    index: number;
+    total: number;
+    last: boolean;
+  },
 ) {
   const { wrapper, title, footer, footerButtons, nextButton, closeButton } =
     popover;
   const current = opts.index + 1;
 
-  const bar = document.createElement("div");
-  bar.className = "xb-tour-progress";
-  const fill = document.createElement("div");
-  fill.className = "xb-tour-progress-fill";
-  fill.style.width = `${(current / opts.total) * 100}%`;
-  bar.appendChild(fill);
-  wrapper.prepend(bar);
+  const tile = document.createElement("span");
+  tile.className = "xb-tour-icon";
+  tile.innerHTML = tourIconSvg(opts.icon ?? "compass");
+  wrapper.prepend(tile);
 
-  const head = document.createElement("div");
-  head.className = "xb-tour-head";
-  const badge = document.createElement("span");
-  badge.className = "xb-tour-step";
-  badge.setAttribute("aria-hidden", "true");
-  badge.textContent = String(current);
-  const text = document.createElement("div");
-  text.className = "xb-tour-text";
   const eyebrow = document.createElement("p");
   eyebrow.className = "xb-tour-eyebrow";
   eyebrow.textContent = `${opts.label} · ${current} of ${opts.total}`;
-  title.replaceWith(head);
-  text.append(eyebrow, title);
-  head.append(badge, text);
+  title.before(eyebrow);
+
+  const dots = document.createElement("div");
+  dots.className = "xb-tour-dots";
+  dots.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < opts.total; i += 1) {
+    const dot = document.createElement("span");
+    dot.className = `xb-tour-dot${
+      i < opts.index ? " is-done" : i === opts.index ? " is-active" : ""
+    }`;
+    dots.append(dot);
+  }
+  footer.prepend(dots);
 
   // Next goes first in DOM order so keyboard focus lands on it rather than
   // Back; CSS `order` keeps Back on the left visually.
   footerButtons.prepend(nextButton);
+  nextButton.innerHTML = `<span>${nextButton.textContent}</span>${tourIconSvg(
+    opts.last ? "check" : "arrow-right",
+  )}`;
 
+  // "Skip" is positioned top-right by CSS but comes last in the DOM, after
+  // the buttons, so it is never the element driver.js focuses first.
   if (!opts.last) {
     const skip = document.createElement("button");
     skip.type = "button";
     skip.className = "xb-tour-skip";
-    skip.textContent = "Skip tour";
+    skip.textContent = "Skip";
     // Routes through driver.js's own close handling so the exit is recorded
     // with reason "close" and counts as seen.
     skip.addEventListener("click", () => closeButton.click());
-    footer.append(skip);
+    wrapper.append(skip);
   }
 }
