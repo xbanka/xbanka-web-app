@@ -84,6 +84,15 @@ export function ProductTour() {
         skipMissingElement: true,
         // Keep buttons and links from being triggered mid-tour.
         disableActiveInteraction: true,
+        // On phones the popover is a sheet docked above the tab bar (see
+        // globals.css), so bring the target to the top of the page where it
+        // stays clear of the sheet. driver.js only scrolls afterwards if the
+        // element is still off-screen.
+        onHighlightStarted: (element) => {
+          if (!desktop && element) {
+            element.scrollIntoView({ block: "start", behavior: "auto" });
+          }
+        },
         onPopoverRender: (popover, { driver: active, state, index }) =>
           decoratePopover(popover, {
             label: tour.label,

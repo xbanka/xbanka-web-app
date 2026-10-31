@@ -631,3 +631,26 @@ body {
   width: 16px;
   height: 16px;
 }
+/* On phones the popover docks above the tab bar as a sheet, full width,
+   wherever the target is; product-tour.tsx scrolls the target to the top of
+   the page instead. driver.js positions with inline styles, hence the
+   !important. The tab bar is h-16 (64px). */
+@media (max-width: 767px) {
+  .driver-popover.xb-tour {
+    top: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto;
+    padding: 16px 16px 14px;
+  }
+  .xb-tour .xb-tour-skip {
+    top: 8px;
+    right: 6px;
+    padding: 8px 12px;
+  }
+}
+/* Leaves a little air above a target scrolled to the top of the page. */
+[data-tour] {
+  scroll-margin-top: 12px;
+}
