@@ -72,14 +72,14 @@ export function ProductTour() {
         prevBtnText: "Back",
         doneBtnText: "Finish",
         animate: !reduceMotion,
-        overlayColor: "#0b1220",
-        overlayOpacity: 0.58,
+        overlayColor: "#000",
+        overlayOpacity: 0.5,
         // A stray tap outside must not end (and silence) a once-only tour.
         overlayClickBehavior: "none",
-        stagePadding: 10,
-        stageRadius: 16,
+        stagePadding: 8,
+        stageRadius: 12,
         // The popover has no arrow; sit it a little clear of the spotlight.
-        popoverOffset: 14,
+        popoverOffset: 12,
         // Safety net for a target removed while the tour is running.
         skipMissingElement: true,
         // Keep buttons and links from being triggered mid-tour.
