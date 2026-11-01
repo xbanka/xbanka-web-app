@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Upload, Trash2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAX_UPLOAD_MB, fileProblem, prettyTypes } from "@/lib/file-validation";
@@ -32,11 +31,6 @@ export function AttachmentUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [rejection, setRejection] = useState<string | null>(null);
 
-  const reject = (message: string) => {
-    setRejection(message);
-    toast.error(message);
-  };
-
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
 
@@ -58,8 +52,8 @@ export function AttachmentUpload({
       });
     });
 
-    if (rejected) reject(rejected);
-    else setRejection(null);
+    // Shown inline under the upload box, next to the file it is about.
+    setRejection(rejected);
 
     // Keep what was already chosen when the new file is refused.
     if (newFiles.length > 0) onChange(newFiles.slice(0, 1));

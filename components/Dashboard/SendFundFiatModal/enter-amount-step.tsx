@@ -53,7 +53,9 @@ export function EnterAmountStep({
     return digits ? Number(digits).toLocaleString() : "";
   };
 
-  const isValid = numericAmount >= MIN_SEND_AMOUNT && numericAmount <= sumFiatBalances(wallets);
+  const balance = sumFiatBalances(wallets);
+  const insufficientBalance = !!data?.data && numericAmount > balance;
+  const isValid = numericAmount >= MIN_SEND_AMOUNT && numericAmount <= balance;
 
   const handleContinue = () => {
     const trimmedNarration = narration.trim();
@@ -135,6 +137,13 @@ export function EnterAmountStep({
               placeholder="0"
             />
           </div>
+          <ErrorField
+            message={
+              insufficientBalance
+                ? "Insufficient balance. Enter an amount within your available balance."
+                : undefined
+            }
+          />
           <div className="flex justify-between text-xs text-text">
             <span>Minimum send amount: ₦{MIN_SEND_AMOUNT.toLocaleString()}</span>
             <span>

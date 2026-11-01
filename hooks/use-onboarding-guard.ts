@@ -5,12 +5,18 @@ import {
   UseProfileUser,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
-import { isOnboardingStepCompleted } from "@/lib/verificationProgress";
+import {
+  KycBlocker,
+  cryptoSendBlocker,
+  hasPersonalInfo as personalInfoDone,
+  userBlocker,
+} from "@/lib/kycGate";
+import { isStepDone } from "@/lib/verificationProgress";
 import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 
 export const useOnboardingGuard = () => {
-  const { data: profileData } = UseProfileUser();
-  const { data: verificationData } = UseVerificationStatus();
+  const profileQuery = UseProfileUser();
+  const verificationQuery = UseVerificationStatus();
 
   const openPersonalInfo = useOnboardingModalStore(
     (state) => state.openPersonalInfo,
@@ -20,64 +26,39 @@ export const useOnboardingGuard = () => {
 
   const openIdSelfie = useOnboardingModalStore((state) => state.openIdSelfie);
 
-  const profile = profileData?.data;
+  const profile = profileQuery.data?.data;
+  const verification = verificationQuery.data?.data;
 
-  const progress = verificationData?.data?.progress ?? [];
-
-  const identityCompleted = isOnboardingStepCompleted(
-    progress.find((item: { id: string }) => item.id === "IDENTITY"),
-  );
-
-  const selfieCompleted = isOnboardingStepCompleted(
-    progress.find((item: { id: string }) => item.id === "SELFIE"),
-  );
-
-  const hasPersonalInfo =
-    !!profile?.firstName &&
-    !!profile?.lastName &&
-    !!profile?.dateOfBirth &&
-    !!profile?.gender &&
-    !!profile?.phoneNumber &&
-    !!profile?.country;
-
+  const hasPersonalInfo = personalInfoDone(profile);
   const hasTierOne = profile?.kycStatus?.bvnVerified;
-
   const hasIdentityVerification =
-    identityCompleted && selfieCompleted;
+    isStepDone(verification, "IDENTITY") && isStepDone(verification, "SELFIE");
 
-  const validateUser = () => {
-    // Step 1 → personal info
-    if (!hasPersonalInfo) {
-      openPersonalInfo();
-      return false;
-    }
-
-    // Step 2 → BVN
-    if (!hasTierOne) {
-      openBvn();
-      return false;
-    }
-
-    return true;
+  const openFor = (blocker: KycBlocker) => {
+    if (blocker === "personal-info") openPersonalInfo();
+    if (blocker === "bvn") openBvn();
+    if (blocker === "id-selfie") openIdSelfie();
+    return blocker === null;
   };
 
-  const validateCryptoSend = () => {
-    if (!hasPersonalInfo) {
-      openPersonalInfo();
-      return false;
-    }
+  const validateUser = () => openFor(userBlocker(profile));
 
-    if (!hasTierOne) {
-      openBvn();
-      return false;
-    }
-
-    if (!hasIdentityVerification) {
-      openIdSelfie();
-      return false;
-    }
-
-    return true;
+  /**
+   * Checks against a fresh verification status, not the 5-minute cache: a
+   * selfie finished on another device (QR flow) would otherwise still look
+   * missing and the liveness check would open again.
+   */
+  const validateCryptoSend = async () => {
+    const [freshProfile, freshVerification] = await Promise.all([
+      profileQuery.refetch(),
+      verificationQuery.refetch(),
+    ]);
+    return openFor(
+      cryptoSendBlocker(
+        freshProfile.data?.data ?? profile,
+        freshVerification.data?.data ?? verification,
+      ),
+    );
   };
 
   return {

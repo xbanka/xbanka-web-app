@@ -3,6 +3,7 @@ import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { DataTableLayout } from "@/components/Layout/TableLayout";
 import { Input } from "@/components/ui/input";
 import { SelectFieldWithValue } from "@/components/ui/select-with-value";
+import { formatCurrencyAmount } from "@/lib/formatCurrencyAmount";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { UseGetTransactionHistory } from "@/lib/services/wallet.service";
@@ -112,7 +113,9 @@ export function TransactionHistory({ tableType }: TransactionHistoryProps) {
       key: "amount",
       header: "Amount",
       render: (item: TransactionTypes) => (
-        <span className="">{item.amount}</span>
+        <span className="">
+          {formatCurrencyAmount(item.amount, item.currency)}
+        </span>
       ),
     },
     {

@@ -30,8 +30,8 @@ export const CryptoBalance = () => {
   const { data: profileData } = UseProfileUser();
   const hasTransactionPin = profileData?.data?.hasTransactionPin;
 
-  const handleSendCrypto = () => {
-    const isAllowed = validateCryptoSend();
+  const handleSendCrypto = async () => {
+    const isAllowed = await validateCryptoSend();
 
     if (!isAllowed) return;
     if (!hasTransactionPin) {
