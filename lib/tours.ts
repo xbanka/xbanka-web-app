@@ -328,7 +328,7 @@ export const TOURS: Record<TourId, Tour> = {
   transactions: {
     id: "transactions",
     label: "Transactions tour",
-    steps: () => [
+    steps: ({ desktop }) => [
       stop({
         element: "[data-tour=transactions-summary]",
         icon: "nav-transactions",
@@ -344,8 +344,7 @@ export const TOURS: Record<TourId, Tour> = {
           "Switch between fiat, crypto, bills and gift cards, search by reference or amount, or filter by status.",
       }),
       stop({
-        // The table shows from lg (1024px); below that it is the list.
-        element: window.matchMedia("(min-width: 1024px)").matches
+        element: desktop
           ? "[data-tour=transactions-list]"
           : "[data-tour=transactions-list-mobile]",
         icon: "receipt",

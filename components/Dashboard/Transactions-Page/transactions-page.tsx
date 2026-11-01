@@ -106,9 +106,7 @@ function Truncated({
       <span className={cn("block truncate", className)}>{children ?? text}</span>
       <span
         aria-hidden="true"
-        // Wraps between words; only an unbroken string (a reference) breaks mid-way.
-        style={{ overflowWrap: "anywhere" }}
-        className="pointer-events-none invisible absolute left-0 top-full z-30 mt-1.5 w-max max-w-[min(22rem,70vw)] whitespace-normal rounded-md border border-border bg-card-background px-2.5 py-1.5 text-xs leading-5 text-card-text opacity-0 shadow-xl transition-opacity duration-100 group-hover/full:visible group-hover/full:opacity-100"
+        className="pointer-events-none invisible absolute left-0 top-full z-30 mt-1.5 w-max max-w-[min(22rem,70vw)] whitespace-normal break-all rounded-md border border-border bg-card-background px-2.5 py-1.5 text-xs leading-5 text-card-text opacity-0 shadow-xl transition-opacity duration-100 group-hover/full:visible group-hover/full:opacity-100"
       >
         {text}
       </span>
@@ -319,24 +317,22 @@ export default function TransactionsPage() {
 
         {/* Desktop table */}
         {!isError && (
-          // From lg the table fits its card at every width: fixed widths for
-          // the short columns, the rest for the transaction name. Narrower
-          // screens get the list below (the whole row opens the receipt).
-          <div className="hidden lg:block" data-tour="transactions-list">
+          // Fixed column widths so the table always fits its card; columns
+          // that matter least drop out as the screen narrows (the whole row
+          // still opens the receipt).
+          <div className="hidden md:block" data-tour="transactions-list">
             <table className="w-full table-fixed text-sm">
               <thead>
-                <tr className="text-left text-[13px] text-text whitespace-nowrap">
-                  {/* Fixed widths for the short, predictable columns; the
-                      transaction name takes all the room that is left. */}
-                  <th style={{ width: 124 }} className="px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
+                <tr className="text-left text-[13px] text-text">
+                  <th className="w-[6.5rem] lg:w-[7.5rem] px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
                   <th className="px-4 py-3 font-medium border-b border-border">Transaction</th>
-                  <th style={{ width: 104 }} className="hidden xl:table-cell px-4 py-3 font-medium border-b border-border">Category</th>
-                  <th style={{ width: 136 }} className="px-4 py-3 font-medium border-b border-border">Reference</th>
-                  <th style={{ width: 120 }} className="px-4 py-3 font-medium border-b border-border text-right">Amount</th>
-                  <th style={{ width: 116 }} className="px-4 py-3 font-medium border-b border-border">Status</th>
-                  <th style={{ width: 136 }} className="hidden xl:table-cell px-5 py-3 border-b border-border">
+                  <th className="hidden xl:table-cell w-[6.5rem] px-4 py-3 font-medium border-b border-border">Category</th>
+                  <th className="w-[6rem] lg:w-[11rem] px-4 py-3 font-medium border-b border-border">Reference</th>
+                  <th className="w-[7rem] lg:w-[8rem] px-4 py-3 font-medium border-b border-border text-right">Amount</th>
+                  <th className="hidden xl:table-cell w-[8.5rem] px-5 py-3 border-b border-border">
                     <span className="sr-only">Receipt</span>
                   </th>
+                  <th className="w-[6.5rem] lg:w-[7rem] px-4 py-3 font-medium border-b border-border">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -405,9 +401,6 @@ export default function TransactionsPage() {
                         >
                           {signedAmount(tx)}
                         </td>
-                        <td className="px-4 py-3 border-b border-border">
-                          <TransactionHistoryStatusBadge status={tx.status} />
-                        </td>
                         <td className="hidden xl:table-cell px-5 py-3 border-b border-border text-right">
                           <button
                             type="button"
@@ -421,6 +414,9 @@ export default function TransactionsPage() {
                             View receipt
                           </button>
                         </td>
+                        <td className="px-4 py-3 border-b border-border">
+                          <TransactionHistoryStatusBadge status={tx.status} />
+                        </td>
                       </tr>
                     );
                   })}
@@ -431,7 +427,7 @@ export default function TransactionsPage() {
 
         {/* Phone list */}
         {!isError && (
-          <ul className="lg:hidden divide-y divide-border" data-tour="transactions-list-mobile">
+          <ul className="md:hidden divide-y divide-border" data-tour="transactions-list-mobile">
             {isPending &&
               Array.from({ length: 5 }).map((_, i) => (
                 <li key={`s${i}`} className="px-4 py-3">
