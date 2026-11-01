@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* The theme is switched with `data-theme` on <html>, so `dark:` utilities
+   follow that attribute rather than the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --background: #f9f9f9;
   --foreground: #171717;
@@ -47,6 +51,8 @@
   --green-success-light: #ECFDF3;
   --input-text: #1B1D20;
   --card-secondary: #F9F9F9;
+  /* Figma: Surface/surface-primary. */
+  --surface-primary: #f9f9f9;
 }
 
 @theme inline {
@@ -54,6 +60,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Geist (loaded in app/layout.tsx) for balance figures and headings. */
+  --font-display: var(--font-geist), var(--font-geist-sans);
+  --color-surface-primary: var(--surface-primary);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-border: var(--border);
@@ -143,6 +152,18 @@
   --green-success-light: #012E03;
   --input-text: #F9F9F9;
   --card-secondary: #25272B;
+  --surface-primary: #121315;
+}
+
+/* On phones the dark theme sits nearer to black: the page and the surfaces
+   that share it (top bar, tab bar, slide-out menu) go darker, while cards
+   keep card-background and so stand off the page more. Desktop keeps the
+   Figma surface value above. */
+@media (max-width: 767px) {
+  [data-theme="dark"] {
+    --surface-primary: #0b0c0e;
+    --background: #0b0c0e;
+  }
 }
 
 @theme {
@@ -437,4 +458,221 @@ body {
 [data-sonner-toast] [data-close-button]:hover {
   background: transparent;
   opacity: 1;
+}
+
+/* ── Product tour (driver.js) ──────────────────────────────────────────────
+   driver.js ships a plain white popover with an arrow. These rules restyle
+   it from the app's own components: the profile menu's card for the
+   surface, the Quick Actions icon chip, the sidebar's section labels for
+   the eyebrow, an input's focus ring for the spotlight, and the default and
+   outline Button variants for Next and Back, all from the theme tokens
+   (light and dark). They also lay out the elements that
+   components/Layout/product-tour.tsx adds: icon chip, "Skip" link, eyebrow,
+   progress dots and the arrow on Next. The class comes from
+   `popoverClass: "xb-tour"`. */
+@keyframes xb-tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.driver-popover.xb-tour {
+  font-family: inherit;
+  color: var(--card-text);
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  width: min(360px, calc(100vw - 32px));
+  min-width: 0;
+  max-width: none;
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+.driver-fade .driver-popover.xb-tour {
+  animation: xb-tour-in 0.2s ease-out both;
+}
+.xb-tour .driver-popover-close-btn,
+.xb-tour .driver-popover-arrow {
+  display: none;
+}
+/* The highlighted element gets the same ring as a focused input, inside the
+   cut-out that driver.js leaves in the overlay (stagePadding leaves room). */
+.driver-active .driver-active-element {
+  box-shadow:
+    0 0 0 2px var(--border-active),
+    0 0 0 5px color-mix(in srgb, var(--border-active) 20%, transparent);
+  transition: box-shadow 0.2s ease;
+}
+.xb-tour .xb-tour-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--teal-border);
+  color: var(--teal-text);
+}
+.xb-tour .xb-tour-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.xb-tour .xb-tour-skip {
+  all: unset;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.xb-tour .xb-tour-skip:hover {
+  color: var(--card-text);
+  background-color: var(--border);
+}
+.xb-tour .xb-tour-skip:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--border-active) 20%, transparent);
+}
+.xb-tour .xb-tour-eyebrow {
+  margin: 16px 0 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.xb-tour .driver-popover-title {
+  font-family: var(--font-geist), var(--font-geist-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--card-text);
+}
+.driver-popover.xb-tour .driver-popover-title + .driver-popover-description {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.xb-tour .driver-popover-footer {
+  margin-top: 18px;
+  align-items: center;
+  gap: 12px;
+}
+.xb-tour .xb-tour-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.xb-tour .xb-tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--input);
+}
+.xb-tour .xb-tour-dot.is-done {
+  background-color: var(--abstract-green);
+}
+.xb-tour .xb-tour-dot.is-active {
+  width: 18px;
+  background-color: var(--Green);
+}
+.xb-tour .driver-popover-navigation-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.xb-tour .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+.xb-tour .driver-popover-prev-btn {
+  order: -1;
+}
+/* driver.js disables Back on the first stop; hide it instead of greying it.
+   driver.js sets `display` inline on its buttons, hence the !important. */
+.xb-tour .driver-popover-prev-btn.driver-popover-btn-disabled {
+  display: none !important;
+}
+/* Back is the app's outline button; Next its default (green) one. */
+.xb-tour .driver-popover-footer-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  text-shadow: none;
+  color: var(--text);
+  background-color: var(--card-background);
+  border: 1px solid var(--input);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    transform 0.1s;
+}
+.xb-tour .driver-popover-footer-btn:hover,
+.xb-tour .driver-popover-footer-btn:focus {
+  color: var(--card-text);
+  background-color: var(--background);
+}
+.xb-tour .driver-popover-footer-btn:active {
+  transform: scale(0.99);
+}
+.xb-tour .driver-popover-footer-btn:focus-visible {
+  border-color: var(--border-active);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--border-active) 20%, transparent);
+}
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn {
+  padding: 0 12px 0 14px;
+  color: #fff;
+  background-color: var(--Green);
+  border-color: var(--abstract-green);
+  box-shadow: none;
+}
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn:hover,
+.xb-tour .driver-popover-footer-btn.driver-popover-next-btn:focus {
+  color: #fff;
+  background-color: color-mix(in srgb, var(--Green) 90%, var(--card-background));
+}
+.xb-tour .driver-popover-footer-btn svg {
+  width: 16px;
+  height: 16px;
+}
+/* On phones the popover docks above the tab bar as a sheet, full width,
+   wherever the target is; product-tour.tsx scrolls the target to the top of
+   the page instead. driver.js positions with inline styles, hence the
+   !important. The tab bar is h-16 (64px). */
+@media (max-width: 767px) {
+  .driver-popover.xb-tour {
+    top: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto;
+    padding: 16px 16px 14px;
+  }
+  .xb-tour .xb-tour-skip {
+    top: 8px;
+    right: 6px;
+    padding: 8px 12px;
+  }
+}
+/* Leaves a little air above a target scrolled to the top of the page. */
+[data-tour] {
+  scroll-margin-top: 12px;
 }

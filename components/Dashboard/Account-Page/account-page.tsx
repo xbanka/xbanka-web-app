@@ -19,7 +19,10 @@ export default function AccountPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Sub-nav tabs */}
-      <div className="flex gap-1 border-b border-border overflow-x-auto">
+      <div
+        data-tour="account-tabs"
+        className="flex gap-1 border-b border-border overflow-x-auto"
+      >
         {tabs.map((t) => (
           <button
             key={t.id}

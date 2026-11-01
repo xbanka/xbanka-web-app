@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Compass } from "lucide-react";
 import { MENU_ITEMS } from "@/lib/nav";
 import {
   UseProfileUser,
@@ -9,7 +9,10 @@ import {
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useLogoutStore } from "@/store/logout.store";
+import { useProductTourStore } from "@/store/product-tour.store";
+import { tourForPath } from "@/lib/tours";
 import { cn } from "@/lib/utils";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { getWalletTotals } from "@/lib/walletTotals";
@@ -28,6 +31,9 @@ export default function UserDropdown({}: UserDropdownProps) {
     error: profileDataError,
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const requestTour = useProductTourStore((state) => state.request);
   const avatar = profile?.data?.avatarUrl;
   const { data: balances } = UseGetAllWalletBalances();
   const { hidden: balancesHidden } = useBalanceVisibility();
@@ -67,6 +73,7 @@ export default function UserDropdown({}: UserDropdownProps) {
         className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-border transition-colors cursor-pointer"
         aria-expanded={open}
         aria-haspopup="true"
+        data-tour="profile-menu"
       >
         {/* Avatar */}
         <div className="relative shrink-0">
@@ -169,7 +176,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 <span className="text-text">Total assets</span>
                 <span
                   key={balancesHidden ? "hidden" : "shown"}
-                  className="font-semibold text-card-text motion-safe:animate-reveal"
+                  className="font-display font-semibold text-card-text motion-safe:animate-reveal"
                 >
                   {balancesHidden
                     ? "₦•••••"
@@ -180,7 +187,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 <span className="text-text">Crypto assets</span>
                 <span
                   key={balancesHidden ? "hidden" : "shown"}
-                  className="text-card-text motion-safe:animate-reveal"
+                  className="font-display text-card-text motion-safe:animate-reveal"
                 >
                   {balancesHidden
                     ? "$•••"
@@ -244,6 +251,20 @@ export default function UserDropdown({}: UserDropdownProps) {
                 );
               },
             )}
+            {/* Replays this section's tour, or the dashboard's where the
+                section has none; the layout's ProductTour picks it up. */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                requestTour();
+                if (!tourForPath(pathname)) router.push("/");
+              }}
+              className="flex w-full items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm text-card-text transition-colors hover:text-text hover:bg-border"
+            >
+              <Compass className="w-6 h-6 shrink-0" />
+              <span>Take a tour</span>
+            </button>
           </nav>
 
           {/* Divider + Logout */}

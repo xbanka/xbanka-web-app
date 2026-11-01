@@ -446,7 +446,7 @@ export default function BillPaymentsPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">
           Bill Payments
         </h1>
         <p className="text-sm text-text mt-0.5">
@@ -455,7 +455,7 @@ export default function BillPaymentsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative" data-tour="bills-search">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
         <input
           value={search}
@@ -563,7 +563,7 @@ export default function BillPaymentsPage() {
         /* Browse by category, with saved payments above it */
         <div className="space-y-5">
           {favourites.length > 0 && (
-            <div>
+            <div data-tour="bills-favourites">
               <h3 className="font-semibold text-card-text text-sm mb-1">
                 Favourites
               </h3>
@@ -576,7 +576,7 @@ export default function BillPaymentsPage() {
             </div>
           )}
 
-          <div>
+          <div data-tour="bills-categories">
           <h3 className="font-semibold text-card-text text-sm mb-1">
             Browse by Category
           </h3>
@@ -642,7 +642,10 @@ export default function BillPaymentsPage() {
       {!query && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Recent Transactions */}
-          <div className="bg-card-background border border-border rounded-2xl p-5">
+          <div
+            data-tour="bills-recent"
+            className="bg-card-background border border-border rounded-2xl p-5"
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-card-text text-sm">
                 Recent Transaction

@@ -1,38 +1,44 @@
 import {
-  LayoutDashboard,
-  Wallet,
   User,
-  CreditCard,
-  Receipt,
-  Bitcoin,
-  ArrowLeftRight,
-  TrendingUp,
-  ClipboardList,
-  BarChart2,
   Settings,
-  Users,
   Gift,
   HelpCircle,
   ShieldCheck,
   BadgeCheck,
   Star,
 } from "lucide-react";
+// The sidebar uses the Figma icon set; the profile menu keeps Lucide for now.
+import {
+  AccountIcon,
+  AffiliateIcon,
+  BillPaymentsIcon,
+  CryptoIcon,
+  DashboardIcon,
+  GiftCardsIcon,
+  HelpSupportIcon,
+  MarketOverviewIcon,
+  P2pMarketplaceIcon,
+  ReferralsRewardsIcon,
+  SettingsIcon,
+  TransactionsIcon,
+  WalletIcon,
+} from "@/components/icons/nav-icons";
 
 export const NAV: NavSection[] = [
   {
     title: "Overview",
-    items: [{ id: "dashboard", label: "Dashboard", icon: LayoutDashboard }],
+    items: [{ id: "dashboard", label: "Dashboard", icon: DashboardIcon }],
   },
   {
     title: "Wallet & Services",
     items: [
-      { id: "wallet", label: "Wallet", icon: Wallet },
-      { id: "account", label: "Account", icon: User },
-      { id: "bill-payment", label: "Bill Payments", icon: Receipt },
+      { id: "wallet", label: "Wallet", icon: WalletIcon },
+      { id: "account", label: "Account", icon: AccountIcon },
+      { id: "bill-payment", label: "Bill Payments", icon: BillPaymentsIcon },
       {
         id: "gift-cards",
         label: "Gift Cards",
-        icon: CreditCard,
+        icon: GiftCardsIcon,
         disabled: true,
         badge: "Soon",
         badgeColor:
@@ -43,11 +49,11 @@ export const NAV: NavSection[] = [
   {
     title: "Trading",
     items: [
-      { id: "crypto", label: "Crypto", icon: Bitcoin },
+      { id: "crypto", label: "Crypto", icon: CryptoIcon },
       {
         id: "p2p",
         label: "P2P Marketplace",
-        icon: ArrowLeftRight,
+        icon: P2pMarketplaceIcon,
         badge: "Soon",
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
@@ -56,7 +62,7 @@ export const NAV: NavSection[] = [
       {
         id: "market",
         label: "Market Overview",
-        icon: TrendingUp,
+        icon: MarketOverviewIcon,
       },
     ],
   },
@@ -66,13 +72,9 @@ export const NAV: NavSection[] = [
       {
         id: "transactions",
         label: "Transactions",
-        icon: ClipboardList,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        icon: TransactionsIcon,
       },
-      // { id: "analytics", label: "Analytics", icon: BarChart2, badge: "Beta", badgeColor: "bg-blue-500/20 text-blue-400" },
+      // { id: "analytics", label: "Analytics", icon: AnalyticsIcon, badge: "Beta", badgeColor: "bg-blue-500/20 text-blue-400" },
     ],
   },
   {
@@ -81,16 +83,12 @@ export const NAV: NavSection[] = [
       {
         id: "settings",
         label: "Settings",
-        icon: Settings,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        icon: SettingsIcon,
       },
       {
         id: "affiliate",
         label: "Affiliate",
-        icon: Users,
+        icon: AffiliateIcon,
         disabled: true,
         badge: "Soon",
         badgeColor:
@@ -99,7 +97,7 @@ export const NAV: NavSection[] = [
       {
         id: "referrals",
         label: "Referrals & Rewards",
-        icon: Gift,
+        icon: ReferralsRewardsIcon,
         disabled: true,
         badge: "Soon",
         badgeColor:
@@ -108,11 +106,7 @@ export const NAV: NavSection[] = [
       {
         id: "help",
         label: "Help & Support",
-        icon: HelpCircle,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        icon: HelpSupportIcon,
       },
     ],
   },
@@ -147,19 +141,11 @@ export const MENU_ITEMS = [
   {
     icon: Settings,
     label: "Settings",
-    href: "#",
-    disabled: true,
-    badge: "Soon",
-    badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+    href: "/settings",
   },
   {
     icon: HelpCircle,
     label: "Help & Support",
-    href: "#",
-    disabled: true,
-    badge: "Soon",
-    badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+    href: "/help",
   },
 ];

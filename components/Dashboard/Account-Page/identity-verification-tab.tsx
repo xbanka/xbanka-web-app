@@ -50,7 +50,7 @@ export function IdentityVerificationTab() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="font-semibold text-2xl leading-8">
+        <h1 className="font-display font-semibold text-2xl leading-8">
           Identity Verification
         </h1>
         <p className="font-normal text-sm leading-6">
@@ -87,7 +87,7 @@ export function IdentityVerificationTab() {
         )}
 
         {/* Header */}
-        <DashboardCard>
+        <DashboardCard data-tour="account-identity">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-base font-medium leading-6 text-card-text">
