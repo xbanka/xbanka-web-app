@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES, QUICK_ACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
@@ -585,7 +586,6 @@ export default function BillPaymentsPage() {
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 stagger">
             {CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
               const live = isCategoryLive(cat.id as BillerCategoryId);
               return (
                 <button
@@ -603,11 +603,13 @@ export default function BillPaymentsPage() {
                       : "opacity-60 cursor-not-allowed",
                   )}
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-white`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
+                  <Image
+                    src={cat.image}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 shrink-0"
+                  />
                   <div>
                     <p
                       className={cn(

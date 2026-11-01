@@ -1,4 +1,4 @@
-import { AppleIcon, ArrowDownCircle, ArrowLeftRight, ArrowUpCircle, BadgeCheck, BarChart2, Bell, Bitcoin, CalendarDays, Dices, GraduationCap, IdCard, Landmark, Laptop, LayoutGrid, Repeat, ShieldCheck, Smartphone, Tv, Wifi, Zap } from "lucide-react";
+import { AppleIcon, BarChart2, Bell, Bitcoin, CalendarDays, Repeat } from "lucide-react";
 import { NotifGroup, Tab } from "./types/notification-types";
 
 // export const MARKET = [
@@ -154,59 +154,51 @@ export const GIFT_TRANSACTIONS = [
 export const CATEGORIES = [
   {
     id: "airtime",
+    image: "/bill-categories/airtime.svg",
     name: "Airtime & Data",
     desc: "Top up your mobile phone & others",
-    icon: Smartphone,
-    color: "bg-blue-500",
   },
   {
     id: "electricity",
+    image: "/bill-categories/electricity.svg",
     name: "Electricity",
     desc: "Pay your power bills",
-    icon: Zap,
-    color: "bg-green-500",
   },
   {
     id: "cable",
+    image: "/bill-categories/cable.svg",
     name: "Cable TV",
     desc: "Subscribe to your favorite channels",
-    icon: Tv,
-    color: "bg-red-500",
   },
   {
     id: "betting",
+    image: "/bill-categories/betting.svg",
     name: "Betting",
     desc: "Top up your betting account",
-    icon: Dices,
-    color: "bg-indigo-500",
   },
   {
     id: "internet",
+    image: "/bill-categories/internet.svg",
     name: "Internet",
     desc: "Renew your broadband",
-    icon: Wifi,
-    color: "bg-yellow-500",
   },
   {
     id: "government",
+    image: "/bill-categories/government.svg",
     name: "Government",
     desc: "Taxes, licenses & permits",
-    icon: Landmark,
-    color: "bg-pink-600",
   },
   {
     id: "education",
+    image: "/bill-categories/education.svg",
     name: "Education",
     desc: "Pay for school fees & courses",
-    icon: GraduationCap,
-    color: "bg-violet-500",
   },
   {
     id: "others",
+    image: "/bill-categories/others.svg",
     name: "Others",
     desc: "More services and billers",
-    icon: LayoutGrid,
-    color: "bg-Green",
   },
 ];
 
