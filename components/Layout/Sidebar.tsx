@@ -1,6 +1,7 @@
 import { NAV } from "@/lib/nav";
 import { useLogoutStore } from "@/store/logout.store";
-import { ChevronLeft, ChevronRight, LogOut, Wallet, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Wallet, X } from "lucide-react";
+import { LogoutIcon } from "@/components/icons/nav-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -206,7 +207,7 @@ export function Sidebar({
                 const content = (
                   <div
                     title={collapsed ? item.label : undefined}
-                    className={`w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
+                    className={`group w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
       ${
         item.disabled
           ? "opacity-50 cursor-not-allowed bg-card-background text-text"
@@ -216,8 +217,16 @@ export function Sidebar({
       }
       ${collapsed ? "justify-center" : ""}`}
                   >
+                    {/* The icon takes its colour from these classes (currentColor):
+                        green when active or hovered, muted when the page is not live yet. */}
                     <Icon
-                      className={`${active ? "text-Green" : "text-card-text"} w-5 h-5 shrink-0`}
+                      className={`${
+                        active
+                          ? "text-Green"
+                          : item.disabled
+                            ? "text-text"
+                            : "text-card-text group-hover:text-Green"
+                      } w-5 h-5 shrink-0 transition-colors`}
                     />
 
                     {!collapsed && (
@@ -261,7 +270,7 @@ export function Sidebar({
           onClick={() => openModal()}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors ${collapsed ? "justify-center" : ""}`}
         >
-          <LogOut className="w-4 h-4 shrink-0" />
+          <LogoutIcon className="w-5 h-5 shrink-0" />
           {!collapsed && <span>Logout</span>}
         </button>
       </div>
