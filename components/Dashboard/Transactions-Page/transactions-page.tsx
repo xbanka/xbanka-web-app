@@ -270,7 +270,7 @@ export default function TransactionsPage() {
                 aria-selected={tab === id}
                 onClick={() => changeTab(id)}
                 className={cn(
-                  "shrink-0 h-9 sm:h-8 px-3.5 sm:px-3 text-[13px] sm:text-sm font-medium transition-colors rounded-full sm:rounded-md border sm:border-0",
+                  "shrink-0 h-9 sm:h-8 px-3.5 sm:px-3 text-[13px] sm:text-sm font-medium transition-colors rounded-md border sm:border-0",
                   tab === id
                     ? "border-Green bg-teal-light text-teal-text sm:bg-border sm:text-card-text"
                     : "border-input bg-card-background text-text hover:text-card-text sm:bg-transparent",
@@ -324,12 +324,12 @@ export default function TransactionsPage() {
             <table className="w-full table-fixed text-sm">
               <thead>
                 <tr className="text-left text-[13px] text-text">
-                  <th className="w-[7.5rem] px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
+                  <th className="w-[6.5rem] lg:w-[7.5rem] px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
                   <th className="px-4 py-3 font-medium border-b border-border">Transaction</th>
                   <th className="hidden xl:table-cell w-[6.5rem] px-4 py-3 font-medium border-b border-border">Category</th>
-                  <th className="hidden lg:table-cell w-[11rem] px-4 py-3 font-medium border-b border-border">Reference</th>
-                  <th className="w-[7rem] px-4 py-3 font-medium border-b border-border">Status</th>
-                  <th className="w-[8rem] px-4 py-3 font-medium border-b border-border text-right">Amount</th>
+                  <th className="w-[6rem] lg:w-[11rem] px-4 py-3 font-medium border-b border-border">Reference</th>
+                  <th className="w-[6.5rem] lg:w-[7rem] px-4 py-3 font-medium border-b border-border">Status</th>
+                  <th className="w-[7rem] lg:w-[8rem] px-4 py-3 font-medium border-b border-border text-right">Amount</th>
                   <th className="hidden xl:table-cell w-[8.5rem] px-5 py-3 border-b border-border">
                     <span className="sr-only">Receipt</span>
                   </th>
@@ -371,7 +371,7 @@ export default function TransactionsPage() {
                         <td className="px-4 py-3 border-b border-border">
                           <div className="flex items-center gap-3 min-w-0">
                             <span
-                              className={cn("grid place-items-center w-9 h-9 shrink-0 rounded-lg", GROUP_STYLE[group])}
+                              className={cn("hidden lg:grid place-items-center w-9 h-9 shrink-0 rounded-lg", GROUP_STYLE[group])}
                               aria-hidden="true"
                             >
                               <Icon className="w-4 h-4" />
@@ -387,7 +387,7 @@ export default function TransactionsPage() {
                             {GROUP_LABEL[group]}
                           </span>
                         </td>
-                        <td className="hidden lg:table-cell px-4 py-3 border-b border-border">
+                        <td className="px-4 py-3 border-b border-border">
                           <Truncated
                             text={tx.reference || tx.id}
                             className="font-mono text-[13px] text-text"
