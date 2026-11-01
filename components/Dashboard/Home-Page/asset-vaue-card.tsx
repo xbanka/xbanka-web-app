@@ -36,7 +36,7 @@ export function AssetValueCard() {
     <>
       <DashboardCard
         data-tour="balance"
-        className="border border-teal-border bg-teal-light dark:bg-surface-primary"
+        className="border border-teal-border bg-teal-light"
       >
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-1">
