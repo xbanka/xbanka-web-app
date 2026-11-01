@@ -155,6 +155,17 @@
   --surface-primary: #121315;
 }
 
+/* On phones the dark theme sits nearer to black: the page and the surfaces
+   that share it (top bar, tab bar, slide-out menu) go darker, while cards
+   keep card-background and so stand off the page more. Desktop keeps the
+   Figma surface value above. */
+@media (max-width: 767px) {
+  [data-theme="dark"] {
+    --surface-primary: #0b0c0e;
+    --background: #0b0c0e;
+  }
+}
+
 @theme {
   --animate-sun-roll: sun-roll 1.2s ease-in-out infinite;
   --animate-moon-tilt: moon-tilt 1.2s ease-in-out infinite;
