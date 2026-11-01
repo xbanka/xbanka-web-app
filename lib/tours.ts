@@ -328,7 +328,7 @@ export const TOURS: Record<TourId, Tour> = {
   transactions: {
     id: "transactions",
     label: "Transactions tour",
-    steps: ({ desktop }) => [
+    steps: () => [
       stop({
         element: "[data-tour=transactions-summary]",
         icon: "nav-transactions",
