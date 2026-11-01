@@ -332,7 +332,7 @@ export default function TransactionsPage() {
                   <th className="hidden xl:table-cell w-[8.5rem] px-5 py-3 border-b border-border">
                     <span className="sr-only">Receipt</span>
                   </th>
-                  <th className="w-[6.5rem] lg:w-[7rem] px-4 py-3 font-medium border-b border-border">Status</th>
+                  <th className="w-[6.5rem] lg:w-[7rem] px-5 py-3 font-medium border-b border-border text-right">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -414,7 +414,7 @@ export default function TransactionsPage() {
                             View receipt
                           </button>
                         </td>
-                        <td className="px-4 py-3 border-b border-border">
+                        <td className="px-5 py-3 border-b border-border text-right">
                           <TransactionHistoryStatusBadge status={tx.status} />
                         </td>
                       </tr>
