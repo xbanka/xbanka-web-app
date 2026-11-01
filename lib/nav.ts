@@ -73,10 +73,6 @@ export const NAV: NavSection[] = [
         id: "transactions",
         label: "Transactions",
         icon: TransactionsIcon,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       // { id: "analytics", label: "Analytics", icon: AnalyticsIcon, badge: "Beta", badgeColor: "bg-blue-500/20 text-blue-400" },
     ],

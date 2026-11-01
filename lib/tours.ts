@@ -16,7 +16,8 @@ export type TourId =
   | "crypto"
   | "bills"
   | "account"
-  | "market";
+  | "market"
+  | "transactions";
 
 export type TourContext = {
   /** Tailwind's `md` and up: the sidebar shows instead of the bottom tab bar. */
@@ -56,7 +57,7 @@ export const TOURS: Record<TourId, Tour> = {
     steps: ({ desktop }) => [
       stop({
         element: "[data-tour=balance]",
-        icon: "wallet",
+        icon: "nav-wallet",
         title: "Your total asset value",
         description:
           "Naira and crypto balances in one figure. Switch between NGN and USDT, or tap the eye to hide it.",
@@ -86,7 +87,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: desktop ? "[data-tour=nav-wallet]" : "[data-tour=tab-wallet]",
-        icon: "wallet",
+        icon: "nav-wallet",
         title: "Your wallet",
         description:
           "Every balance, deposit and withdrawal lives here. It has its own short tour.",
@@ -94,7 +95,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: desktop ? "[data-tour=nav-crypto]" : "[data-tour=tab-crypto]",
-        icon: "bitcoin",
+        icon: "nav-crypto",
         title: "Trade crypto",
         description: "Buy and sell BTC, ETH, USDT and USDC at live rates.",
         side: desktop ? "right" : "top",
@@ -109,7 +110,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: "[data-tour=profile-menu]",
-        icon: "user-round",
+        icon: "nav-account",
         title: "Your profile",
         description:
           "Manage your details, security settings and verification status. You can replay any tour from here.",
@@ -125,7 +126,7 @@ export const TOURS: Record<TourId, Tour> = {
     steps: () => [
       stop({
         element: "[data-tour=wallet-tabs]",
-        icon: "layout-grid",
+        icon: "nav-wallet",
         title: "Three views of your money",
         description:
           "Fiat is your naira wallet, Crypto is your coin holdings, and History lists every transaction across both.",
@@ -152,7 +153,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: "[data-tour=wallet-crypto-balance]",
-        icon: "bitcoin",
+        icon: "nav-crypto",
         title: "Crypto balance",
         description:
           "Deposit coins to your Xbanka address, send them out, or convert between assets.",
@@ -165,7 +166,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: "[data-tour=wallet-history]",
-        icon: "history",
+        icon: "nav-transactions",
         title: "Transaction history",
         description:
           "Search, filter by status or type, and tap any row for a receipt.",
@@ -180,7 +181,7 @@ export const TOURS: Record<TourId, Tour> = {
     steps: () => [
       stop({
         element: "[data-tour=crypto-tabs]",
-        icon: "arrow-left-right",
+        icon: "nav-crypto",
         title: "Buy & Sell, or Convert",
         description:
           "Trade crypto with naira here, or swap one coin for another under Convert.",
@@ -238,7 +239,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: "[data-tour=bills-categories]",
-        icon: "layout-grid",
+        icon: "nav-bill-payments",
         title: "Browse by category",
         description:
           "Airtime, data, electricity, cable TV and betting. Pick one to see its providers.",
@@ -252,7 +253,7 @@ export const TOURS: Record<TourId, Tour> = {
       }),
       stop({
         element: "[data-tour=bills-recent]",
-        icon: "receipt",
+        icon: "nav-transactions",
         title: "Recent payments",
         description:
           "Your latest bills with their status. Tap one for the receipt or to pay it again.",
@@ -267,14 +268,14 @@ export const TOURS: Record<TourId, Tour> = {
     steps: () => [
       stop({
         element: "[data-tour=account-tabs]",
-        icon: "layout-grid",
+        icon: "nav-account",
         title: "Your account, in three tabs",
         description:
           "Account Info holds your details, Security your password, PIN and devices, and Identity Verification your KYC.",
       }),
       stop({
         element: "[data-tour=account-profile]",
-        icon: "user-round",
+        icon: "nav-account",
         title: "Profile",
         description:
           "Update your photo and personal details. Your UID is what other Xbanka users send money to.",
@@ -309,17 +310,48 @@ export const TOURS: Record<TourId, Tour> = {
     steps: () => [
       stop({
         element: "[data-tour=market-controls]",
-        icon: "sliders-horizontal",
+        icon: "nav-market-overview",
         title: "Browse the market",
         description:
           "Switch between Spot and Futures, filter new listings, or search for a coin.",
       }),
       stop({
         element: "[data-tour=market-table]",
-        icon: "trending-up",
+        icon: "nav-market-overview",
         title: "Live prices",
         description:
           "Prices update in real time. Star a coin to pin it under Favorites, or tap Buy to trade it straight away.",
+      }),
+    ],
+  },
+
+  transactions: {
+    id: "transactions",
+    label: "Transactions tour",
+    steps: ({ desktop }) => [
+      stop({
+        element: "[data-tour=transactions-summary]",
+        icon: "nav-transactions",
+        title: "Your month at a glance",
+        description:
+          "Naira in, out and still pending over the last 30 days.",
+      }),
+      stop({
+        element: "[data-tour=transactions-filters]",
+        icon: "search",
+        title: "Find any transaction",
+        description:
+          "Switch between fiat, crypto, bills and gift cards, search by reference or amount, or filter by status.",
+      }),
+      stop({
+        element: desktop
+          ? "[data-tour=transactions-list]"
+          : "[data-tour=transactions-list-mobile]",
+        icon: "receipt",
+        title: "Tap for the receipt",
+        description:
+          "Every transaction opens its receipt, which you can download or share.",
+        side: "top",
       }),
     ],
   },
@@ -333,6 +365,7 @@ const TOUR_BY_PATH: Record<string, TourId> = {
   "/bill-payment": "bills",
   "/account": "account",
   "/market": "market",
+  "/transactions": "transactions",
 };
 
 export const tourForPath = (pathname: string): Tour | undefined => {

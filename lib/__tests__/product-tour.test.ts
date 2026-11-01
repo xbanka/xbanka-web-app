@@ -74,6 +74,7 @@ describe("tourForPath", () => {
     expect(tourForPath("/bill-payment")?.id).toBe("bills");
     expect(tourForPath("/account")?.id).toBe("account");
     expect(tourForPath("/market")?.id).toBe("market");
+    expect(tourForPath("/transactions")?.id).toBe("transactions");
   });
 
   it("has no tour for sections without one", () => {
