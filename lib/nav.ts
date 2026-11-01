@@ -84,10 +84,6 @@ export const NAV: NavSection[] = [
         id: "settings",
         label: "Settings",
         icon: SettingsIcon,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
       {
         id: "affiliate",
@@ -145,11 +141,7 @@ export const MENU_ITEMS = [
   {
     icon: Settings,
     label: "Settings",
-    href: "#",
-    disabled: true,
-    badge: "Soon",
-    badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+    href: "/settings",
   },
   {
     icon: HelpCircle,

@@ -8,6 +8,7 @@ import { useUserProfile } from "@/lib/services/onboarding.service";
 import { useDepositAlerts } from "@/hooks/use-deposit-alerts";
 import { SplashGate } from "./splash-gate";
 import { ProductTour } from "./product-tour";
+import { SettingsEffects } from "./settings-effects";
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>("dashboard");
@@ -21,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <SplashGate>
     {/* First-visit tour of whichever section is open; renders nothing. */}
     <ProductTour />
+    <SettingsEffects />
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
         activePage={activePage}
