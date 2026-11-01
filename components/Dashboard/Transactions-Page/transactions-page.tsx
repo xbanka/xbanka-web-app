@@ -4,17 +4,19 @@ import { useMemo, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  Bitcoin,
   ChevronLeft,
   ChevronRight,
   Clock,
-  Gift,
-  Landmark,
-  Receipt,
   Search,
-  Send,
-  type LucideIcon,
 } from "lucide-react";
+import {
+  BillPaymentsIcon,
+  CryptoIcon,
+  GiftCardsIcon,
+  WalletIcon,
+  type NavIconProps,
+} from "@/components/icons/nav-icons";
+import type { ComponentType, ReactNode } from "react";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Input } from "@/components/ui/input";
 import { SelectFieldWithValue } from "@/components/ui/select-with-value";
@@ -77,15 +79,40 @@ const GROUP_STYLE: Record<TransactionGroup, string> = {
   giftcards: "bg-coral-light text-coral-text",
 };
 
-const iconFor = (tx: TransactionTypes): LucideIcon => {
-  const group = transactionGroup(tx);
-  if (group === "bills") return Receipt;
-  if (group === "giftcards") return Gift;
-  if (isInflow(tx)) return ArrowDownLeft;
-  if (group === "crypto") return Bitcoin;
-  if (tx.type === "WITHDRAWAL") return Landmark;
-  return Send;
+// The Figma sidebar icons, one per group; direction reads from the amount.
+const GROUP_ICON: Record<TransactionGroup, ComponentType<NavIconProps>> = {
+  fiat: WalletIcon,
+  crypto: CryptoIcon,
+  bills: BillPaymentsIcon,
+  giftcards: GiftCardsIcon,
 };
+const iconFor = (tx: TransactionTypes) => GROUP_ICON[transactionGroup(tx)];
+
+/**
+ * Cuts text to its cell with an ellipsis and shows all of it on hover. The
+ * full text stays in the DOM, so screen readers and copy get the whole value.
+ */
+function Truncated({
+  text,
+  className,
+  children,
+}: {
+  text: string;
+  className?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <span className="group/full relative block min-w-0">
+      <span className={cn("block truncate", className)}>{children ?? text}</span>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none invisible absolute left-0 top-full z-30 mt-1.5 w-max max-w-[min(22rem,70vw)] whitespace-normal break-all rounded-md border border-border bg-card-background px-2.5 py-1.5 text-xs leading-5 text-card-text opacity-0 shadow-xl transition-opacity duration-100 group-hover/full:visible group-hover/full:opacity-100"
+      >
+        {text}
+      </span>
+    </span>
+  );
+}
 
 /** Teal for inflows only, so income is easy to find; failed reads as void. */
 const amountClass = (tx: TransactionTypes) =>
@@ -224,7 +251,7 @@ export default function TransactionsPage() {
       </p>
 
       {/* History */}
-      <DashboardCard className="p-0 max-sm:p-0 space-y-0 overflow-hidden">
+      <DashboardCard className="p-0 max-sm:p-0 space-y-0">
         {/* Filters */}
         <div
           data-tour="transactions-filters"
@@ -290,17 +317,20 @@ export default function TransactionsPage() {
 
         {/* Desktop table */}
         {!isError && (
-          <div className="hidden md:block overflow-x-auto" data-tour="transactions-list">
-            <table className="w-full min-w-[960px] text-sm">
+          // Fixed column widths so the table always fits its card; columns
+          // that matter least drop out as the screen narrows (the whole row
+          // still opens the receipt).
+          <div className="hidden md:block" data-tour="transactions-list">
+            <table className="w-full table-fixed text-sm">
               <thead>
                 <tr className="text-left text-[13px] text-text">
-                  <th className="px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
+                  <th className="w-[7.5rem] px-5 py-3 font-medium border-b border-border">Date &amp; Time</th>
                   <th className="px-4 py-3 font-medium border-b border-border">Transaction</th>
-                  <th className="px-4 py-3 font-medium border-b border-border">Category</th>
-                  <th className="px-4 py-3 font-medium border-b border-border">Reference</th>
-                  <th className="px-4 py-3 font-medium border-b border-border">Status</th>
-                  <th className="px-4 py-3 font-medium border-b border-border text-right">Amount</th>
-                  <th className="px-5 py-3 border-b border-border">
+                  <th className="hidden xl:table-cell w-[6.5rem] px-4 py-3 font-medium border-b border-border">Category</th>
+                  <th className="hidden lg:table-cell w-[11rem] px-4 py-3 font-medium border-b border-border">Reference</th>
+                  <th className="w-[7rem] px-4 py-3 font-medium border-b border-border">Status</th>
+                  <th className="w-[8rem] px-4 py-3 font-medium border-b border-border text-right">Amount</th>
+                  <th className="hidden xl:table-cell w-[8.5rem] px-5 py-3 border-b border-border">
                     <span className="sr-only">Receipt</span>
                   </th>
                 </tr>
@@ -338,7 +368,7 @@ export default function TransactionsPage() {
                           <div>{formatDate(tx.createdAt)}</div>
                           <div className="text-xs text-text">{formatTo12Hour(tx.createdAt)}</div>
                         </td>
-                        <td className="px-4 py-3 border-b border-border max-w-80">
+                        <td className="px-4 py-3 border-b border-border">
                           <div className="flex items-center gap-3 min-w-0">
                             <span
                               className={cn("grid place-items-center w-9 h-9 shrink-0 rounded-lg", GROUP_STYLE[group])}
@@ -346,34 +376,35 @@ export default function TransactionsPage() {
                             >
                               <Icon className="w-4 h-4" />
                             </span>
-                            <div className="min-w-0">
-                              <div className="font-medium truncate">{title}</div>
+                            <div className="min-w-0 flex-1">
+                              <Truncated text={title} className="font-medium" />
                               <div className="text-xs text-text truncate">{subtitle}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 border-b border-border">
-                          <span className={cn("inline-block px-2.5 py-0.5 rounded-full text-xs", GROUP_STYLE[group])}>
+                        <td className="hidden xl:table-cell px-4 py-3 border-b border-border">
+                          <span className={cn("inline-block px-2.5 py-0.5 rounded-full text-xs whitespace-nowrap", GROUP_STYLE[group])}>
                             {GROUP_LABEL[group]}
                           </span>
                         </td>
-                        <td className="px-4 py-3 border-b border-border max-w-44">
-                          <span className="block truncate font-mono text-[13px] text-text">
-                            {tx.reference || tx.id}
-                          </span>
+                        <td className="hidden lg:table-cell px-4 py-3 border-b border-border">
+                          <Truncated
+                            text={tx.reference || tx.id}
+                            className="font-mono text-[13px] text-text"
+                          />
                         </td>
                         <td className="px-4 py-3 border-b border-border">
                           <TransactionHistoryStatusBadge status={tx.status} />
                         </td>
                         <td
                           className={cn(
-                            "px-4 py-3 border-b border-border text-right font-display font-semibold tabular-nums whitespace-nowrap",
+                            "px-4 py-3 border-b border-border text-right font-display font-semibold tabular-nums truncate",
                             amountClass(tx),
                           )}
                         >
                           {signedAmount(tx)}
                         </td>
-                        <td className="px-5 py-3 border-b border-border text-right">
+                        <td className="hidden xl:table-cell px-5 py-3 border-b border-border text-right">
                           <button
                             type="button"
                             onClick={(event) => {
