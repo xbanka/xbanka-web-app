@@ -111,10 +111,6 @@ export const NAV: NavSection[] = [
         id: "help",
         label: "Help & Support",
         icon: HelpSupportIcon,
-        disabled: true,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
       },
     ],
   },
@@ -158,10 +154,6 @@ export const MENU_ITEMS = [
   {
     icon: HelpCircle,
     label: "Help & Support",
-    href: "#",
-    disabled: true,
-    badge: "Soon",
-    badgeColor:
-      "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+    href: "/help",
   },
 ];
