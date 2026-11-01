@@ -145,7 +145,7 @@ export function Sidebar({
   const { openModal } = useLogoutStore();
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-card-background dark:bg-surface-primary text-text select-none border-r border-border">
+    <div className="flex flex-col h-full bg-card-background dark:max-md:bg-surface-primary text-text select-none border-r border-border">
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
