@@ -176,7 +176,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 <span className="text-text">Total assets</span>
                 <span
                   key={balancesHidden ? "hidden" : "shown"}
-                  className="font-semibold text-card-text motion-safe:animate-reveal"
+                  className="font-display font-semibold text-card-text motion-safe:animate-reveal"
                 >
                   {balancesHidden
                     ? "₦•••••"
@@ -187,7 +187,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 <span className="text-text">Crypto assets</span>
                 <span
                   key={balancesHidden ? "hidden" : "shown"}
-                  className="text-card-text motion-safe:animate-reveal"
+                  className="font-display text-card-text motion-safe:animate-reveal"
                 >
                   {balancesHidden
                     ? "$•••"

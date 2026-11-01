@@ -178,7 +178,7 @@ export function MarketPage() {
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
-      <h1 className="text-xl sm:text-2xl font-bold text-card-text">Market</h1>
+      <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">Market</h1>
 
       {/* Tab row */}
       <div

@@ -30,7 +30,7 @@ export default function WalletPage() {
     <div className="space-y-4 max-w-7xl mx-auto">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
+        <h1 className="font-display text-xl sm:text-[24px] leading-8 font-semibold text-card-text">
           My Wallets
         </h1>
         <p className="text-sm font-normal leading-6 text-text">

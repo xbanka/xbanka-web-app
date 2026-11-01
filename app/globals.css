@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* The theme is switched with `data-theme` on <html>, so `dark:` utilities
+   follow that attribute rather than the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --background: #f9f9f9;
   --foreground: #171717;
@@ -47,6 +51,8 @@
   --green-success-light: #ECFDF3;
   --input-text: #1B1D20;
   --card-secondary: #F9F9F9;
+  /* Figma: Surface/surface-primary. */
+  --surface-primary: #f9f9f9;
 }
 
 @theme inline {
@@ -54,6 +60,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Geist (loaded in app/layout.tsx) for balance figures and headings. */
+  --font-display: var(--font-geist), var(--font-geist-sans);
+  --color-surface-primary: var(--surface-primary);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-border: var(--border);
@@ -143,6 +152,7 @@
   --green-success-light: #012E03;
   --input-text: #F9F9F9;
   --card-secondary: #25272B;
+  --surface-primary: #121315;
 }
 
 @theme {
@@ -532,6 +542,7 @@ body {
   color: var(--text);
 }
 .xb-tour .driver-popover-title {
+  font-family: var(--font-geist), var(--font-geist-sans);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.5;

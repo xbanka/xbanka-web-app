@@ -194,7 +194,7 @@ export function AccountInfoTab() {
             </label>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-semibold leading-8 text-card-text">
+                <h2 className="font-display text-2xl font-semibold leading-8 text-card-text">
                   {profileData?.data?.firstName}
                 </h2>
                 <Image

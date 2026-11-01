@@ -99,7 +99,7 @@ export const FiatBalance = () => {
             {!isPending && !error && (
               <p
                 key={hidden ? "balance-hidden" : "balance-shown"}
-                className="text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
+                className="font-display tracking-[-0.04em] text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
               >
                 {hidden
                   ? "₦•••••••"

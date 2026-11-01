@@ -446,7 +446,7 @@ export default function BillPaymentsPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">
           Bill Payments
         </h1>
         <p className="text-sm text-text mt-0.5">

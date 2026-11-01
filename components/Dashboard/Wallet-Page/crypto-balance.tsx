@@ -67,7 +67,7 @@ export const CryptoBalance = () => {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <p
                 key={hidden ? "hidden" : "shown"}
-                className="break-all text-3xl sm:text-4xl font-bold max-sm:text-[32px] max-sm:leading-10 motion-safe:animate-reveal"
+                className="font-display tracking-[-0.04em] break-all text-3xl sm:text-4xl font-bold max-sm:text-[32px] max-sm:leading-10 motion-safe:animate-reveal"
               >
                 {hidden
                   ? "•••••••"

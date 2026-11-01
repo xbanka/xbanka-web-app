@@ -12,7 +12,7 @@ export default function GiftCardsPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header + sub-nav */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">
           Gift Cards
         </h1>
         <div className="flex gap-1 overflow-x-auto border-b border-border sm:border-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

@@ -36,7 +36,7 @@ export function AssetValueCard() {
     <>
       <DashboardCard
         data-tour="balance"
-        className="border border-teal-border bg-teal-light"
+        className="border border-teal-border bg-teal-light dark:bg-surface-primary"
       >
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-1">
@@ -66,7 +66,7 @@ export function AssetValueCard() {
                 <span
                   // Remount on toggle so the figure blurs in each time it is shown or hidden.
                   key={hidden ? "hidden" : "shown"}
-                  className="text-3xl sm:text-4xl text-card-text font-bold leading-11 tabular-nums motion-safe:animate-reveal"
+                  className="font-display tracking-[-0.04em] text-3xl sm:text-4xl text-card-text font-bold leading-11 tabular-nums motion-safe:animate-reveal"
                 >
                   {hidden
                     ? "•••••••"

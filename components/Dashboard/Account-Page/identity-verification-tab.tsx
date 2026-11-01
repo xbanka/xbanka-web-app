@@ -46,7 +46,7 @@ export function IdentityVerificationTab() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="font-semibold text-2xl leading-8">
+        <h1 className="font-display font-semibold text-2xl leading-8">
           Identity Verification
         </h1>
         <p className="font-normal text-sm leading-6">

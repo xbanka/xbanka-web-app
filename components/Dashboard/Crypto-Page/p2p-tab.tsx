@@ -13,7 +13,7 @@ export function P2PPage({ embedded = false }: { embedded?: boolean }) {
     <div className="space-y-5 max-w-7xl mx-auto">
       {!embedded && (
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">
             P2P Marketplace
           </h1>
           <p className="text-sm text-text mt-0.5">

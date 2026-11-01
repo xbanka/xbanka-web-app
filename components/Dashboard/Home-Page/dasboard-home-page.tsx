@@ -29,7 +29,7 @@ export default function DashboardPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Welcome */}
       <RiseIn index={0}>
-        <h1 className="text-xl sm:text-2xl font-semibold leading-8 text-card-text">
+        <h1 className="font-display text-xl sm:text-2xl font-semibold leading-8 text-card-text">
           Welcome to Xbanka, {profileData?.data?.firstName ?? ""}{" "}
           <span
             role="img"
