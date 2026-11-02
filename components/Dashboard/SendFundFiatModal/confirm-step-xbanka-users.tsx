@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { TransactionDescriptionField } from "@/components/ui/transaction-description-field";
 import { UseProfileUser } from "@/lib/services/profile.service";
-import { AlertTriangle, ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 
 export function ConfirmXbankaUserStep({
   amount,
@@ -82,13 +82,6 @@ export function ConfirmXbankaUserStep({
               amount={true}
             />
           </div>
-        </div>
-
-        <div className="flex items-start gap-3 text-xs text-text max-sm:gap-2">
-          <AlertTriangle className="w-3.5 h-3.5 text-Green shrink-0 mt-0.5" />
-          <span className="font-normal leading-4.6 max-sm:text-[11px] max-sm:leading-4">
-            Funds will be debited directly from your selected bank account.
-          </span>
         </div>
       </div>
 
