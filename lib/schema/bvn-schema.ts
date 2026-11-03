@@ -1,4 +1,5 @@
 import z from "zod";
+import { isWeakPin, WEAK_PIN_MESSAGE } from "@/lib/pin-strength";
 
 export const bvnSchema = z.object({
   bvn: z
@@ -16,7 +17,8 @@ export const pinSchema = z.object({
     .string()
     .min(4, "PIN must be at least 4 digits")
     .max(4, "PIN must be at most 4 digits")
-    .regex(/^\d+$/, "PIN must contain numbers only"),
+    .regex(/^\d+$/, "PIN must contain numbers only")
+    .refine((v) => !isWeakPin(v), WEAK_PIN_MESSAGE),
 });
 
 export const updatePinSchema = z.object({
@@ -32,7 +34,8 @@ export const updatePinSchema = z.object({
     .string()
     .min(4, "PIN must be at least 4 digits")
     .max(4, "PIN must be at most 4 digits")
-    .regex(/^\d+$/, "PIN must contain numbers only"),
+    .regex(/^\d+$/, "PIN must contain numbers only")
+    .refine((v) => !isWeakPin(v), WEAK_PIN_MESSAGE),
 });
 
 export const resetPinSchema = z.object({
@@ -43,7 +46,8 @@ export const resetPinSchema = z.object({
     .string()
     .min(4, "PIN must be at least 4 digits")
     .max(4, "PIN must be at most 4 digits")
-    .regex(/^\d+$/, "PIN must contain numbers only"),
+    .regex(/^\d+$/, "PIN must contain numbers only")
+    .refine((v) => !isWeakPin(v), WEAK_PIN_MESSAGE),
 });
 
 export type BvnForm = z.infer<typeof bvnSchema>;
