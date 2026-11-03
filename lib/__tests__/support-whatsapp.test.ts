@@ -1,7 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildSupportMessage,
+  DEFAULT_SUPPORT_WHATSAPP,
   normaliseWhatsAppNumber,
+  supportWhatsAppNumber,
   whatsAppLink,
 } from "@/lib/supportWhatsApp";
 
@@ -18,6 +20,21 @@ describe("support WhatsApp", () => {
     expect(normaliseWhatsAppNumber("")).toBeNull();
     expect(normaliseWhatsAppNumber("12345")).toBeNull();
     expect(normaliseWhatsAppNumber("[WHATSAPP NUMBER]")).toBeNull();
+  });
+
+  describe("support number", () => {
+    afterEach(() => vi.unstubAllEnvs());
+
+    it("falls back to the support line when the env var is unset or unusable", () => {
+      vi.stubEnv("NEXT_PUBLIC_SUPPORT_WHATSAPP", "");
+      expect(supportWhatsAppNumber()).toBe(DEFAULT_SUPPORT_WHATSAPP);
+      expect(DEFAULT_SUPPORT_WHATSAPP).toBe("2349039716418");
+    });
+
+    it("uses the env var when it holds a valid number", () => {
+      vi.stubEnv("NEXT_PUBLIC_SUPPORT_WHATSAPP", "+234 801 234 5678");
+      expect(supportWhatsAppNumber()).toBe("2348012345678");
+    });
   });
 
   it("builds the message with topic, text and UID", () => {

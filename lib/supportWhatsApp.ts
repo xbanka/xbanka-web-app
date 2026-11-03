@@ -2,10 +2,13 @@
  * Support runs on WhatsApp: the help page builds the message and hands the
  * user to WhatsApp with it filled in, so nothing is stored on our side.
  *
- * The number comes from NEXT_PUBLIC_SUPPORT_WHATSAPP in international format
- * (e.g. 2348012345678). Spaces, dashes, brackets and a leading + or 00 are
- * tolerated; a local 0-prefixed Nigerian number is converted to +234.
+ * The number is the support line below, which NEXT_PUBLIC_SUPPORT_WHATSAPP
+ * can override, in international format (e.g. 2348012345678). Spaces,
+ * dashes, brackets and a leading + or 00 are tolerated; a local 0-prefixed
+ * Nigerian number is converted to +234.
  */
+export const DEFAULT_SUPPORT_WHATSAPP = "2349039716418";
+
 export const SUPPORT_TOPICS = [
   "Deposit",
   "Withdrawal",
@@ -29,7 +32,8 @@ export const normaliseWhatsAppNumber = (raw?: string | null): string | null => {
 };
 
 export const supportWhatsAppNumber = () =>
-  normaliseWhatsAppNumber(process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP);
+  normaliseWhatsAppNumber(process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP) ??
+  DEFAULT_SUPPORT_WHATSAPP;
 
 /** The text the user sends; their UID lets support find the account. */
 export const buildSupportMessage = ({
