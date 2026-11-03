@@ -14,8 +14,34 @@ const initiate = {
   mutate: vi.fn<(payload: unknown, opts: MutateOptions) => void>(),
   error: null as unknown,
 };
+// Tier and today's spend behind the daily-limit guard (useTransactionLimit).
+const limits = { tier: 1, spentToday: 0 };
+vi.mock("@/lib/services/profile.service", () => ({
+  UseVerificationStatus: () => ({ data: { data: { tierLevel: limits.tier } } }),
+}));
+
 vi.mock("@/lib/services/wallet.service", () => ({
   UseGetFiatWallet: () => ({ data: { data: { data: [{ balance: 200_000 }] } } }),
+  UseGetTransactionHistory: () => ({
+    isPending: false,
+    data: {
+      data: {
+        data: {
+          items: limits.spentToday
+            ? [
+                {
+                  type: "WITHDRAWAL",
+                  amount: limits.spentToday,
+                  currency: "NGN",
+                  status: "COMPLETED",
+                  createdAt: new Date().toISOString(),
+                },
+              ]
+            : [],
+        },
+      },
+    },
+  }),
   UseInitiateNombaWithdrawal: () => ({
     mutate: initiate.mutate,
     isPending: false,
@@ -73,6 +99,8 @@ beforeEach(() => {
   initiate.mutate.mockReset();
   initiate.error = null;
   traceMock.mockReset();
+  limits.tier = 1;
+  limits.spentToday = 0;
   useOnboardingModalStore.setState({ activeModal: null });
 });
 afterEach(cleanup);
@@ -163,5 +191,37 @@ describe("EnterAmountStep", () => {
     );
     expect(screen.getByText("This request has expired.")).toBeInTheDocument();
     expect(amountInput()).toHaveValue("10,000");
+  });
+
+  describe("daily tier limit", () => {
+    it("Tier 0 allows exactly ₦150,000 and blocks ₦150,001 with an upgrade prompt", () => {
+      limits.tier = 0;
+      setup();
+      fireEvent.change(amountInput(), { target: { value: "150000" } });
+      expect(continueButton().hasAttribute("disabled")).toBe(false);
+      fireEvent.change(amountInput(), { target: { value: "150001" } });
+      expect(continueButton().hasAttribute("disabled")).toBe(true);
+      expect(screen.getByRole("alert").textContent).toContain("Tier 0 daily limit of ₦150,000");
+      expect(screen.getByRole("link", { name: "Upgrade to Tier 1" })).toBeTruthy();
+    });
+
+    it("counts today's spend and shows what is left", () => {
+      limits.spentToday = 450_000;
+      setup();
+      fireEvent.change(amountInput(), { target: { value: "60000" } });
+      expect(continueButton().hasAttribute("disabled")).toBe(true);
+      expect(screen.getByRole("alert").textContent).toContain("₦50,000 more today");
+      fireEvent.click(continueButton());
+      expect(initiate.mutate).not.toHaveBeenCalled();
+    });
+
+    it("Tier 2 at its ₦2,000,000 limit points to Support, not Tier 3", () => {
+      limits.tier = 2;
+      limits.spentToday = 2_000_000;
+      setup();
+      fireEvent.change(amountInput(), { target: { value: "1000" } });
+      expect(screen.getByRole("link", { name: "Contact Support" })).toBeTruthy();
+      expect(screen.queryByText(/Tier 3/)).toBeNull();
+    });
   });
 });
