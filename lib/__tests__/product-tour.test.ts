@@ -2,7 +2,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   hasSeenTour,
+  isNewAccount,
   markTourSeen,
+  NEW_ACCOUNT_DAYS,
   TOUR_VERSION,
   tourStorageKey,
 } from "@/lib/productTour";
@@ -62,6 +64,28 @@ describe("product tour once-only flag", () => {
     withBrokenStorage(() => {
       expect(() => markTourSeen("u1", "dashboard")).not.toThrow();
     });
+  });
+});
+
+describe("isNewAccount", () => {
+  const now = new Date("2026-11-03T12:00:00.000Z");
+  const daysAgo = (days: number) =>
+    new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  it("is new for an account created within the window", () => {
+    expect(isNewAccount(daysAgo(0), now)).toBe(true);
+    expect(isNewAccount(daysAgo(NEW_ACCOUNT_DAYS - 1), now)).toBe(true);
+  });
+
+  it("is not new once the account is older than the window", () => {
+    expect(isNewAccount(daysAgo(NEW_ACCOUNT_DAYS), now)).toBe(false);
+    expect(isNewAccount("2025-01-01T00:00:00.000Z", now)).toBe(false);
+  });
+
+  it("treats a missing or unparseable date as an existing account", () => {
+    expect(isNewAccount(undefined, now)).toBe(false);
+    expect(isNewAccount("", now)).toBe(false);
+    expect(isNewAccount("not-a-date", now)).toBe(false);
   });
 });
 
