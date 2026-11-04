@@ -6,6 +6,7 @@ import { ProgressBar } from "../Wallet-Page/progress-bar";
 import { UserWallet } from "../Wallet-Page/types";
 import { RecipientXbankaUsersTypes } from "./types";
 import { TRANSACTION_FEE } from "./crypto-modal-types";
+import { ErrorField } from "@/components/ui/field-error";
 
 export function EnterAmountStep({
   asset,
@@ -24,12 +25,20 @@ export function EnterAmountStep({
   onClose: () => void;
   onNext: () => void;
 }) {
-  const numericBalance = asset?.balance ?? 0;
+  const numericBalance = Number(asset?.balance) || 0;
   const inputAmount = parseFloat(amount) || 0;
   const rate = asset?.fiatEquivalent?.rate ?? 0;
   const nairaEquiv = (inputAmount * rate).toLocaleString();
   const totalDeduction = inputAmount + TRANSACTION_FEE;
   const isValid = inputAmount > 0 && totalDeduction <= numericBalance;
+  const balanceError =
+    inputAmount <= 0
+      ? undefined
+      : inputAmount > numericBalance
+        ? "Insufficient balance. Enter an amount within your available balance."
+        : totalDeduction > numericBalance
+          ? `Insufficient balance to cover the ~${TRANSACTION_FEE} ${asset?.currency ?? ""} network fee. Reduce the amount or use Send max.`
+          : undefined;
 
   const sendMax = () => {
     const max = Math.max(0, numericBalance - TRANSACTION_FEE).toFixed(2);
@@ -68,6 +77,9 @@ export function EnterAmountStep({
             <span className="inline-flex items-center gap-1 text-xs font-normal text-text px-3 py-1.5 bg-input-background rounded-lg">
               ≈ ₦{nairaEquiv}
             </span>
+          </div>
+          <div className="flex justify-center pt-1">
+            <ErrorField message={balanceError} />
           </div>
         </div>
 
