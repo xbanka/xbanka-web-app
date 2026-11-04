@@ -43,7 +43,13 @@ export const config = {
     /* 
       🟢 OPTIMIZED: Explicitly added image folder paths to ensure your 
       broken `/images/fallback/ramp.png` asset doesn't choke the router logic
+
+      PWA: manifest.webmanifest, sw.js and offline.html are fetched by the
+      browser without the auth cookie. If this proxy redirects them to
+      /sign-in, the manifest is invalid and the service worker never
+      registers, so the app is not installable. Keep them excluded
+      (guarded by lib/pwa/__tests__/proxy-matcher.test.ts).
     */
-    "/((?!api|_next/static|_next/image|images|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|images|favicon.ico|manifest.webmanifest|sw.js|offline.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
