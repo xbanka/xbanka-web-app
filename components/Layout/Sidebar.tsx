@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useThemeStore } from "@/store/theme.store";
 import Image from "next/image";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 
 type IconProps = { className?: string };
 
@@ -265,7 +266,8 @@ export function Sidebar({
       </nav>
 
       {/* Logout */}
-      <div className="px-2 py-4 border-t border-white/10">
+      <div className="px-2 py-4 border-t border-white/10 space-y-1">
+        <InstallAppButton collapsed={collapsed} />
         <button
           onClick={() => openModal()}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors ${collapsed ? "justify-center" : ""}`}

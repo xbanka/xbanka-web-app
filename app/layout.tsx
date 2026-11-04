@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
@@ -7,6 +7,7 @@ import { GlobalLogout } from "@/components/Dashboard/LogOutModal/global-logout-m
 import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModal/onboarding-modal-provider";
 import { Toaster } from "sonner";
 import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 // Geist, self-hosted (SIL OFL, see app/fonts/GEIST-LICENSE.txt). Balance
 // figures and page headings use it through the `font-display` utility; body
@@ -24,6 +25,19 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon-square.png",
   },
+  // iOS: open from the home-screen icon without Safari's browser chrome.
+  appleWebApp: {
+    capable: true,
+    title: "XBanka",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f9f9f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#121315" },
+  ],
 };
 
 export default function RootLayout({
@@ -67,6 +81,7 @@ export default function RootLayout({
             <GlobalNotificationsModal />
             <GlobalLogout />
             <OnboardingModalProvider />
+            <ServiceWorkerRegistration />
           </Providers>
         </QueryProvider>
       </body>
