@@ -7,6 +7,7 @@ import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { listFundedCryptoAddresses } from "@/lib/crypto-addresses";
 import { maskAddress } from "@/lib/mask";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
+import { CoinIcon } from "@/components/ui/coin-icon";
 
 function AddressRow({
   currency,
@@ -18,6 +19,10 @@ function AddressRow({
   address: string;
 }) {
   const [copied, setCopied] = useState(false);
+  // BTC on "BTC" and SOL on "SOL" would read as a repeated word; the network
+  // only adds information when it differs from the coin (USDT on TRC20).
+  const showNetwork = network.toUpperCase() !== currency.toUpperCase();
+  const label = showNetwork ? `${currency} ${network}` : currency;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
@@ -28,19 +33,24 @@ function AddressRow({
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-xl border border-input bg-border px-5 py-4 max-sm:px-4 max-sm:py-3.5">
-      <div className="min-w-0">
-        <p className="text-sm font-medium leading-5 text-card-text">
-          {currency}
-          <span className="ml-2 text-xs font-normal text-text">{network}</span>
-        </p>
-        <p className="mt-0.5 truncate font-mono text-sm font-semibold tracking-wide text-card-text">
-          {maskAddress(address)}
-        </p>
+      <div className="flex min-w-0 items-center gap-3">
+        <CoinIcon currency={currency} size={36} />
+        <div className="min-w-0">
+          <p className="text-sm font-medium leading-5 text-card-text">
+            {currency}
+            {showNetwork && (
+              <span className="ml-2 text-xs font-normal text-text">{network}</span>
+            )}
+          </p>
+          <p className="mt-0.5 truncate font-mono text-sm font-semibold tracking-wide text-card-text">
+            {maskAddress(address)}
+          </p>
+        </div>
       </div>
       <button
         type="button"
         onClick={handleCopy}
-        aria-label={`Copy ${currency} ${network} wallet address`}
+        aria-label={`Copy ${label} wallet address`}
         className="shrink-0 rounded p-1 text-text transition-colors hover:bg-card-background hover:text-card-text"
       >
         {copied ? (
@@ -82,7 +92,7 @@ export function CryptoAddressesColumn() {
         // stretching the page. Roughly four rows are visible.
         <div
           data-testid="crypto-address-list"
-          className="max-h-80 space-y-3 overflow-y-auto pr-1"
+          className="max-h-80 space-y-3 overflow-y-auto pr-1 stagger"
         >
           {rows.map((row) => (
             <AddressRow key={row.id} {...row} />

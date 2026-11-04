@@ -5,12 +5,15 @@ import { CloseBtn } from "./close-btn";
 export function ModalHeader({
   title,
   subtitle,
+  leading,
   onBack,
   onClose,
   className,
 }: {
   title?: string;
   subtitle?: string;
+  /** Shown before the title, e.g. the logo of what the modal is about. */
+  leading?: React.ReactNode;
   onBack?: () => void;
   onClose: () => void;
   className?: string;
@@ -31,6 +34,7 @@ export function ModalHeader({
             <ChevronLeft className="w-4 h-4" />
           </button>
         )}
+        {leading && <div className="shrink-0 max-sm:mt-0.5">{leading}</div>}
         <div className="min-w-0">
           <h3 className="text-2xl font-semibold leading-8 text-card-text max-sm:text-[24px] max-sm:leading-8">
             {title}

@@ -170,7 +170,10 @@ export function ConvertTab() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 items-start gap-4">
-      <DashboardCard className="lg:col-span-3 space-y-3 p-4 max-sm:p-3.5">
+      <DashboardCard
+        data-tour="crypto-convert-form"
+        className="lg:col-span-3 space-y-3 p-4 max-sm:p-3.5"
+      >
         <AmountRow
           label="From"
           dropDownLoading={currencyPending}

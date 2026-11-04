@@ -7,6 +7,8 @@ import {
 import { CryptoHistoryStatusBadge } from "@/lib/statusBadge";
 import { Notification } from "@/lib/types/notification-types";
 import { cn } from "@/lib/utils";
+import { maskAmounts } from "@/lib/settings";
+import { useSettingsStore } from "@/store/settings.store";
 import { ArrowDown, ArrowUp, ShieldCheck, Bell, Trash2 } from "lucide-react";
 
 const notificationIcons = {
@@ -34,6 +36,7 @@ export function NotifItem({
 }) {
   const Icon = getNotificationIcon(n);
   const statusLabel = getNotificationStatusLabel(n);
+  const hideAmounts = useSettingsStore((s) => s.hideAmountsInNotifications);
   return (
     <div
       onClick={onClick}
@@ -53,7 +56,7 @@ export function NotifItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <span className="text-[14px] font-medium text-card-text leading-5">
-            {n.title}
+            {hideAmounts ? maskAmounts(n.title ?? "") : n.title}
           </span>
           <span className="flex items-center gap-1.5 text-[11px] text-placeholder shrink-0 pt-0.5">
             {timeAgo(n.createdAt)}
@@ -78,7 +81,7 @@ export function NotifItem({
           </span>
         </div>
 
-        <p className="text-[12px] font-normal text-text mt-1">{n.message}</p>
+        <p className="text-[12px] font-normal text-text mt-1">{hideAmounts ? maskAmounts(n.message ?? "") : n.message}</p>
 
         {statusLabel && (
           <div className="mt-2">

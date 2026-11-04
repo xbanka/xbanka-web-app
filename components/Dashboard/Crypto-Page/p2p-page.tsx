@@ -18,7 +18,7 @@ export function P2PPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">P2P Marketplace</h1>
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">P2P Marketplace</h1>
         <p className="text-sm text-text mt-0.5">Buy and sell crypto directly with verified traders.</p>
       </div>
  

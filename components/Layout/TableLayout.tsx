@@ -168,7 +168,7 @@ export function DataTableLayout<T>({
                 </TableRow>
               </TableHeader>
 
-              <TableBody>
+              <TableBody className="stagger">
                 {/* Loading State */}
                 {isLoading && (
                   <TableRow>
@@ -262,7 +262,7 @@ export function DataTableLayout<T>({
         )}
 
         {!isLoading && !isError && (
-          <div className="space-y-4 p-0 sm:p-4">
+          <div className="space-y-4 p-0 sm:p-4 stagger">
             {paginatedData?.map((item) => (
               <div
                 key={rowKey(item)}
@@ -321,7 +321,7 @@ export function DataTableLayout<T>({
                         <span className="shrink-0 text-[12px] text-text font-medium">
                           {col.header}
                         </span>
-                        <span className="min-w-0 max-w-[62%] text-right text-[14px] max-sm:text-[12px] font-medium text-card-text [&_*]:min-w-0">
+                        <span className="min-w-0 max-w-[62%] text-right text-[14px] max-sm:text-[12px] font-medium text-card-text wrap-anywhere [&_*]:min-w-0">
                           {col.render
                             ? col.render(item)
                             : renderRecordValue(item, col.key as string)}

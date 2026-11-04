@@ -43,7 +43,10 @@ export const CryptoBalance = () => {
   };
   return (
     <div>
-      <DashboardCard className="border-teal-border bg-teal-light max-sm:p-4">
+      <DashboardCard
+        data-tour="wallet-crypto-balance"
+        className="border-teal-border bg-teal-light max-sm:p-4"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-text text-xs mb-2 max-sm:text-sm">
@@ -62,7 +65,10 @@ export const CryptoBalance = () => {
               </button>
             </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <p className="break-all text-3xl sm:text-4xl font-bold max-sm:text-[32px] max-sm:leading-10">
+              <p
+                key={hidden ? "hidden" : "shown"}
+                className="font-display tracking-[-0.04em] break-all text-3xl sm:text-4xl font-bold max-sm:text-[32px] max-sm:leading-10 motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "•••••••"
                   : view === "NGN"

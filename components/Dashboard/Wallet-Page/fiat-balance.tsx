@@ -70,7 +70,10 @@ export const FiatBalance = () => {
 
   return (
     <div>
-      <DashboardCard className="border-blue-border bg-blue-light">
+      <DashboardCard
+        data-tour="wallet-fiat-balance"
+        className="border-blue-border bg-blue-light"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-text text-[14px] leading-6 font-normal">
@@ -94,7 +97,10 @@ export const FiatBalance = () => {
               </div>
             )}
             {!isPending && !error && (
-              <p className="text-3xl sm:text-4xl font-bold text-card-text">
+              <p
+                key={hidden ? "balance-hidden" : "balance-shown"}
+                className="font-display tracking-[-0.04em] text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "₦•••••••"
                   : data?.data
@@ -104,7 +110,10 @@ export const FiatBalance = () => {
             )}
             {(error || !isPending) && <ErrorField message={error?.message} />}
             {!isPending && !error && (
-              <span className="text-text text-xs font-normal leading-4.5">
+              <span
+                key={hidden ? "today-hidden" : "today-shown"}
+                className="text-text text-xs font-normal leading-4.5 motion-safe:animate-reveal"
+              >
                 {hidden ? "₦•••••••" : `≈ ₦${latestWallet?.balance ?? 0} today`}
               </span>
             )}
@@ -117,6 +126,7 @@ export const FiatBalance = () => {
           <div className="flex items-start gap-4">
             <div className="">
               <Button
+                data-tour="wallet-add-fund"
                 onClick={handleAddFund}
                 variant={"default"}
                 size={"sm"}
@@ -145,6 +155,7 @@ export const FiatBalance = () => {
               tooltip="Add funds to continue"
             >
               <Button
+                data-tour="wallet-send"
                 disabled={isSendDisabled}
                 onClick={handleSendFund}
                 variant={"outline"}

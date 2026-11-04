@@ -198,7 +198,7 @@ export function SecurityTab() {
   return (
     <div className="space-y-5">
       {/* Security health */}
-      <DashboardCard className="space-y-3">
+      <DashboardCard data-tour="account-security" className="space-y-3">
         <div className="space-y-3">
           <h3 className="text-[16px] font-medium leading-6 text-card-text">
             Security Overview

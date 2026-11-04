@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { maskAmounts, notificationCategory } from "@/lib/settings";
+import { useSettingsStore } from "@/store/settings.store";
 import { UseGetNotifications } from "@/lib/services/notification.service";
 import { findNewDeposits } from "@/lib/depositNotifications";
 import { Notification } from "@/lib/types/notification-types";
@@ -46,9 +48,15 @@ export const useDepositAlerts = () => {
       queryClient.invalidateQueries({ queryKey: [key] });
     }
 
-    fresh.forEach((notification) => {
-      toast.success(notification.title || "Wallet funded", {
-        description: notification.message,
+    // Balances still refresh above; Settings only decides whether to pop up.
+    const { notifications: prefs, hideAmountsInNotifications: hide } =
+      useSettingsStore.getState();
+    const show = (text: string) => (hide ? maskAmounts(text) : text);
+    fresh
+      .filter((n) => prefs[notificationCategory(n)]?.inApp !== false)
+      .forEach((notification) => {
+      toast.success(show(notification.title || "Wallet funded"), {
+        description: show(notification.message ?? ""),
         action: { label: "View", onClick: openNotifications },
       });
     });

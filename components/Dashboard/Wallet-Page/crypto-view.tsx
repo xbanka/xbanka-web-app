@@ -135,7 +135,10 @@ export function CryptoView() {
   return (
     <div className="space-y-4">
       {/* My Holdings */}
-      <div className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4">
+      <div
+        data-tour="wallet-holdings"
+        className="bg-card-background border border-border rounded-2xl p-5 max-sm:p-4"
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-medium text-card-text text-[16px] leading-6 max-sm:text-[16px] max-sm:leading-6">
             My Holdings

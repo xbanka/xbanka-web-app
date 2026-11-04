@@ -3,7 +3,7 @@ import { HOW_TO_STEPS } from "@/lib/MockData";
 
 export function HowTo({ action = "buy" }: { action?: string }) {
   return (
-    <DashboardCard className="max-sm:p-4">
+    <DashboardCard data-tour="crypto-how-to" className="max-sm:p-4">
       <h3 className="text-[16px] font-medium leading-6 text-card-text text-center max-sm:text-[14px] max-sm:leading-5">
         How to {action} crypto on Xbanka
       </h3>

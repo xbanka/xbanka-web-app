@@ -9,6 +9,9 @@ import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
 import { shortenUid } from "@/lib/shortenuid";
 import { Label } from "@/components/ui/label";
+import { ErrorField } from "@/components/ui/field-error";
+import { useTransactionLimit } from "@/hooks/use-transaction-limit";
+import { LimitNotice } from "@/components/ui/limit-notice";
 
 export function EnterAmountXbankaStep({
   recipient,
@@ -31,8 +34,14 @@ export function EnterAmountXbankaStep({
     return digits ? Number(digits).toLocaleString() : "";
   };
 
+  const balance = sumFiatBalances(wallets);
+  const insufficientBalance = !!data?.data && numericAmount > balance;
+  const { checkDaily } = useTransactionLimit();
+  const limitCheck = checkDaily(numericAmount);
   const isValid =
-    numericAmount >= MIN_SEND_AMOUNT && numericAmount <= sumFiatBalances(wallets);
+    numericAmount >= MIN_SEND_AMOUNT &&
+    numericAmount <= balance &&
+    limitCheck.allowed;
 
   const handleContinue = () => {
     // We spread the existing recipient and add the new amount/narration
@@ -86,6 +95,14 @@ export function EnterAmountXbankaStep({
                 placeholder="0"
               />
             </div>
+            <ErrorField
+              message={
+                insufficientBalance
+                  ? "Insufficient balance. Enter an amount within your available balance."
+                  : undefined
+              }
+            />
+            {!insufficientBalance && <LimitNotice check={limitCheck} />}
             <div className="flex justify-between items-center text-xs text-text font-normal leading-4.5">
               <span className="font-normal text-xs leading-4.5">Minimum send amount: ₦{MIN_SEND_AMOUNT.toLocaleString()}</span>
               <span className="bg-input-background py-2.5 px-4 rounded-lg">

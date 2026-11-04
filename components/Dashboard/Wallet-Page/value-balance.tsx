@@ -48,7 +48,10 @@ export const ValueBalance = () => {
               </div>
             )}
             {!getAllWalletBalancePending && !getAllWalletBalanceError && (
-              <p className="text-3xl sm:text-4xl font-bold text-card-text ">
+              <p
+                key={hidden ? "balance-hidden" : "balance-shown"}
+                className="font-display tracking-[-0.04em] text-3xl sm:text-4xl font-bold text-card-text motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "₦•••••••"
                   : totalNgn
@@ -61,7 +64,10 @@ export const ValueBalance = () => {
             )}
 
             {!getAllWalletBalancePending && (
-              <span className="text-text text-xs font-normal leading-4.5">
+              <span
+                key={hidden ? "today-hidden" : "today-shown"}
+                className="text-text text-xs font-normal leading-4.5 motion-safe:animate-reveal"
+              >
                 {hidden ? "₦•••••••" : `≈ ₦${totalNgn.toLocaleString()} today`}
               </span>
             )}
@@ -76,7 +82,10 @@ export const ValueBalance = () => {
               <p className="text-text font-medium leading-5 text-[12px]">
                 Fiat
               </p>
-              <p className="font-medium leading-5 text-sm text-card-text">
+              <p
+                key={hidden ? "hidden" : "shown"}
+                className="font-medium leading-5 text-sm text-card-text motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "₦•••••••"
                   : fiatNgn
@@ -88,7 +97,10 @@ export const ValueBalance = () => {
               <p className="text-text font-medium leading-5 text-[12px]">
                 Crypto
               </p>
-              <p className="font-medium leading-5 text-sm text-card-text">
+              <p
+                key={hidden ? "hidden" : "shown"}
+                className="font-medium leading-5 text-sm text-card-text motion-safe:animate-reveal"
+              >
                 {hidden
                   ? "₦•••"
                   : cryptoNgn
@@ -96,7 +108,7 @@ export const ValueBalance = () => {
                     : "₦0"}
               </p>
               {!hidden && cryptoUsd > 0 && (
-                <p className="text-text font-normal leading-4 text-[11px]">
+                <p className="text-text font-normal leading-4 text-[11px] motion-safe:animate-reveal">
                   ≈ ${cryptoUsd.toLocaleString()}
                 </p>
               )}

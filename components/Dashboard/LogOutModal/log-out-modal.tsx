@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FormHeader } from "@/components/ui/FormHeader";
 import { Modal } from "@/components/ui/Modal";
-import { authTokens } from "@/lib/authToken";
-import { tokenStore } from "@/store/token.store";
+import { clearSession } from "@/lib/signOut";
 import { useRouter } from "next/navigation";
 
 interface LogoutProps {
@@ -13,9 +12,7 @@ export const Logout = ({ onClose }: LogoutProps) => {
   const router = useRouter();
 
   const handleLogout = () => {
-    tokenStore.clear();
-    authTokens.clear();
-    document.cookie = "accessToken=; Max-Age=0; path=/";
+    clearSession();
 
     onClose();
     router.push("/sign-in");

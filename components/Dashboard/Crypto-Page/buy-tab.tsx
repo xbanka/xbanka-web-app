@@ -266,6 +266,7 @@ export function BuyTab() {
           )}
           <div className="space-y-2">
             <Button
+              data-tour="crypto-quote"
               onClick={handleQuoteModal}
               className="w-full transition-colors"
               variant={

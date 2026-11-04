@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
@@ -7,6 +8,16 @@ import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModa
 import { Toaster } from "sonner";
 import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
+
+// Geist, self-hosted (SIL OFL, see app/fonts/GEIST-LICENSE.txt). Balance
+// figures and page headings use it through the `font-display` utility; body
+// text stays on the system stack.
+const geist = localFont({
+  src: "./fonts/Geist-Variable.woff2",
+  variable: "--font-geist",
+  weight: "100 900",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Xbanka",
@@ -35,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" className={geist.variable}>
       <body>
         <QueryProvider>
           <Providers>

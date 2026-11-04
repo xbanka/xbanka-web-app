@@ -34,7 +34,10 @@ export function CryptoPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Main tabs */}
-      <div className="flex gap-4 overflow-x-auto -mx-1 px-1 [&::-webkit-scrollbar]:hidden">
+      <div
+        data-tour="crypto-tabs"
+        className="flex gap-4 overflow-x-auto -mx-1 px-1 [&::-webkit-scrollbar]:hidden"
+      >
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -52,8 +55,14 @@ export function CryptoPage() {
           {/* Buy / Sell sub-tabs */}
           <div className="space-y-10 max-sm:space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-sm:gap-4">
-              <DashboardCard className="lg:col-span-2 space-y-3 w-full">
-                <div className="flex bg-card-background border border-border rounded-lg p-1 w-full">
+              <DashboardCard
+                data-tour="crypto-form"
+                className="lg:col-span-2 space-y-3 w-full"
+              >
+                <div
+                  data-tour="crypto-mode"
+                  className="flex bg-card-background border border-border rounded-lg p-1 w-full"
+                >
                   {(["buy", "sell"] as const).map((m) => (
                     <Button
                       variant={tradeMode === m ? "default" : "outline"}

@@ -178,10 +178,13 @@ export function MarketPage() {
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
-      <h1 className="text-xl sm:text-2xl font-bold text-card-text">Market</h1>
+      <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">Market</h1>
 
       {/* Tab row */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div
+        data-tour="market-controls"
+        className="flex items-center justify-between flex-wrap gap-3"
+      >
         <div className="flex gap-1 border-b border-border overflow-x-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {MARKET_PAGE_TABS.map((t) => (
             <button
@@ -222,7 +225,10 @@ export function MarketPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-card-background border border-border rounded-2xl overflow-hidden">
+      <div
+        data-tour="market-table"
+        className="bg-card-background border border-border rounded-2xl overflow-hidden"
+      >
         {/* This div owns the horizontal scroller, which is what the sticky
             Action column anchors to. The table only overflows below `sm` — at
             wider widths it fits, so the pin and its shadow are scoped to
@@ -265,7 +271,7 @@ export function MarketPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-border stagger">
               {marketPricesPending && (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-text">

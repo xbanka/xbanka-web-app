@@ -81,7 +81,7 @@ export function OnboardingJourney() {
   }
 
   return (
-    <DashboardCard className="space-y-4 overflow-hidden">
+    <DashboardCard data-tour="verification" className="space-y-4 overflow-hidden">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
           <h3 className="font-medium text-card-text text-[16px] max-sm:text-[14px] max-sm:leading-5 leading-6">

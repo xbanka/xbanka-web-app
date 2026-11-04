@@ -9,6 +9,7 @@ import { UserWallet } from "../Wallet-Page/types";
 import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { Confetti } from "@/components/ui/confetti";
+import { useCountUp } from "@/hooks/use-count-up";
 
 export function SuccessStep({
   amount,
@@ -28,6 +29,8 @@ export function SuccessStep({
   successDetails: WalletSuccessState | null
 }) {
   const [copied, setCopied] = useState(false);
+  // The amount ticks up from zero as the success screen opens.
+  const countedAmount = useCountUp(Number(amount.replace(/,/g, "")) || 0);
   const amountNum = parseFloat(amount) || 0;
   const total = amountNum + TRANSACTION_FEE;
   const rate = asset?.fiatEquivalent?.rate ?? 0;
@@ -54,8 +57,9 @@ export function SuccessStep({
         <Image alt="check" src="/badge 2.svg" width={60} height={60} unoptimized />
 
         <div className="space-y-2">
-          <h3 className="text-2xl font-semibold leading-8 text-card-text">
-            {amount} {asset?.currency} Sent Successfully
+          <h3 className="text-2xl font-semibold leading-8 text-card-text tabular-nums">
+            {countedAmount.toLocaleString(undefined, { maximumFractionDigits: 8 })}{" "}
+            {asset?.currency} Sent Successfully
           </h3>
           <p className="text-base font-normal leading-6 text-text">
             Your wallet has been credited

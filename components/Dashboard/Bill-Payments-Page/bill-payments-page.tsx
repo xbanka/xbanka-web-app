@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES, QUICK_ACTIONS } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
@@ -446,7 +447,7 @@ export default function BillPaymentsPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-card-text">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-card-text">
           Bill Payments
         </h1>
         <p className="text-sm text-text mt-0.5">
@@ -455,7 +456,7 @@ export default function BillPaymentsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative" data-tour="bills-search">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
         <input
           value={search}
@@ -496,7 +497,7 @@ export default function BillPaymentsPage() {
             </div>
           </div>
           {resultCount > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
               {searchResults.map(billerTile)}
               {liveSearchResults.map(({ category, provider }) =>
                 providerTile(category, provider),
@@ -546,7 +547,7 @@ export default function BillPaymentsPage() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
               {selectedCategory === "electricity"
                 ? discos.data?.map((d) => providerTile("electricity", d))
                 : selectedCategory === "betting"
@@ -563,29 +564,28 @@ export default function BillPaymentsPage() {
         /* Browse by category, with saved payments above it */
         <div className="space-y-5">
           {favourites.length > 0 && (
-            <div>
+            <div data-tour="bills-favourites">
               <h3 className="font-semibold text-card-text text-sm mb-1">
                 Favourites
               </h3>
               <p className="text-xs text-text mb-4">
                 Payments you saved — tap one to pay it again
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
                 {favourites.map(favouriteTile)}
               </div>
             </div>
           )}
 
-          <div>
+          <div data-tour="bills-categories">
           <h3 className="font-semibold text-card-text text-sm mb-1">
             Browse by Category
           </h3>
           <p className="text-xs text-text mb-4">
             Select a service below to get started
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 stagger">
             {CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
               const live = isCategoryLive(cat.id as BillerCategoryId);
               return (
                 <button
@@ -603,11 +603,13 @@ export default function BillPaymentsPage() {
                       : "opacity-60 cursor-not-allowed",
                   )}
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-white`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
+                  <Image
+                    src={cat.image}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 shrink-0"
+                  />
                   <div>
                     <p
                       className={cn(
@@ -642,7 +644,10 @@ export default function BillPaymentsPage() {
       {!query && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Recent Transactions */}
-          <div className="bg-card-background border border-border rounded-2xl p-5">
+          <div
+            data-tour="bills-recent"
+            className="bg-card-background border border-border rounded-2xl p-5"
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-card-text text-sm">
                 Recent Transaction
@@ -670,7 +675,7 @@ export default function BillPaymentsPage() {
                   : "No bill payments yet — your purchases will show up here."}
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 stagger">
                 {recentRows.map((tx, i) => {
                   // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids,
                   // and rows built before a biller was known carry no id at
@@ -717,7 +722,7 @@ export default function BillPaymentsPage() {
             <h3 className="font-semibold text-card-text text-sm mb-4">
               Quick Action
             </h3>
-            <div className="space-y-2.5">
+            <div className="space-y-2.5 stagger">
               {QUICK_ACTIONS.map((action) => {
                 const Icon = action.icon;
                 return (

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Compass } from "lucide-react";
 import { MENU_ITEMS } from "@/lib/nav";
 import {
   UseProfileUser,
@@ -8,7 +8,11 @@ import {
 } from "@/lib/services/profile.service";
 import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useLogoutStore } from "@/store/logout.store";
+import { useProductTourStore } from "@/store/product-tour.store";
+import { tourForPath } from "@/lib/tours";
 import { cn } from "@/lib/utils";
 import { UseGetAllWalletBalances } from "@/lib/services/wallet.service";
 import { getWalletTotals } from "@/lib/walletTotals";
@@ -27,6 +31,9 @@ export default function UserDropdown({}: UserDropdownProps) {
     error: profileDataError,
   } = UseProfileUser();
   const { openModal } = useLogoutStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const requestTour = useProductTourStore((state) => state.request);
   const avatar = profile?.data?.avatarUrl;
   const { data: balances } = UseGetAllWalletBalances();
   const { hidden: balancesHidden } = useBalanceVisibility();
@@ -66,6 +73,7 @@ export default function UserDropdown({}: UserDropdownProps) {
         className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-border transition-colors cursor-pointer"
         aria-expanded={open}
         aria-haspopup="true"
+        data-tour="profile-menu"
       >
         {/* Avatar */}
         <div className="relative shrink-0">
@@ -166,7 +174,10 @@ export default function UserDropdown({}: UserDropdownProps) {
             <div className="mt-3 space-y-1 text-xs">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text">Total assets</span>
-                <span className="font-semibold text-card-text">
+                <span
+                  key={balancesHidden ? "hidden" : "shown"}
+                  className="font-display font-semibold text-card-text motion-safe:animate-reveal"
+                >
                   {balancesHidden
                     ? "₦•••••"
                     : `₦${totals.totalNgn.toLocaleString()}`}
@@ -174,7 +185,10 @@ export default function UserDropdown({}: UserDropdownProps) {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-text">Crypto assets</span>
-                <span className="text-card-text">
+                <span
+                  key={balancesHidden ? "hidden" : "shown"}
+                  className="font-display text-card-text motion-safe:animate-reveal"
+                >
                   {balancesHidden
                     ? "$•••"
                     : `$${totals.cryptoUsd.toLocaleString()}`}
@@ -192,37 +206,65 @@ export default function UserDropdown({}: UserDropdownProps) {
           {/* Menu items */}
           <nav className="mb-6">
             {MENU_ITEMS.map(
-              ({ icon: Icon, label, href, disabled, badge, badgeColor }) => (
-                <a
-                  key={label}
-                  href={disabled ? undefined : href}
-                  onClick={(e) => {
-                    if (disabled) {
-                      e.preventDefault();
-                      return;
-                    }
+              ({ icon: Icon, label, href, disabled, badge, badgeColor }) => {
+                const content = (
+                  <>
+                    <Icon className="w-6 h-6 shrink-0" />
+                    <span>{label}</span>
+                    {badge && (
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badgeColor}`}
+                      >
+                        {badge}
+                      </span>
+                    )}
+                  </>
+                );
+                const itemClass =
+                  "flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm transition-colors";
 
-                    setOpen(false);
-                  }}
-                  className={cn(
-                    "flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm hover:text-text hover:bg-border text-card-text transition-colors",
-                    disabled
-                      ? "opacity-50 cursor-not-allowed bg-card-background text-text"
-                      : "hover:text-text hover:bg-border text-card-text",
-                  )}
-                >
-                  <Icon className="w-6 h-6 shrink-0" />
-                  <span>{label}</span>
-                  {badge && (
-                    <span
-                      className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badgeColor}`}
-                    >
-                      {badge}
-                    </span>
-                  )}
-                </a>
-              ),
+                return disabled ? (
+                  <span
+                    key={label}
+                    aria-disabled="true"
+                    className={cn(
+                      itemClass,
+                      "opacity-50 cursor-not-allowed bg-card-background text-text",
+                    )}
+                  >
+                    {content}
+                  </span>
+                ) : (
+                  // A client-side route change; a plain <a> would reload the
+                  // whole app and replay the splash.
+                  <Link
+                    key={label}
+                    href={href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      itemClass,
+                      "text-card-text hover:text-text hover:bg-border",
+                    )}
+                  >
+                    {content}
+                  </Link>
+                );
+              },
             )}
+            {/* Replays this section's tour, or the dashboard's where the
+                section has none; the layout's ProductTour picks it up. */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                requestTour();
+                if (!tourForPath(pathname)) router.push("/");
+              }}
+              className="flex w-full items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm text-card-text transition-colors hover:text-text hover:bg-border"
+            >
+              <Compass className="w-6 h-6 shrink-0" />
+              <span>Take a tour</span>
+            </button>
           </nav>
 
           {/* Divider + Logout */}

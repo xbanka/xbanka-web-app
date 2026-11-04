@@ -18,6 +18,8 @@ import { BankLogo } from "@/components/ui/bank-logo";
 import { MIN_SEND_AMOUNT, QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { sumFiatBalances } from "@/lib/sumBalances";
+import { useTransactionLimit } from "@/hooks/use-transaction-limit";
+import { LimitNotice } from "@/components/ui/limit-notice";
 
 const NARRATION_MAX_LENGTH = 100;
 
@@ -53,7 +55,14 @@ export function EnterAmountStep({
     return digits ? Number(digits).toLocaleString() : "";
   };
 
-  const isValid = numericAmount >= MIN_SEND_AMOUNT && numericAmount <= sumFiatBalances(wallets);
+  const balance = sumFiatBalances(wallets);
+  const insufficientBalance = !!data?.data && numericAmount > balance;
+  const { checkDaily } = useTransactionLimit();
+  const limitCheck = checkDaily(numericAmount);
+  const isValid =
+    numericAmount >= MIN_SEND_AMOUNT &&
+    numericAmount <= balance &&
+    limitCheck.allowed;
 
   const handleContinue = () => {
     const trimmedNarration = narration.trim();
@@ -135,6 +144,14 @@ export function EnterAmountStep({
               placeholder="0"
             />
           </div>
+          <ErrorField
+            message={
+              insufficientBalance
+                ? "Insufficient balance. Enter an amount within your available balance."
+                : undefined
+            }
+          />
+          {!insufficientBalance && <LimitNotice check={limitCheck} />}
           <div className="flex justify-between text-xs text-text">
             <span>Minimum send amount: ₦{MIN_SEND_AMOUNT.toLocaleString()}</span>
             <span>

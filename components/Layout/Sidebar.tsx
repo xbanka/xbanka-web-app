@@ -1,6 +1,7 @@
 import { NAV } from "@/lib/nav";
 import { useLogoutStore } from "@/store/logout.store";
-import { ChevronLeft, ChevronRight, LogOut, Wallet, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Wallet, X } from "lucide-react";
+import { LogoutIcon } from "@/components/icons/nav-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -100,7 +101,7 @@ function AccountTabAvatar({ active }: { active: boolean }) {
     <div
       className={`relative w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-border text-[9px] font-bold text-card-text ${
         active
-          ? "ring-2 ring-Green ring-offset-2 ring-offset-card-background"
+          ? "ring-2 ring-Green ring-offset-2 ring-offset-card-background dark:ring-offset-surface-primary"
           : ""
       }`}
     >
@@ -146,7 +147,7 @@ export function Sidebar({
   const { openModal } = useLogoutStore();
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-card-background text-text select-none border-r border-border">
+    <div className="flex flex-col h-full bg-card-background dark:max-md:bg-surface-primary text-text select-none border-r border-border">
       {/* Logo + collapse */}
       <div className="flex items-center justify-between py-2 px-4 border-b border-border">
         {!collapsed && (
@@ -207,7 +208,7 @@ export function Sidebar({
                 const content = (
                   <div
                     title={collapsed ? item.label : undefined}
-                    className={`w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
+                    className={`group w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
       ${
         item.disabled
           ? "opacity-50 cursor-not-allowed bg-card-background text-text"
@@ -217,8 +218,16 @@ export function Sidebar({
       }
       ${collapsed ? "justify-center" : ""}`}
                   >
+                    {/* The icon takes its colour from these classes (currentColor):
+                        green when active or hovered, muted when the page is not live yet. */}
                     <Icon
-                      className={`${active ? "text-Green" : "text-card-text"} w-5 h-5 shrink-0`}
+                      className={`${
+                        active
+                          ? "text-Green"
+                          : item.disabled
+                            ? "text-text"
+                            : "text-card-text group-hover:text-Green"
+                      } w-5 h-5 shrink-0 transition-colors`}
                     />
 
                     {!collapsed && (
@@ -242,7 +251,11 @@ export function Sidebar({
                 }
 
                 return (
-                  <Link href={route} key={item.id}>
+                  <Link
+                    href={route}
+                    key={item.id}
+                    data-tour={`nav-${item.id}`}
+                  >
                     {content}
                   </Link>
                 );
@@ -259,7 +272,7 @@ export function Sidebar({
           onClick={() => openModal()}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors ${collapsed ? "justify-center" : ""}`}
         >
-          <LogOut className="w-4 h-4 shrink-0" />
+          <LogoutIcon className="w-5 h-5 shrink-0" />
           {!collapsed && <span>Logout</span>}
         </button>
       </div>
@@ -290,7 +303,7 @@ export function Sidebar({
 
       {/* More panel — card grid that slides up above bottom nav */}
       <div
-        className={`fixed inset-x-0 z-20 md:hidden bg-card-background border-t border-border transition-all duration-300 ease-in-out ${
+        className={`fixed inset-x-0 z-20 md:hidden bg-card-background dark:bg-surface-primary border-t border-border transition-all duration-300 ease-in-out ${
           showMore
             ? "bottom-16 opacity-100 translate-y-0"
             : "bottom-16 opacity-0 pointer-events-none translate-y-4"
@@ -367,13 +380,14 @@ export function Sidebar({
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 inset-x-0 z-30 md:hidden flex items-center justify-around bg-card-background border-t border-border h-16 px-2">
+      <nav className="fixed bottom-0 inset-x-0 z-30 md:hidden flex items-center justify-around bg-card-background dark:bg-surface-primary border-t border-border h-16 px-2">
         {BOTTOM_NAV_ITEMS.map(({ id, label, icon: Icon, route }) => {
           const active = pathname === route;
           return (
             <Link
               key={id}
               href={route}
+              data-tour={`tab-${id}`}
               onClick={() => setShowMore(false)}
               className="flex flex-col items-center gap-1 flex-1 py-1"
             >
