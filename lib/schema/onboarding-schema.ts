@@ -1,16 +1,25 @@
 import { z } from "zod";
 
-export const step1Schema = z.object({
-  firstName: z.string().min(1, { message: "First name is required" }),
-  lastName: z.string().min(1, { message: "Last name is required" }),
+/**
+ * Personal details collected at sign-up (email flow) and by the dashboard
+ * personal-info form (Google sign-ups). Shared so the two can't drift.
+ */
+export const personalInfoFields = {
+  firstName: z.string().trim().min(1, { message: "First name is required" }),
+  lastName: z.string().trim().min(1, { message: "Last name is required" }),
   dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
   phoneNumber: z
     .string()
+    .trim()
     .min(7, { message: "Phone number must be at least 7 characters" }),
   gender: z.enum(["male", "female", "other"], {
     message: "Gender is required",
   }),
   country: z.string().min(1, { message: "Country is required" }),
+};
+
+export const step1Schema = z.object({
+  ...personalInfoFields,
   // Optional. When filled it must be exactly 11 digits (spaces and hyphens are
   // ignored). It unlocks the international passport option at the ID step.
   nin: z

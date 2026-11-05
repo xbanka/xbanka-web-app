@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { personalInfoFields } from "./onboarding-schema";
 
 export const signUpSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address"),
@@ -11,7 +12,7 @@ export const signUpSchema = z.object({
     .regex(/[^A-Za-z0-9]/, "Must include a symbol")
     .regex(/[A-Za-z]/, "Must include a letter"),
   referral: z.string().optional(),
-  
+  ...personalInfoFields,
 });
 
 export type SignupFormData = z.infer<typeof signUpSchema>;

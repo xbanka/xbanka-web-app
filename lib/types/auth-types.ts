@@ -1,8 +1,16 @@
-export interface SignupFormData {
+/** Body of POST /auth/signup. */
+export interface SignupPayload {
   email: string;
   password: string;
+  redirectUrl: string;
   referralCode?: string;
-  redirectUrl?: string;
+  firstName: string;
+  lastName: string;
+  /** ISO 8601, midnight UTC, e.g. "1990-01-01T00:00:00.000Z". */
+  dateOfBirth: string;
+  phoneNumber: string;
+  gender: "Male" | "Female" | "Other";
+  country: string;
 }
 
 export interface LoginFormData {

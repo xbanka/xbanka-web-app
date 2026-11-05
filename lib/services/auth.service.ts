@@ -12,10 +12,12 @@ import {
   verifyTwoFactor,
 } from "../actions/auth";
 import { handleApiError } from "../errors/error";
-import { SignupFormData, VerifyDeviceData, VerifyTwoFactorData } from "../types/auth-types";
+import { buildSignupPayload } from "../signupPayload";
+import { VerifyDeviceData, VerifyTwoFactorData } from "../types/auth-types";
 import {
   forgotPasswordData,
   logInFormData,
+  SignupFormData,
   resetPasswordData,
 } from "../schema/auth-schema";
 import { useRouter } from "next/navigation";
@@ -40,7 +42,7 @@ const getAccessToken = (result: TokenResponse) =>
 export const useSignup = () => {
   const mutate = useMutation({
     mutationFn: (data: SignupFormData) =>
-      signup(data.email, data.password, data.referralCode || ""),
+      signup(buildSignupPayload(data, window.location.origin)),
     onSuccess: (result) => {
       toast.success(apiMessage(result, "Account created"));
     },

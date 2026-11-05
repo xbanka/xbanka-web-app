@@ -76,7 +76,7 @@ function Step3({ setStep }: Step3Props) {
     mutate(formData, {
       onSuccess: () => {
         reset();
-        setStep(3);
+        setStep(2);
         setAttachments([]);
       },
     });
@@ -90,7 +90,7 @@ function Step3({ setStep }: Step3Props) {
     skipMutate(userId, {
       onSuccess: () => {
         reset();
-        setStep(3);
+        setStep(2);
       },
     });
   };
@@ -157,7 +157,7 @@ function Step3({ setStep }: Step3Props) {
           <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
             <Button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => setStep(0)}
               variant="outline"
               size="lg"
               className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"

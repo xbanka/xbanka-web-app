@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Step1 from "./step-one";
 import Step2 from "./step-two";
 import Step3 from "./step-three";
 import Step4 from "./step-four";
@@ -8,7 +7,6 @@ import Step5 from "./step-five";
 import { Card } from "../../ui/FormCard";
 
 const STEPS = [
-  { label: "Basic Information" },
   { label: "BVN Verification" },
   { label: "Identity Verification" },
   { label: "Selfie Verification" },
@@ -18,11 +16,12 @@ const STEPS = [
 export default function OnboardingForm() {
   const [step, setStep] = useState(0);
 
-  const TOTAL = 4;
+  // Personal details are collected at sign-up, so KYC starts at BVN.
+  const TOTAL = STEPS.length;
   const progress = ((step + 1) / TOTAL) * 100;
 
   // const StepComponents = [Step1, Step2, Step3, Step4, Step5];
-  const StepComponents = [Step1, Step2, Step3, Step4];
+  const StepComponents = [Step2, Step3, Step4];
   const StepComp = StepComponents[step];
 
   return (
