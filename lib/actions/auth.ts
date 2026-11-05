@@ -1,20 +1,15 @@
 import { redirect } from "next/dist/server/api-utils";
 import AxiosInstance from "../AxiosInstance/AxiosInstance";
-import { VerifyDeviceData, VerifyTwoFactorData } from "../types/auth-types";
+import {
+  SignupPayload,
+  VerifyDeviceData,
+  VerifyTwoFactorData,
+} from "../types/auth-types";
 
 const baseUrl = process.env.NEXT_PUBLIC_REDIRECT_BASE_URL + "/";
 
-export const signup = async (
-  email: string,
-  password: string,
-  referralCode: string,
-) => {
-  const response = await AxiosInstance.post("/auth/signup", {
-    email,
-    password,
-    referralCode,
-    redirectUrl: `${window.location.origin}/verify-email`,
-  });
+export const signup = async (payload: SignupPayload) => {
+  const response = await AxiosInstance.post("/auth/signup", payload);
   return {
     success: true,
     data: response.data,
