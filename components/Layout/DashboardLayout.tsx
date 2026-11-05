@@ -6,6 +6,7 @@ import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { useUserProfile } from "@/lib/services/onboarding.service";
 import { useDepositAlerts } from "@/hooks/use-deposit-alerts";
+import { useLiveWalletBalances } from "@/hooks/use-live-wallet-balances";
 import { SplashGate } from "./splash-gate";
 import { ProductTour } from "./product-tour";
 import { SettingsEffects } from "./settings-effects";
@@ -16,6 +17,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   useDepositAlerts();
+  // Fiat and crypto balances update the moment money lands, no refresh.
+  useLiveWalletBalances();
 
  
   return (

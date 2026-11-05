@@ -33,6 +33,13 @@ export const getAllWalletBalances = async () => {
   };
 };
 
+/** One-time ticket for GET /wallets/stream (see lib/walletStream.ts). */
+export const getWalletStreamTicket = async (): Promise<string> => {
+  const response = await AxiosInstance.post("/wallets/stream/ticket");
+
+  return response.data.data.ticket;
+};
+
 export const getSingleWalletBalance = async (walletId: string) => {
   const response = await AxiosInstance.get(`/wallets/${walletId}`);
 
