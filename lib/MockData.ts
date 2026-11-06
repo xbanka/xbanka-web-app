@@ -1,4 +1,4 @@
-import { AppleIcon, BarChart2, Bell, Bitcoin, CalendarDays, Repeat } from "lucide-react";
+import { AppleIcon, Bitcoin } from "lucide-react";
 import { NotifGroup, Tab } from "./types/notification-types";
 
 // export const MARKET = [
@@ -207,33 +207,6 @@ export const RECENT_TRANSACTIONS = [
   { billerId: "dstv", name: "DStv Compact", number: "7023 456 789", time: "Today, 11:05 AM", amount: "₦19,000.00", status: "Completed" },
   { billerId: "ikedc", name: "IKEDC Prepaid", number: "4512 0098 331", time: "Yesterday, 6:42 PM", amount: "₦10,000.00", status: "Completed" },
   { billerId: "airtel", name: "Airtel Data", number: "080 223 45678", time: "Yesterday, 9:15 AM", amount: "₦2,500.00", status: "Pending" },
-];
-
-export const QUICK_ACTIONS = [
-  {
-    label: "Repeat Last Payment",
-    sub: "MTN Airtime - ₦1,500",
-    icon: Repeat,
-    color: "bg-Green/15 text-Green",
-  },
-  {
-    label: "Schedule Payment",
-    sub: "Set up recurring bills",
-    icon: CalendarDays,
-    color: "bg-green-500 text-white",
-  },
-  {
-    label: "Set Reminders",
-    sub: "Set reminders before due dates",
-    icon: Bell,
-    color: "bg-violet-500 text-white",
-  },
-  {
-    label: "View Analytics",
-    sub: "View spending patterns",
-    icon: BarChart2,
-    color: "bg-pink-500 text-white",
-  },
 ];
 
 export const P2P_LISTINGS = Array(7).fill(null).map((_, i) => ({
