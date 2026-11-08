@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Copy, MessageCircle, MoveLeft } from "lucide-react";
+import {
+  ChevronDown,
+  Copy,
+  Fingerprint,
+  Globe,
+  Mail,
+  MapPin,
+  MessageCircle,
+  MoveLeft,
+  type LucideIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { UseProfileUser } from "@/lib/services/profile.service";
@@ -12,6 +22,15 @@ import {
   whatsAppLink,
   type SupportTopic,
 } from "@/lib/supportWhatsApp";
+import {
+  INFO_EMAIL,
+  OFFICE_ADDRESS,
+  SUPPORT_EMAIL,
+  WEBSITE_LABEL,
+  WEBSITE_URL,
+  formatPhoneNumber,
+  mailtoLink,
+} from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 
 const QUICK_ANSWERS: { q: string; a: string }[] = [
@@ -67,8 +86,8 @@ export default function HelpPage() {
           Help &amp; Support
         </h1>
         <p className="text-sm text-text">
-          Tell us what’s wrong and finish on WhatsApp. The support team replies
-          in the same chat.
+          Tell us what’s wrong and finish on WhatsApp, or reach us by email. The
+          support team replies in the same chat.
         </p>
       </div>
 
@@ -211,24 +230,141 @@ export default function HelpPage() {
           )}
         </DashboardCard>
 
-        <DashboardCard className="w-full lg:w-80 shrink-0 p-5 space-y-1">
-          <h2 className="text-base font-medium text-card-text pb-1">
-            Quick answers
-          </h2>
-          {QUICK_ANSWERS.map(({ q, a }) => (
-            <details
-              key={q}
-              className="group border-b border-border last:border-0 py-3"
-            >
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-3 text-sm font-medium text-card-text [&::-webkit-details-marker]:hidden">
-                {q}
-                <ChevronDown className="mt-0.5 w-4 h-4 shrink-0 text-text transition-transform group-open:rotate-180" />
-              </summary>
-              <p className="mt-2 text-[13px] leading-5 text-text">{a}</p>
-            </details>
-          ))}
-        </DashboardCard>
+        <div className="w-full lg:w-80 shrink-0 space-y-5">
+          <ContactCard number={number} uid={uid} />
+          <DashboardCard className="p-5 space-y-1">
+            <h2 className="text-base font-medium text-card-text pb-1">
+              Quick answers
+            </h2>
+            {QUICK_ANSWERS.map(({ q, a }) => (
+              <details
+                key={q}
+                className="group border-b border-border last:border-0 py-3"
+              >
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-3 text-sm font-medium text-card-text [&::-webkit-details-marker]:hidden">
+                  {q}
+                  <ChevronDown className="mt-0.5 w-4 h-4 shrink-0 text-text transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="mt-2 text-[13px] leading-5 text-text">{a}</p>
+              </details>
+            ))}
+          </DashboardCard>
+        </div>
       </div>
+    </div>
+  );
+}
+
+const copyText = async (value: string, what: string) => {
+  try {
+    await navigator.clipboard.writeText(value);
+    toast.success(`${what} copied`);
+  } catch {
+    toast.error(`Couldn’t copy. Select the ${what.toLowerCase()} and copy it instead.`);
+  }
+};
+
+/** Every way to reach Xbanka, plus the UID support asks for. */
+function ContactCard({ number, uid }: { number: string | null; uid?: string }) {
+  const emailBody = uid ? `\n\n\nUID: ${uid}` : undefined;
+
+  return (
+    <DashboardCard className="p-5 space-y-3">
+      <h2 className="text-base font-medium text-card-text">Contact us</h2>
+      <div className="divide-y divide-border rounded-xl border border-border bg-input-background">
+        {number && (
+          <ContactRow
+            icon={MessageCircle}
+            label="WhatsApp"
+            value={formatPhoneNumber(number)}
+            href={whatsAppLink(number, uid ? `Hi Xbanka\n\nUID: ${uid}` : "Hi Xbanka")}
+            external
+            onCopy={() => copyText(`+${number}`, "Number")}
+          />
+        )}
+        <ContactRow
+          icon={Mail}
+          label="Customer support"
+          value={SUPPORT_EMAIL}
+          href={mailtoLink(SUPPORT_EMAIL, { subject: "Xbanka support request", body: emailBody })}
+          onCopy={() => copyText(SUPPORT_EMAIL, "Email")}
+        />
+        <ContactRow
+          icon={Mail}
+          label="General enquiries"
+          value={INFO_EMAIL}
+          href={mailtoLink(INFO_EMAIL)}
+          onCopy={() => copyText(INFO_EMAIL, "Email")}
+        />
+        <ContactRow
+          icon={Globe}
+          label="Website"
+          value={WEBSITE_LABEL}
+          href={WEBSITE_URL}
+          external
+        />
+        <ContactRow icon={MapPin} label="Office" value={OFFICE_ADDRESS} />
+        {uid && (
+          <ContactRow
+            icon={Fingerprint}
+            label="Your UID"
+            value={uid}
+            hint="Share it with support so we can find your account."
+            onCopy={() => copyText(uid, "UID")}
+          />
+        )}
+      </div>
+    </DashboardCard>
+  );
+}
+
+function ContactRow({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  href,
+  external,
+  onCopy,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  hint?: string;
+  href?: string;
+  external?: boolean;
+  onCopy?: () => void;
+}) {
+  return (
+    <div className="flex items-start gap-3 px-4 py-3">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-Green" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium tracking-wide text-text uppercase">
+          {label}
+        </p>
+        {href ? (
+          <a
+            href={href}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="text-sm leading-6 break-words text-Green hover:underline"
+          >
+            {value}
+          </a>
+        ) : (
+          <p className="text-sm leading-6 break-words text-card-text">{value}</p>
+        )}
+        {hint && <p className="text-xs leading-5 text-text">{hint}</p>}
+      </div>
+      {onCopy && (
+        <button
+          type="button"
+          onClick={onCopy}
+          aria-label={`Copy ${label.toLowerCase()}`}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-text hover:bg-border hover:text-card-text transition-colors"
+        >
+          <Copy className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
