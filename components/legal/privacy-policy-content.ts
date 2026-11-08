@@ -1,3 +1,11 @@
+import {
+  INFO_EMAIL,
+  OFFICE_ADDRESS,
+  SUPPORT_EMAIL,
+  WEBSITE_LABEL,
+  WEBSITE_URL,
+} from "@/lib/supportContacts";
+
 /**
  * The Privacy Policy, kept as structured data rather than JSX so the modal can
  * build its table of contents, deep links and section tracking from the same
@@ -533,21 +541,21 @@ export const PRIVACY_POLICY_SECTIONS: Section[] = [
 export const PRIVACY_POLICY_CONTACTS = [
   {
     label: "Data Protection Officer",
-    value: "info@xbankang.com",
-    href: "mailto:info@xbankang.com",
+    value: INFO_EMAIL,
+    href: `mailto:${INFO_EMAIL}`,
   },
   {
     label: "Customer Support",
-    value: "support@xbankang.com",
-    href: "mailto:support@xbankang.com",
+    value: SUPPORT_EMAIL,
+    href: `mailto:${SUPPORT_EMAIL}`,
   },
   {
     label: "Website",
-    value: "www.xbankang.com",
-    href: "https://www.xbankang.com",
+    value: WEBSITE_LABEL,
+    href: WEBSITE_URL,
   },
   {
     label: "Registered Office",
-    value: "25 Maya Street, Yaba, Lagos, Nigeria",
+    value: OFFICE_ADDRESS,
   },
 ];

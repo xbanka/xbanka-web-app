@@ -3,6 +3,7 @@
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/button";
+import { INFO_EMAIL } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ExternalLink, Mail, MapPin, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -221,10 +222,10 @@ export function PrivacyPolicyModal({ onClose }: { onClose: () => void }) {
         <p className="text-xs leading-5 text-text max-sm:hidden">
           Questions? Email{" "}
           <a
-            href="mailto:info@xbankang.com"
+            href={`mailto:${INFO_EMAIL}`}
             className="text-Green hover:underline"
           >
-            info@xbankang.com
+            {INFO_EMAIL}
           </a>
         </p>
         <Button onClick={onClose} className="px-6 max-sm:h-12 max-sm:w-full">
