@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { driver, type Driver, type PopoverDOM } from "driver.js";
 import "driver.js/dist/driver.css";
 import { UseProfileUser } from "@/lib/services/profile.service";
-import { hasSeenTour, markTourSeen } from "@/lib/productTour";
+import { hasSeenTour, isNewAccount, markTourSeen } from "@/lib/productTour";
 import { tourIconSvg, type TourIconName } from "@/lib/tour-icons";
 import { tourForPath } from "@/lib/tours";
 import { useProductTourStore } from "@/store/product-tour.store";
@@ -19,8 +19,9 @@ const START_DELAY_MS = 700;
 const DESKTOP_QUERY = "(min-width: 768px)";
 
 /**
- * Runs the tour for whichever section is open, the first time a user opens
- * it (see `lib/tours.ts`). Mounted once in the dashboard layout; renders
+ * Runs the tour for whichever section is open, the first time a new user
+ * (account under NEW_ACCOUNT_DAYS old) opens it (see `lib/tours.ts`).
+ * Mounted once in the dashboard layout; renders
  * nothing. It waits for the splash to lift and for the profile, whose id
  * scopes the once-only flag. "Take a tour" in the profile menu replays the
  * current section's tour.
@@ -32,11 +33,12 @@ export function ProductTour() {
   const clearRequest = useProductTourStore((state) => state.clear);
   const { data: profileData } = UseProfileUser();
   const userId: string | undefined = profileData?.data?.userId;
+  const newAccount = isNewAccount(profileData?.data?.createdAt);
 
   useEffect(() => {
     const tour = tourForPath(pathname);
     if (!tour || !splashDone || !userId) return;
-    if (!requested && hasSeenTour(userId, tour.id)) return;
+    if (!requested && (!newAccount || hasSeenTour(userId, tour.id))) return;
 
     let instance: Driver | undefined;
 
@@ -118,7 +120,7 @@ export function ProductTour() {
       window.clearTimeout(timer);
       if (instance?.isActive()) instance.destroy();
     };
-  }, [pathname, splashDone, userId, requested, clearRequest]);
+  }, [pathname, splashDone, userId, newAccount, requested, clearRequest]);
 
   return null;
 }
