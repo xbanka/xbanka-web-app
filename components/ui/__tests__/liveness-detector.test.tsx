@@ -87,11 +87,11 @@ describe("LivenessDetector", () => {
     expect(verifySelfie).not.toHaveBeenCalled();
   });
 
-  it("sends the selfie exactly once when the user clicks Next", async () => {
+  it("sends the selfie exactly once when the user clicks Submit selfie", async () => {
     render(<LivenessDetector userId="u1" sessionId="s1" onSuccess={vi.fn()} />);
     await takePhoto();
 
-    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Submit selfie"));
 
     expect(verifySelfie).toHaveBeenCalledTimes(1);
     const form = verifySelfie.mock.calls[0][0] as FormData;

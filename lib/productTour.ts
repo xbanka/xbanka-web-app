@@ -16,6 +16,26 @@ const STORAGE_KEY = "xbanka:product-tour";
 
 export const TOUR_VERSION = 1;
 
+/**
+ * The tours start on their own only for accounts younger than this. The
+ * localStorage flag cannot tell an existing user on a new browser (or one
+ * who logged in before the tours shipped) from a new one, but the account's
+ * age can. Anyone can still replay a tour from "Take a tour".
+ */
+export const NEW_ACCOUNT_DAYS = 7;
+
+export const isNewAccount = (
+  createdAt: string | undefined,
+  now: Date = new Date(),
+): boolean => {
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  // An unparseable date is treated as an existing account: better to miss a
+  // tour than to show it to everyone.
+  if (Number.isNaN(created)) return false;
+  return now.getTime() - created < NEW_ACCOUNT_DAYS * 24 * 60 * 60 * 1000;
+};
+
 export const tourStorageKey = (userId: string, tourId: string) =>
   `${STORAGE_KEY}:v${TOUR_VERSION}:${userId}:${tourId}`;
 
