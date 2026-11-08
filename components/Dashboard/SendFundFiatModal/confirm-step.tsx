@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { BankLogo } from "@/components/ui/bank-logo";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 
 export function ConfirmStep({
   amount,
@@ -120,13 +120,6 @@ export function ConfirmStep({
               ₦{total}
             </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 text-xs text-text">
-          <AlertTriangle className="w-4 h-4 text-Green shrink-0" />
-          <span className="font-normal leading-4.6 max-sm:text-[11px]">
-            Funds will be debited directly from your selected bank account.
-          </span>
         </div>
       </div>
 

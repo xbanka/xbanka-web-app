@@ -53,7 +53,7 @@ function Step4({ setStep }: Step4Props) {
           <Button
             variant="outline"
             className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
-            onClick={() => setStep(2)}
+            onClick={() => setStep(1)}
           >
             Back
           </Button>
@@ -99,7 +99,7 @@ function Step4({ setStep }: Step4Props) {
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
           userId={userId}
-          onBack={() => setStep(2)}
+          onBack={() => setStep(1)}
           onSuccess={() => router.push("/welcome")}
           brandColor="#36b6ab"
         />

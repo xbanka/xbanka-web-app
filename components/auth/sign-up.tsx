@@ -4,7 +4,9 @@ import { Card } from "../ui/FormCard";
 import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
-import { Lock, Mail } from "lucide-react";
+import { Calendar, Globe, Lock, Mail, Phone, User } from "lucide-react";
+import { SelectField } from "../ui/select";
+import { countryOptions } from "@/lib/countries";
 import { SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
@@ -20,6 +22,12 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import MailPic  from "../../public/mail.svg";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
+
+const mobileFieldClass =
+  "[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5";
+
+const mobileSelectClass =
+  "[&_select]:max-sm:h-14 [&_select]:max-sm:rounded-lg [&_select]:max-sm:pl-12 [&_select]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5";
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -39,6 +47,11 @@ const SignUp = () => {
       email: "",
       password: "",
       referral: "",
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      phoneNumber: "",
+      country: "",
     },
   });
 
@@ -111,7 +124,7 @@ const SignUp = () => {
   }
 
   return (
-    <Card className="space-y-6 max-sm:text-left">
+    <Card className="space-y-6 py-8 max-sm:text-left">
       <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
       <FormHeader
         className="max-sm:text-left"
@@ -162,6 +175,64 @@ const SignUp = () => {
               register={methods.register}
               error={methods.formState.errors?.password}
               className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
+            />
+            <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+              <FormField
+                id="firstName"
+                placeholder="First name"
+                icon={User}
+                register={methods.register}
+                error={methods.formState.errors.firstName}
+                className={mobileFieldClass}
+              />
+              <FormField
+                id="lastName"
+                placeholder="Last name"
+                icon={User}
+                register={methods.register}
+                error={methods.formState.errors.lastName}
+                className={mobileFieldClass}
+              />
+            </div>
+            <FormField
+              id="dateOfBirth"
+              placeholder="Date of Birth"
+              type="date"
+              icon={Calendar}
+              register={methods.register}
+              error={methods.formState.errors.dateOfBirth}
+              className={mobileFieldClass}
+            />
+            <FormField
+              id="phoneNumber"
+              placeholder="Phone number"
+              type="tel"
+              icon={Phone}
+              register={methods.register}
+              error={methods.formState.errors.phoneNumber}
+              className={mobileFieldClass}
+            />
+            <SelectField
+              id="gender"
+              placeholder="Gender"
+              icon={User}
+              options={[
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
+                { value: "other", label: "Other" },
+              ]}
+              register={methods.register}
+              error={methods.formState.errors.gender}
+              className={mobileSelectClass}
+            />
+            <SelectField
+              id="country"
+              placeholder="Country of Residence"
+              icon={Globe}
+              options={countryOptions}
+              register={methods.register}
+              error={methods.formState.errors.country}
+              className={mobileSelectClass}
             />
             <FormField
               id="referral"

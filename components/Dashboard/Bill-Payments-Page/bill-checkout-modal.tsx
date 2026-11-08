@@ -19,6 +19,8 @@ import { ModalHeader } from "@/components/ui/modal-header";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { ErrorLayout } from "@/components/ui/error-layout";
+import { LimitNotice } from "@/components/ui/limit-notice";
+import { useTransactionLimit } from "@/hooks/use-transaction-limit";
 import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 import { cn } from "@/lib/utils";
 import {
@@ -206,6 +208,10 @@ export function BillCheckoutModal({
             (product === "AIRTIME"
               ? Number(amount) >= MIN_AIRTIME
               : !!selectedPlan);
+  const { checkDaily } = useTransactionLimit();
+  const limitCheck = checkDaily(
+    hasPlans ? (selectedPlan?.amount ?? 0) : Number(amount) || 0,
+  );
 
   /** The code the API expects for this target, and the account just paid. */
   const targetCode =
@@ -349,7 +355,7 @@ export function BillCheckoutModal({
   }, [payloadKey, attemptedKey, verifies, step, initiate.isPending]);
 
   const handleContinue = () => {
-    if (!detailsOk || initiate.isPending) return;
+    if (!detailsOk || !limitCheck.allowed || initiate.isPending) return;
     setNotice("");
     // The verification above already priced these exact details.
     if (quoteIsCurrent) {
@@ -844,11 +850,12 @@ export function BillCheckoutModal({
               </div>
             )}
 
+            <LimitNotice check={limitCheck} />
             <ErrorLayout message={notice || initiate.error?.message} />
 
             <Button
               className="w-full max-sm:mt-auto"
-              disabled={!detailsOk || initiate.isPending}
+              disabled={!detailsOk || !limitCheck.allowed || initiate.isPending}
               onClick={handleContinue}
             >
               {initiate.isPending ? (

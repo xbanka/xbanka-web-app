@@ -51,6 +51,13 @@ const VerifyPage = ({ token }: { token?: string }) => {
             Start KYC
           </Button>
         </Link>
+        {/* Verifying does not sign the user in, so postponing goes to login. */}
+        <Link
+          href="/sign-in"
+          className="mx-auto mt-4 block w-fit text-[14px] font-medium leading-5.5 tracking-[-0.02em] text-Green"
+        >
+          I’ll do this later
+        </Link>
       </Card>
     );
   }

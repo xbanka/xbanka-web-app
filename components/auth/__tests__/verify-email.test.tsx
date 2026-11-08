@@ -19,14 +19,15 @@ vi.mock("@/lib/services/auth.service", () => ({
 afterEach(cleanup);
 
 describe("VerifyPage after successful verification", () => {
-  it("only offers Start KYC, linking to onboarding", () => {
+  it("Start KYC links to onboarding, which opens on BVN", () => {
     render(<VerifyPage token="abc" />);
     expect(screen.getByRole("link", { name: "Start KYC" }).getAttribute("href")).toBe("/onboarding");
   });
 
-  it("does not let the user postpone KYC", () => {
+  // Verifying does not sign the user in, so postponing must go to login,
+  // not a protected page.
+  it("lets the user postpone KYC by going to sign-in", () => {
     render(<VerifyPage token="abc" />);
-    expect(screen.queryByText(/do this later/i)).toBeNull();
-    expect(document.querySelector('a[href="/welcome"]')).toBeNull();
+    expect(screen.getByRole("link", { name: "I’ll do this later" }).getAttribute("href")).toBe("/sign-in");
   });
 });

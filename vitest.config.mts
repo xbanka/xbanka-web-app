@@ -14,7 +14,8 @@ export default defineConfig({
     // `// @vitest-environment happy-dom` comment at the top of the file.
     environment: "node",
     include: ["**/__tests__/**/*.test.{ts,tsx}"],
-    exclude: ["node_modules/**", ".next/**"],
+    // lib/pwa tests use node:test (npm run test:pwa), not vitest.
+    exclude: ["node_modules/**", ".next/**", "lib/pwa/__tests__/**"],
     setupFiles: ["./vitest.setup.ts"],
     restoreMocks: true,
   },

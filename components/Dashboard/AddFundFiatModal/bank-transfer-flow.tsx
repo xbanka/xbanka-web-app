@@ -23,6 +23,8 @@ import { FundingAccount } from "@/lib/types/wallet-types";
 import { maskAccountNumber as maskAccount } from "@/lib/mask";
 import { UseProfileUser } from "@/lib/services/profile.service";
 import { accountNameMatchesProfile } from "@/lib/accountNameMatch";
+import { useTransactionLimit } from "@/hooks/use-transaction-limit";
+import { LimitNotice } from "@/components/ui/limit-notice";
 
 const fundingAccountSchema = z.object({
   bankCode: z.string().min(1, "Please select a bank"),
@@ -123,7 +125,11 @@ function EnterAmountStep({
   onContinue: () => void;
 }) {
   const numeric = parseFloat(amount.replace(/,/g, "")) || 0;
-  const isValid = numeric >= 1000;
+  // Tier balance cap (KYC architecture v4.0 s.9): block a deposit that would
+  // take the wallet above the tier limit before the user declares it.
+  const { checkDeposit } = useTransactionLimit();
+  const capCheck = checkDeposit(numeric);
+  const isValid = numeric >= 1000 && capCheck.allowed;
   const hasFundingAccount = fundingAccounts.length > 0;
 
   return (
@@ -162,6 +168,7 @@ function EnterAmountStep({
           <div className="flex items-center justify-between text-xs text-text">
             <span>Minimum transfer: ₦1,000</span>
           </div>
+          <LimitNotice check={capCheck} />
 
           {/* Quick amounts */}
           <div className="flex gap-2 overflow-x-auto pb-1 max-sm:-mx-1 max-sm:px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

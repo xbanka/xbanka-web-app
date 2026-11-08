@@ -44,7 +44,7 @@ function Step2({ setStep }: Step2Props) {
     verifyBvn(payload, {
       onSuccess: () => {
         reset();
-        setStep(2);
+        setStep(1);
       },
     });
   };
@@ -53,7 +53,7 @@ function Step2({ setStep }: Step2Props) {
     skipMutate(userId, {
       onSuccess: () => {
         reset();
-        setStep(2);
+        setStep(1);
       },
     });
   };
@@ -85,19 +85,10 @@ function Step2({ setStep }: Step2Props) {
           <ErrorField message={error?.message || skipError?.message} />
         </div>
         <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
-          <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
-            <Button
-              type="button"
-              onClick={() => setStep(0)}
-              variant="outline"
-              size="lg"
-              className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
-            >
-              Back
-            </Button>
+          <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:gap-3.5">
             <Button
               size="lg"
-              className="hidden flex-3 sm:inline-flex"
+              className="hidden flex-1 sm:inline-flex"
               disabled={!isValid || isPending}
               variant={isPending || !isValid ? "disabled" : "default"}
               type="submit"
