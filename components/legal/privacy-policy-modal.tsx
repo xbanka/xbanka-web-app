@@ -83,7 +83,9 @@ export function PrivacyPolicyModal({ onClose }: { onClose: () => void }) {
     <Modal
       onClose={onClose}
       className={cn(
-        "flex h-[86vh] max-h-[860px] w-full max-w-4xl flex-col overflow-hidden p-0",
+        // text-left: the link sits inside centred consent copy, and the
+        // modal renders in place, so it would otherwise inherit the centring.
+        "flex h-[86vh] max-h-[860px] w-full max-w-4xl flex-col overflow-hidden p-0 text-left",
         "max-sm:h-[94dvh] max-sm:max-h-[94dvh] max-sm:overflow-hidden",
       )}
     >
