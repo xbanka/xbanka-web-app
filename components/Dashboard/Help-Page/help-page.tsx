@@ -59,7 +59,7 @@ const QUICK_ANSWERS: { q: string; a: string }[] = [
  */
 export default function HelpPage() {
   const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.userId;
+  const uid: string | undefined = profileData?.data?.xbId;
   const number = supportWhatsAppNumber();
 
   const [topic, setTopic] = useState<SupportTopic>(SUPPORT_TOPICS[0]);

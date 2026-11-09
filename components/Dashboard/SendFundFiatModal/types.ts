@@ -40,7 +40,10 @@ export interface XbankaUserProfile {
   phoneNumber: string | null;
 }
 export interface XbankaUser {
+  /** The UUID. Sent as `targetUserId` on transfers; never shown to users. */
   id: string;
+  /** Short, readable ID ("xb-" + 5 characters) shown and searched in the UI. */
+  xbId: string;
   createdAt: string;
   profile: XbankaUserProfile | null;
   email: string;

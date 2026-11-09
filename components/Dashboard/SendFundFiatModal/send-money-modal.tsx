@@ -21,7 +21,6 @@ import { ConfirmXbankaUserStep } from "./confirm-step-xbanka-users";
 import { EnterPinXbankaStep } from "./enter-pin-xbanka-users";
 import { ProcessingXbankaStep } from "./processing-xbanka-users-step";
 import { formatTransactionDate } from "@/lib/formatDate";
-import { truncateMiddle } from "@/lib/truncate";
 import {
   NombaInitiateResponse,
   NombaWithdrawal,
@@ -263,14 +262,11 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
               "0"
             }
             name={recipient?.accountName || xbankaRecipient?.name || ""}
-            // Xbanka-user transfers have no bank; show their UID rather than
-            // the internal record id, which rendered as a raw UUID. Shortened
-            // from the middle — the full id overran the receipt's Bank row.
+            // Xbanka-user transfers have no bank; show their XBanka ID rather
+            // than the internal record id (a raw UUID).
             bank={
               recipient?.bankName ||
-              (xbankaRecipient?.uid
-                ? `Xbanka · ${truncateMiddle(xbankaRecipient.uid)}`
-                : "")
+              (xbankaRecipient?.uid ? `Xbanka · ${xbankaRecipient.uid}` : "")
             }
             fee={"₦0.00"}
             date={formatTransactionDate(new Date())}

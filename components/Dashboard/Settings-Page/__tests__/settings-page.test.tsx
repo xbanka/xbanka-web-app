@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(`tab=${nav.tab}`),
 }));
 vi.mock("@/lib/services/profile.service", () => ({
-  UseProfileUser: () => ({ data: { data: { userId: "465f97b6" } } }),
+  UseProfileUser: () => ({ data: { data: { userId: "465f97b6-0000-4000-8000-000000000000", xbId: "xb-k7m2p" } } }),
 }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn() } }));
 
