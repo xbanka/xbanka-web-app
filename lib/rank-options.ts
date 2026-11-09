@@ -35,6 +35,39 @@ const isSubsequence = (query: string, text: string) => {
   return false;
 };
 
+/** Edit distance, capped: returns `max + 1` as soon as it is exceeded. */
+const editDistance = (a: string, b: string, max: number) => {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i];
+    let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + cost);
+      rowMin = Math.min(rowMin, row[j]);
+    }
+    if (rowMin > max) return max + 1;
+    prev = row;
+  }
+  return prev[b.length];
+};
+
+/** Typos allowed for a query word: none for short words (too many false
+ *  hits), one from four letters, two from seven. */
+const typoBudget = (length: number) => (length >= 7 ? 2 : length >= 4 ? 1 : 0);
+
+/** True when `queryWord` is a misspelling of `word` or of its start —
+ *  "guarantee" → Guaranty, "acess" → Access, "zenit" → Zenith. */
+const isNearWord = (queryWord: string, word: string) => {
+  const budget = typoBudget(queryWord.length);
+  if (budget === 0) return word.startsWith(queryWord);
+  return (
+    editDistance(queryWord, word, budget) <= budget ||
+    editDistance(queryWord, word.slice(0, queryWord.length), budget) <= budget
+  );
+};
+
 /** 0 means "no match"; higher is a better match. */
 export const scoreOption = (label: string, rawQuery: string): number => {
   const query = normalise(rawQuery);
@@ -54,6 +87,9 @@ export const scoreOption = (label: string, rawQuery: string): number => {
   if (initials.includes(query)) return 50;
   if (query.length >= 2 && isSubsequence(query, haystack.replace(/ /g, "")))
     return 30;
+  const queryWords = query.split(" ");
+  if (queryWords.every((qw) => words.some((word) => isNearWord(qw, word))))
+    return 20;
   return 0;
 };
 

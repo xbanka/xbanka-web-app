@@ -3,6 +3,7 @@
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/button";
+import { INFO_EMAIL } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ExternalLink, Mail, MapPin, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -83,7 +84,9 @@ export function PrivacyPolicyModal({ onClose }: { onClose: () => void }) {
     <Modal
       onClose={onClose}
       className={cn(
-        "flex h-[86vh] max-h-[860px] w-full max-w-4xl flex-col overflow-hidden p-0",
+        // text-left: the link sits inside centred consent copy, and the
+        // modal renders in place, so it would otherwise inherit the centring.
+        "flex h-[86vh] max-h-[860px] w-full max-w-4xl flex-col overflow-hidden p-0 text-left",
         "max-sm:h-[94dvh] max-sm:max-h-[94dvh] max-sm:overflow-hidden",
       )}
     >
@@ -219,10 +222,10 @@ export function PrivacyPolicyModal({ onClose }: { onClose: () => void }) {
         <p className="text-xs leading-5 text-text max-sm:hidden">
           Questions? Email{" "}
           <a
-            href="mailto:info@xbankang.com"
+            href={`mailto:${INFO_EMAIL}`}
             className="text-Green hover:underline"
           >
-            info@xbankang.com
+            {INFO_EMAIL}
           </a>
         </p>
         <Button onClick={onClose} className="px-6 max-sm:h-12 max-sm:w-full">

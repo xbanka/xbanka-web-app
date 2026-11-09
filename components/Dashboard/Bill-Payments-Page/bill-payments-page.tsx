@@ -1,10 +1,8 @@
 "use client";
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/MockData";
-import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
 import { ErrorLayout } from "@/components/ui/error-layout";
 import { cn } from "@/lib/utils";
@@ -41,6 +39,7 @@ import {
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
 import { FavouriteBill, useFavouriteBills } from "./use-favourite-bills";
+import { RecentBillPayments, type RecentBillRow } from "./recent-bill-payments";
 
 const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
   electricity: "Choose your electricity provider",
@@ -72,7 +71,7 @@ const STATUS_LABELS: Record<BillPayment["status"], string> = {
 
 /** A row in the recent list: a payment made this session (carries `payment`)
  *  or one from the user's transaction history (carries `historyTx`). */
-type RecentRow = BillTransaction & { historyTx?: TransactionTypes };
+type RecentRow = RecentBillRow;
 
 export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
@@ -136,7 +135,7 @@ export default function BillPaymentsPage() {
   const recentRows: RecentRow[] = [
     ...transactions,
     ...historyRows.filter((r) => !sessionRefs.has(r.reference)),
-  ].slice(0, 4);
+  ];
 
   const query = search.trim().toLowerCase();
 
@@ -642,78 +641,12 @@ export default function BillPaymentsPage() {
 
       {/* Recent Transactions — hidden while searching, so the results own the page */}
       {!query && (
-        <div
-          data-tour="bills-recent"
-          className="bg-card-background border border-border rounded-2xl p-5"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-card-text text-sm">
-              Recent Transaction
-            </h3>
-            <Link
-              href="/wallet?tab=fiat&type=BILL_PAYMENT"
-              className="text-xs text-Green flex items-center gap-1 hover:underline"
-            >
-              See all <ArrowUpRight className="w-3 h-3" />
-            </Link>
-          </div>
-          {history.isPending && recentRows.length === 0 ? (
-            <div className="space-y-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-13 rounded-lg bg-border/40 animate-pulse"
-                />
-              ))}
-            </div>
-          ) : recentRows.length === 0 ? (
-            <p className="py-8 text-center text-sm text-text">
-              {history.isError
-                ? "We couldn't load your recent transactions."
-                : "No bill payments yet — your purchases will show up here."}
-            </p>
-          ) : (
-            <div className="space-y-3 stagger">
-              {recentRows.map((tx, i) => {
-                // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids,
-                // and rows built before a biller was known carry no id at
-                // all — fall back to the description ("ikeja prepaid…").
-                const biller =
-                  findBiller(tx.billerId) ??
-                  discoBiller(tx.billerId) ??
-                  billerFromText(tx.name);
-                return (
-                  <div
-                    key={tx.reference ?? i}
-                    onClick={() => openReceipt(tx)}
-                    className="flex items-center gap-3 py-2 border-b border-border last:border-0 transition-colors rounded-lg px-1 hover:bg-border/20 cursor-pointer"
-                  >
-                    <BillerLogo
-                      logo={biller?.logo}
-                      name={biller?.name ?? tx.name}
-                      fallbackColor={biller?.fallbackColor}
-                      size={36}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-card-text truncate">
-                        {tx.name}
-                      </p>
-                      <p className="text-xs text-text truncate">
-                        {tx.number} • {tx.time}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm font-semibold text-card-text">
-                        {tx.amount}
-                      </p>
-                      <StatusBadge status={tx.status} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <RecentBillPayments
+          rows={recentRows}
+          isPending={history.isPending}
+          isError={history.isError}
+          onOpen={openReceipt}
+        />
       )}
 
       {checkout && (

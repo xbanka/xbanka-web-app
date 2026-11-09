@@ -32,9 +32,18 @@ export const SearchSelectField = ({
 
   // Ranked rather than merely filtered, so typing "gt" surfaces Guaranty
   // Trust ahead of the other banks that happen to share those letters.
+  //
+  // The live bank list repeats some entries (same code twice). Rows are keyed
+  // by value, so duplicates must go first — with clashing keys React reuses
+  // stale rows while filtering and the list stops matching the search.
+  const uniqueOptions = useMemo(() => {
+    const seen = new Set<string>();
+    return options.filter((o) => !seen.has(o.value) && !!seen.add(o.value));
+  }, [options]);
+
   const filteredOptions = useMemo(
-    () => rankOptions(options, search),
-    [options, search],
+    () => rankOptions(uniqueOptions, search),
+    [uniqueOptions, search],
   );
 
   useEffect(() => {
@@ -102,6 +111,7 @@ export const SearchSelectField = ({
           <div className="absolute z-50 mt-1 w-full rounded-lg border border-input bg-input-background shadow-md">
             <div className="p-2">
               <Input
+                autoFocus
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
