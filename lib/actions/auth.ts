@@ -106,7 +106,9 @@ export const verifyTwoFactor = async (data: VerifyTwoFactorData) => {
     "/auth/2fa/login",
     {
       userId: data.userId,
-      code: data.code,
+      // Backend reads the TOTP code as `token` (same as /security/2fa/*).
+      // Sending `code` makes it reject every login with 401 "Invalid 2FA token".
+      token: data.code,
     },
     { withCredentials: true },
   );
