@@ -321,7 +321,7 @@ function PrivacyTab() {
   const settings = useSettings();
   const setHidden = useBalanceVisibilityStore((s) => s.setHidden);
   const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.userId;
+  const uid: string | undefined = profileData?.data?.xbId;
   const number = supportWhatsAppNumber();
   const closeLink = number
     ? whatsAppLink(

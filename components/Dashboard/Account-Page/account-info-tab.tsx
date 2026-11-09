@@ -11,7 +11,6 @@ import {
   useUpdateAvatar,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
-import { shortenUid } from "@/lib/shortenuid";
 import { UseGetFundingAccounts } from "@/lib/services/wallet.service";
 import { FundingAccount } from "@/lib/types/wallet-types";
 import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/bank-transfer-flow";
@@ -138,7 +137,7 @@ export function AccountInfoTab() {
   const handleEditModal = () => setEditProfileModal(true);
 
   const handleCopyUid = () => {
-    navigator.clipboard?.writeText(String(profileData?.data?.userId ?? ""));
+    navigator.clipboard?.writeText(String(profileData?.data?.xbId ?? ""));
     setUidCopied(true);
     setTimeout(() => setUidCopied(false), 1500);
   };
@@ -206,7 +205,7 @@ export function AccountInfoTab() {
               <div className="flex items-center mt-1 gap-2">
                 <div className="flex items-center gap-1">
                   <p className="text-xs font-normal leading-5.5 text-text">
-                    UID: {shortenUid(profileData?.data?.userId)}
+                    ID: {profileData?.data?.xbId}
                   </p>
                   <button
                     onClick={handleCopyUid}

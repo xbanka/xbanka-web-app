@@ -278,7 +278,7 @@ export const TOURS: Record<TourId, Tour> = {
         icon: "nav-account",
         title: "Profile",
         description:
-          "Update your photo and personal details. Your UID is what other Xbanka users send money to.",
+          "Update your photo and personal details. Your XBanka ID is what other Xbanka users send money to.",
       }),
       stop({
         element: "[data-tour=account-funding]",

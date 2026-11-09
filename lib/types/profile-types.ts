@@ -1,5 +1,7 @@
 export interface UserProfileTypes {
   userId: string;
+  /** Short, readable ID ("xb-" + 5 characters) shown to users in place of the UUID. */
+  xbId: string;
   email: string;
   isEmailVerified: boolean;
   currentStep: string;

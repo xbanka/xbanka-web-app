@@ -13,7 +13,7 @@ import { UseGetActiveXbankaUsers } from "@/lib/services/send-fiat.service";
 import { xbankaUserName } from "@/lib/xbankaUserName";
 
 const recipientSchema = z.object({
-  address: z.string().min(4, "Enter a valid wallet address or XBanka UID"),
+  address: z.string().min(4, "Enter a valid wallet address or XBanka ID"),
 });
 type RecipientForm = z.infer<typeof recipientSchema>;
 
@@ -54,7 +54,7 @@ export function RecipientStep({
     if (!value) return false;
 
     return (
-      user.id?.toLowerCase()?.includes(value) ||
+      user.xbId?.toLowerCase()?.includes(value) ||
       // user.username?.toLowerCase()?.includes(value) ||
       user.profile?.firstName?.toLowerCase()?.includes(value) ||
       user.profile?.lastName?.toLowerCase()?.includes(value) ||
@@ -89,7 +89,7 @@ export function RecipientStep({
           <FormField
             label="Provide wallet address"
             id="address"
-            placeholder="Or paste wallet address / XBanka UID"
+            placeholder="Or paste wallet address / XBanka ID"
             register={register}
             error={errors.address}
           />
@@ -135,7 +135,7 @@ export function RecipientStep({
                       user: {
                         id: user.id,
                         name: xbankaUserName(user),
-                        uid: user.id,
+                        uid: user.xbId,
                       },
                       name: xbankaUserName(user),
                     })
@@ -150,7 +150,7 @@ export function RecipientStep({
                         {xbankaUserName(user)}
                       </p>
 
-                      <p className="text-xs text-text">{user.id}</p>
+                      <p className="text-xs text-text">{user.xbId}</p>
                     </div>
                   </div>
                 </button>

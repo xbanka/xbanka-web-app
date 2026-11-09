@@ -23,7 +23,7 @@ export function SelectRecipientStep({
     const value = search.toLowerCase();
 
     return (
-      user.id?.toLowerCase().includes(value) ||
+      user.xbId?.toLowerCase().includes(value) ||
       // user.username?.toLowerCase().includes(value) ||
       user.profile?.firstName?.toLowerCase().includes(value) ||
       user.profile?.lastName?.toLowerCase().includes(value) ||
@@ -37,7 +37,7 @@ export function SelectRecipientStep({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-placeholder" />
           <Input
-            placeholder="Search by name or UID"
+            placeholder="Search by name or XBanka ID"
             className="pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -52,7 +52,7 @@ export function SelectRecipientStep({
                   onSelectXbanka({
                     id: user.id,
                     name: xbankaUserName(user),
-                    uid: user.id,
+                    uid: user.xbId,
                   })
                 }
                 className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-background transition-colors group"
@@ -65,7 +65,7 @@ export function SelectRecipientStep({
                       {xbankaUserName(user)}
                     </p>
 
-                    <p className="text-xs text-text">{user.id}</p>
+                    <p className="text-xs text-text">{user.xbId}</p>
                   </div>
                 </div>
               </button>
