@@ -18,10 +18,15 @@ import { Enable2faModal } from "./enable2fa-modal";
 import { RemoveDeviceModal } from "./remove-device-modal";
 import { RemoveSessionModal } from "./remove-session-modal";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { UseTrustedWallets } from "@/lib/services/trusted-wallets.service";
+import { useRouter } from "next/navigation";
+import { WHITELIST_HREF } from "../TrustedWallets/whitelist-shortcut";
 
 export function SecurityTab() {
   const hasPassword = true;
-  const whiteList = false;
+  const router = useRouter();
+  const { data: trustedWallets } = UseTrustedWallets();
+  const whiteList = (trustedWallets?.length ?? 0) > 0;
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const [openUpdatePin, setOpenUpdatePin] = useState(false);
   const [enable2faModal, setEnable2faModal] = useState(false);
@@ -326,9 +331,10 @@ export function SecurityTab() {
             {
               title: "Withdrawal Whitelist",
               desc: "When enabled, withdrawals to your trusted bank accounts or crypto addresses will bypass standard 2FA and email verification; however, if suspicious activity is detected, enhanced security checks may still apply.",
-              status: "Not configured",
-              action: "Configure",
+              status: whiteList ? "" : "Not configured",
+              action: whiteList ? "Manage" : "Configure",
               icon: Lock,
+              onClick: () => router.push(WHITELIST_HREF),
             },
             {
               title: "Manage Crypto Withdrawal Limits",
@@ -346,6 +352,7 @@ export function SecurityTab() {
                 // desc={item.desc}
                 key={i}
                 label={item.title}
+                onClick={"onClick" in item ? item.onClick : undefined}
               />
             );
           })}
