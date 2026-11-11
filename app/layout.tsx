@@ -11,6 +11,7 @@ import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 const GTM_ID = "GTM-K46973BF";
+const META_PIXEL_ID = "1447176090814875";
 
 // Geist, self-hosted (SIL OFL, see app/fonts/GEIST-LICENSE.txt). Balance
 // figures and page headings use it through the `font-display` utility; body
@@ -66,6 +67,22 @@ export default function RootLayout({
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`}
         />
+        {/* Meta Pixel. Later client-side route changes are picked up by the
+            pixel's own history tracking. */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${META_PIXEL_ID}');
+            fbq('track', 'PageView');
+          `}
+        </Script>
       </head>
       <body>
         <noscript>
@@ -74,6 +91,14 @@ export default function RootLayout({
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
           />
         </noscript>
         <QueryProvider>
