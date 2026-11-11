@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import QueryProvider from "@/lib/queryClientProvider.tsx/quertClientProvider";
 import { Providers } from "@/components/Layout/provider";
@@ -8,6 +9,8 @@ import { OnboardingModalProvider } from "@/components/Dashboard/PersonalInfoModa
 import { Toaster } from "sonner";
 import { GlobalNotificationsModal } from "@/components/Layout/GlobalNotification";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
+
+const GTM_ID = "GTM-K46973BF";
 
 // Geist, self-hosted (SIL OFL, see app/fonts/GEIST-LICENSE.txt). Balance
 // figures and page headings use it through the `font-display` utility; body
@@ -47,7 +50,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="light" className={geist.variable}>
+      <head>
+        {/* Google Tag Manager. The `gtm.js` event is what fires the
+            container's page-view triggers, so it is pushed before load. */}
+        <Script id="gtm-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+          `}
+        </Script>
+        <Script
+          id="gtm"
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`}
+        />
+      </head>
       <body>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <QueryProvider>
           <Providers>
             <script
