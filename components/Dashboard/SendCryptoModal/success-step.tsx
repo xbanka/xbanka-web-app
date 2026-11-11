@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/formatDate";
 import { formatTo12Hour } from "@/lib/formatTime";
 import { Confetti } from "@/components/ui/confetti";
 import { useCountUp } from "@/hooks/use-count-up";
+import { withdrawalStatusText } from "@/lib/trusted-wallets";
 
 export function SuccessStep({
   amount,
@@ -35,6 +36,8 @@ export function SuccessStep({
   const total = amountNum + TRANSACTION_FEE;
   const rate = asset?.fiatEquivalent?.rate ?? 0;
   const nairaTotal = (total * rate).toLocaleString();
+  // PENDING: Obiex accepted the payout but has not paid it yet.
+  const { done } = withdrawalStatusText(successDetails?.status);
 
   const copy = () => {
     navigator.clipboard.writeText(txHash).catch(() => {});
@@ -44,7 +47,7 @@ export function SuccessStep({
 
   return (
     <Modal className="pb-10 px-10 pt-6" onClose={onDone}>
-      <Confetti />
+      {done && <Confetti />}
       {/* Close button */}
       <div className="flex justify-end mb-2">
         <CloseBtn onClose={onDone} />
@@ -59,10 +62,12 @@ export function SuccessStep({
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold leading-8 text-card-text tabular-nums">
             {countedAmount.toLocaleString(undefined, { maximumFractionDigits: 8 })}{" "}
-            {asset?.currency} Sent Successfully
+            {asset?.currency} {done ? "Sent Successfully" : "Processing"}
           </h3>
           <p className="text-base font-normal leading-6 text-text">
-            Your wallet has been credited
+            {done
+              ? "Your crypto has been sent."
+              : "Your send is on its way. We'll notify you when it completes, and refund you if it fails."}
           </p>
         </div>
 
