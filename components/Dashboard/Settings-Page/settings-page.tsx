@@ -17,6 +17,8 @@ import {
 } from "@/lib/settings";
 import { UseSendSupportRequest } from "@/lib/services/support.service";
 import { previewChime } from "@/lib/transaction-sounds";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
+import type { PushStatus } from "@/lib/push/push-notifications";
 import { SUPPORT_EMAIL, mailtoLink } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { useBalanceVisibilityStore } from "@/store/balance-visibility.store";
@@ -264,11 +266,60 @@ function GeneralTab() {
   );
 }
 
+const PUSH_HINTS: Record<PushStatus, string> = {
+  on: "On for this device. You’ll get alerts even when Xbanka is closed.",
+  off: "Money in and out, bill payments and security alerts, even when Xbanka is closed.",
+  denied:
+    "Notifications are blocked for Xbanka. Allow them in your browser or phone settings, then come back here.",
+  "needs-install":
+    "On iPhone and iPad, add Xbanka to your Home Screen first (Share › Add to Home Screen), then open it from there.",
+  unsupported: "This browser can’t show notifications. Try Chrome, Edge or Safari.",
+  "not-configured": "Not available yet. We’re switching this on soon.",
+  unavailable: "Not available right now. Reload Xbanka and try again.",
+};
+
+function PushNotificationsSection() {
+  const push = usePushNotifications();
+  const canToggle = push.status === "on" || push.status === "off";
+
+  return (
+    <Section
+      title="Push notifications"
+      description="Alerts on this phone or computer, like any other app."
+    >
+      <Row
+        label="Notifications on this device"
+        inline
+        hint={push.status ? PUSH_HINTS[push.status] : "Checking this device…"}
+      >
+        {canToggle && (
+          <Switch
+            label="Notifications on this device"
+            checked={push.status === "on"}
+            disabled={push.busy}
+            onChange={async (on) => {
+              try {
+                const next = await (on ? push.enable() : push.disable());
+                if (next === "on") toast.success("Notifications are on for this device");
+                else if (next === "denied") toast.error("Notifications are blocked for Xbanka");
+              } catch {
+                toast.error("We couldn’t turn on notifications. Try again.");
+              }
+            }}
+          />
+        )}
+      </Row>
+    </Section>
+  );
+}
+
 function NotificationsTab() {
   const settings = useSettings();
 
   return (
     <div className="space-y-5">
+      <PushNotificationsSection />
+
       <Section title="Sounds" description="Plays while Xbanka is open in this browser.">
         <Row
           label="Transaction sounds"
