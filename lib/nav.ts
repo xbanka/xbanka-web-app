@@ -39,7 +39,6 @@ export const NAV: NavSection[] = [
         id: "gift-cards",
         label: "Gift Cards",
         icon: GiftCardsIcon,
-        disabled: true,
         badge: "Soon",
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
@@ -57,7 +56,6 @@ export const NAV: NavSection[] = [
         badge: "Soon",
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
-        disabled: true,
       },
       {
         id: "market",
@@ -89,7 +87,6 @@ export const NAV: NavSection[] = [
         id: "affiliate",
         label: "Affiliate",
         icon: AffiliateIcon,
-        disabled: true,
         badge: "Soon",
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
@@ -98,7 +95,6 @@ export const NAV: NavSection[] = [
         id: "referrals",
         label: "Referrals & Rewards",
         icon: ReferralsRewardsIcon,
-        disabled: true,
         badge: "Soon",
         badgeColor:
           "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
@@ -123,8 +119,7 @@ export const MENU_ITEMS = [
   {
     icon: Gift,
     label: "Refer & Earn",
-    href: "#",
-    disabled: true,
+    href: "/referrals",
     badge: "Soon",
     badgeColor:
       "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
@@ -132,8 +127,7 @@ export const MENU_ITEMS = [
   {
     icon: Star,
     label: "Rewards",
-    href: "#",
-    disabled: true,
+    href: "/referrals",
     badge: "Soon",
     badgeColor:
       "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",

@@ -40,6 +40,9 @@ import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
 import { FavouriteBill, useFavouriteBills } from "./use-favourite-bills";
 import { RecentBillPayments, type RecentBillRow } from "./recent-bill-payments";
+import { Modal } from "@/components/ui/Modal";
+import { ModalHeader } from "@/components/ui/modal-header";
+import { ComingSoonScene } from "@/components/ui/coming-soon-scene";
 
 const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
   electricity: "Choose your electricity provider",
@@ -83,6 +86,9 @@ export default function BillPaymentsPage() {
     prefill?: FavouriteBill;
   } | null>(null);
   const { favourites, remove: removeFavourite } = useFavouriteBills();
+  /** A bill category that isn't live yet, shown in the coming-soon modal. */
+  const [soonCategory, setSoonCategory] = useState<BillerCategoryId | null>(null);
+  const soonCategoryInfo = CATEGORIES.find((c) => c.id === soonCategory);
   const [receipt, setReceipt] = useState<TransactionReceiptData | null>(null);
   /** Payments made this session — richer than their history rows (receipt
    *  context, live PENDING → COMPLETED status from the poll). */
@@ -321,11 +327,12 @@ export default function BillPaymentsPage() {
     return (
       <button
         key={biller.id}
-        onClick={live ? () => openBiller(biller) : undefined}
-        disabled={!live}
+        onClick={() =>
+          live ? openBiller(biller) : setSoonCategory(biller.category)
+        }
         className={cn(
           "group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
-          live ? "hover:border-border-active" : "opacity-60 cursor-not-allowed",
+          live ? "hover:border-border-active" : "opacity-70 hover:opacity-100",
         )}
       >
         <BillerLogo
@@ -589,17 +596,16 @@ export default function BillPaymentsPage() {
               return (
                 <button
                   key={cat.id}
-                  onClick={
+                  onClick={() =>
                     live
-                      ? () => setSelectedCategory(cat.id as BillerCategoryId)
-                      : undefined
+                      ? setSelectedCategory(cat.id as BillerCategoryId)
+                      : setSoonCategory(cat.id as BillerCategoryId)
                   }
-                  disabled={!live}
                   className={cn(
                     "group flex flex-col gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
                     live
                       ? "hover:border-border-active"
-                      : "opacity-60 cursor-not-allowed",
+                      : "opacity-70 hover:opacity-100",
                   )}
                 >
                   <Image
@@ -647,6 +653,30 @@ export default function BillPaymentsPage() {
           isError={history.isError}
           onOpen={openReceipt}
         />
+      )}
+
+      {soonCategoryInfo && (
+        <Modal className="p-0" onClose={() => setSoonCategory(null)}>
+          <ModalHeader
+            className="px-10 py-6 max-sm:px-5 max-sm:py-5"
+            title={soonCategoryInfo.name}
+            onClose={() => setSoonCategory(null)}
+          />
+          <div className="px-10 pb-10 max-sm:px-5 max-sm:pb-6">
+            <ComingSoonScene
+              compact
+              title={
+                soonCategoryInfo.id === "others"
+                  ? "more billers"
+                  : soonCategoryInfo.name
+              }
+              accent="#0066CC"
+              icon="bill"
+              description={`${soonCategoryInfo.desc}, straight from your Xbanka wallet.`}
+              notifyKey={`bills:${soonCategoryInfo.id}`}
+            />
+          </div>
+        </Modal>
       )}
 
       {checkout && (

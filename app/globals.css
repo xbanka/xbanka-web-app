@@ -676,3 +676,33 @@ body {
 [data-tour] {
   scroll-margin-top: 12px;
 }
+
+/* ---- Coming soon build animation (components/ui/coming-soon-scene.tsx). ----
+   The logo lands, the card's outline draws, a worker on a lift paints it,
+   its details pop on, then the copy fades in. The worker keeps working. */
+.cs-logo { animation: cs-drop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.cs-outline { stroke-dasharray: 1; stroke-dashoffset: 1; animation: cs-draw 1s ease-out 0.5s forwards; }
+.cs-paint { transform-box: fill-box; transform-origin: 50% 100%; animation: cs-paint 1.8s ease-in-out 1.3s both; }
+.cs-pop { transform-box: fill-box; transform-origin: center; animation: cs-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.cs-worker { animation: cs-lift 3.6s ease-in-out 0.9s infinite both; }
+.cs-pole { transform-box: fill-box; transform-origin: 50% 100%; animation: cs-pole 3.6s ease-in-out 0.9s infinite both; }
+.cs-twinkle { transform-box: fill-box; transform-origin: center; animation: cs-twinkle 1.8s ease-in-out infinite both; }
+.cs-fade { animation: cs-fade-up 0.6s ease-out both; }
+.cs-badge { animation: cs-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 3.3s both; }
+.cs-bar { animation: cs-slide 1.6s ease-in-out infinite; }
+@keyframes cs-drop { from { opacity: 0; transform: translateY(-18px) scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes cs-draw { to { stroke-dashoffset: 0; } }
+@keyframes cs-paint { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes cs-pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes cs-lift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-62px); } }
+@keyframes cs-pole { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+@keyframes cs-twinkle { 0%, 100% { opacity: 0.15; transform: scale(0.55); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes cs-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes cs-slide { from { transform: translateX(-110%); } to { transform: translateX(280%); } }
+@media (prefers-reduced-motion: reduce) {
+  .cs-scene, .cs-scene * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
