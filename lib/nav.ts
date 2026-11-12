@@ -39,9 +39,7 @@ export const NAV: NavSection[] = [
         id: "gift-cards",
         label: "Gift Cards",
         icon: GiftCardsIcon,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        soon: true,
       },
     ],
   },
@@ -53,9 +51,7 @@ export const NAV: NavSection[] = [
         id: "p2p",
         label: "P2P Marketplace",
         icon: P2pMarketplaceIcon,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        soon: true,
       },
       {
         id: "market",
@@ -87,17 +83,13 @@ export const NAV: NavSection[] = [
         id: "affiliate",
         label: "Affiliate",
         icon: AffiliateIcon,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        soon: true,
       },
       {
         id: "referrals",
         label: "Referrals & Rewards",
         icon: ReferralsRewardsIcon,
-        badge: "Soon",
-        badgeColor:
-          "bg-[#3E2E00] text-[#FEC84B] font-normal text-[12px] leading-4.5 rounded-sm border border-[#A27D00] px-2",
+        soon: true,
       },
       {
         id: "help",
