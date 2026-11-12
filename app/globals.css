@@ -678,9 +678,8 @@ body {
 }
 
 /* ---- Coming soon build animation (components/ui/coming-soon-scene.tsx). ----
-   The logo lands, the card's outline draws, a worker on a lift paints it,
-   its details pop on. The worker keeps working. */
-.cs-logo { animation: cs-drop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+   The card's outline draws, a worker on a lift paints it, then its details
+   and the Xbanka logo pop on. The worker keeps working. */
 .cs-outline { stroke-dasharray: 1; stroke-dashoffset: 1; animation: cs-draw 1s ease-out 0.5s forwards; }
 .cs-paint { transform-box: fill-box; transform-origin: 50% 100%; animation: cs-paint 1.8s ease-in-out 1.3s both; }
 .cs-pop { transform-box: fill-box; transform-origin: center; animation: cs-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
@@ -688,7 +687,6 @@ body {
 .cs-pole { transform-box: fill-box; transform-origin: 50% 100%; animation: cs-pole 3.6s ease-in-out 0.9s infinite both; }
 .cs-twinkle { transform-box: fill-box; transform-origin: center; animation: cs-twinkle 1.8s ease-in-out infinite both; }
 .cs-fade { animation: cs-fade-up 0.6s ease-out both; }
-@keyframes cs-drop { from { opacity: 0; transform: translateY(-18px) scale(0.92); } to { opacity: 1; transform: none; } }
 @keyframes cs-draw { to { stroke-dashoffset: 0; } }
 @keyframes cs-paint { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes cs-pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }

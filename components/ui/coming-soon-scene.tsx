@@ -12,17 +12,6 @@ import {
 } from "@/lib/coming-soon";
 import { cn } from "@/lib/utils";
 
-function XbankaLogo({ className }: { className?: string }) {
-  return (
-    <span className={cn("block [&>img]:h-auto [&>img]:w-full", className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/xbanka_logo.png" alt="Xbanka" className="cs-logo dark:hidden" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/xbanka_white.png" alt="Xbanka" className="cs-logo hidden dark:block" />
-    </span>
-  );
-}
-
 export type SceneIcon = "gift" | "p2p" | "affiliate" | "referrals" | "bill";
 
 /** The white mark painted on the card, in a 28×28 box. */
@@ -47,9 +36,10 @@ const ICON_PATHS: Record<SceneIcon, React.ReactNode> = {
 };
 
 /**
- * The "coming soon" build animation: the Xbanka logo lands, a worker on a
- * lift paints the feature's card. Clicking the illustration remounts it and
- * plays it again. Styles: `.cs-*` in globals.css.
+ * The "coming soon" build animation: a worker on a lift paints the
+ * feature's card, then its details and the Xbanka logo pop on. Clicking the
+ * illustration remounts it and plays it again. Styles: `.cs-*` in
+ * globals.css.
  */
 export function ComingSoonScene({
   title,
@@ -106,18 +96,9 @@ export function ComingSoonScene({
         "cs-scene grid w-full items-center",
         compact
           ? "gap-5 text-center"
-          : "gap-5 text-left md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:items-stretch md:gap-x-12 md:gap-y-8 md:self-stretch xl:gap-x-16",
+          : "gap-5 text-left md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-stretch md:gap-12 md:self-stretch xl:gap-16",
       )}
     >
-      {/* On a desktop page the logo heads the whole card, centred above
-          both columns (phones already show it in the header); in the modal
-          it sits in the illustration. */}
-      {!compact && (
-        <div key={`logo-${run}`} className="hidden justify-center md:col-span-2 md:flex">
-          <XbankaLogo className="w-32" />
-        </div>
-      )}
-
       <button
         key={run}
         type="button"
@@ -128,7 +109,6 @@ export function ComingSoonScene({
           compact ? "py-5" : "py-3 md:py-12 xl:py-16",
         )}
       >
-        {compact && <XbankaLogo className="w-20" />}
           <svg
             viewBox="0 0 400 250"
             className={cn(
@@ -146,9 +126,8 @@ export function ComingSoonScene({
             {/* card details */}
             <rect className="cs-pop" x="76" y="92" width="30" height="22" rx="4" fill="#FEC84B" style={{ animationDelay: "3s" }} />
             <line className="cs-pop" x1="76" y1="103" x2="106" y2="103" stroke="#A27D00" strokeWidth="1.2" style={{ animationDelay: "3s" }} />
-            <text className="cs-pop" x="76" y="170" fill="#fff" fontSize="12" fontWeight="600" letterSpacing="2.5" style={{ animationDelay: "3.15s" }}>
-              XBANKA
-            </text>
+            {/* the Xbanka logo on the card (white lettering reads on every accent) */}
+            <image className="cs-pop" href="/xbanka_white.png" x="74" y="149" width="86" height="24" preserveAspectRatio="xMinYMid meet" style={{ animationDelay: "3.15s" }} />
             <rect className="cs-pop" x="76" y="178" width="72" height="5" rx="2.5" fill="#fff" fillOpacity=".45" style={{ animationDelay: "3.3s" }} />
             <g transform="translate(212 88)">
               <g className="cs-pop" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animationDelay: "3.05s" }}>
