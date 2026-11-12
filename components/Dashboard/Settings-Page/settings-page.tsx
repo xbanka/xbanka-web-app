@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronRight, MessageCircle } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { useSettings } from "@/hooks/use-settings";
@@ -14,11 +15,8 @@ import {
   isLocked,
   languageByCode,
 } from "@/lib/settings";
-import {
-  buildSupportMessage,
-  supportWhatsAppNumber,
-  whatsAppLink,
-} from "@/lib/supportWhatsApp";
+import { UseSendSupportRequest } from "@/lib/services/support.service";
+import { SUPPORT_EMAIL, mailtoLink } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { useBalanceVisibilityStore } from "@/store/balance-visibility.store";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
@@ -320,19 +318,6 @@ function NotificationsTab() {
 function PrivacyTab() {
   const settings = useSettings();
   const setHidden = useBalanceVisibilityStore((s) => s.setHidden);
-  const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.userId;
-  const number = supportWhatsAppNumber();
-  const closeLink = number
-    ? whatsAppLink(
-        number,
-        buildSupportMessage({
-          topic: "Account & verification",
-          message: "I’d like to close my Xbanka account.",
-          uid,
-        }),
-      )
-    : null;
 
   return (
     <div className="space-y-5">
@@ -408,26 +393,100 @@ function PrivacyTab() {
           label="Close account"
           hint="Our team will help you withdraw your balance first. This can’t be undone."
         >
-          <a
-            href={closeLink ?? undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-disabled={!closeLink}
-            onClick={(e) => {
-              if (!closeLink) e.preventDefault();
-            }}
-            className={cn(
-              "inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md border px-4 text-sm font-medium transition-colors",
-              closeLink
-                ? "border-error-text/50 text-error-text hover:bg-error-text/10"
-                : "border-border text-disabled-text cursor-not-allowed",
-            )}
-          >
-            <MessageCircle className="h-4 w-4" />
-            Request on WhatsApp
-          </a>
+          <CloseAccountRequest />
         </Row>
       </Section>
+    </div>
+  );
+}
+
+const CLOSE_ACCOUNT_MESSAGE =
+  "I’d like to close my Xbanka account. Please help me withdraw any remaining balance first.";
+
+/**
+ * Closing an account is handled by the support team, so this emails them a
+ * closure request (with the account details attached by the server). It asks
+ * once before sending.
+ */
+function CloseAccountRequest() {
+  const { data: profileData } = UseProfileUser();
+  const uid: string | undefined = profileData?.data?.userId;
+  const [confirming, setConfirming] = useState(false);
+  const { mutate: send, isPending, isSuccess, error, reset } = UseSendSupportRequest();
+
+  if (isSuccess) {
+    return (
+      <span className="inline-flex h-10 shrink-0 items-center gap-2 text-sm text-card-text">
+        <CheckCircle2 className="h-4 w-4 text-Green" />
+        Request sent
+      </span>
+    );
+  }
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md border border-error-text/50 px-4 text-sm font-medium text-error-text transition-colors hover:bg-error-text/10"
+      >
+        <Mail className="h-4 w-4" />
+        Request closure
+      </button>
+    );
+  }
+
+  const fallbackLink = mailtoLink(SUPPORT_EMAIL, {
+    subject: "[Close account] Xbanka support request",
+    body: [CLOSE_ACCOUNT_MESSAGE, uid ? `\nUID: ${uid}` : ""].join("\n"),
+  });
+
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-2 sm:max-w-xs">
+      <p className="text-right text-[13px] text-text">
+        Email a closure request to support? They’ll reply to confirm.
+      </p>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            setConfirming(false);
+            reset();
+          }}
+          className="inline-flex h-10 items-center justify-center rounded-md border border-input px-4 text-sm font-medium text-card-text transition-colors hover:bg-border disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() =>
+            send(
+              { topic: "Close account", message: CLOSE_ACCOUNT_MESSAGE },
+              { onSuccess: () => toast.success("Closure request sent to support") },
+            )
+          }
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-error-text px-4 text-sm font-medium text-white transition-colors hover:bg-error-text/90 disabled:opacity-60"
+        >
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isPending ? "Sending…" : "Send request"}
+        </button>
+      </div>
+      {error && (
+        <p className="text-right text-xs text-error-text">
+          {error.status === 503 ? (
+            <>
+              Couldn’t send from the app.{" "}
+              <a href={fallbackLink} className="underline">
+                Email {SUPPORT_EMAIL}
+              </a>
+            </>
+          ) : (
+            error.message || "Couldn’t send. Try again."
+          )}
+        </p>
+      )}
     </div>
   );
 }
