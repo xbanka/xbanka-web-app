@@ -58,7 +58,7 @@ export function ComingSoonScene({
         "cs-scene grid w-full items-center",
         compact
           ? "gap-5 text-center"
-          : "gap-5 text-left md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-stretch md:gap-12 md:self-stretch xl:gap-16",
+          : "gap-5 text-center md:text-left md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-stretch md:gap-12 md:self-stretch xl:gap-16",
       )}
     >
       <button
@@ -126,7 +126,7 @@ export function ComingSoonScene({
       <div
         className={cn(
           "flex flex-col",
-          compact ? "items-center gap-4" : "items-start gap-3.5 md:gap-5 md:self-center",
+          compact ? "items-center gap-4" : "items-center gap-3.5 md:items-start md:gap-5 md:self-center",
         )}
       >
         <span
@@ -156,7 +156,7 @@ export function ComingSoonScene({
               className={cn(
                 "max-w-md text-sm leading-[22px] text-text",
                 !compact && "md:max-w-lg md:text-base md:leading-7 xl:text-lg xl:leading-8",
-                compact && "mx-auto",
+                compact ? "mx-auto" : "max-md:mx-auto",
               )}
             >
               {description}
