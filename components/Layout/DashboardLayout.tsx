@@ -37,7 +37,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar setMobileOpen={setMobileOpen} />
-        <main className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6">
+        <main
+          data-sidebar={collapsed ? "collapsed" : "expanded"}
+          className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6"
+        >
           {/* Keyed by route so each section fades in as it is opened. */}
           <div key={pathname} className="motion-safe:animate-page-in">
             {children}

@@ -703,3 +703,12 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* With the sidebar collapsed, pages use the room it gave back instead of
+   sitting in wide empty margins. Pages cap themselves with max-w-7xl or
+   max-w-6xl + mx-auto; narrow form pages (max-w-4xl) keep their width. */
+@media (min-width: 768px) {
+  main[data-sidebar="collapsed"] .mx-auto:is(.max-w-7xl, .max-w-6xl) {
+    max-width: 100rem;
+  }
+}
