@@ -95,24 +95,26 @@ export function ComingSoonScene({
         "cs-scene grid w-full items-center",
         compact
           ? "gap-5 text-center"
-          : "gap-6 text-center md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 md:text-left",
+          : "gap-5 text-left md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10",
       )}
     >
       <button
         key={run}
         type="button"
         onClick={() => setRun((n) => n + 1)}
-        title="Replay animation"
         aria-label={`Replay the ${title} animation`}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-2xl bg-input-background px-4 py-6 cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-border-active/40",
-          compact && "py-5",
+          "flex flex-col items-center gap-3 rounded-2xl bg-input-background px-4 cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-border-active/40",
+          compact ? "py-5" : "py-3 md:py-6",
         )}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/xbanka_logo.png" alt="" className="cs-logo h-auto w-20 dark:hidden" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/xbanka_white.png" alt="" className="cs-logo hidden h-auto w-20 dark:block" />
+        {/* On a phone page the header already shows the logo. */}
+        <span className={cn(!compact && "max-md:hidden")}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/xbanka_logo.png" alt="" className="cs-logo h-auto w-20 dark:hidden" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/xbanka_white.png" alt="" className="cs-logo hidden h-auto w-20 dark:block" />
+        </span>
           <svg
             viewBox="0 0 400 250"
             className="h-auto w-full max-w-[22rem] overflow-visible"
@@ -165,8 +167,8 @@ export function ComingSoonScene({
 
       <div
         className={cn(
-          "flex flex-col gap-4",
-          compact ? "items-center" : "items-center md:items-start",
+          "flex flex-col",
+          compact ? "items-center gap-4" : "items-start gap-3.5 md:gap-4",
         )}
       >
         <span
@@ -180,25 +182,30 @@ export function ComingSoonScene({
           Coming soon
         </span>
 
-        <div className="cs-fade space-y-2" style={{ animationDelay: "0.55s" }}>
+        <div className="cs-fade space-y-1.5 md:space-y-2" style={{ animationDelay: "0.55s" }}>
           <h2
             className={cn(
-              "font-display font-semibold leading-tight text-card-text",
-              compact ? "text-xl" : "text-2xl sm:text-[28px]",
+              "font-display font-semibold tracking-[-0.01em] text-card-text",
+              compact ? "text-xl leading-7" : "text-[22px] leading-7 md:text-[28px] md:leading-9",
             )}
           >
             {title} is on its way
           </h2>
           {description && (
-            <p className="max-w-md text-sm leading-6 text-text sm:text-[15px]">
+            <p
+              className={cn(
+                "max-w-md text-sm leading-[22px] text-text md:text-[15px] md:leading-6",
+                compact && "mx-auto",
+              )}
+            >
               {description}
             </p>
           )}
         </div>
 
-        <div className="cs-fade w-full sm:w-auto" style={{ animationDelay: "0.7s" }}>
+        <div className="cs-fade mt-1 w-full md:w-auto" style={{ animationDelay: "0.7s" }}>
           {notified ? (
-            <span className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-teal-border bg-teal-light px-5 text-[15px] font-medium text-teal-text sm:w-auto">
+            <span className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-teal-border bg-teal-light px-5 text-[15px] font-medium text-teal-text md:w-auto">
               <Check className="h-4 w-4" />
               We’ll let you know
             </span>
@@ -206,7 +213,7 @@ export function ComingSoonScene({
             <Button
               onClick={notify}
               disabled={isPending}
-              className="w-full gap-2 px-5 text-[15px] sm:w-auto"
+              className="w-full gap-2 px-5 text-[15px] md:w-auto"
             >
               {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
