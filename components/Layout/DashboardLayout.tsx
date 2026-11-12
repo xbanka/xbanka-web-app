@@ -7,6 +7,7 @@ import { Topbar } from "./Topbar";
 import { useUserProfile } from "@/lib/services/onboarding.service";
 import { useDepositAlerts } from "@/hooks/use-deposit-alerts";
 import { useLiveWalletBalances } from "@/hooks/use-live-wallet-balances";
+import { useAppBadge } from "@/hooks/use-app-badge";
 import { SplashGate } from "./splash-gate";
 import { ProductTour } from "./product-tour";
 import { SettingsEffects } from "./settings-effects";
@@ -19,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useDepositAlerts();
   // Fiat and crypto balances update the moment money lands, no refresh.
   useLiveWalletBalances();
+  useAppBadge();
 
  
   return (
@@ -37,7 +39,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar setMobileOpen={setMobileOpen} />
-        <main className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6">
+        <main
+          data-sidebar={collapsed ? "collapsed" : "expanded"}
+          className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6"
+        >
           {/* Keyed by route so each section fades in as it is opened. */}
           <div key={pathname} className="motion-safe:animate-page-in">
             {children}

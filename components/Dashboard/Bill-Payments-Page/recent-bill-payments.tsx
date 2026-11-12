@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ChevronRight, ReceiptText } from "lucide-react";
+import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/MockData";
 import { StatusBadge } from "@/lib/statusBadge";
 import { formatDateTime } from "@/lib/formatDate";
@@ -16,6 +16,7 @@ import {
   discoBiller,
   findBiller,
 } from "./billers-data";
+import { EmptyState } from "@/components/ui/empty-state";
 
 /** How many payments the card lists; "See all" opens the full history. */
 const MAX_ROWS = 8;
@@ -129,23 +130,18 @@ export function RecentBillPayments({
             ))}
           </div>
         ) : rows.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <span className="grid h-12 w-12 place-items-center rounded-xl border border-teal-border bg-teal-light text-teal-text">
-              <ReceiptText className="h-5 w-5" />
-            </span>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-card-text">
-                {isError
-                  ? "We couldn't load your recent transactions."
-                  : "No bill payments yet"}
-              </p>
-              {!isError && (
-                <p className="text-[13px] text-text">
-                  Airtime, data, electricity and TV payments will show up here.
-                </p>
-              )}
-            </div>
-          </div>
+          <EmptyState
+            title={
+              isError
+                ? "We couldn't load your recent transactions."
+                : "No bill payments yet"
+            }
+            description={
+              isError
+                ? undefined
+                : "Airtime, data, electricity and TV payments will show up here."
+            }
+          />
         ) : (
           <div className="rounded-xl border border-border">
             <div

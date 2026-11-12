@@ -1,12 +1,5 @@
-import GiftCardsPage from '@/components/Dashboard/Gift-Card-Page/gift-card-page'
-import React from 'react'
+import ComingSoonPage from "@/components/Dashboard/Coming-Soon-Page/coming-soon-page";
 
-const page = () => {
-  return (
-    <div>
-      <GiftCardsPage />
-    </div>
-  )
+export default function Page() {
+  return <ComingSoonPage id="gift-cards" />;
 }
-
-export default page

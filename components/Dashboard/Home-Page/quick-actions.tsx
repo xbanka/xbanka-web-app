@@ -12,7 +12,7 @@ export function QuickActions() {
       iconTextColor: "text-teal-text",
       page: "crypto",
       icon: BlocksIcon,
-      disabled: false,
+      soon: false,
     },
     {
       title: "Bill Payments",
@@ -22,7 +22,7 @@ export function QuickActions() {
       iconTextColor: "text-blue-text",
       page: "bill-payment",
       icon: Receipt,
-      disabled: false,
+      soon: false,
     },
     {
       title: "Buy/Sell Gift Cards",
@@ -32,7 +32,7 @@ export function QuickActions() {
       iconTextColor: "text-coral-text",
       page: "gift-cards",
       icon: LucideGift,
-      disabled: true,
+      soon: true,
     },
   ];
   return (
@@ -44,13 +44,13 @@ export function QuickActions() {
         {actions.map((a) => (
           <Link
             key={a.title}
-            href={a.disabled ? "#" : `/${a.page}`}
+            href={`/${a.page}`}
             className="w-[76vw] max-w-90 shrink-0 snap-start sm:w-auto sm:max-w-none sm:shrink sm:snap-none"
           >
             <div
               className={`relative cursor-pointer flex gap-4.25 items-center ${a.gradient} rounded-2xl p-4 text-left text-white hover:opacity-90 transition-opacity overflow-hidden`}
             >
-              {!a.disabled ? (
+              {!a.soon ? (
                 <ArrowUpRight className="text-card-text/60 absolute top-3 right-3 w-4 h-4" />
               ) : (
                 <span className="absolute top-3 right-3 bg-black/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-card-text border border-white/10">
