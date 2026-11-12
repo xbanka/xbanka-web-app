@@ -17,22 +17,16 @@ export default function ComingSoonPage({ id }: { id: ComingSoonId }) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <div className="space-y-1">
-        <p className="text-[13px] text-text">
-          {section.group} / {section.title}
-        </p>
-        <h1 className="font-display text-xl font-semibold leading-8 text-card-text sm:text-2xl">
-          {section.title}
-        </h1>
-      </div>
+      <h1 className="font-display text-xl font-semibold leading-8 text-card-text sm:text-2xl">
+        {section.title}
+      </h1>
 
-      <DashboardCard className="px-5 py-8 sm:px-8 sm:py-12">
+      <DashboardCard className="p-4 sm:p-6 md:p-8">
         <ComingSoonScene
           title={section.title}
           accent={section.accent}
           icon={ICONS[id]}
           description={section.description}
-          features={section.features}
           notifyKey={id}
         />
       </DashboardCard>

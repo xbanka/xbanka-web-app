@@ -13,7 +13,6 @@ export type ComingSoonSection = {
   /** Paint colour of the card in the animation. */
   accent: string;
   description: string;
-  features: [string, string, string];
 };
 
 export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
@@ -24,11 +23,6 @@ export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
     accent: "#C003A2",
     description:
       "Buy and sell gift cards like Amazon, Visa and Starbucks, paid straight from your Xbanka wallet.",
-    features: [
-      "Sell unused gift cards for naira",
-      "Buy cards for yourself or as a gift",
-      "See every trade in Transactions",
-    ],
   },
   p2p: {
     id: "p2p",
@@ -37,11 +31,6 @@ export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
     accent: "#4F46E5",
     description:
       "Buy and sell crypto directly with other Xbanka users, at prices you agree on.",
-    features: [
-      "Set your own price",
-      "Pay and get paid by bank transfer",
-      "Track every order in one place",
-    ],
   },
   affiliate: {
     id: "affiliate",
@@ -50,11 +39,6 @@ export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
     accent: "#0066CC",
     description:
       "Share Xbanka with your audience and earn from the users you bring in.",
-    features: [
-      "Your own affiliate link",
-      "See sign-ups as they happen",
-      "Earnings paid to your wallet",
-    ],
   },
   referrals: {
     id: "referrals",
@@ -63,11 +47,6 @@ export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
     accent: "#A27D00",
     description:
       "Invite friends to Xbanka and earn rewards when they start trading.",
-    features: [
-      "Invite friends with one link",
-      "Earn rewards on their first trades",
-      "Redeem rewards in your wallet",
-    ],
   },
 };
 
