@@ -1,15 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Bell, Check, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { UseSendSupportRequest } from "@/lib/services/support.service";
-import {
-  launchNotifyMessage,
-  readNotified,
-  rememberNotified,
-} from "@/lib/coming-soon";
+import { useState } from "react";
+import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type SceneIcon = "gift" | "p2p" | "affiliate" | "referrals" | "bill";
@@ -46,7 +38,6 @@ export function ComingSoonScene({
   accent,
   icon,
   description,
-  notifyKey,
   compact = false,
 }: {
   title: string;
@@ -54,39 +45,10 @@ export function ComingSoonScene({
   accent: string;
   icon: SceneIcon;
   description?: string;
-  /** Remembers a "notify me" per feature, e.g. "gift-cards". */
-  notifyKey: string;
   /** Stacked, for use in a modal. Otherwise side by side from md up. */
   compact?: boolean;
 }) {
   const [run, setRun] = useState(0);
-  const [notified, setNotified] = useState(false);
-  const { mutate: send, isPending } = UseSendSupportRequest();
-
-  useEffect(() => {
-    setNotified(readNotified().includes(notifyKey));
-  }, [notifyKey]);
-
-  const notify = () => {
-    send(
-      { topic: "Launch notification", message: launchNotifyMessage(title) },
-      {
-        onSuccess: () => {
-          rememberNotified(notifyKey);
-          setNotified(true);
-          toast.success(`We’ll let you know when ${title} is live`);
-        },
-        onError: (error) => {
-          toast.error(
-            error.status === 503
-              ? "We couldn’t sign you up right now. Please try again later."
-              : error.message || "We couldn’t sign you up. Try again.",
-          );
-        },
-      },
-    );
-  };
-
   const accentVars = { "--cs-accent": accent } as React.CSSProperties;
 
   return (
@@ -203,33 +165,17 @@ export function ComingSoonScene({
         </div>
 
         <div className="cs-fade mt-1 w-full md:w-auto" style={{ animationDelay: "0.7s" }}>
-          {notified ? (
-            <span
-              className={cn(
-                "inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-teal-border bg-teal-light px-5 text-[15px] font-medium text-teal-text md:w-auto",
-                !compact && "md:h-13 md:px-7 md:text-base",
-              )}
-            >
-              <Check className="h-4 w-4" />
-              We’ll let you know
+          <p
+            className={cn(
+              "inline-flex items-center gap-2.5 text-sm font-medium text-card-text",
+              !compact && "md:text-base",
+            )}
+          >
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-teal-border bg-teal-light text-teal-text">
+              <Bell className="h-4 w-4" />
             </span>
-          ) : (
-            <Button
-              onClick={notify}
-              disabled={isPending}
-              className={cn(
-                "w-full gap-2 px-5 text-[15px] md:w-auto",
-                !compact && "md:h-13 md:px-7 md:text-base",
-              )}
-            >
-              {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Bell className="h-4 w-4" />
-              )}
-              {isPending ? "Signing you up…" : "Notify me when it’s live"}
-            </Button>
-          )}
+            We’ll notify you when it’s live
+          </p>
         </div>
       </div>
     </div>

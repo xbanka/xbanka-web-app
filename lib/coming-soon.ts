@@ -49,29 +49,3 @@ export const COMING_SOON: Record<ComingSoonId, ComingSoonSection> = {
       "Invite friends to Xbanka and earn rewards when they start trading.",
   },
 };
-
-/** The message emailed to support when someone asks to be told at launch. */
-export const launchNotifyMessage = (title: string) =>
-  `Please let me know when ${title} is live on Xbanka.`;
-
-const NOTIFY_KEY = "xbanka-launch-notify";
-
-/** Things this browser has already asked to hear about, by key
- *  ("gift-cards", "bills:data", …). */
-export const readNotified = (): string[] => {
-  try {
-    const raw = JSON.parse(localStorage.getItem(NOTIFY_KEY) ?? "[]");
-    return Array.isArray(raw) ? raw : [];
-  } catch {
-    return [];
-  }
-};
-
-export const rememberNotified = (id: string) => {
-  try {
-    const next = Array.from(new Set([...readNotified(), id]));
-    localStorage.setItem(NOTIFY_KEY, JSON.stringify(next));
-  } catch {
-    // Private mode or blocked storage: the request was still sent.
-  }
-};

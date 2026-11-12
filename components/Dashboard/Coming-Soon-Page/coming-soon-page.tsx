@@ -29,7 +29,6 @@ export default function ComingSoonPage({ id }: { id: ComingSoonId }) {
           accent={section.accent}
           icon={ICONS[id]}
           description={section.description}
-          notifyKey={id}
         />
       </DashboardCard>
     </div>

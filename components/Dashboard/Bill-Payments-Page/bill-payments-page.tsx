@@ -673,7 +673,6 @@ export default function BillPaymentsPage() {
               accent="#0066CC"
               icon="bill"
               description={`${soonCategoryInfo.desc}, straight from your Xbanka wallet.`}
-              notifyKey={`bills:${soonCategoryInfo.id}`}
             />
           </div>
         </Modal>

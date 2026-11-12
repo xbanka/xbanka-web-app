@@ -14,16 +14,15 @@ export const SUPPORT_TOPICS = [
   "Bill payment",
   "Account & verification",
   "Close account",
-  "Launch notification",
   "Something else",
 ] as const;
 
 export type SupportTopic = (typeof SUPPORT_TOPICS)[number];
 
 /** Topics the user picks on Help & Support. "Close account" is only sent
- *  from Settings, and "Launch notification" from the coming-soon pages. */
+ *  from Settings, where closing the account lives. */
 export const HELP_PAGE_TOPICS = SUPPORT_TOPICS.filter(
-  (topic) => topic !== "Close account" && topic !== "Launch notification",
+  (topic) => topic !== "Close account",
 );
 
 export const MAX_MESSAGE_LENGTH = 2000;
