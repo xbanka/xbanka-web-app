@@ -95,7 +95,7 @@ export function ComingSoonScene({
         "cs-scene grid w-full items-center",
         compact
           ? "gap-5 text-center"
-          : "gap-5 text-left md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10",
+          : "gap-5 text-left md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-stretch md:gap-12 md:self-stretch xl:gap-16",
       )}
     >
       <button
@@ -104,12 +104,12 @@ export function ComingSoonScene({
         onClick={() => setRun((n) => n + 1)}
         aria-label={`Replay the ${title} animation`}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-2xl bg-input-background px-4 cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-border-active/40",
-          compact ? "py-5" : "py-3 md:py-6",
+          "flex flex-col items-center justify-center gap-3 rounded-2xl bg-input-background px-4 cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-border-active/40",
+          compact ? "py-5" : "py-3 md:py-12 xl:py-16",
         )}
       >
         {/* On a phone page the header already shows the logo. */}
-        <span className={cn(!compact && "max-md:hidden")}>
+        <span className={cn(!compact && "max-md:hidden md:[&>img]:w-28")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/xbanka_logo.png" alt="" className="cs-logo h-auto w-20 dark:hidden" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -117,7 +117,10 @@ export function ComingSoonScene({
         </span>
           <svg
             viewBox="0 0 400 250"
-            className="h-auto w-full max-w-[22rem] overflow-visible"
+            className={cn(
+              "h-auto w-full max-w-[22rem] overflow-visible",
+              !compact && "md:max-w-[30rem] xl:max-w-[36rem]",
+            )}
             role="img"
             aria-label={`A worker on a lift paints the Xbanka ${title} card`}
           >
@@ -168,11 +171,11 @@ export function ComingSoonScene({
       <div
         className={cn(
           "flex flex-col",
-          compact ? "items-center gap-4" : "items-start gap-3.5 md:gap-4",
+          compact ? "items-center gap-4" : "items-start gap-3.5 md:gap-5 md:self-center",
         )}
       >
         <span
-          className="cs-fade inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--cs-accent)_45%,transparent)] bg-[color-mix(in_srgb,var(--cs-accent)_14%,transparent)] px-3 py-1 text-[13px] font-semibold text-[color-mix(in_srgb,var(--cs-accent)_60%,var(--card-text))]"
+          className="cs-fade inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--cs-accent)_45%,transparent)] bg-[color-mix(in_srgb,var(--cs-accent)_14%,transparent)] px-3 py-1 text-[13px] font-semibold md:px-3.5 md:py-1.5 md:text-sm text-[color-mix(in_srgb,var(--cs-accent)_60%,var(--card-text))]"
           style={{ animationDelay: "0.4s" }}
         >
           <span className="relative flex h-2 w-2">
@@ -186,7 +189,9 @@ export function ComingSoonScene({
           <h2
             className={cn(
               "font-display font-semibold tracking-[-0.01em] text-card-text",
-              compact ? "text-xl leading-7" : "text-[22px] leading-7 md:text-[28px] md:leading-9",
+              compact
+                ? "text-xl leading-7"
+                : "text-[22px] leading-7 md:text-[32px] md:leading-10 xl:text-[38px] xl:leading-[46px]",
             )}
           >
             {title} is on its way
@@ -194,7 +199,8 @@ export function ComingSoonScene({
           {description && (
             <p
               className={cn(
-                "max-w-md text-sm leading-[22px] text-text md:text-[15px] md:leading-6",
+                "max-w-md text-sm leading-[22px] text-text",
+                !compact && "md:max-w-lg md:text-base md:leading-7 xl:text-lg xl:leading-8",
                 compact && "mx-auto",
               )}
             >
@@ -205,7 +211,12 @@ export function ComingSoonScene({
 
         <div className="cs-fade mt-1 w-full md:w-auto" style={{ animationDelay: "0.7s" }}>
           {notified ? (
-            <span className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-teal-border bg-teal-light px-5 text-[15px] font-medium text-teal-text md:w-auto">
+            <span
+              className={cn(
+                "inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-teal-border bg-teal-light px-5 text-[15px] font-medium text-teal-text md:w-auto",
+                !compact && "md:h-13 md:px-7 md:text-base",
+              )}
+            >
               <Check className="h-4 w-4" />
               We’ll let you know
             </span>
@@ -213,7 +224,10 @@ export function ComingSoonScene({
             <Button
               onClick={notify}
               disabled={isPending}
-              className="w-full gap-2 px-5 text-[15px] md:w-auto"
+              className={cn(
+                "w-full gap-2 px-5 text-[15px] md:w-auto",
+                !compact && "md:h-13 md:px-7 md:text-base",
+              )}
             >
               {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

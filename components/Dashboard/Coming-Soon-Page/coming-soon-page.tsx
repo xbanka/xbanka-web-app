@@ -16,13 +16,14 @@ export default function ComingSoonPage({ id }: { id: ComingSoonId }) {
   const section = COMING_SOON[id];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5 max-md:space-y-0">
+    <div className="mx-auto max-w-7xl space-y-5 max-md:space-y-0">
       {/* On phones the card's own heading names the section. */}
       <h1 className="font-display text-xl font-semibold leading-8 text-card-text max-md:sr-only sm:text-2xl">
         {section.title}
       </h1>
 
-      <DashboardCard className="p-3 sm:p-6 md:p-8">
+      {/* On desktop the card fills the screen below the title. */}
+      <DashboardCard className="flex p-3 sm:p-6 md:min-h-[calc(100dvh-13rem)] md:p-10">
         <ComingSoonScene
           title={section.title}
           accent={section.accent}
