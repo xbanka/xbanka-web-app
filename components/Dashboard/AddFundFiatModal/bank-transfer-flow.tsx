@@ -323,16 +323,26 @@ function TransferDetailsStep({
   };
 
   return (
-    <Modal className="p-0" onClose={onClose}>
+    // Capped height with a pinned header: the body scrolls so the
+    // "I have sent the money" button never pushes past the viewport.
+    <Modal
+      className="flex flex-col p-0 max-h-[85dvh] overflow-hidden max-sm:max-h-[85dvh] max-sm:overflow-hidden"
+      onClose={onClose}
+    >
+      {/* ModalHeader's `max-sm:pb-8` is a separate key from `py-*` to
+          tailwind-merge, so mobile paddings are named explicitly. */}
       <ModalHeader
-        className="px-10 py-6 max-sm:px-5 max-sm:py-5"
+        className="shrink-0 px-8 pt-5 pb-3 max-sm:px-5 max-sm:pt-5 max-sm:pb-3"
         title="Bank Transfer"
         subtitle="Transfer the exact amount to the account below."
         onBack={onBack}
         onClose={onClose}
       />
 
-      <div className="px-10 pb-10 pt-2 space-y-6 max-sm:px-5 max-sm:pb-6">
+      <div
+        data-testid="transfer-details-body"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 pb-4 pt-1 space-y-4 max-sm:px-5"
+      >
         {/* Amount to transfer banner */}
         <div className="bg-border/40 rounded-2xl p-4 flex items-center justify-between border border-border">
           <div>
@@ -365,7 +375,7 @@ function TransferDetailsStep({
               again later.
             </p>
           ) : (
-            <div className="bg-border rounded-2xl p-5 space-y-1">
+            <div className="bg-border rounded-2xl p-4 space-y-1">
               <div className="flex items-center justify-between gap-3 px-1 py-2.5">
                 <span className="text-xs font-normal text-text">Bank Name</span>
                 <span className="text-sm font-semibold text-card-text text-right">
@@ -415,7 +425,9 @@ function TransferDetailsStep({
               + Add another
             </button>
           </div>
-          <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
+          {/* No inner max-height: the body already scrolls, and a nested
+              scroller inside it traps the wheel/touch gesture. */}
+          <div className="space-y-2">
             {fundingAccounts.map((account) => (
               <div
                 key={account.id}
@@ -438,7 +450,14 @@ function TransferDetailsStep({
             ))}
           </div>
         </div>
+      </div>
 
+      {/* Pinned footer: the funding-account rule and the CTAs are always
+          visible, no matter how far the body above is scrolled. */}
+      <div
+        data-testid="transfer-details-footer"
+        className="shrink-0 space-y-3 border-t border-border px-8 pt-4 pb-6 max-sm:px-5 max-sm:pb-[calc(env(safe-area-inset-bottom)+16px)]"
+      >
         <div className="flex items-start gap-2.5 bg-Green/5 border border-Green/40 rounded-lg px-4 py-3">
           <Info className="w-4 h-4 text-Green shrink-0 mt-0.5" />
           <p className="text-xs font-normal leading-5 text-Green">
