@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, ChevronDown, ChevronRight, Loader2, Mail } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Loader2, Mail, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { useSettings } from "@/hooks/use-settings";
@@ -16,6 +16,7 @@ import {
   languageByCode,
 } from "@/lib/settings";
 import { UseSendSupportRequest } from "@/lib/services/support.service";
+import { previewChime } from "@/lib/transaction-sounds";
 import { SUPPORT_EMAIL, mailtoLink } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { useBalanceVisibilityStore } from "@/store/balance-visibility.store";
@@ -267,51 +268,93 @@ function NotificationsTab() {
   const settings = useSettings();
 
   return (
-    <Section
-      title="What we tell you about"
-      description="Choose where each alert goes. In-app alerts pop up while you’re using Xbanka; everything still lands in your notification list."
-    >
-      <div className="hidden sm:grid grid-cols-[1fr_5.5rem_5.5rem] px-5 py-3 text-[13px] text-text">
-        <span>Alert</span>
-        <span className="text-center">In app</span>
-        <span className="text-center">Email</span>
-      </div>
-      {NOTIFICATION_CATEGORIES.map((c) => {
-        const pref = settings.notifications[c.id];
-        return (
-          <div
-            key={c.id}
-            className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_5.5rem_5.5rem] items-center gap-x-4 sm:gap-x-0 px-5 py-4"
-          >
-            <div className="min-w-0">
-              <div className="text-sm font-medium text-card-text">{c.label}</div>
-              <div className="text-[13px] text-text">{c.hint}</div>
+    <div className="space-y-5">
+      <Section title="Sounds" description="Plays while Xbanka is open in this browser.">
+        <Row
+          label="Transaction sounds"
+          inline
+          hint={
+            <>
+              A chime when money comes in, a softer one when it goes out.{" "}
+              <span className="inline-flex flex-wrap gap-x-3">
+                <button
+                  type="button"
+                  onClick={() => previewChime("in")}
+                  className="inline-flex items-center gap-1 text-Green hover:underline"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  Play money in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => previewChime("out")}
+                  className="inline-flex items-center gap-1 text-Green hover:underline"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  Play money out
+                </button>
+              </span>
+            </>
+          }
+        >
+          <Switch
+            label="Transaction sounds"
+            checked={settings.transactionSounds}
+            onChange={(on) => {
+              settings.set({ transactionSounds: on });
+              if (on) previewChime("in");
+              saved();
+            }}
+          />
+        </Row>
+      </Section>
+
+      <Section
+        title="What we tell you about"
+        description="Choose where each alert goes. In-app alerts pop up while you’re using Xbanka; everything still lands in your notification list."
+      >
+        <div className="hidden sm:grid grid-cols-[1fr_5.5rem_5.5rem] px-5 py-3 text-[13px] text-text">
+          <span>Alert</span>
+          <span className="text-center">In app</span>
+          <span className="text-center">Email</span>
+        </div>
+        {NOTIFICATION_CATEGORIES.map((c) => {
+          const pref = settings.notifications[c.id];
+          return (
+            <div
+              key={c.id}
+              className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_5.5rem_5.5rem] items-center gap-x-4 sm:gap-x-0 px-5 py-4"
+            >
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-card-text">{c.label}</div>
+                <div className="text-[13px] text-text">{c.hint}</div>
+              </div>
+              {(["inApp", "email"] as const).map((channel) => {
+                const locked = isLocked(c.id, channel);
+                const name = channel === "inApp" ? "In app" : "Email";
+                return (
+                  <div key={channel} className="flex flex-col items-center gap-1">
+                    <span className="text-[11px] text-text sm:hidden">{name}</span>
+                    <Switch
+                      label={`${c.label}, ${name}${locked ? ", always on" : ""}`}
+                      checked={locked || pref[channel]}
+                      disabled={locked}
+                      onChange={(on) => {
+                        settings.setNotification(c.id, channel, on);
+                        saved();
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-            {(["inApp", "email"] as const).map((channel) => {
-              const locked = isLocked(c.id, channel);
-              const name = channel === "inApp" ? "In app" : "Email";
-              return (
-                <div key={channel} className="flex flex-col items-center gap-1">
-                  <span className="text-[11px] text-text sm:hidden">{name}</span>
-                  <Switch
-                    label={`${c.label}, ${name}${locked ? ", always on" : ""}`}
-                    checked={locked || pref[channel]}
-                    disabled={locked}
-                    onChange={(on) => {
-                      settings.setNotification(c.id, channel, on);
-                      saved();
-                    }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-      <p className="px-5 py-3 text-[13px] text-text">
-        Security alerts always reach you by email.
-      </p>
-    </Section>
+          );
+        })}
+        <p className="px-5 py-3 text-[13px] text-text">
+          Security alerts always reach you by email.
+        </p>
+      </Section>
+    </div>
   );
 }
 
