@@ -7,7 +7,6 @@ import { MIN_SEND_AMOUNT, QUICK_AMOUNTS } from "./mockData";
 import { cn } from "@/lib/utils";
 import { UseGetFiatWallet } from "@/lib/services/wallet.service";
 import { sumFiatBalances } from "@/lib/sumBalances";
-import { shortenUid } from "@/lib/shortenuid";
 import { Label } from "@/components/ui/label";
 import { ErrorField } from "@/components/ui/field-error";
 import { useTransactionLimit } from "@/hooks/use-transaction-limit";
@@ -68,7 +67,7 @@ export function EnterAmountXbankaStep({
             </p>
             <div className="flex items-center">
               <p className="text-xs text-text truncate border-r pr-3 border-input">
-                {shortenUid(recipient?.id)}
+                {recipient?.uid}
                 {/* {recipient.bankName ? ` · ${recipient.bankName}` : ""} */}
               </p>
               <p className="text-xs text-text truncate border-l pl-3 border-input">

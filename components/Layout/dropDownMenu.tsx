@@ -6,7 +6,6 @@ import {
   UseProfileUser,
   UseVerificationStatus,
 } from "@/lib/services/profile.service";
-import { shortenUid } from "@/lib/shortenuid";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -100,7 +99,7 @@ export default function UserDropdown({}: UserDropdownProps) {
             </p>
           </div>
           <p className="text-[12px] font-normal leading-5.5 text-text max-w-28 truncate">
-            UID: {shortenUid(profile?.data?.userId)}
+            ID: {profile?.data?.xbId}
           </p>
         </div>
 
@@ -137,7 +136,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-xs text-text mt-0.5">
-                    UID: {shortenUid(profile?.data?.userId)}
+                    ID: {profile?.data?.xbId}
                   </p>
                   {verificationData?.data?.tierLevel === 0 && (
                     <Image

@@ -64,7 +64,7 @@ const QUICK_ANSWERS: { q: string; a: string }[] = [
 export default function HelpPage() {
   const { data: profileData } = UseProfileUser();
   const profile = profileData?.data;
-  const uid: string | undefined = profile?.userId;
+  const uid: string | undefined = profile?.xbId;
   const email: string | undefined = profile?.email;
   const number = supportWhatsAppNumber();
 

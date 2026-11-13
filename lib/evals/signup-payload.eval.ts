@@ -18,7 +18,7 @@ describe("signup payload matches the backend contract across an input grid", () 
         for (const referral of ["", " REF1 ", undefined])
           for (const pad of ["", "  "]) {
             const form = signUpSchema.parse({
-              email: `${pad}a@b.co${pad}`, password: "abc$defgh", referral,
+              email: `${pad}a@b.co${pad}`, password: "Abc$defgh", referral,
               firstName: `${pad}Ada${pad}`, lastName: "Obi", dateOfBirth,
               phoneNumber: `${pad}+2348012345678`, gender, country: "Nigeria",
             });
