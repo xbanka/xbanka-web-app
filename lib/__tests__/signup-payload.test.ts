@@ -80,6 +80,12 @@ describe("signUpSchema", () => {
     expect(signUpSchema.safeParse({ ...valid, phoneNumber: "080" }).success).toBe(false);
   });
 
+  it("requires an uppercase letter in the password", () => {
+    const result = signUpSchema.safeParse({ ...valid, password: "lowercase$1" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Must include an uppercase letter");
+  });
+
   it("does not collect NIN", () => {
     expect(Object.keys(signUpSchema.shape)).not.toContain("nin");
   });
