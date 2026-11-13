@@ -7,26 +7,39 @@ import { SUPPORT_EMAIL } from "@/lib/supportContacts";
 export const runtime = "nodejs";
 
 /**
- * Email settings (server-only, never NEXT_PUBLIC_):
+ * Email settings (server-only, never NEXT_PUBLIC_). Either:
+ *   RESEND_API_KEY  the backend's Resend key; sends via smtp.resend.com
+ *   RESEND_FROM     e.g. "Xbanka <notifications@xbankang.com>" (address used)
+ * or any SMTP server:
  *   SMTP_HOST, SMTP_PORT (465 = TLS, else STARTTLS), SMTP_USER, SMTP_PASS
- *   SUPPORT_INBOX  where requests go      (default support@xbankang.com)
- *   SUPPORT_FROM   the sending address    (default SMTP_USER)
- * Without SMTP_HOST/USER/PASS the route answers 503 and the page falls back
- * to the user's own mail app.
+ *   SUPPORT_FROM    the sending address (default SMTP_USER)
+ * Plus, optionally:
+ *   SUPPORT_INBOX   where requests go (default support@xbankang.com)
+ * With none of them the route answers 503 and the page falls back to the
+ * user's own mail app.
  */
-const makeSender = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
 
-  const port = Number(SMTP_PORT) || 465;
+/** "Xbanka <notifications@x.com>" → "notifications@x.com"; a bare address as is. */
+const addressOf = (value?: string) => value?.match(/<([^>]+)>/)?.[1] ?? value?.trim();
+
+const makeSender = () => {
+  const env = process.env;
+  const resendKey = env.RESEND_API_KEY?.trim();
+  // SMTP settings win when set; otherwise Resend's SMTP with its API key.
+  const host = env.SMTP_HOST || (resendKey ? "smtp.resend.com" : "");
+  const user = env.SMTP_USER || (resendKey ? "resend" : "");
+  const pass = env.SMTP_PASS || resendKey || "";
+  if (!host || !user || !pass) return null;
+
+  const port = Number(env.SMTP_PORT) || 465;
   const transport = nodemailer.createTransport({
-    host: SMTP_HOST,
+    host,
     port,
     secure: port === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    auth: { user, pass },
   });
-  const to = process.env.SUPPORT_INBOX || SUPPORT_EMAIL;
-  const from = process.env.SUPPORT_FROM || SMTP_USER;
+  const to = env.SUPPORT_INBOX || SUPPORT_EMAIL;
+  const from = addressOf(env.SUPPORT_FROM) || addressOf(env.RESEND_FROM) || user;
 
   return async ({ subject, text, replyTo }: OutgoingMail) => {
     await transport.sendMail({
