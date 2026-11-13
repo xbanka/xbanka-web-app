@@ -6,7 +6,6 @@ import { COMING_SOON, type ComingSoonId } from "@/lib/coming-soon";
 
 const ICONS: Record<ComingSoonId, SceneIcon> = {
   "gift-cards": "gift",
-  p2p: "p2p",
   affiliate: "affiliate",
   referrals: "referrals",
 };
