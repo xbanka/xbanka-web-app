@@ -51,7 +51,7 @@ self.addEventListener("fetch", (event) => {
 // ---- Push notifications ----
 //
 // The backend sends a JSON payload (see lib/push/push-notifications.ts):
-//   { title, body, url?, tag?, badgeCount?, notificationId? }
+//   { title, body, url, tag, badgeCount }
 // It is shown as a system notification; tapping it opens or focuses Xbanka
 // at `url`. `badgeCount` sets the unread count on the installed app's icon.
 
@@ -67,14 +67,18 @@ const parsePush = (event) => {
 self.addEventListener("push", (event) => {
   const data = parsePush(event);
   const title = typeof data.title === "string" && data.title ? data.title : "Xbanka";
-  const url = typeof data.url === "string" && data.url.startsWith("/") ? data.url : "/";
+  // Same-origin paths only; the backend's default is /notifications.
+  const url =
+    typeof data.url === "string" && data.url.startsWith("/") && !data.url.startsWith("//")
+      ? data.url
+      : "/notifications";
 
   const jobs = [
     self.registration.showNotification(title, {
       body: typeof data.body === "string" ? data.body : "",
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",
-      tag: typeof data.tag === "string" ? data.tag : data.notificationId || undefined,
+      tag: typeof data.tag === "string" ? data.tag : undefined,
       data: { url },
     }),
   ];
@@ -91,7 +95,7 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || "/";
+  const url = (event.notification.data && event.notification.data.url) || "/notifications";
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
       const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
@@ -100,5 +104,21 @@ self.addEventListener("notificationclick", (event) => {
       }
       return self.clients.openWindow(url);
     }),
+  );
+});
+
+// The browser replaced the subscription (expiry or key rotation). Resubscribe
+// with the same key so pushes keep a home; the app re-sends the new one to
+// the backend on its next start (it needs the user's sign-in to do that).
+self.addEventListener("pushsubscriptionchange", (event) => {
+  const key =
+    event.oldSubscription &&
+    event.oldSubscription.options &&
+    event.oldSubscription.options.applicationServerKey;
+  if (!key) return;
+  event.waitUntil(
+    self.registration.pushManager
+      .subscribe({ userVisibleOnly: true, applicationServerKey: key })
+      .catch(() => {}),
   );
 });
