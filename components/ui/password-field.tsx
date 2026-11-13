@@ -26,6 +26,8 @@ interface PasswordFieldProps<TFieldValues extends FieldValues> {
   disabled?: boolean;
   autoComplete?: string;
   className?: string;
+  /** Show the strength meter and rule checklist. Turn off for sign-in. */
+  showStrength?: boolean;
 }
 
 const PasswordField = <TFieldValues extends FieldValues>({
@@ -38,6 +40,7 @@ const PasswordField = <TFieldValues extends FieldValues>({
   disabled,
   autoComplete,
   className,
+  showStrength = true,
 }: PasswordFieldProps<TFieldValues>) => {
   const [show, setShow] = useState(false);
 
@@ -78,7 +81,7 @@ const PasswordField = <TFieldValues extends FieldValues>({
           {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>
-      {password.length > 0 && (
+      {showStrength && password.length > 0 && (
         <div
           className="h-1 w-full overflow-hidden rounded-full bg-border"
           aria-hidden="true"
@@ -93,7 +96,7 @@ const PasswordField = <TFieldValues extends FieldValues>({
         </div>
       )}
 
-      {password.length > 0 && (
+      {showStrength && password.length > 0 && (
         <div className="space-y-1 text-sm text-text">
           <PasswordChecks
             checks={checks.minLength}
