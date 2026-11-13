@@ -205,7 +205,7 @@ export default function UserDropdown({}: UserDropdownProps) {
           {/* Menu items */}
           <nav className="mb-6">
             {MENU_ITEMS.map(
-              ({ icon: Icon, label, href, disabled, badge, badgeColor }) => {
+              ({ icon: Icon, label, href, badge, badgeColor }) => {
                 const content = (
                   <>
                     <Icon className="w-6 h-6 shrink-0" />
@@ -222,18 +222,7 @@ export default function UserDropdown({}: UserDropdownProps) {
                 const itemClass =
                   "flex items-center gap-3 px-6 font-normal text-[14px] leading-6 py-3 text-sm transition-colors";
 
-                return disabled ? (
-                  <span
-                    key={label}
-                    aria-disabled="true"
-                    className={cn(
-                      itemClass,
-                      "opacity-50 cursor-not-allowed bg-card-background text-text",
-                    )}
-                  >
-                    {content}
-                  </span>
-                ) : (
+                return (
                   // A client-side route change; a plain <a> would reload the
                   // whole app and replay the splash.
                   <Link

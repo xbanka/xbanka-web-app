@@ -1,10 +1,8 @@
 "use client";
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Search, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/MockData";
-import { StatusBadge } from "@/lib/statusBadge";
 import { Button } from "@/components/ui/button";
 import { ErrorLayout } from "@/components/ui/error-layout";
 import { cn } from "@/lib/utils";
@@ -41,6 +39,10 @@ import {
 import { BillReceiptContext, buildBillReceipt } from "./bill-receipt";
 import { BillCheckoutModal, CheckoutTarget } from "./bill-checkout-modal";
 import { FavouriteBill, useFavouriteBills } from "./use-favourite-bills";
+import { RecentBillPayments, type RecentBillRow } from "./recent-bill-payments";
+import { Modal } from "@/components/ui/Modal";
+import { ModalHeader } from "@/components/ui/modal-header";
+import { ComingSoonScene } from "@/components/ui/coming-soon-scene";
 
 const CATEGORY_PROMPTS: Partial<Record<BillerCategoryId, string>> = {
   electricity: "Choose your electricity provider",
@@ -72,7 +74,7 @@ const STATUS_LABELS: Record<BillPayment["status"], string> = {
 
 /** A row in the recent list: a payment made this session (carries `payment`)
  *  or one from the user's transaction history (carries `historyTx`). */
-type RecentRow = BillTransaction & { historyTx?: TransactionTypes };
+type RecentRow = RecentBillRow;
 
 export default function BillPaymentsPage() {
   const [search, setSearch] = useState("");
@@ -84,6 +86,9 @@ export default function BillPaymentsPage() {
     prefill?: FavouriteBill;
   } | null>(null);
   const { favourites, remove: removeFavourite } = useFavouriteBills();
+  /** A bill category that isn't live yet, shown in the coming-soon modal. */
+  const [soonCategory, setSoonCategory] = useState<BillerCategoryId | null>(null);
+  const soonCategoryInfo = CATEGORIES.find((c) => c.id === soonCategory);
   const [receipt, setReceipt] = useState<TransactionReceiptData | null>(null);
   /** Payments made this session — richer than their history rows (receipt
    *  context, live PENDING → COMPLETED status from the poll). */
@@ -136,7 +141,7 @@ export default function BillPaymentsPage() {
   const recentRows: RecentRow[] = [
     ...transactions,
     ...historyRows.filter((r) => !sessionRefs.has(r.reference)),
-  ].slice(0, 4);
+  ];
 
   const query = search.trim().toLowerCase();
 
@@ -322,11 +327,12 @@ export default function BillPaymentsPage() {
     return (
       <button
         key={biller.id}
-        onClick={live ? () => openBiller(biller) : undefined}
-        disabled={!live}
+        onClick={() =>
+          live ? openBiller(biller) : setSoonCategory(biller.category)
+        }
         className={cn(
           "group flex items-center gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
-          live ? "hover:border-border-active" : "opacity-60 cursor-not-allowed",
+          live ? "hover:border-border-active" : "opacity-70 hover:opacity-100",
         )}
       >
         <BillerLogo
@@ -590,17 +596,16 @@ export default function BillPaymentsPage() {
               return (
                 <button
                   key={cat.id}
-                  onClick={
+                  onClick={() =>
                     live
-                      ? () => setSelectedCategory(cat.id as BillerCategoryId)
-                      : undefined
+                      ? setSelectedCategory(cat.id as BillerCategoryId)
+                      : setSoonCategory(cat.id as BillerCategoryId)
                   }
-                  disabled={!live}
                   className={cn(
                     "group flex flex-col gap-3 p-4 rounded-2xl border border-border bg-card-background transition-colors text-left",
                     live
                       ? "hover:border-border-active"
-                      : "opacity-60 cursor-not-allowed",
+                      : "opacity-70 hover:opacity-100",
                   )}
                 >
                   <Image
@@ -642,78 +647,35 @@ export default function BillPaymentsPage() {
 
       {/* Recent Transactions — hidden while searching, so the results own the page */}
       {!query && (
-        <div
-          data-tour="bills-recent"
-          className="bg-card-background border border-border rounded-2xl p-5"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-card-text text-sm">
-              Recent Transaction
-            </h3>
-            <Link
-              href="/wallet?tab=fiat&type=BILL_PAYMENT"
-              className="text-xs text-Green flex items-center gap-1 hover:underline"
-            >
-              See all <ArrowUpRight className="w-3 h-3" />
-            </Link>
+        <RecentBillPayments
+          rows={recentRows}
+          isPending={history.isPending}
+          isError={history.isError}
+          onOpen={openReceipt}
+        />
+      )}
+
+      {soonCategoryInfo && (
+        <Modal className="p-0" onClose={() => setSoonCategory(null)}>
+          <ModalHeader
+            className="px-10 py-6 max-sm:px-5 max-sm:py-5"
+            title={soonCategoryInfo.name}
+            onClose={() => setSoonCategory(null)}
+          />
+          <div className="px-10 pb-10 max-sm:px-5 max-sm:pb-6">
+            <ComingSoonScene
+              compact
+              title={
+                soonCategoryInfo.id === "others"
+                  ? "more billers"
+                  : soonCategoryInfo.name
+              }
+              accent="#0066CC"
+              icon="bill"
+              description={`${soonCategoryInfo.desc}, straight from your Xbanka wallet.`}
+            />
           </div>
-          {history.isPending && recentRows.length === 0 ? (
-            <div className="space-y-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-13 rounded-lg bg-border/40 animate-pulse"
-                />
-              ))}
-            </div>
-          ) : recentRows.length === 0 ? (
-            <p className="py-8 text-center text-sm text-text">
-              {history.isError
-                ? "We couldn't load your recent transactions."
-                : "No bill payments yet — your purchases will show up here."}
-            </p>
-          ) : (
-            <div className="space-y-3 stagger">
-              {recentRows.map((tx, i) => {
-                // Disco codes ("IKEJA_ELECTRIC") aren't always biller ids,
-                // and rows built before a biller was known carry no id at
-                // all — fall back to the description ("ikeja prepaid…").
-                const biller =
-                  findBiller(tx.billerId) ??
-                  discoBiller(tx.billerId) ??
-                  billerFromText(tx.name);
-                return (
-                  <div
-                    key={tx.reference ?? i}
-                    onClick={() => openReceipt(tx)}
-                    className="flex items-center gap-3 py-2 border-b border-border last:border-0 transition-colors rounded-lg px-1 hover:bg-border/20 cursor-pointer"
-                  >
-                    <BillerLogo
-                      logo={biller?.logo}
-                      name={biller?.name ?? tx.name}
-                      fallbackColor={biller?.fallbackColor}
-                      size={36}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-card-text truncate">
-                        {tx.name}
-                      </p>
-                      <p className="text-xs text-text truncate">
-                        {tx.number} • {tx.time}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm font-semibold text-card-text">
-                        {tx.amount}
-                      </p>
-                      <StatusBadge status={tx.status} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        </Modal>
       )}
 
       {checkout && (

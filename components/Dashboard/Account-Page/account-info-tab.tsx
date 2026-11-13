@@ -24,6 +24,7 @@ import { CryptoAddressesColumn } from "./crypto-addresses-column";
 // import { toast } from "sonner";
 import { toast } from "sonner";
 import { fileProblem } from "@/lib/file-validation";
+import { EmptyStateIcon } from "@/components/ui/empty-state";
 // import { UseGetVirtualAccount } from "@/lib/services/wallet.service";
 // import { MapleradBankAccount } from "./types";
 // Withdrawal account column (hidden):
@@ -46,14 +47,7 @@ function EmptyBankState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center text-center py-10 px-4 gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/withdrawal-empty.png"
-        alt={title}
-        width={48}
-        height={48}
-        className="mb-1 opacity-80"
-      />
+      <EmptyStateIcon size={72} className="mb-1" />
       <p className="text-sm font-medium leading-5 text-card-text">{title}</p>
       <p className="text-xs font-normal leading-5 text-text max-w-xs">
         {description}

@@ -71,3 +71,19 @@ describe("rankOptions — bank search", () => {
     );
   });
 });
+
+describe("rankOptions — typos", () => {
+  it("finds Guaranty Trust from a misspelling", () => {
+    expect(search("guarantee")[0]).toBe("Guaranty Trust Bank");
+    expect(search("guarante trust")[0]).toBe("Guaranty Trust Bank");
+  });
+
+  it("finds Access and Zenith from near misses", () => {
+    expect(search("acess")[0]).toBe("Access Bank");
+    expect(search("zenit")[0]).toBe("Zenith Bank");
+  });
+
+  it("does not fuzz short queries", () => {
+    expect(search("zzz")).toHaveLength(0);
+  });
+});

@@ -8,6 +8,7 @@ import { useGetMarketPrices } from "@/lib/services/wallet.service";
 import { CryptoMarketOverview } from "../Home-Page/types";
 import { formatPrice, formatToTwoDecimals } from "@/lib/marketFormat";
 import { CoinIcon } from "@/components/ui/coin-icon";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const MARKET_PAGE_TABS = ["favorites", "spot", "futures"] as const;
 const MARKET_FILTERS = ["all", "new"] as const;
@@ -296,13 +297,17 @@ export function MarketPage() {
                 !marketPricesIsError &&
                 visibleCoins.length === 0 && (
                   <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-10 text-center text-text"
-                    >
-                      {tab === "favorites"
-                        ? "No favorites yet. Tap the star to add coins."
-                        : "No coins found."}
+                    <td colSpan={5} className="px-4 py-2">
+                      <EmptyState
+                        title={
+                          tab === "favorites" ? "No favorites yet" : "No coins found."
+                        }
+                        description={
+                          tab === "favorites"
+                            ? "Tap the star to add coins."
+                            : undefined
+                        }
+                      />
                     </td>
                   </tr>
                 )}
