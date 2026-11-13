@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SceneIcon = "gift" | "p2p" | "affiliate" | "referrals" | "bill";
+export type SceneIcon = "gift" | "affiliate" | "referrals" | "bill";
 
 /** The white mark painted on the card, in a 28×28 box. */
 const ICON_PATHS: Record<SceneIcon, React.ReactNode> = {
   gift: <path d="M2 12h24v14H2zM0 6h28v6H0zM14 6v20M14 6c-3-6-10-4-6 0M14 6c3-6 10-4 6 0" />,
-  p2p: <path d="M3 9h21M18 3l6 6-6 6M25 20H4M10 14l-6 6 6 6" />,
   affiliate: (
     <>
       <circle cx="5" cy="14" r="3.5" />
