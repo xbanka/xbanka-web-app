@@ -12,6 +12,12 @@ import {
   WALLET_BALANCE_QUERY_KEYS,
   WalletStreamStatus,
 } from "@/lib/walletStream";
+import {
+  createChimeQueue,
+  playChime,
+  unlockTransactionSounds,
+} from "@/lib/transaction-sounds";
+import { useSettingsStore } from "@/store/settings.store";
 
 /** While the stream is down, poll balances this often (guide: 30 to 60s). */
 export const FALLBACK_POLL_MS = 45_000;
@@ -66,6 +72,15 @@ export const useLiveWalletBalances = () => {
     }
 
     const guard = createStaleGuard();
+    // A chime per transaction: up for money in, down for money out. Only
+    // live balance events count, never the snapshot that (re)opens the
+    // stream, so loading the app or returning to the tab stays quiet.
+    unlockTransactionSounds();
+    void useSettingsStore.persist.rehydrate();
+    const chimes = createChimeQueue({
+      play: playChime,
+      isEnabled: () => useSettingsStore.getState().transactionSounds,
+    });
     let status: WalletStreamStatus = "connecting";
     let stop: (() => void) | null = null;
     let poll: ReturnType<typeof setInterval> | null = null;
@@ -115,6 +130,7 @@ export const useLiveWalletBalances = () => {
         },
         onBalance: (event) => {
           if (!guard.accept(event)) return;
+          chimes.add(event);
           applyBalances(queryClient, toBalanceMap([event]));
           scheduleRefresh(["transaction-history", "get-notifications"]);
         },
@@ -150,6 +166,7 @@ export const useLiveWalletBalances = () => {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("focus", onFocus);
       pause();
+      chimes.dispose();
       if (refresh) clearTimeout(refresh);
     };
   }, [queryClient]);

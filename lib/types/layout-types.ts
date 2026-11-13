@@ -8,6 +8,8 @@ interface NavItem {
   icon: React.ElementType;
   badge?: string;
   badgeColor?: string;
+  /** Not built yet: links to its coming-soon page and is marked in the nav. */
+  soon?: boolean;
   disabled?: boolean,
 }
  

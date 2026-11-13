@@ -13,6 +13,15 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/services/profile.service", () => ({
   UseProfileUser: () => ({ data: { data: { userId: "465f97b6-0000-4000-8000-000000000000", xbId: "xb-k7m2p" } } }),
 }));
+vi.mock("@/lib/services/support.service", () => ({
+  UseSendSupportRequest: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isSuccess: false,
+    error: null,
+    reset: vi.fn(),
+  }),
+}));
 vi.mock("sonner", () => ({ toast: { success: vi.fn() } }));
 
 afterEach(cleanup);

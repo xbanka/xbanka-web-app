@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import {
+  CheckCircle2,
   ChevronDown,
   Copy,
   Fingerprint,
@@ -9,19 +10,22 @@ import {
   Mail,
   MapPin,
   MessageCircle,
+  Loader2,
   MoveLeft,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { UseProfileUser } from "@/lib/services/profile.service";
+import { Button } from "@/components/ui/button";
+import { UseSendSupportRequest } from "@/lib/services/support.service";
 import {
-  SUPPORT_TOPICS,
-  buildSupportMessage,
-  supportWhatsAppNumber,
-  whatsAppLink,
+  HELP_PAGE_TOPICS,
+  MAX_MESSAGE_LENGTH,
   type SupportTopic,
-} from "@/lib/supportWhatsApp";
+} from "@/lib/support/support-request";
+import { supportWhatsAppNumber, whatsAppLink } from "@/lib/supportWhatsApp";
 import {
   INFO_EMAIL,
   OFFICE_ADDRESS,
@@ -36,7 +40,7 @@ import { cn } from "@/lib/utils";
 const QUICK_ANSWERS: { q: string; a: string }[] = [
   {
     q: "My bank transfer hasn’t arrived",
-    a: "Transfers to your Xbanka funding account usually land within minutes. Check that you sent to the account number shown under Add Fund. If it is still missing, message us with your bank’s session ID.",
+    a: "Transfers to your Xbanka funding account usually land within minutes. Check that you sent to the account number shown under Add Fund. If it is still missing, send us a request with your bank’s session ID.",
   },
   {
     q: "I paid for electricity but have no token",
@@ -54,29 +58,39 @@ const QUICK_ANSWERS: { q: string; a: string }[] = [
 
 /**
  * Help & Support: the user picks a topic and describes the problem, and we
- * hand them to WhatsApp with the message filled in. There is no ticketing on
- * our side; the conversation lives in WhatsApp.
+ * email it to the support inbox from our server with their UID, name, email
+ * and phone attached. Support replies to the user's own email.
  */
 export default function HelpPage() {
   const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.xbId;
+  const profile = profileData?.data;
+  const uid: string | undefined = profile?.xbId;
+  const email: string | undefined = profile?.email;
   const number = supportWhatsAppNumber();
 
-  const [topic, setTopic] = useState<SupportTopic>(SUPPORT_TOPICS[0]);
+  const [topic, setTopic] = useState<SupportTopic>(HELP_PAGE_TOPICS[0]);
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const { mutate: send, isPending, error, reset } = UseSendSupportRequest();
 
-  const text = buildSupportMessage({ topic, message, uid });
-  const link = number ? whatsAppLink(number, text) : null;
-  const canSend = !!link && message.trim().length > 0;
+  const trimmed = message.trim();
+  const tooLong = message.length > MAX_MESSAGE_LENGTH;
+  const canSend = !!trimmed && !tooLong && !isPending;
+  // The server only refuses with 503 when email isn't set up on this
+  // deployment; then the user's own mail app is the way through.
+  const emailUnavailable = error?.status === 503;
+  const fallbackLink = mailtoLink(SUPPORT_EMAIL, {
+    subject: `[${topic}] Xbanka support request`,
+    body: [trimmed, uid ? `\nUID: ${uid}` : ""].join("\n"),
+  });
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success("Message copied");
-    } catch {
-      toast.error("Couldn’t copy. Select the message and copy it instead.");
-    }
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!canSend) return;
+    send(
+      { topic, message: trimmed },
+      { onSuccess: () => setSentTo(email ?? "") },
+    );
   };
 
   return (
@@ -86,70 +100,55 @@ export default function HelpPage() {
           Help &amp; Support
         </h1>
         <p className="text-sm text-text">
-          Tell us what’s wrong and finish on WhatsApp, or reach us by email. The
-          support team replies in the same chat.
+          Tell us what’s wrong and we’ll email the support team for you. They
+          reply to your email.
         </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-5 items-start">
         <DashboardCard className="w-full lg:flex-1 min-w-0 p-5 sm:p-7 space-y-6">
-          {sent ? (
-            /* Handoff: WhatsApp has been opened in a new tab. */
+          {sentTo !== null ? (
             <div className="space-y-5">
               <div className="flex flex-col items-center text-center gap-3 pt-2">
                 <span className="grid place-items-center w-14 h-14 rounded-xl bg-teal-light border border-teal-border text-teal-text">
-                  <MessageCircle className="w-6 h-6" />
+                  <CheckCircle2 className="w-6 h-6" />
                 </span>
                 <h2 className="font-display text-lg font-semibold text-card-text">
-                  Your message is ready in WhatsApp
+                  Request sent
                 </h2>
                 <p className="text-sm text-text max-w-sm">
-                  Tap send there and the support team will reply in the same
-                  chat.
+                  {sentTo
+                    ? <>The support team will reply to <span className="font-medium text-card-text">{sentTo}</span>.</>
+                    : "The support team has your request and will get back to you."}
                 </p>
               </div>
-              <pre className="whitespace-pre-wrap break-words rounded-lg border border-border bg-background p-4 text-[13px] leading-6 text-card-text font-sans">
-                {text}
-              </pre>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a
-                  href={link ?? undefined}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-2 h-12 rounded-md border border-abstract-green bg-Green px-5 text-[15px] font-medium text-white hover:bg-Green/90"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Open WhatsApp again
-                </a>
-                <button
-                  type="button"
-                  onClick={copy}
-                  className="inline-flex flex-1 items-center justify-center gap-2 h-12 rounded-md border border-input bg-card-background px-5 text-[15px] font-medium text-card-text hover:bg-border"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy message
-                </button>
+              <div className="rounded-lg border border-border bg-background p-4 space-y-1">
+                <p className="text-[13px] text-text">{topic}</p>
+                <p className="whitespace-pre-wrap break-words text-[14px] leading-6 text-card-text">
+                  {trimmed}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  setSent(false);
+                  setSentTo(null);
                   setMessage("");
+                  reset();
                 }}
                 className="inline-flex items-center gap-2 text-sm text-text hover:text-card-text"
               >
                 <MoveLeft className="w-4 h-4" />
-                Start a new request
+                Send another request
               </button>
             </div>
           ) : (
-            <>
+            <form onSubmit={submit} className="space-y-6">
               <fieldset className="space-y-3">
                 <legend className="mb-3 text-[13px] text-text">
                   1. What is it about?
                 </legend>
                 <div className="flex flex-wrap gap-2">
-                  {SUPPORT_TOPICS.map((t) => (
+                  {HELP_PAGE_TOPICS.map((t) => (
                     <button
                       key={t}
                       type="button"
@@ -174,59 +173,65 @@ export default function HelpPage() {
                 </label>
                 <textarea
                   id="help-message"
-                  rows={5}
+                  rows={6}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="For example: I paid for electricity on 16 Oct but didn’t get a token."
                   className="w-full rounded-lg border border-input bg-input-background px-3.5 py-3 text-base md:text-[15px] leading-6 text-card-text placeholder:text-placeholder outline-none focus:border-border-active focus:ring-[3px] focus:ring-border-active/20 transition-[border-color,box-shadow] resize-y"
                 />
-                <p className="text-xs text-text">
-                  Include amounts, dates or a reference if you have them. Never
-                  share your PIN or password.
-                </p>
+                <div className="flex justify-between gap-4 text-xs text-text">
+                  <p>
+                    Include amounts, dates or a reference if you have them.
+                    Never share your PIN or password.
+                  </p>
+                  <span className={cn("shrink-0 tabular-nums", tooLong && "text-error-text")}>
+                    {message.length}/{MAX_MESSAGE_LENGTH}
+                  </span>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="block text-[13px] text-text">
-                  What we’ll send on WhatsApp
-                </span>
-                <pre className="whitespace-pre-wrap break-words rounded-lg border border-dashed border-input bg-background p-4 text-[13px] leading-6 text-card-text font-sans">
-                  {message.trim() ? text : `${text}[your message]`}
-                </pre>
-              </div>
+              <p className="text-xs text-text">
+                Your UID{uid ? ` (${uid})` : ""}, name, email and phone number
+                are attached so the team can find your account.
+              </p>
+
+              {error && (
+                <div className="rounded-lg border border-error-text/40 bg-error-text/5 px-4 py-3 text-sm text-error-text">
+                  {emailUnavailable ? (
+                    <>
+                      We couldn’t send this from the app. You can{" "}
+                      <a href={fallbackLink} className="font-medium underline">
+                        email it to {SUPPORT_EMAIL}
+                      </a>{" "}
+                      instead.
+                    </>
+                  ) : (
+                    error.message || "We couldn’t send your request. Try again."
+                  )}
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <a
-                  href={canSend ? link! : undefined}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-disabled={!canSend}
-                  onClick={(e) => {
-                    if (!canSend) {
-                      e.preventDefault();
-                      return;
-                    }
-                    setSent(true);
-                  }}
-                  className={cn(
-                    "inline-flex items-center justify-center gap-2 h-12 rounded-md px-6 text-[15px] font-medium transition-colors",
-                    canSend
-                      ? "border border-abstract-green bg-Green text-white hover:bg-Green/90"
-                      : "bg-border text-disabled-text cursor-not-allowed",
-                  )}
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={!canSend}
+                  className="gap-2 px-6"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  Continue on WhatsApp
-                </a>
+                  {isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  {isPending ? "Sending…" : "Send to support"}
+                </Button>
                 <span className="text-xs text-text">
-                  {!number
-                    ? "WhatsApp support isn’t set up yet."
-                    : message.trim()
-                      ? "Opens WhatsApp in a new tab with your message filled in."
-                      : "Describe the problem to continue."}
+                  {trimmed
+                    ? `Goes straight to ${SUPPORT_EMAIL}.`
+                    : "Describe the problem to continue."}
                 </span>
               </div>
-            </>
+            </form>
           )}
         </DashboardCard>
 

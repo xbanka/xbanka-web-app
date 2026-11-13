@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Tab } from "@/lib/types/notification-types";
 import {
   Check,
-  BellOff,
   Loader2,
   Maximize2,
   Minimize2,
@@ -13,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ModalHeader } from "../ui/modal-header";
 import { Button } from "../ui/button";
 import { useNotificationsFeed } from "@/hooks/use-notifications-feed";
+import { EmptyStateIcon } from "@/components/ui/empty-state";
 
 interface NotificationsModalProps {
   onClose: () => void;
@@ -159,10 +159,8 @@ export function NotificationsModal({
               </p>
             </div>
           ) : !hasNotifications ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-border text-text">
-                <BellOff className="h-5 w-5" />
-              </div>
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+              <EmptyStateIcon size={80} className="mb-1" />
               <p className="text-sm font-medium text-card-text">
                 {search.trim()
                   ? "No matching notifications"

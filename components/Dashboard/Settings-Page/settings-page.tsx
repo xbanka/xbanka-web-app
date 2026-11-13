@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronRight, MessageCircle } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Loader2, Mail, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { useSettings } from "@/hooks/use-settings";
@@ -14,11 +15,11 @@ import {
   isLocked,
   languageByCode,
 } from "@/lib/settings";
-import {
-  buildSupportMessage,
-  supportWhatsAppNumber,
-  whatsAppLink,
-} from "@/lib/supportWhatsApp";
+import { UseSendSupportRequest } from "@/lib/services/support.service";
+import { previewChime } from "@/lib/transaction-sounds";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
+import type { PushStatus } from "@/lib/push/push-notifications";
+import { SUPPORT_EMAIL, mailtoLink } from "@/lib/supportContacts";
 import { cn } from "@/lib/utils";
 import { useBalanceVisibilityStore } from "@/store/balance-visibility.store";
 import { useCurrencyViewStore } from "@/store/currency-view.store";
@@ -265,74 +266,152 @@ function GeneralTab() {
   );
 }
 
+const PUSH_HINTS: Record<PushStatus, string> = {
+  on: "On for this device. You’ll get alerts even when Xbanka is closed.",
+  off: "Money in and out, bill payments and security alerts, even when Xbanka is closed.",
+  denied:
+    "Notifications are blocked for Xbanka. Allow them in your browser or phone settings, then come back here.",
+  "needs-install":
+    "On iPhone and iPad, add Xbanka to your Home Screen first (Share › Add to Home Screen), then open it from there.",
+  unsupported: "This browser can’t show notifications. Try Chrome, Edge or Safari.",
+  "not-configured": "Not available yet. We’re switching this on soon.",
+  unavailable: "Not available right now. Reload Xbanka and try again.",
+};
+
+function PushNotificationsSection() {
+  const push = usePushNotifications();
+  const canToggle = push.status === "on" || push.status === "off";
+
+  return (
+    <Section
+      title="Push notifications"
+      description="Alerts on this phone or computer, like any other app."
+    >
+      <Row
+        label="Notifications on this device"
+        inline
+        hint={push.status ? PUSH_HINTS[push.status] : "Checking this device…"}
+      >
+        {canToggle && (
+          <Switch
+            label="Notifications on this device"
+            checked={push.status === "on"}
+            disabled={push.busy}
+            onChange={async (on) => {
+              try {
+                const next = await (on ? push.enable() : push.disable());
+                if (next === "on") toast.success("Notifications are on for this device");
+                else if (next === "denied") toast.error("Notifications are blocked for Xbanka");
+              } catch {
+                toast.error("We couldn’t turn on notifications. Try again.");
+              }
+            }}
+          />
+        )}
+      </Row>
+    </Section>
+  );
+}
+
 function NotificationsTab() {
   const settings = useSettings();
 
   return (
-    <Section
-      title="What we tell you about"
-      description="Choose where each alert goes. In-app alerts pop up while you’re using Xbanka; everything still lands in your notification list."
-    >
-      <div className="hidden sm:grid grid-cols-[1fr_5.5rem_5.5rem] px-5 py-3 text-[13px] text-text">
-        <span>Alert</span>
-        <span className="text-center">In app</span>
-        <span className="text-center">Email</span>
-      </div>
-      {NOTIFICATION_CATEGORIES.map((c) => {
-        const pref = settings.notifications[c.id];
-        return (
-          <div
-            key={c.id}
-            className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_5.5rem_5.5rem] items-center gap-x-4 sm:gap-x-0 px-5 py-4"
-          >
-            <div className="min-w-0">
-              <div className="text-sm font-medium text-card-text">{c.label}</div>
-              <div className="text-[13px] text-text">{c.hint}</div>
+    <div className="space-y-5">
+      <PushNotificationsSection />
+
+      <Section title="Sounds" description="Plays while Xbanka is open in this browser.">
+        <Row
+          label="Transaction sounds"
+          inline
+          hint={
+            <>
+              A chime when money comes in, a softer one when it goes out.{" "}
+              <span className="inline-flex flex-wrap gap-x-3">
+                <button
+                  type="button"
+                  onClick={() => previewChime("in")}
+                  className="inline-flex items-center gap-1 text-Green hover:underline"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  Play money in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => previewChime("out")}
+                  className="inline-flex items-center gap-1 text-Green hover:underline"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  Play money out
+                </button>
+              </span>
+            </>
+          }
+        >
+          <Switch
+            label="Transaction sounds"
+            checked={settings.transactionSounds}
+            onChange={(on) => {
+              settings.set({ transactionSounds: on });
+              if (on) previewChime("in");
+              saved();
+            }}
+          />
+        </Row>
+      </Section>
+
+      <Section
+        title="What we tell you about"
+        description="Choose where each alert goes. In-app alerts pop up while you’re using Xbanka; everything still lands in your notification list."
+      >
+        <div className="hidden sm:grid grid-cols-[1fr_5.5rem_5.5rem] px-5 py-3 text-[13px] text-text">
+          <span>Alert</span>
+          <span className="text-center">In app</span>
+          <span className="text-center">Email</span>
+        </div>
+        {NOTIFICATION_CATEGORIES.map((c) => {
+          const pref = settings.notifications[c.id];
+          return (
+            <div
+              key={c.id}
+              className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_5.5rem_5.5rem] items-center gap-x-4 sm:gap-x-0 px-5 py-4"
+            >
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-card-text">{c.label}</div>
+                <div className="text-[13px] text-text">{c.hint}</div>
+              </div>
+              {(["inApp", "email"] as const).map((channel) => {
+                const locked = isLocked(c.id, channel);
+                const name = channel === "inApp" ? "In app" : "Email";
+                return (
+                  <div key={channel} className="flex flex-col items-center gap-1">
+                    <span className="text-[11px] text-text sm:hidden">{name}</span>
+                    <Switch
+                      label={`${c.label}, ${name}${locked ? ", always on" : ""}`}
+                      checked={locked || pref[channel]}
+                      disabled={locked}
+                      onChange={(on) => {
+                        settings.setNotification(c.id, channel, on);
+                        saved();
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-            {(["inApp", "email"] as const).map((channel) => {
-              const locked = isLocked(c.id, channel);
-              const name = channel === "inApp" ? "In app" : "Email";
-              return (
-                <div key={channel} className="flex flex-col items-center gap-1">
-                  <span className="text-[11px] text-text sm:hidden">{name}</span>
-                  <Switch
-                    label={`${c.label}, ${name}${locked ? ", always on" : ""}`}
-                    checked={locked || pref[channel]}
-                    disabled={locked}
-                    onChange={(on) => {
-                      settings.setNotification(c.id, channel, on);
-                      saved();
-                    }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-      <p className="px-5 py-3 text-[13px] text-text">
-        Security alerts always reach you by email.
-      </p>
-    </Section>
+          );
+        })}
+        <p className="px-5 py-3 text-[13px] text-text">
+          Security alerts always reach you by email.
+        </p>
+      </Section>
+    </div>
   );
 }
 
 function PrivacyTab() {
   const settings = useSettings();
   const setHidden = useBalanceVisibilityStore((s) => s.setHidden);
-  const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.xbId;
-  const number = supportWhatsAppNumber();
-  const closeLink = number
-    ? whatsAppLink(
-        number,
-        buildSupportMessage({
-          topic: "Account & verification",
-          message: "I’d like to close my Xbanka account.",
-          uid,
-        }),
-      )
-    : null;
 
   return (
     <div className="space-y-5">
@@ -408,26 +487,100 @@ function PrivacyTab() {
           label="Close account"
           hint="Our team will help you withdraw your balance first. This can’t be undone."
         >
-          <a
-            href={closeLink ?? undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-disabled={!closeLink}
-            onClick={(e) => {
-              if (!closeLink) e.preventDefault();
-            }}
-            className={cn(
-              "inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md border px-4 text-sm font-medium transition-colors",
-              closeLink
-                ? "border-error-text/50 text-error-text hover:bg-error-text/10"
-                : "border-border text-disabled-text cursor-not-allowed",
-            )}
-          >
-            <MessageCircle className="h-4 w-4" />
-            Request on WhatsApp
-          </a>
+          <CloseAccountRequest />
         </Row>
       </Section>
+    </div>
+  );
+}
+
+const CLOSE_ACCOUNT_MESSAGE =
+  "I’d like to close my Xbanka account. Please help me withdraw any remaining balance first.";
+
+/**
+ * Closing an account is handled by the support team, so this emails them a
+ * closure request (with the account details attached by the server). It asks
+ * once before sending.
+ */
+function CloseAccountRequest() {
+  const { data: profileData } = UseProfileUser();
+  const uid: string | undefined = profileData?.data?.userId;
+  const [confirming, setConfirming] = useState(false);
+  const { mutate: send, isPending, isSuccess, error, reset } = UseSendSupportRequest();
+
+  if (isSuccess) {
+    return (
+      <span className="inline-flex h-10 shrink-0 items-center gap-2 text-sm text-card-text">
+        <CheckCircle2 className="h-4 w-4 text-Green" />
+        Request sent
+      </span>
+    );
+  }
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md border border-error-text/50 px-4 text-sm font-medium text-error-text transition-colors hover:bg-error-text/10"
+      >
+        <Mail className="h-4 w-4" />
+        Request closure
+      </button>
+    );
+  }
+
+  const fallbackLink = mailtoLink(SUPPORT_EMAIL, {
+    subject: "[Close account] Xbanka support request",
+    body: [CLOSE_ACCOUNT_MESSAGE, uid ? `\nUID: ${uid}` : ""].join("\n"),
+  });
+
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-2 sm:max-w-xs">
+      <p className="text-right text-[13px] text-text">
+        Email a closure request to support? They’ll reply to confirm.
+      </p>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            setConfirming(false);
+            reset();
+          }}
+          className="inline-flex h-10 items-center justify-center rounded-md border border-input px-4 text-sm font-medium text-card-text transition-colors hover:bg-border disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() =>
+            send(
+              { topic: "Close account", message: CLOSE_ACCOUNT_MESSAGE },
+              { onSuccess: () => toast.success("Closure request sent to support") },
+            )
+          }
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-error-text px-4 text-sm font-medium text-white transition-colors hover:bg-error-text/90 disabled:opacity-60"
+        >
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isPending ? "Sending…" : "Send request"}
+        </button>
+      </div>
+      {error && (
+        <p className="text-right text-xs text-error-text">
+          {error.status === 503 ? (
+            <>
+              Couldn’t send from the app.{" "}
+              <a href={fallbackLink} className="underline">
+                Email {SUPPORT_EMAIL}
+              </a>
+            </>
+          ) : (
+            error.message || "Couldn’t send. Try again."
+          )}
+        </p>
+      )}
     </div>
   );
 }

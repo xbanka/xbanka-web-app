@@ -15,6 +15,8 @@ type SettingsState = {
   hideAmountsInNotifications: boolean;
   /** Minutes of inactivity before signing out; 0 is never. */
   autoSignOutMinutes: number;
+  /** Chime when money comes in or goes out while the app is open. */
+  transactionSounds: boolean;
   notifications: NotificationPrefs;
   set: (patch: Partial<Omit<SettingsState, "set" | "setNotification">>) => void;
   setNotification: (category: NotificationCategory, channel: Channel, on: boolean) => void;
@@ -33,6 +35,7 @@ export const useSettingsStore = create<SettingsState>()(
       hideBalancesOnOpen: false,
       hideAmountsInNotifications: false,
       autoSignOutMinutes: 0,
+      transactionSounds: true,
       notifications: DEFAULT_NOTIFICATION_PREFS,
       set: (patch) => set(patch),
       setNotification: (category, channel, on) =>

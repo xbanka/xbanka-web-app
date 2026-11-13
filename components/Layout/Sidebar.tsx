@@ -207,8 +207,14 @@ export function Sidebar({
 
                 const content = (
                   <div
-                    title={collapsed ? item.label : undefined}
-                    className={`group w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
+                    title={
+                      collapsed
+                        ? `${item.label}${item.soon ? " · Coming soon" : ""}`
+                        : item.soon
+                          ? "Coming soon"
+                          : undefined
+                    }
+                    className={`group relative w-full flex font-medium leading-5.5 items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] transition-colors
       ${
         item.disabled
           ? "opacity-50 cursor-not-allowed bg-card-background text-text"
@@ -226,7 +232,9 @@ export function Sidebar({
                           ? "text-Green"
                           : item.disabled
                             ? "text-text"
-                            : "text-card-text group-hover:text-Green"
+                            : item.soon
+                              ? "text-text group-hover:text-Green"
+                              : "text-card-text group-hover:text-Green"
                       } w-5 h-5 shrink-0 transition-colors`}
                     />
 
@@ -241,6 +249,20 @@ export function Sidebar({
                             {item.badge}
                           </span>
                         )}
+                      </>
+                    )}
+
+                    {/* Not built yet: an amber dot instead of a "Soon" pill,
+                        at the row's end, or on the icon when collapsed. */}
+                    {item.soon && (
+                      <>
+                        <span
+                          aria-hidden="true"
+                          className={`h-1.5 w-1.5 shrink-0 rounded-full bg-[#F79009] ring-[3px] ring-[#F79009]/20 ${
+                            collapsed ? "absolute right-2.5 top-2" : ""
+                          }`}
+                        />
+                        <span className="sr-only">Coming soon</span>
                       </>
                     )}
                   </div>
@@ -339,10 +361,14 @@ export function Sidebar({
 
             const cardContent = (
               <>
-                {item.badge && (
-                  <span className="absolute right-1 top-1 rounded-[4px] border border-[#A27D00]/80 bg-[#3E2E00] px-1 py-px text-[7px] font-semibold uppercase leading-3 tracking-normal text-[#FEC84B] shadow-[0_0_10px_rgba(254,200,75,0.14)]">
-                    {item.badge}
-                  </span>
+                {item.soon && (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#F79009] ring-[3px] ring-[#F79009]/20"
+                    />
+                    <span className="sr-only">Coming soon</span>
+                  </>
                 )}
                 <Icon className="w-5 h-5 shrink-0" />
                 <span className="text-[9px] font-medium text-center leading-tight">

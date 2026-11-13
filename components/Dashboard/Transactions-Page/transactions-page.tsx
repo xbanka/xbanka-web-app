@@ -39,6 +39,7 @@ import {
 } from "@/lib/transactionDisplay";
 import type { TransactionTypes } from "@/lib/types/transaction-types";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const PAGE_SIZE = 10;
 // The summary reads the most recent transactions in one request; a month of
@@ -346,10 +347,14 @@ export default function TransactionsPage() {
                   ))}
                 {!isPending && rows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-5 py-14 text-center text-text">
-                      {search || status !== "ALL" || tab !== "all"
-                        ? "No transactions match these filters."
-                        : "No transactions yet."}
+                    <td colSpan={7} className="px-5 py-4">
+                      <EmptyState
+                        title={
+                          search || status !== "ALL" || tab !== "all"
+                            ? "No transactions match these filters."
+                            : "No transactions yet."
+                        }
+                      />
                     </td>
                   </tr>
                 )}
@@ -435,10 +440,15 @@ export default function TransactionsPage() {
                 </li>
               ))}
             {!isPending && rows.length === 0 && (
-              <li className="px-4 py-12 text-center text-sm text-text">
-                {search || status !== "ALL" || tab !== "all"
-                  ? "No transactions match these filters."
-                  : "No transactions yet."}
+              <li className="px-4 py-2">
+                <EmptyState
+                  size={72}
+                  title={
+                    search || status !== "ALL" || tab !== "all"
+                      ? "No transactions match these filters."
+                      : "No transactions yet."
+                  }
+                />
               </li>
             )}
             {!isPending &&
