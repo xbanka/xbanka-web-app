@@ -504,7 +504,7 @@ const CLOSE_ACCOUNT_MESSAGE =
  */
 function CloseAccountRequest() {
   const { data: profileData } = UseProfileUser();
-  const uid: string | undefined = profileData?.data?.userId;
+  const uid: string | undefined = profileData?.data?.xbId;
   const [confirming, setConfirming] = useState(false);
   const { mutate: send, isPending, isSuccess, error, reset } = UseSendSupportRequest();
 
