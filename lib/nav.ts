@@ -17,7 +17,6 @@ import {
   GiftCardsIcon,
   HelpSupportIcon,
   MarketOverviewIcon,
-  P2pMarketplaceIcon,
   ReferralsRewardsIcon,
   SettingsIcon,
   TransactionsIcon,
@@ -47,12 +46,6 @@ export const NAV: NavSection[] = [
     title: "Trading",
     items: [
       { id: "crypto", label: "Crypto", icon: CryptoIcon },
-      {
-        id: "p2p",
-        label: "P2P Marketplace",
-        icon: P2pMarketplaceIcon,
-        soon: true,
-      },
       {
         id: "market",
         label: "Market Overview",
