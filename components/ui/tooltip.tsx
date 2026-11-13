@@ -9,6 +9,8 @@ interface TooltipProps {
   children: React.ReactNode;
   disabled?: boolean;
   className?: string;
+  /** Classes for the wrapper around `children`, e.g. to let it stretch. */
+  wrapperClassName?: string;
 }
 
 export function Tooltip({
@@ -16,6 +18,7 @@ export function Tooltip({
   children,
   disabled = false,
   className,
+  wrapperClassName,
 }: TooltipProps) {
   const [open, setOpen] = useState(false);
 
@@ -25,7 +28,7 @@ export function Tooltip({
 
   return (
     <div
-      className="relative inline-block"
+      className={cn("relative inline-block", wrapperClassName)}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
