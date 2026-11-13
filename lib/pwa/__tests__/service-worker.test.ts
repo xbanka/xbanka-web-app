@@ -131,7 +131,7 @@ test("a push without JSON or with an outside URL still shows safely", async () =
   await dispatch(sw.handlers.push, { data: pushData({ body: "x", url: "https://evil.example" }) });
   assert.equal(sw.shown[0].title, "Xbanka");
   assert.equal(sw.shown[0].options.body, "Hello");
-  assert.equal(sw.shown[1].options.data.url, "/");
+  assert.equal(sw.shown[1].options.data.url, "/notifications");
 });
 
 test("tapping a notification focuses an open Xbanka window at its URL", async () => {
@@ -154,4 +154,14 @@ test("tapping a notification opens Xbanka when no window is open", async () => {
     notification: { data: { url: "/wallet" }, close: () => {} },
   });
   assert.deepEqual(sw.opened, ["/wallet"]);
+});
+
+test("a notification without a URL opens /notifications", async () => {
+  const sw = boot({ online: true });
+  await dispatch(sw.handlers.push, { data: pushData({ title: "Hi", body: "x" }) });
+  assert.equal(sw.shown[0].options.data.url, "/notifications");
+  await dispatch(sw.handlers.notificationclick, {
+    notification: { data: {}, close: () => {} },
+  });
+  assert.deepEqual(sw.opened, ["/notifications"]);
 });
