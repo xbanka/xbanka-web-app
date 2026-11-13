@@ -141,7 +141,7 @@ export function OtpInput({
       )}
 
       {/* Digit boxes */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className={cn("flex items-center sm:gap-3", length <= 4 ? "gap-3" : "gap-2")}>
         {Array.from({ length }).map((_, i) => (
           <input
             key={i}
@@ -162,8 +162,13 @@ export function OtpInput({
             onBlur={() => setFocused(null)}
             aria-label={`Digit ${i + 1} of ${length}`}
             className={cn(
-              // Base
-              "w-11 h-13 sm:w-18.5 sm:h-16 rounded-lg border bg-transparent text-center text-xl font-bold text-card-text",
+              // Base. Phones get roomier boxes: a 4-digit PIN has the width
+              // for 56px boxes; 6-digit codes stay narrower to fit 360px.
+              "rounded-lg border bg-transparent text-center font-bold text-card-text sm:w-18.5 sm:h-16",
+              length <= 4 ? "w-14 h-16" : "w-12 h-14",
+              // A masked digit is the browser's bullet, which scales with the
+              // font size: large enough to read at a glance on a phone.
+              mask ? "text-[34px] leading-none sm:text-[30px]" : "text-2xl sm:text-xl",
               "outline-none transition-[border-color,box-shadow,background-color] duration-150",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "caret-transparent",

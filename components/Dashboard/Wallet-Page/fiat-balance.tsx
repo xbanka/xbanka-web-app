@@ -123,14 +123,15 @@ export const FiatBalance = () => {
               </span>
             )}
           </div>
-          <div className="flex items-start gap-4">
-            <div className="">
+          {/* On phones the two actions share the card's full width. */}
+          <div className="flex items-start gap-4 max-sm:gap-3">
+            <div className="max-sm:flex-1">
               <Button
                 data-tour="wallet-add-fund"
                 onClick={handleAddFund}
                 variant={"default"}
                 size={"sm"}
-                className="flex items-center transition-colors"
+                className="flex items-center transition-colors max-sm:h-12 max-sm:w-full max-sm:text-[15px]"
               >
                 <Plus className="w-5 h-5" />
                 Add Fund
@@ -150,22 +151,25 @@ export const FiatBalance = () => {
                 </Button>
               </DisabledTooltipButton> */}
             </div>
-            <DisabledTooltipButton
-              disabled={isSendDisabled}
-              tooltip="Add funds to continue"
-            >
-              <Button
-                data-tour="wallet-send"
+            <div className="max-sm:flex-1">
+              <DisabledTooltipButton
                 disabled={isSendDisabled}
-                onClick={handleSendFund}
-                variant={"outline"}
-                size={"sm"}
-                className="flex items-center transition-colors"
+                tooltip="Add funds to continue"
+                className="max-sm:block max-sm:w-full"
               >
-                <Send className="w-5 h-5" />
-                Send
-              </Button>
-            </DisabledTooltipButton>
+                <Button
+                  data-tour="wallet-send"
+                  disabled={isSendDisabled}
+                  onClick={handleSendFund}
+                  variant={"outline"}
+                  size={"sm"}
+                  className="flex items-center transition-colors max-sm:h-12 max-sm:w-full max-sm:text-[15px]"
+                >
+                  <Send className="w-5 h-5" />
+                  Send
+                </Button>
+              </DisabledTooltipButton>
+            </div>
           </div>
         </div>
         {addFundsOpen && (
