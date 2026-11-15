@@ -13,6 +13,7 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { WhitelistShortcut } from "../TrustedWallets/whitelist-shortcut";
 
 export function CryptoView() {
   const { data, error, isPending, isError } = UseGetCryptoWallet();
@@ -214,6 +215,8 @@ export function CryptoView() {
             ))}
         </div>
       </div>
+
+      <WhitelistShortcut />
 
       <div id="transactions">
         <TransactionHistory tableType="CRYPTO" />

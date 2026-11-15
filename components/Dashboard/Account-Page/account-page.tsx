@@ -4,12 +4,14 @@ import { AccountInfoTab } from "./account-info-tab";
 import { IdentityVerificationTab } from "./identity-verification-tab";
 import { SecurityTab } from "./security-tab";
 import { useRouter, useSearchParams } from "next/navigation";
+import { WhitelistPage } from "../TrustedWallets/whitelist-page";
 
 export default function AccountPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const currentTab = searchParams.get("tab") || "info";
+  const view = searchParams.get("view");
   const tabs: { id: AccountTab; label: string }[] = [
     { id: "info", label: "Account Info" },
     { id: "security", label: "Security" },
@@ -36,7 +38,8 @@ export default function AccountPage() {
       </div>
 
       {currentTab === "info" && <AccountInfoTab />}
-      {currentTab === "security" && <SecurityTab />}
+      {currentTab === "security" &&
+        (view === "whitelist" ? <WhitelistPage /> : <SecurityTab />)}
       {currentTab === "identity" && <IdentityVerificationTab />}
     </div>
   );

@@ -57,14 +57,28 @@ export interface fundWalletBankPayload {
   bankCode: string;
 }
 
-export interface WithdrawCryptoPayload {
-  currency: string;
-  network: string;
-  address: string;
-  amount: number;
-  memo: string;
-  narration: string;
-}
+/**
+ * POST /wallets/withdraw/crypto. To a saved wallet: currency, amount,
+ * trustedWalletId and pin; the backend takes network and address from the
+ * wallet. The free network + address form is refused once the backend turns
+ * on ENFORCE_TRUSTED_WALLETS.
+ */
+export type WithdrawCryptoPayload =
+  | {
+      currency: string;
+      amount: number;
+      trustedWalletId: string;
+      pin: string;
+      narration?: string;
+    }
+  | {
+      currency: string;
+      network: string;
+      address: string;
+      amount: number;
+      memo: string;
+      narration: string;
+    };
 
 export interface DeleteFiatWalletBankSavedCardPayload {
   mandateId: string;

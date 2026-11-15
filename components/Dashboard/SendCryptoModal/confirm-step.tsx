@@ -19,6 +19,7 @@ export function ConfirmStep({
   onNext,
   recipientType,
   xbankaRecipient,
+  networkLabel,
 }: {
   amount: string;
   asset?: UserWallet | null;
@@ -28,8 +29,10 @@ export function ConfirmStep({
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
-  recipientType?: "wallet" | "xbanka-user";
+  recipientType?: "trusted-wallet" | "xbanka-user";
   xbankaRecipient?: RecipientXbankaUsersTypes | null;
+  /** Shown instead of the network code when sending to a saved wallet. */
+  networkLabel?: string;
 }) {
   const parsedAmount = parseFloat(amount || "0");
 
@@ -55,7 +58,7 @@ export function ConfirmStep({
       />
 
       <div className="px-8 pb-3">
-        <ProgressBar step="confirm" />
+        <ProgressBar step="confirm" skipNetwork={recipientType === "trusted-wallet"} />
       </div>
 
       <div className="px-8 pt-4 pb-8 space-y-8">
@@ -98,16 +101,16 @@ export function ConfirmStep({
             {/* Recipient */}
             <div className="flex items-start justify-between gap-3">
               <span className="text-xs font-normal leading-5.5 text-text shrink-0">
-                {recipientType === "wallet" ? "Recipient" : "XBanka User"}
+                {recipientType === "trusted-wallet" ? "To" : "XBanka User"}
               </span>
               <div className="text-right min-w-0">
                 <p className="text-sm font-medium leading-5 text-card-text truncate">
-                  {recipientType === "wallet"
+                  {recipientType === "trusted-wallet"
                     ? recipientName || shortAddr
                     : xbankaName}
                 </p>
                 <p className="text-xs font-normal leading-5 text-text mt-0.5 truncate">
-                  {recipientType === "wallet"
+                  {recipientType === "trusted-wallet"
                     ? recipientName
                       ? shortAddr
                       : ""
@@ -122,7 +125,7 @@ export function ConfirmStep({
                 Network
               </span>
               <span className="text-xs font-medium leading-5 text-card-text px-2.5 py-1 rounded-md bg-input-background border border-input">
-                {network || "-"}
+                {networkLabel || network || "-"}
               </span>
             </div>
 
@@ -148,7 +151,7 @@ export function ConfirmStep({
             <AlertTriangle className="w-4 h-4 text-[#A6F4C5] shrink-0 mt-0.5" />
 
             <p className="text-xs font-normal leading-4.5 text-[#A6F4C5]">
-              Please verify the recipient address and network carefully.
+              Please verify the wallet and network carefully.
               Transactions cannot be reversed once confirmed on the blockchain.
             </p>
           </div>

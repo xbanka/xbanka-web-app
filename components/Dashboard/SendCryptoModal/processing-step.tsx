@@ -6,38 +6,35 @@ import { useEffect } from "react";
 import { UserWallet } from "../Wallet-Page/types";
 import { WalletSuccessState } from "./crypto-modal-types";
 
+// Sends to a saved (trusted) wallet. The network and address come from the
+// wallet on the backend; the PIN is checked as part of this call.
 export function ProcessingStep({
   amount,
   asset,
-  network,
-  recipientName,
-  recipientAddress,
+  trustedWalletId,
+  pin,
   onConfirm,
   setSuccessDetails,
   onError
 }: {
   amount: string;
   asset?: UserWallet | null;
-  network: string | null;
-  recipientAddress: string;
-  recipientName?: string;
+  trustedWalletId: string;
+  pin: string;
   onConfirm: () => void;
   setSuccessDetails: (value: WalletSuccessState) => void;
   onError: (error: Error) => void;
 }) {
-  const shortAddr = `${recipientAddress.slice(0, 4)}...${recipientAddress.slice(-4)}`;
-  const { mutate, isPending, error } = UseWithdrawCrypto();
+  const { mutate } = UseWithdrawCrypto();
 
   useEffect(() => {
-    if (!asset?.currency || !amount || !recipientAddress || !network) return;
+    if (!asset?.currency || !amount || !trustedWalletId || !pin) return;
     const mainAmount = Number(amount.replace(/,/g, ""));
     const payload = {
-      currency: asset?.currency,
-      network,
-      address: recipientAddress,
+      currency: asset.currency,
       amount: mainAmount,
-      memo: "none",
-      narration: "none",
+      trustedWalletId,
+      pin,
     };
     mutate(payload, {
       onSuccess: (response) => {
@@ -48,7 +45,7 @@ export function ProcessingStep({
           onError(error);
         },
     });
-  }, [asset?.currency, amount, recipientAddress, network]);
+  }, [asset?.currency, amount, trustedWalletId, pin]);
   return (
     <Modal onClose={() => {}}>
       <div className="py-10 flex flex-col items-center gap-5 text-center space-y-6">
