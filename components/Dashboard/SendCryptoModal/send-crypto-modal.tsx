@@ -17,17 +17,6 @@ import { FailedStep } from "./failed-step";
 import { RecipientXbankaUsersTypes } from "./types";
 import { ProcessingXbankaStep } from "./processing-xbanka-step";
 import { SuccessStepXbanka } from "./success-step-xbanka";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  classifyTrustedWalletError,
-  networkName,
-  TrustedWallet,
-} from "@/lib/trusted-wallets";
-import {
-  TRUSTED_WALLETS_KEY,
-  UseTrustedWalletsSupported,
-} from "@/lib/services/trusted-wallets.service";
-import { CoolingOffModal } from "../TrustedWallets/cooling-off-modal";
 
 export const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -46,20 +35,14 @@ export function SendCryptoModal({
   const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(
     null,
   );
-  const [trustedWallet, setTrustedWallet] = useState<TrustedWallet | null>(
-    null,
-  );
-  // Held only between the PIN screen and the withdraw call.
-  const [pin, setPin] = useState("");
-  const [coolingOff, setCoolingOff] = useState<string | null>(null);
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [recipientName, setRecipientName] = useState<string | undefined>();
   const [amount, setAmount] = useState("");
   const [successDetails, setSuccessDetails] =
     useState<WalletSuccessState | null>(null);
-  const [recipientType, setRecipientType] = useState<
-    "trusted-wallet" | "xbanka-user"
-  >("trusted-wallet");
-  const queryClient = useQueryClient();
-  const { data: supported } = UseTrustedWalletsSupported();
+  const [recipientType, setRecipientType] = useState<"wallet" | "xbanka-user">(
+    "wallet",
+  );
 
   const [xbankaRecipient, setXbankaRecipient] =
     useState<RecipientXbankaUsersTypes | null>(null);
@@ -75,12 +58,11 @@ export function SendCryptoModal({
     setStep("select_asset");
     setSelectedAssetId(null);
     setSelectedNetworkId(null);
-    setTrustedWallet(null);
-    setPin("");
-    setCoolingOff(null);
+    setRecipientAddress("");
+    setRecipientName(undefined);
     setAmount("");
     setXbankaRecipient(null);
-    setRecipientType("trusted-wallet");
+    setRecipientType("wallet");
     setProcessingError(null);
     setSuccessDetails(null);
   };
@@ -100,35 +82,18 @@ export function SendCryptoModal({
       />
     );
 
-  const isTrusted = recipientType === "trusted-wallet";
-
-  if (coolingOff !== null && trustedWallet)
-    return (
-      <CoolingOffModal
-        label={trustedWallet.label}
-        unlocksAt={coolingOff || trustedWallet.unlocksAt}
-        onClose={() => {
-          setCoolingOff(null);
-          setStep("recipient");
-        }}
-      />
-    );
-
   if (step === "recipient")
     return (
       <RecipientStep
-        currency={selectedAssetId?.currency}
-        selectedWalletId={trustedWallet?.id}
         onBack={() => setStep("select_asset")}
         onClose={handleClose}
         onNext={(data) => {
           setRecipientType(data.type);
 
-          // A saved wallet fixes the network, so that step is skipped.
-          if (data.type === "trusted-wallet" && data.wallet) {
-            setTrustedWallet(data.wallet);
-            setSelectedNetworkId(data.wallet.network);
-            setStep("enter_amount");
+          if (data.type === "wallet") {
+            setRecipientAddress(data.address || "");
+            setRecipientName(data.name);
+            setStep("select_network");
           }
 
           if (data.type === "xbanka-user") {
@@ -158,10 +123,9 @@ export function SendCryptoModal({
         network={selectedNetworkId}
         amount={amount}
         setAmount={setAmount}
-        onBack={() => setStep(isTrusted ? "recipient" : "select_network")}
+        onBack={() => setStep("select_network")}
         onClose={handleClose}
         onNext={() => setStep("confirm")}
-        skipNetwork={isTrusted}
       />
     );
 
@@ -171,11 +135,8 @@ export function SendCryptoModal({
         amount={amount}
         asset={selectedAssetId}
         network={selectedNetworkId}
-        recipientAddress={trustedWallet?.address ?? ""}
-        recipientName={trustedWallet?.label}
-        networkLabel={
-          isTrusted ? networkName(trustedWallet?.network, supported) : undefined
-        }
+        recipientAddress={recipientAddress}
+        recipientName={recipientName}
         recipientType={recipientType}
         xbankaRecipient={xbankaRecipient}
         onBack={() => setStep("enter_amount")}
@@ -189,10 +150,7 @@ export function SendCryptoModal({
       <EnterPinStep
         onBack={() => setStep("confirm")}
         onClose={handleClose}
-        onConfirm={(value) => {
-          setPin(value);
-          setStep("processing");
-        }}
+        onConfirm={() => setStep("processing")}
       />
     );
 
@@ -239,29 +197,14 @@ export function SendCryptoModal({
     return (
       <ProcessingStep
         setSuccessDetails={setSuccessDetails}
-        onConfirm={() => {
-          setPin("");
-          setStep("success");
-        }}
+        onConfirm={() => setStep("success")}
         amount={amount}
         asset={selectedAssetId}
-        trustedWalletId={trustedWallet?.id ?? ""}
-        pin={pin}
+        network={selectedNetworkId}
+        recipientName={recipientName}
+        recipientAddress={recipientAddress}
         onError={(error) => {
-          setPin("");
-          const action = classifyTrustedWalletError(error);
-          if (action.kind === "cooling-off") {
-            queryClient.invalidateQueries({ queryKey: TRUSTED_WALLETS_KEY });
-            setCoolingOff(action.unlocksAt);
-            return;
-          }
-          if (action.kind === "pick-saved-wallet" || action.kind === "refetch") {
-            queryClient.invalidateQueries({ queryKey: TRUSTED_WALLETS_KEY });
-            setTrustedWallet(null);
-            setStep("recipient");
-            return;
-          }
-          setProcessingError(action.message);
+          setProcessingError(error.message);
           setStep("failed");
         }}
       />
@@ -310,8 +253,7 @@ export function SendCryptoModal({
     return (
       <FailedStep
         onClose={handleClose}
-        // A trusted send needs the PIN again: it is not kept after a failure.
-        onRetry={() => setStep(isTrusted ? "enter_pin" : "processing")}
+        onRetry={() => setStep("processing")}
         errorMessage={processingError ? `${processingError}` : ""}
       />
     );

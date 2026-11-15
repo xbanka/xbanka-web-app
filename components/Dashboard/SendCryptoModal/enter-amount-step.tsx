@@ -15,8 +15,7 @@ export function EnterAmountStep({
   setAmount,
   onBack,
   onClose,
-  onNext,
-  skipNetwork,
+  onNext
 }: {
   asset?: UserWallet | null;
   network: string | null;
@@ -25,7 +24,6 @@ export function EnterAmountStep({
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
-  skipNetwork?: boolean;
 }) {
   const numericBalance = Number(asset?.balance) || 0;
   const inputAmount = parseFloat(amount) || 0;
@@ -57,7 +55,7 @@ export function EnterAmountStep({
         onClose={onClose}
       />
       <div className="px-8 pb-3">
-        <ProgressBar step="enter_amount" skipNetwork={skipNetwork} />
+        <ProgressBar step="enter_amount" />
       </div>
 
       <div className="px-8 pt-4 pb-8 space-y-8">
