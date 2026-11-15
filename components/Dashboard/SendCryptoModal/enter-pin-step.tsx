@@ -14,7 +14,7 @@ export function EnterPinStep({
 }: {
   onBack: () => void;
   onClose: () => void;
-  onConfirm: (pin: string) => void;
+  onConfirm: () => void;
 }) {
   const [pin, setPin] = useState("");
   const { mutate, isPending, error } = useValidatePin();
@@ -27,7 +27,7 @@ export function EnterPinStep({
     };
     mutate(payload, {
       onSuccess: () => {
-        onConfirm(pin);
+        onConfirm();
       },
     });
   };
