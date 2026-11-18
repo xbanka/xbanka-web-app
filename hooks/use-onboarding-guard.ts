@@ -34,10 +34,14 @@ export const useOnboardingGuard = () => {
   const hasIdentityVerification =
     isStepDone(verification, "IDENTITY") && isStepDone(verification, "SELFIE");
 
-  const openFor = (blocker: KycBlocker) => {
+  const openIdSelfiePrompt = useOnboardingModalStore(
+    (state) => state.openIdSelfiePrompt,
+  );
+
+  const openFor = (blocker: KycBlocker, introFirst = false) => {
     if (blocker === "personal-info") openPersonalInfo();
     if (blocker === "bvn") openBvn();
-    if (blocker === "id-selfie") openIdSelfie();
+    if (blocker === "id-selfie") (introFirst ? openIdSelfiePrompt : openIdSelfie)();
     return blocker === null;
   };
 
@@ -58,6 +62,7 @@ export const useOnboardingGuard = () => {
         freshProfile.data?.data ?? profile,
         freshVerification.data?.data ?? verification,
       ),
+      true,
     );
   };
 
