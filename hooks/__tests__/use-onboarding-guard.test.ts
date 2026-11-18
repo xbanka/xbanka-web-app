@@ -3,9 +3,10 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const openIdSelfie = vi.fn();
+const openIdSelfiePrompt = vi.fn();
 vi.mock("@/store/onboarding-modal-store", () => ({
   useOnboardingModalStore: (sel: (s: object) => unknown) =>
-    sel({ openPersonalInfo: vi.fn(), openBvn: vi.fn(), openIdSelfie }),
+    sel({ openPersonalInfo: vi.fn(), openBvn: vi.fn(), openIdSelfie, openIdSelfiePrompt }),
 }));
 
 const profile = {
@@ -35,7 +36,10 @@ vi.mock("@/lib/services/profile.service", () => ({
 
 import { useOnboardingGuard } from "../use-onboarding-guard";
 
-beforeEach(() => openIdSelfie.mockReset());
+beforeEach(() => {
+  openIdSelfie.mockReset();
+  openIdSelfiePrompt.mockReset();
+});
 
 describe("useOnboardingGuard.validateCryptoSend", () => {
   it("uses the fresh status: a selfie done on another device does not reopen liveness", async () => {
@@ -45,15 +49,17 @@ describe("useOnboardingGuard.validateCryptoSend", () => {
 
     await expect(result.current.validateCryptoSend()).resolves.toBe(true);
     expect(openIdSelfie).not.toHaveBeenCalled();
+    expect(openIdSelfiePrompt).not.toHaveBeenCalled();
   });
 
-  it("opens the ID/selfie modal when the selfie really is missing", async () => {
+  it("opens the verify-identity prompt (not the ID form) when the selfie really is missing", async () => {
     cachedVerification = NOT_DONE;
     freshVerification = NOT_DONE;
     const { result } = renderHook(() => useOnboardingGuard());
 
     await expect(result.current.validateCryptoSend()).resolves.toBe(false);
-    expect(openIdSelfie).toHaveBeenCalledTimes(1);
+    expect(openIdSelfiePrompt).toHaveBeenCalledTimes(1);
+    expect(openIdSelfie).not.toHaveBeenCalled();
   });
 
   it("falls back to the cached status when the refetch returns nothing", async () => {
