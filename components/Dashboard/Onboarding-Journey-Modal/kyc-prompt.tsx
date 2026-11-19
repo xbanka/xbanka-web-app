@@ -4,24 +4,31 @@ import { ShieldCheck } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { CloseBtn } from "@/components/ui/close-btn";
 import { Button } from "@/components/ui/button";
+import { kycPromptCopy } from "@/lib/kycGate";
+import type { KycPromptState } from "@/store/onboarding-modal-store";
 
 /**
- * Figma "Blocked - Verify identity" (node 9219-366). Shown when a customer
- * taps Send on crypto without ID + selfie done. "Verify now" hands off to the
- * ID/selfie modal; "Later" and close just dismiss.
+ * Figma "Blocked - Verify identity" (node 9219-366), reused for every send
+ * that the customer's tier does not cover yet: "Verify your BVN to send
+ * money" below Tier 1, "Verify your identity to send ..." below Tier 2.
+ * The main button ("Verify now", or "Continue" for personal details) hands
+ * off to that step's form; "Later" and close dismiss.
  */
-export function VerifyIdentityPrompt({
+export function KycPrompt({
+  prompt,
   onVerify,
   onClose,
 }: {
+  prompt: KycPromptState;
   onVerify: () => void;
   onClose: () => void;
 }) {
+  const { title, body, cta } = kycPromptCopy(prompt.blocker, prompt.action);
   return (
     <Modal onClose={onClose} className="p-0">
       <div
         role="dialog"
-        aria-labelledby="verify-identity-title"
+        aria-labelledby="kyc-prompt-title"
         className="relative px-8 pb-8 pt-16 text-center max-sm:px-5"
       >
         <CloseBtn onClose={onClose} className="absolute right-6 top-6" />
@@ -29,14 +36,12 @@ export function VerifyIdentityPrompt({
           <ShieldCheck className="h-7 w-7 text-Green" />
         </div>
         <h2
-          id="verify-identity-title"
+          id="kyc-prompt-title"
           className="mt-8 text-2xl font-semibold text-card-text max-sm:text-xl"
         >
-          Verify your identity to send crypto
+          {title}
         </h2>
-        <p className="mt-3 text-text">
-          Sending crypto needs ID verification. It only takes 2 minutes.
-        </p>
+        <p className="mt-3 text-text">{body}</p>
         <div className="mt-10 flex gap-4">
           <Button
             variant="outline"
@@ -47,7 +52,7 @@ export function VerifyIdentityPrompt({
             Later
           </Button>
           <Button size="lg" className="flex-1" onClick={onVerify}>
-            Verify now
+            {cta}
           </Button>
         </div>
       </div>

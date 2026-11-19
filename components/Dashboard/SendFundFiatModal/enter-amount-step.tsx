@@ -7,7 +7,7 @@ import {
 } from "@/lib/services/wallet.service";
 import { ErrorField } from "@/components/ui/field-error";
 import { NombaInitiateResponse } from "@/lib/types/wallet-types";
-import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { CreatePinModal } from "@/components/Dashboard/Account-Page/create-pin-modal";
 import {
   classifyWithdrawalError,
@@ -44,7 +44,7 @@ export function EnterAmountStep({
   const { data } = UseGetFiatWallet();
   const wallets = data?.data?.data || [];
   const { mutate: initiate, isPending, error, reset } = UseInitiateNombaWithdrawal();
-  const openBvn = useOnboardingModalStore((state) => state.openBvn);
+  const { promptForTierError } = useOnboardingGuard();
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const errorMessage = error ? classifyWithdrawalError(error).message : "";
 
@@ -90,8 +90,11 @@ export function EnterAmountStep({
           const { kind } = classifyWithdrawalError(err);
           traceWithdrawal({ event: "initiate_failed", kind });
           if (kind === "tier-required") {
-            onClose();
-            openBvn();
+            // Backstop for the Tier 2 check on Send: below Tier 1, verify
+            // BVN; at Tier 1, verify ID. Already Tier 2: keep the backend message.
+            void promptForTierError("fiat").then((prompted) => {
+              if (prompted) onClose();
+            });
           } else if (kind === "pin-setup-required") {
             setOpenCreatePin(true);
           }

@@ -2,13 +2,19 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NombaWithdrawal } from "@/lib/types/wallet-types";
-import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 import { EnterPinStep, UNKNOWN_OUTCOME_MESSAGE } from "../enter-pin-step";
 
 const confirmMock = vi.fn();
 vi.mock("@/lib/services/wallet.service", () => ({
   UseConfirmNombaWithdrawal: () => ({ mutateAsync: confirmMock }),
 }));
+
+// Tier checks are covered in hooks/__tests__/use-onboarding-guard.test.ts;
+// here only "did the step ask for the prompt, and what did it do after".
+const guard = vi.hoisted(() => ({
+  promptForTierError: vi.fn<(action: string) => Promise<boolean>>(),
+}));
+vi.mock("@/hooks/use-onboarding-guard", () => ({ useOnboardingGuard: () => guard }));
 
 // Retries run without the real 1s / 2s waits; traces are captured.
 const traceMock = vi.fn();
@@ -66,7 +72,7 @@ const enterPinAndSubmit = (pin = "1234") => {
 beforeEach(() => {
   confirmMock.mockReset();
   traceMock.mockReset();
-  useOnboardingModalStore.setState({ activeModal: null });
+  guard.promptForTierError.mockReset().mockResolvedValue(true);
 });
 afterEach(cleanup);
 
@@ -168,12 +174,21 @@ describe("EnterPinStep", () => {
     );
   });
 
-  it("closes and opens BVN verification when the tier is too low", async () => {
+  it("tier too low: opens the verify prompt, then closes", async () => {
     confirmMock.mockRejectedValue(err(403, "Withdrawal blocked: TIER_REQUIRED"));
     const props = setup();
     enterPinAndSubmit();
     await waitFor(() => expect(props.onClose).toHaveBeenCalled());
-    expect(useOnboardingModalStore.getState().activeModal).toBe("bvn");
+    expect(guard.promptForTierError).toHaveBeenCalledWith("fiat");
+  });
+
+  it("tier error but nothing left to verify: shows the backend message, stays open", async () => {
+    guard.promptForTierError.mockResolvedValue(false);
+    confirmMock.mockRejectedValue(err(403, "Withdrawal blocked: TIER_REQUIRED"));
+    const props = setup();
+    enterPinAndSubmit();
+    expect(await screen.findByText("Withdrawal blocked: TIER_REQUIRED")).toBeInTheDocument();
+    expect(props.onClose).not.toHaveBeenCalled();
   });
 
   it("opens PIN setup when the user has no transaction PIN", async () => {

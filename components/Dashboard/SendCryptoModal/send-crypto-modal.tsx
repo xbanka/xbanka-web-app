@@ -28,6 +28,8 @@ import {
   UseTrustedWalletsSupported,
 } from "@/lib/services/trusted-wallets.service";
 import { CoolingOffModal } from "../TrustedWallets/cooling-off-modal";
+import { isTierRequiredError } from "@/lib/kycGate";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 
 export const CRYPTO_NETWORKS = {
   USDT: ["TRX", "ETH", "BSC", "SOL", "MATIC"],
@@ -60,6 +62,7 @@ export function SendCryptoModal({
   >("trusted-wallet");
   const queryClient = useQueryClient();
   const { data: supported } = UseTrustedWalletsSupported();
+  const { promptForTierError } = useOnboardingGuard();
 
   const [xbankaRecipient, setXbankaRecipient] =
     useState<RecipientXbankaUsersTypes | null>(null);
@@ -88,6 +91,19 @@ export function SendCryptoModal({
   const handleClose = () => {
     reset();
     onClose();
+  };
+
+  // The Send button already checks Tier 2; this covers the backend refusing
+  // for tier anyway (status changed since, or it asks for more). Opens the
+  // verify prompt; if our data shows nothing missing, show its message.
+  const handleTierRequired = async (message: string) => {
+    setPin("");
+    if (await promptForTierError("crypto")) {
+      handleClose();
+      return;
+    }
+    setProcessingError(message);
+    setStep("failed");
   };
 
   if (step === "select_asset")
@@ -230,6 +246,10 @@ export function SendCryptoModal({
             setStep("success");
           }}
           onError={(error) => {
+            if (isTierRequiredError(error)) {
+              void handleTierRequired(error.message);
+              return;
+            }
             setProcessingError(error.message);
             setStep("failed");
           }}
@@ -248,6 +268,10 @@ export function SendCryptoModal({
         trustedWalletId={trustedWallet?.id ?? ""}
         pin={pin}
         onError={(error) => {
+          if (isTierRequiredError(error)) {
+            void handleTierRequired(error.message);
+            return;
+          }
           setPin("");
           const action = classifyTrustedWalletError(error);
           if (action.kind === "cooling-off") {
