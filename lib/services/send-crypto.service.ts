@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { transferCryptoToXbankaUsers, XbankaCryptoUserPayload } from "../actions/send-crypto-to-users";
 import { handleApiError } from "../errors/error";
+import { isTierRequiredError } from "../kycGate";
 
 export const useTransferCryptoToXbankaUsers = () => {
   const queryClient = useQueryClient();
@@ -15,7 +16,8 @@ export const useTransferCryptoToXbankaUsers = () => {
     },
 
     onError: (err) => {
-      handleApiError(err);
+      // A tier error opens the verify prompt instead of a toast.
+      handleApiError(err, { showToast: !isTierRequiredError(err) });
     },
   });
 };

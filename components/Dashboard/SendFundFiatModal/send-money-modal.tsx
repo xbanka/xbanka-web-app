@@ -10,6 +10,8 @@ import {
   XbankaTransferRecipient,
 } from "./types";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { SelectRecipientStep } from "./selectRecepient";
 import { TabToggle } from "./tab-toggle";
 import { ConfirmStep } from "./confirm-step";
@@ -47,6 +49,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const [amountNotice, setAmountNotice] = useState("");
 
   const showTabs = step === "select-recipient";
+  const { promptForTierError } = useOnboardingGuard();
 
   const handleTabChange = (t: Tab) => {
     setTab(t);
@@ -57,6 +60,17 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
   const handleSelectXbanka = (r: XbankaTransferRecipient) => {
     setXbankaRecipient(r);
     setStep("enter-amount-xbanka");
+  };
+
+  // Backstop for the Tier 2 check on Send (status changed since, or the
+  // backend asks for more than we know about): "tier required" on transfer.
+  const handleXbankaTierRequired = async (message: string) => {
+    if (await promptForTierError("fiat")) {
+      handleClose();
+      return;
+    }
+    toast.error(message);
+    setStep("enter_pin_xbanka");
   };
 
   const handleBankFound = (r: Recipient) => {
@@ -252,6 +266,7 @@ export function SendMoneyModal({ onClose, onBack }: SendMoneyModalProps) {
             mandateId={xbankaRecipient.uid}
             accountName={xbankaRecipient.name}
             handleStep={setStep}
+            onTierRequired={handleXbankaTierRequired}
           />
         )}
         {step === "success" && (recipient || xbankaRecipient) && (

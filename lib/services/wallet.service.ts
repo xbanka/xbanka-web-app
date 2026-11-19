@@ -38,6 +38,7 @@ import {
   withdrawCrypto,
 } from "../actions/wallet";
 import { handleApiError } from "../errors/error";
+import { isTierRequiredError } from "../kycGate";
 import {
   ConvertExecutePayload,
   QuoteExecutePayload,
@@ -105,7 +106,8 @@ export const UseWithdrawCrypto = () => {
     mutationFn: (data: WithdrawCryptoPayload) => withdrawCrypto(data),
     onSuccess: (result) => {},
     onError: (err) => {
-      handleApiError(err);
+      // A tier error opens the verify prompt instead of a toast.
+      handleApiError(err, { showToast: !isTierRequiredError(err) });
     },
   });
 };
