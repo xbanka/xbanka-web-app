@@ -32,6 +32,14 @@ describe("classifyWithdrawalError", () => {
     expect(classifyWithdrawalError(apiError(status, message)).kind).toBe(kind);
   });
 
+  it("classifies a friendly KYC message by its errorGroup", () => {
+    const error = {
+      ...apiError(403, "Withdrawal not allowed yet. Verify your BVN to continue."),
+      raw: { response: { data: { errorGroup: "KYC_REQUIRED" } } },
+    };
+    expect(classifyWithdrawalError(error).kind).toBe("tier-required");
+  });
+
   it("matches wording case-insensitively", () => {
     expect(
       classifyWithdrawalError(apiError(400, "WITHDRAWAL REQUEST EXPIRED")).kind,

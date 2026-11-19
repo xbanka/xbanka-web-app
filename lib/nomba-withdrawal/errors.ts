@@ -25,8 +25,10 @@ export const LIMIT_EXCEEDED_MESSAGE =
 export const classifyWithdrawalError = (
   error: unknown,
 ): ClassifiedWithdrawalError => {
-  const { status, message = "Something went wrong" } = (error ??
+  const { status, message = "Something went wrong", raw } = (error ??
     {}) as Partial<ApiError>;
+  const errorGroup = (raw as { response?: { data?: { errorGroup?: string } } })
+    ?.response?.data?.errorGroup;
   const text = message.toLowerCase();
 
   if (
@@ -35,7 +37,11 @@ export const classifyWithdrawalError = (
   ) {
     return { kind: "expired", message };
   }
-  if (text.includes("tier_required")) return { kind: "tier-required", message };
+  // The backend now sends a plain-language message plus errorGroup KYC_REQUIRED;
+  // the legacy TIER_REQUIRED wording is still accepted.
+  if (errorGroup === "KYC_REQUIRED" || text.includes("tier_required")) {
+    return { kind: "tier-required", message };
+  }
   if (
     text.includes("pin_setup_required") ||
     text.includes("transaction pin not set")
