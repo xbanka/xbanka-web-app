@@ -7,7 +7,7 @@ import { useState } from "react";
 import { ErrorField } from "@/components/ui/field-error";
 import { ResetPinModal } from "@/components/Layout/ResetPinModal";
 import { NombaWithdrawal } from "@/lib/types/wallet-types";
-import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
+import { useOnboardingGuard } from "@/hooks/use-onboarding-guard";
 import { CreatePinModal } from "@/components/Dashboard/Account-Page/create-pin-modal";
 import {
   classifyWithdrawalError,
@@ -42,7 +42,7 @@ export function EnterPinStep({
   const [locked, setLocked] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { mutateAsync: confirm } = UseConfirmNombaWithdrawal();
-  const openBvn = useOnboardingModalStore((state) => state.openBvn);
+  const { promptForTierError } = useOnboardingGuard();
 
   const handleConfirm = async () => {
     if (submitting) return;
@@ -74,8 +74,10 @@ export function EnterPinStep({
           onExpired(message);
           return;
         case "tier-required":
-          onClose();
-          openBvn();
+          // Backstop for the Tier 2 check on Send: below Tier 1, verify
+          // BVN; at Tier 1, verify ID. Already Tier 2: keep the backend message.
+          if (await promptForTierError("fiat")) onClose();
+          else setErrorMessage(message);
           return;
         case "pin-setup-required":
           // The digits typed were not a real PIN; start fresh once it's set.

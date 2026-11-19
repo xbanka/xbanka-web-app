@@ -5,15 +5,33 @@ import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 import { PersonalInfoModal } from "./personal-info-modal";
 import { BvnModal } from "../Onboarding-Journey-Modal/bvn-modal";
 import { IdSelfieModal } from "../Onboarding-Journey-Modal/id-selfie-modal";
-import { VerifyIdentityPrompt } from "../Onboarding-Journey-Modal/verify-identity-prompt";
+import { KycPrompt } from "../Onboarding-Journey-Modal/kyc-prompt";
 
 export const OnboardingModalProvider = () => {
-  const { activeModal, closeModal, openIdSelfie } = useOnboardingModalStore();
+  const {
+    activeModal,
+    prompt,
+    closeModal,
+    openPersonalInfo,
+    openBvn,
+    openIdSelfie,
+  } = useOnboardingModalStore();
+
+  const startVerification = () => {
+    if (prompt?.blocker === "personal-info") openPersonalInfo();
+    else if (prompt?.blocker === "bvn") openBvn();
+    else if (prompt?.blocker === "id-selfie") openIdSelfie();
+    else closeModal();
+  };
 
   return (
     <>
-      {activeModal === "id-selfie-prompt" && (
-        <VerifyIdentityPrompt onVerify={openIdSelfie} onClose={closeModal} />
+      {activeModal === "kyc-prompt" && prompt && (
+        <KycPrompt
+          prompt={prompt}
+          onVerify={startVerification}
+          onClose={closeModal}
+        />
       )}
 
       {activeModal === "personal-info" && (

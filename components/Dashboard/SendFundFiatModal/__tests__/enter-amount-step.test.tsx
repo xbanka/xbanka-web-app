@@ -1,9 +1,8 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LIMIT_EXCEEDED_MESSAGE } from "@/lib/nomba-withdrawal";
 import type { NombaInitiateResponse } from "@/lib/types/wallet-types";
-import { useOnboardingModalStore } from "@/store/onboarding-modal-store";
 import { EnterAmountStep } from "../enter-amount-step";
 
 type MutateOptions = {
@@ -49,6 +48,13 @@ vi.mock("@/lib/services/wallet.service", () => ({
     reset: vi.fn(),
   }),
 }));
+
+// Tier checks are covered in hooks/__tests__/use-onboarding-guard.test.ts;
+// here only "did the step ask for the prompt, and what did it do after".
+const guard = vi.hoisted(() => ({
+  promptForTierError: vi.fn<(action: string) => Promise<boolean>>(),
+}));
+vi.mock("@/hooks/use-onboarding-guard", () => ({ useOnboardingGuard: () => guard }));
 
 const traceMock = vi.fn();
 vi.mock("@/lib/nomba-withdrawal", async (importOriginal) => ({
@@ -101,7 +107,7 @@ beforeEach(() => {
   traceMock.mockReset();
   limits.tier = 1;
   limits.spentToday = 0;
-  useOnboardingModalStore.setState({ activeModal: null });
+  guard.promptForTierError.mockReset().mockResolvedValue(true);
 });
 afterEach(cleanup);
 
@@ -146,15 +152,27 @@ describe("EnterAmountStep", () => {
     expect(screen.getByPlaceholderText("What's this for?")).toHaveAttribute("maxLength", "100");
   });
 
-  it("closes and opens BVN verification when the tier is too low", () => {
+  it("tier too low: opens the verify prompt, then closes", async () => {
     initiate.mutate.mockImplementation((_p, opts) =>
       opts.onError(err(403, "Withdrawal blocked: TIER_REQUIRED")),
     );
     const { onClose } = setup();
     fillAndContinue("10000");
-    expect(onClose).toHaveBeenCalled();
-    expect(useOnboardingModalStore.getState().activeModal).toBe("bvn");
+    expect(guard.promptForTierError).toHaveBeenCalledWith("fiat");
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(traceMock).toHaveBeenCalledWith({ event: "initiate_failed", kind: "tier-required" });
+  });
+
+  it("tier error but nothing left to verify: stays open on the backend message", async () => {
+    guard.promptForTierError.mockResolvedValue(false);
+    initiate.error = err(403, "Withdrawal blocked: TIER_REQUIRED");
+    initiate.mutate.mockImplementation((_p, opts) => opts.onError(initiate.error));
+    const { onClose } = setup();
+    fillAndContinue("10000");
+    await waitFor(() => expect(guard.promptForTierError).toHaveBeenCalled());
+    await Promise.resolve();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByText("Withdrawal blocked: TIER_REQUIRED")).toBeInTheDocument();
   });
 
   it("opens PIN setup when the user has no transaction PIN", () => {
