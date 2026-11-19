@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getActiveXbankaUsers, transferFiatToXbankaUsers, XbankaUserPayload } from "../actions/send-fiat-to-users";
 import { handleApiError } from "../errors/error";
+import { isTierRequiredError } from "../kycGate";
 
 export const UseGetActiveXbankaUsers = () => {
   const mutate = useQuery({
@@ -29,7 +30,8 @@ export const useTransferFiatToXbankaUsers = () => {
     },
 
     onError: (err) => {
-      handleApiError(err);
+      // A tier error opens the verify prompt instead of a toast.
+      handleApiError(err, { showToast: !isTierRequiredError(err) });
     },
   });
 };

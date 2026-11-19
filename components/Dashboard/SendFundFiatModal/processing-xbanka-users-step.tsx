@@ -4,12 +4,14 @@ import { LucideArrowLeftRight } from "lucide-react";
 import { useEffect } from "react";
 import { Step, XbankaTransferRecipient } from "./types";
 import { useTransferFiatToXbankaUsers } from "@/lib/services/send-fiat.service";
+import { isTierRequiredError } from "@/lib/kycGate";
 
 export function ProcessingXbankaStep({
   handleStep,
   recipient,
   setReference,
   setMessage,
+  onTierRequired,
 }: {
   amount: string;
   savedCardId?: string;
@@ -19,6 +21,8 @@ export function ProcessingXbankaStep({
   accountName: string;
   handleStep: (value: Step) => void;
   recipient: XbankaTransferRecipient;
+  /** The backend refused the transfer for KYC tier. Gets its message. */
+  onTierRequired?: (message: string) => void;
 }) {
   const { mutate } = useTransferFiatToXbankaUsers();
 
@@ -36,7 +40,11 @@ export function ProcessingXbankaStep({
           setMessage(result.data.message);
           handleStep("success");
         },
-        onError: () => {
+        onError: (err) => {
+          if (onTierRequired && isTierRequiredError(err)) {
+            onTierRequired(err.message);
+            return;
+          }
           handleStep("enter_pin_xbanka");
         },
       },

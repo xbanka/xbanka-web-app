@@ -29,7 +29,7 @@ export const FiatBalance = () => {
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [sendFundsOpen, setSendFundsOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
-  const { validateUser } = useOnboardingGuard();
+  const { validateSend } = useOnboardingGuard();
   const wallets = data?.data?.data || [];
   const latestWallet = wallets?.[0];
   const { data: profileData } = UseProfileUser();
@@ -45,8 +45,10 @@ export const FiatBalance = () => {
     setAddFundsOpen(true);
   };
 
-  const handleSendFund = () => {
-    const isAllowed = validateUser();
+  const handleSendFund = async () => {
+    // Every fiat send needs Tier 2 (spec 7.3): "Verify your BVN" below
+    // Tier 1, "Verify your identity" at Tier 1.
+    const isAllowed = await validateSend("fiat");
 
     if (!isAllowed) return;
     if (!hasTransactionPin) {
