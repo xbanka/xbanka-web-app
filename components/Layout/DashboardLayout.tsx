@@ -12,6 +12,8 @@ import { usePushSync } from "@/hooks/use-push-notifications";
 import { SplashGate } from "./splash-gate";
 import { ProductTour } from "./product-tour";
 import { SettingsEffects } from "./settings-effects";
+import { DepositFlowHost } from "@/components/Dashboard/BankDeposit/deposit-flow-host";
+import { PendingDepositBanner } from "@/components/Dashboard/BankDeposit/pending-deposit-banner";
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>("dashboard");
@@ -30,6 +32,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     {/* First-visit tour of whichever section is open; renders nothing. */}
     <ProductTour />
     <SettingsEffects />
+    {/* The Add Fund flow: one instance for every page and the banner. */}
+    <DepositFlowHost />
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
         activePage={activePage}
@@ -41,6 +45,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar setMobileOpen={setMobileOpen} />
+        {/* Under the top bar on every page, outside the scroll area so it
+            stays put, while a bank deposit is pending. */}
+        <PendingDepositBanner />
         <main
           data-sidebar={collapsed ? "collapsed" : "expanded"}
           className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6"

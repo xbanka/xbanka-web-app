@@ -10,7 +10,7 @@ import { sumFiatBalances } from "@/lib/sumBalances";
 import { Eye, EyeOff, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { VirtualAccountModal } from "../AddFundFiatModal/virtual-account-modal";
-import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
+import { useDepositFlowStore } from "@/store/deposit-flow-store";
 import { SendMoneyModal } from "../SendFundFiatModal/send-money-modal";
 import {
   UseProfileUser,
@@ -26,7 +26,7 @@ import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 export const FiatBalance = () => {
   const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const { data, error, isPending } = UseGetFiatWallet();
-  const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const openAddFund = useDepositFlowStore((s) => s.open);
   const [sendFundsOpen, setSendFundsOpen] = useState(false);
   const [openCreatePin, setOpenCreatePin] = useState(false);
   const { validateSend } = useOnboardingGuard();
@@ -42,7 +42,7 @@ export const FiatBalance = () => {
     // A bank transfer deposit never needs the transaction PIN, so a first-time
     // user can fund the wallet before they have set one up. Sending money out
     // still asks for it (see handleSendFund).
-    setAddFundsOpen(true);
+    openAddFund();
   };
 
   const handleSendFund = async () => {
@@ -170,9 +170,6 @@ export const FiatBalance = () => {
             </DisabledTooltipButton>
           </div>
         </div>
-        {addFundsOpen && (
-          <BankTransferFlow onClose={() => setAddFundsOpen(false)} />
-        )}
         {sendFundsOpen && (
           <SendMoneyModal
             onClose={() => setSendFundsOpen(false)}

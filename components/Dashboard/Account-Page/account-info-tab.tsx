@@ -13,7 +13,7 @@ import {
 } from "@/lib/services/profile.service";
 import { UseGetFundingAccounts } from "@/lib/services/wallet.service";
 import { FundingAccount } from "@/lib/types/wallet-types";
-import { AddFundingAccountStep } from "@/components/Dashboard/AddFundFiatModal/bank-transfer-flow";
+import { AddFundingAccount } from "@/components/Dashboard/BankDeposit/add-funding-account";
 import { BankAccountSkeleton } from "./bank-account-skeleton";
 import { EditProfileModal } from "./edit-modal-profile";
 import { WithdrawalAccountCard } from "./withdrawal-account-card";
@@ -506,7 +506,7 @@ export function AccountInfoTab() {
         </div>
 
         {openFundingModal && (
-          <AddFundingAccountStep
+          <AddFundingAccount
             onBack={() => setOpenFundingModal(false)}
             onClose={() => setOpenFundingModal(false)}
             onAdded={() => setOpenFundingModal(false)}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { DashboardCard } from "@/components/Layout/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { ErrorField } from "@/components/ui/field-error";
@@ -10,12 +9,12 @@ import { useCurrencyViewStore } from "@/store/currency-view.store";
 import { Eye, EyeOff, Plus } from "lucide-react";
 import { useBalanceVisibility } from "@/hooks/use-balance-visibility";
 import { useCountUp } from "@/hooks/use-count-up";
-import { BankTransferFlow } from "../AddFundFiatModal/bank-transfer-flow";
+import { useDepositFlowStore } from "@/store/deposit-flow-store";
 
 export function AssetValueCard() {
   const { hidden, toggle: toggleHidden } = useBalanceVisibility();
   const { view, setView } = useCurrencyViewStore();
-  const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const openAddFund = useDepositFlowStore((s) => s.open);
   const {
     data: getAllWalletBalance,
     error: getAllWalletBalanceError,
@@ -97,7 +96,7 @@ export function AssetValueCard() {
             size="sm"
             data-tour="add-funds"
             className="w-full sm:w-auto"
-            onClick={() => setAddFundsOpen(true)}
+            onClick={openAddFund}
           >
             <Plus className="w-4 h-4" />
             Add Fund
@@ -105,9 +104,6 @@ export function AssetValueCard() {
         </div>
       </DashboardCard>
 
-      {addFundsOpen && (
-        <BankTransferFlow onClose={() => setAddFundsOpen(false)} />
-      )}
     </>
   );
 }
