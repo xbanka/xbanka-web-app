@@ -134,7 +134,7 @@ const SignUp = () => {
 
   return (
     <Card className={AUTH_CARD}>
-      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:right-0 lg:top-0" />
+      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:hidden" />
 
       <div className="space-y-4">
         {/* progress: two short steps instead of one long form */}

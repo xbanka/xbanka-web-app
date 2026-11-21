@@ -123,7 +123,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
   if (isNoAccountError) {
     return (
       <Card className="space-y-6 text-center">
-        <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
+        <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0 lg:hidden" />
         <div className="pt-4 space-y-4">
           <h2 className="text-2xl font-bold text-card-text">Account Not Found</h2>
           <p className="text-text">
@@ -151,7 +151,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
 
   return (
     <Card className={AUTH_CARD}>
-      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:right-0 lg:top-0" />
+      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:hidden" />
       <div className="space-y-2">
         <h1 className="font-display text-[30px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[34px] sm:leading-10">
           Welcome back
