@@ -17,12 +17,12 @@ import { useEffect, useState } from "react";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { maskEmail } from "@/lib/maskEmail";
 import { ErrorField } from "../ui/field-error";
-import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import MailPic  from "../../public/mail.svg";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 import { cn } from "@/lib/utils";
 import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
+import { AuthMobileBar } from "./auth-mobile-bar";
 
 const GENDERS = [
   { value: "female", label: "Female" },
@@ -134,16 +134,19 @@ const SignUp = () => {
 
   return (
     <Card className={AUTH_CARD}>
-      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:hidden" />
+      <AuthMobileBar
+        onBack={step === 2 ? () => setStep(1) : undefined}
+        backHref={step === 1 ? "/sign-in" : undefined}
+      />
 
       <div className="space-y-4">
         {/* progress: two short steps instead of one long form */}
-        <div className="flex items-center gap-3 pr-12">
+        <div className="flex items-center gap-3">
           {step === 2 && (
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="-ml-1 inline-flex items-center gap-1 text-sm text-text hover:text-card-text"
+              className="-ml-1 hidden items-center gap-1 text-sm text-text hover:text-card-text lg:inline-flex"
             >
               <ChevronLeft className="h-4 w-4" />
               Back
@@ -188,7 +191,7 @@ const SignUp = () => {
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:space-y-0 max-sm:gap-5"
+          className="space-y-5"
         >
           {step === 1 ? (
             <>
@@ -213,7 +216,7 @@ const SignUp = () => {
               <Button
                 type="button"
                 onClick={goToDetails}
-                className={cn(AUTH_BUTTON, "max-sm:mt-auto")}
+                className={AUTH_BUTTON}
               >
                 Continue
               </Button>
@@ -323,7 +326,7 @@ const SignUp = () => {
                 type="submit"
                 disabled={!isValid}
                 variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
-                className={cn(AUTH_BUTTON, "max-sm:mt-auto")}
+                className={AUTH_BUTTON}
               >
                 {isPending ? "Creating account…" : "Create account"}
               </Button>
@@ -332,7 +335,7 @@ const SignUp = () => {
         </form>
       </FormProvider>
 
-      <p className="text-center text-xs leading-5 text-placeholder">
+      <p className="text-center text-xs leading-5 text-placeholder max-sm:mt-auto">
         By creating an account you agree to our <span className="text-Green">Terms of Service</span> and{" "}
         <PrivacyPolicyLink />.
       </p>

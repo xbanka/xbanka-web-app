@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -16,6 +16,10 @@ import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
  * Forgot password) in place; "Sign up" goes to sign-up. Wide
  * screens never see it: the hero is beside the form there.
  */
+/** Lets the form behind the Welcome screen go back to it (phones only). */
+const BackToWelcome = createContext<(() => void) | null>(null);
+export const useBackToWelcome = () => useContext(BackToWelcome);
+
 export function MobileWelcome({ children }: { children: React.ReactNode }) {
   const [welcome, setWelcome] = useState(true);
   const { loginWithGoogle } = useGoogleAuth();
@@ -69,7 +73,9 @@ export function MobileWelcome({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       )}
-      <div className={cn(welcome && "max-lg:hidden")}>{children}</div>
+      <div className={cn(welcome && "max-lg:hidden")}>
+        <BackToWelcome.Provider value={() => setWelcome(true)}>{children}</BackToWelcome.Provider>
+      </div>
     </>
   );
 }

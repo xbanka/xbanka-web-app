@@ -21,9 +21,12 @@ import { useRouter } from "next/navigation";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 import { cn } from "@/lib/utils";
 import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
+import { AuthMobileBar } from "./auth-mobile-bar";
+import { useBackToWelcome } from "./hero/mobile-welcome";
 
 const SignIn = ({ urlError }: { urlError?: string }) => {
   const router = useRouter();
+  const backToWelcome = useBackToWelcome();
   const isNoAccountError = urlError?.toLowerCase().includes("no account belongs to this google");
   const { loginWithGoogle } = useGoogleAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
@@ -151,7 +154,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
 
   return (
     <Card className={AUTH_CARD}>
-      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:hidden" />
+      <AuthMobileBar onBack={backToWelcome} />
       <div className="space-y-2">
         <h1 className="font-display text-[30px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[34px] sm:leading-10">
           Welcome back
@@ -177,7 +180,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
 
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:space-y-0 max-sm:gap-5"
+        className="space-y-5"
       >
         <FormField
           id="email"
@@ -209,7 +212,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
           type="submit"
           disabled={!isValid}
           variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
-          className={cn(AUTH_BUTTON, "max-sm:mt-auto")}
+          className={AUTH_BUTTON}
         >
           {isPending ? "Signing in…" : "Sign in"}
         </Button>
@@ -221,7 +224,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
         </p>
       </form>
 
-      <p className="text-center text-xs leading-5 text-placeholder">
+      <p className="text-center text-xs leading-5 text-placeholder max-sm:mt-auto">
         By signing in you agree to our <span className="text-Green">Terms of Service</span> and{" "}
         <PrivacyPolicyLink />.
       </p>
