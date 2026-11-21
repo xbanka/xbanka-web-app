@@ -43,7 +43,7 @@ export function MobileWelcome({ children }: { children: React.ReactNode }) {
               />
               Continue with Google
             </button>
-            <div className="grid grid-cols-[1fr_1.4fr] gap-3">
+            <div className="!mt-4 grid grid-cols-[1fr_1.4fr] gap-3">
               <button
                 type="button"
                 onClick={() => setWelcome(false)}
