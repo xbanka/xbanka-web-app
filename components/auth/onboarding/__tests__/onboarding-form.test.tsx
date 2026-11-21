@@ -18,7 +18,7 @@ describe("OnboardingForm", () => {
     render(<OnboardingForm />);
     expect(screen.getByText("bvn-step")).toBeTruthy();
     expect(screen.getByText("BVN Verification")).toBeTruthy();
-    expect(screen.getByText("1 of 3")).toBeTruthy();
+    expect(screen.getByText("Step 1 of 3")).toBeTruthy();
     expect(screen.queryByText("Basic Information")).toBeNull();
   });
 
@@ -26,7 +26,7 @@ describe("OnboardingForm", () => {
     render(<OnboardingForm />);
     screen.getByText("bvn-step").click();
     return screen.findByText("id-step").then(() => {
-      expect(screen.getByText("2 of 3")).toBeTruthy();
+      expect(screen.getByText("Step 2 of 3")).toBeTruthy();
     });
   });
 });

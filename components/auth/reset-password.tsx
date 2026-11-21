@@ -69,7 +69,7 @@ const ResetPassword = ({ email = "" }: ResetPasswordProps) => {
 
   return (
     <Card className="space-y-6 max-sm:text-left">
-      <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
+      <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0 lg:hidden" />
 
       {step === "form" && (
         <>

@@ -1,7 +1,6 @@
 "use client";
 
-import { IdCard } from "lucide-react";
-import { SelectField } from "../../ui/select";
+import { ChevronLeft, IdCard } from "lucide-react";
 import { FormField } from "../../ui/FormField";
 import { AttachmentFile, AttachmentUpload } from "../../ui/UploadAttachment";
 import { useEffect, useState } from "react";
@@ -21,16 +20,29 @@ import { useIdentity, useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { ErrorField } from "@/components/ui/field-error";
 import { loadFaceLandmarker } from "@/components/ui/LivenessDetector";
+import { cn } from "@/lib/utils";
 
 interface Step3Props {
   setStep: (n: number) => void;
 }
 
-const mobileFieldClass =
-  "max-sm:[&_input]:h-[50px] max-sm:[&_input]:rounded-lg max-sm:[&_input]:pl-14 max-sm:[&_input]:text-[18px] max-sm:[&_input]:leading-7 max-sm:[&_input]:shadow-none max-sm:[&_svg]:left-5 max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+/** Friendlier names for the ID types (values stay what the API expects). */
+const ID_LABELS: Record<string, string> = {
+  nin: "National ID (NIN)",
+  international_passport: "International passport",
+  drivers_license: "Driver’s licence",
+  voters_card: "Voter’s card",
+};
 
-const mobileSelectClass =
-  "max-sm:[&_select]:h-[50px] max-sm:[&_select]:rounded-lg max-sm:[&_select]:pl-14 max-sm:[&_select]:text-[18px] max-sm:[&_select]:leading-7 max-sm:[&_select]:shadow-none max-sm:[&_svg]:left-5 max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+const NUMBER_LABELS: Record<string, string> = {
+  nin: "NIN",
+  international_passport: "Passport number",
+  drivers_license: "Licence number",
+  voters_card: "Voter’s card number",
+};
+
+const ID_FIELD =
+  "[&_label]:text-[13px] [&_input]:h-12 [&_input]:pl-10 [&_input]:text-[15px] max-sm:[&_input]:h-13";
 
 function Step3({ setStep }: Step3Props) {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
@@ -95,104 +107,99 @@ function Step3({ setStep }: Step3Props) {
     });
   };
 
+  const idType = watch("idType");
+  const canContinue = isValid && !isPending && attachments.length > 0;
+
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
-      <div className="text-center space-y-2 mb-8 max-sm:mb-6 max-sm:text-left">
-        <h1 className="text-[26px] font-bold text-card-text max-sm:text-[34px] max-sm:leading-10">
-          Select your preferred ID
+      <button
+        type="button"
+        onClick={() => setStep(0)}
+        className="mb-4 inline-flex items-center gap-1 text-sm text-text hover:text-card-text"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Back
+      </button>
+      <div className="mb-6 space-y-2">
+        <h1 className="font-display text-[28px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[30px]">
+          Add an ID document
         </h1>
-        <p className="text-sm text-text max-sm:text-[18px] max-sm:leading-7">
-          Verify your identity to unlock your wallet
+        <p className="text-[15px] leading-6 text-text">
+          Pick the one you have to hand. The name on it should match your BVN.
         </p>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-3 max-sm:min-h-0 max-sm:flex-1 max-sm:gap-0"
+        className="flex flex-col gap-5 max-sm:min-h-0 max-sm:flex-1"
       >
-        <div className="space-y-4 max-sm:space-y-5">
-          <SelectField
-            id="idType"
-            icon={IdCard}
-            placeholder="Select ID type"
-            error={errors.idType}
-            options={idTypeOptions(hasNin)}
-            register={register}
-            className={mobileSelectClass}
-          />
-          {usingSavedNin ? (
-            <SavedNinNotice
-              ninMasked={profileData?.data?.ninMasked}
-              onChange={changeNin}
-            />
-          ) : (
-            <FormField
-              icon={IdCard}
-              placeholder="Enter ID number"
-              error={errors.idNumber}
-              register={register}
-              id="idNumber"
-              className={mobileFieldClass}
-            />
-          )}
-          <div className="space-y-2">
-            <div className="space-y-1 text-left">
-              <h1 className="font-medium text-sm leading-5 text-card-text max-sm:text-[16px] max-sm:leading-6">
-                Upload ID
-              </h1>
-              <p className="font-normal text-sm leading-6 text-text max-sm:text-[16px]">
-                Include receipt of transaction
-              </p>
-            </div>
-            <AttachmentUpload
-                value={attachments}
-                onChange={setAttachments}
-                maxSizeMB={5}
-                accept="image/jpeg,image/png,application/pdf"
-                title="Upload a photo or PDF of your ID"
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-[13px] font-medium text-card-text">ID type</legend>
+          {idTypeOptions(hasNin).map((option) => (
+            <label
+              key={option.value}
+              className={cn(
+                "flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 text-[15px] text-card-text transition-colors",
+                idType === option.value
+                  ? "border-Green bg-teal-light"
+                  : "border-input bg-input-background hover:border-border-active/60",
+              )}
+            >
+              <input
+                type="radio"
+                value={option.value}
+                {...register("idType")}
+                className="h-4 w-4 shrink-0 accent-[#0c9a8e]"
               />
-          </div>
-          <ErrorField message={error?.message || skipError?.message} />
+              {ID_LABELS[option.value] ?? option.label}
+            </label>
+          ))}
+          <ErrorField message={errors.idType?.message} />
+        </fieldset>
+
+        {usingSavedNin ? (
+          <SavedNinNotice ninMasked={profileData?.data?.ninMasked} onChange={changeNin} />
+        ) : (
+          <FormField
+            icon={IdCard}
+            label={NUMBER_LABELS[idType] ?? "ID number"}
+            placeholder={idType === "nin" ? "11-digit NIN" : "As printed on your ID"}
+            error={errors.idNumber}
+            register={register}
+            id="idNumber"
+            className={ID_FIELD}
+          />
+        )}
+
+        <div className="space-y-2">
+          <p className="text-[13px] font-medium text-card-text">Photo of your ID</p>
+          <AttachmentUpload
+            value={attachments}
+            onChange={setAttachments}
+            maxSizeMB={5}
+            accept="image/jpeg,image/png,application/pdf"
+            title="Upload a photo or PDF of your ID"
+          />
+          <p className="text-xs text-text">Keep all four corners of the ID in view.</p>
         </div>
-        <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
-          <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5">
-            <Button
-              type="button"
-              onClick={() => setStep(0)}
-              variant="outline"
-              size="lg"
-              className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
-            >
-              Back
-            </Button>
-            <Button
-              size="lg"
-              className="hidden flex-3 sm:inline-flex"
-              disabled={!isValid || isPending || attachments.length === 0}
-              variant={
-                isPending || !isValid || attachments.length === 0
-                  ? "disabled"
-                  : "default"
-              }
-              type="submit"
-            >
-              {isPending ? "Verifying..." : "Continue"}
-            </Button>
-            <Button
-              size="lg"
-              className="h-[50px] text-[16px] sm:hidden"
-              disabled={isPending}
-              variant={isPending ? "disabled" : "default"}
-              type="submit"
-            >
-              {isPending ? "Verifying..." : "Continue"}
-            </Button>
-          </div>
-          <h1
-            onClick={handleSkip}
-            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
+        <ErrorField message={error?.message || skipError?.message} />
+
+        <div className="space-y-2 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
+          <Button
+            type="submit"
+            disabled={!canContinue}
+            variant={canContinue ? "default" : "disabled"}
+            className="h-12 w-full text-[15px] font-semibold max-sm:h-13"
           >
-            {skipPending ? "Skipping..." : "Skip for later"}
-          </h1>
+            {isPending ? "Verifying…" : "Continue"}
+          </Button>
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={skipPending}
+            className="h-11 w-full text-sm font-medium text-card-text hover:text-Green disabled:opacity-60"
+          >
+            {skipPending ? "Skipping…" : "Skip for now"}
+          </button>
         </div>
       </form>
     </div>

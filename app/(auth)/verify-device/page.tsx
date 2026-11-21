@@ -1,10 +1,11 @@
 import VerifyDevice from "@/components/auth/verify-device";
+import { AuthSplit } from "@/components/auth/hero/auth-split";
 
 const page = () => {
   return (
-    <div className="bg-background min-h-screen grid place-items-center">
+    <AuthSplit>
       <VerifyDevice />
-    </div>
+    </AuthSplit>
   );
 };
 
