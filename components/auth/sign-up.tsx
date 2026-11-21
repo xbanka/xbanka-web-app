@@ -1,10 +1,9 @@
 "use client";
 
 import { Card } from "../ui/FormCard";
-import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
-import { Calendar, Globe, Lock, Mail, Phone, User } from "lucide-react";
+import { Calendar, ChevronLeft, Globe, Lock, Mail, Phone, Plus, User } from "lucide-react";
 import { SelectField } from "../ui/select";
 import { countryOptions } from "@/lib/countries";
 import { SignupFormData, signUpSchema } from "@/lib/schema/auth-schema";
@@ -22,15 +21,20 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 import { ErrorLayout } from "../ui/error-layout";
 import MailPic  from "../../public/mail.svg";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
+import { cn } from "@/lib/utils";
+import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
 
-const mobileFieldClass =
-  "[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5";
-
-const mobileSelectClass =
-  "[&_select]:max-sm:h-14 [&_select]:max-sm:rounded-lg [&_select]:max-sm:pl-12 [&_select]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5";
+const GENDERS = [
+  { value: "female", label: "Female" },
+  { value: "male", label: "Male" },
+  { value: "other", label: "Other" },
+] as const;
 
 const SignUp = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  /** Two short steps: 1 = email and password, 2 = about you. */
+  const [step, setStep] = useState<1 | 2>(1);
+  const [showReferral, setShowReferral] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [countdown, setCountdown] = useState(0);
   const { loginWithGoogle } = useGoogleAuth();
@@ -61,6 +65,7 @@ const SignUp = () => {
   } = methods;
 
   const { data, error, mutate, isSuccess, isPending } = useSignup();
+  const gender = methods.watch("gender");
 
   const onSubmit = (data: SignupFormData) => {
     mutate(data, {
@@ -123,144 +128,214 @@ const SignUp = () => {
     );
   }
 
-  return (
-    <Card className="space-y-6 py-8 max-sm:text-left">
-      <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
-      <FormHeader
-        className="max-sm:text-left"
-        title="Welcome to XBanka"
-        subtitle={
-          <>
-            <span>Already have an account? </span>
+  const goToDetails = async () => {
+    if (await methods.trigger(["email", "password"])) setStep(2);
+  };
 
-            <Link className="text-Green" href="/sign-in">
-              Login
-            </Link>
-          </>
-        }
-      />
-      <div className="space-y-3">
-        <Button
-          onClick={() => loginWithGoogle("signup")}
-          variant="outline"
-          className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
-        >
-          <Image width={20} height={20} alt="google" src="/googleIcon.svg" unoptimized />
-          Sign up with Google
-        </Button>
-        <div className="flex items-center gap-4 text-text">
-          <span className="h-0.5 w-full bg-border"></span>
-          <span>OR</span>
-          <span className="h-0.5 w-full bg-border"></span>
+  return (
+    <Card className={AUTH_CARD}>
+      <ThemeToggle className="absolute right-0 top-0 m-0 max-sm:right-5 max-sm:top-5 lg:right-0 lg:top-0" />
+
+      <div className="space-y-4">
+        {/* progress: two short steps instead of one long form */}
+        <div className="flex items-center gap-3 pr-12">
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="-ml-1 inline-flex items-center gap-1 text-sm text-text hover:text-card-text"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back
+            </button>
+          )}
+          <span className="flex flex-1 gap-1.5" aria-hidden="true">
+            <span className="h-1 flex-1 rounded-full bg-Green" />
+            <span className={cn("h-1 flex-1 rounded-full", step === 2 ? "bg-Green" : "bg-border")} />
+          </span>
+          <span className="text-xs text-text">Step {step} of 2</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-display text-[30px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[34px] sm:leading-10">
+            {step === 1 ? "Create your account" : "Tell us about you"}
+          </h1>
+          <p className="text-[15px] leading-6 text-text">
+            {step === 1
+              ? "Start with the email you’ll sign in with."
+              : "Use your name exactly as it is on your BVN, so verification goes through first time."}
+          </p>
         </div>
       </div>
+
+      {step === 1 && (
+        <div className="space-y-5">
+          <Button
+            onClick={() => loginWithGoogle("signup")}
+            variant="outline"
+            className={cn(AUTH_BUTTON, "text-card-text")}
+          >
+            <Image width={18} height={18} alt="" src="/googleIcon.svg" unoptimized />
+            Sign up with Google
+          </Button>
+          <div className="flex items-center gap-3 text-xs text-placeholder">
+            <span className="h-px flex-1 bg-border" />
+            or with email
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </div>
+      )}
+
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="space-y-4 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:space-y-0"
+          className="space-y-5 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:space-y-0 max-sm:gap-5"
         >
-          <div className="space-y-4">
-            <FormField
-              id="email"
-              placeholder="Email"
-              icon={Mail}
-              register={methods.register}
-              error={methods.formState.errors.email}
-              className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
-            />
-            <PasswordField
-              id="password"
-              placeholder="Password"
-              icon={Lock}
-              register={methods.register}
-              error={methods.formState.errors?.password}
-              className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
-            />
-            <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+          {step === 1 ? (
+            <>
               <FormField
-                id="firstName"
-                placeholder="First name"
-                icon={User}
+                id="email"
+                label="Email"
+                placeholder="you@example.com"
+                icon={Mail}
                 register={methods.register}
-                error={methods.formState.errors.firstName}
-                className={mobileFieldClass}
+                error={methods.formState.errors.email}
+                className={AUTH_FIELD}
+              />
+              <PasswordField
+                id="password"
+                label="Create a password"
+                placeholder="At least 8 characters"
+                icon={Lock}
+                register={methods.register}
+                error={methods.formState.errors?.password}
+                className={cn(AUTH_FIELD, "[&_input]:pr-12")}
+              />
+              <Button
+                type="button"
+                onClick={goToDetails}
+                className={cn(AUTH_BUTTON, "max-sm:mt-auto")}
+              >
+                Continue
+              </Button>
+              <p className="text-center text-sm text-text">
+                Already have an account?{" "}
+                <Link href="/sign-in" className="font-semibold text-Green hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  id="firstName"
+                  label="First name"
+                  placeholder="First name"
+                  icon={User}
+                  register={methods.register}
+                  error={methods.formState.errors.firstName}
+                  className={AUTH_FIELD}
+                />
+                <FormField
+                  id="lastName"
+                  label="Last name"
+                  placeholder="Last name"
+                  icon={User}
+                  register={methods.register}
+                  error={methods.formState.errors.lastName}
+                  className={AUTH_FIELD}
+                />
+              </div>
+              <FormField
+                id="dateOfBirth"
+                label="Date of birth"
+                placeholder="Date of birth"
+                type="date"
+                icon={Calendar}
+                register={methods.register}
+                error={methods.formState.errors.dateOfBirth}
+                className={AUTH_FIELD}
               />
               <FormField
-                id="lastName"
-                placeholder="Last name"
-                icon={User}
+                id="phoneNumber"
+                label="Phone number"
+                placeholder="0803 123 4567"
+                type="tel"
+                icon={Phone}
                 register={methods.register}
-                error={methods.formState.errors.lastName}
-                className={mobileFieldClass}
+                error={methods.formState.errors.phoneNumber}
+                className={AUTH_FIELD}
               />
-            </div>
-            <FormField
-              id="dateOfBirth"
-              placeholder="Date of Birth"
-              type="date"
-              icon={Calendar}
-              register={methods.register}
-              error={methods.formState.errors.dateOfBirth}
-              className={mobileFieldClass}
-            />
-            <FormField
-              id="phoneNumber"
-              placeholder="Phone number"
-              type="tel"
-              icon={Phone}
-              register={methods.register}
-              error={methods.formState.errors.phoneNumber}
-              className={mobileFieldClass}
-            />
-            <SelectField
-              id="gender"
-              placeholder="Gender"
-              icon={User}
-              options={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "other", label: "Other" },
-              ]}
-              register={methods.register}
-              error={methods.formState.errors.gender}
-              className={mobileSelectClass}
-            />
-            <SelectField
-              id="country"
-              placeholder="Country of Residence"
-              icon={Globe}
-              options={countryOptions}
-              register={methods.register}
-              error={methods.formState.errors.country}
-              className={mobileSelectClass}
-            />
-            <FormField
-              id="referral"
-              placeholder="Referral if any"
-              register={methods.register}
-              className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:text-base"
-            />
-            <ErrorLayout message={error?.message} />
-          </div>
-          <Button
-            type="submit"
-            size={"lg"}
-            disabled={!isValid}
-            variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
-            className="w-full max-sm:mt-auto max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
-          >
-            {isPending ? "Signing Up..." : "Sign Up"}
-          </Button>
+              <fieldset className="space-y-2">
+                <legend className="text-[13px] font-medium leading-5 text-card-text">Gender</legend>
+                <div className="grid grid-cols-3 gap-3">
+                  {GENDERS.map((g) => (
+                    <button
+                      key={g.value}
+                      type="button"
+                      aria-pressed={gender === g.value}
+                      onClick={() =>
+                        methods.setValue("gender", g.value, { shouldValidate: true, shouldDirty: true })
+                      }
+                      className={cn(
+                        "h-12 rounded-xl border text-[15px] transition-colors max-sm:h-13",
+                        gender === g.value
+                          ? "border-Green bg-teal-light font-semibold text-teal-text"
+                          : "border-input bg-input-background text-card-text hover:border-border-active/60",
+                      )}
+                    >
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+                <ErrorField message={methods.formState.errors.gender?.message} />
+              </fieldset>
+              <SelectField
+                id="country"
+                label="Country of residence"
+                placeholder="Select your country"
+                icon={Globe}
+                options={countryOptions}
+                register={methods.register}
+                error={methods.formState.errors.country}
+                className={AUTH_FIELD}
+              />
+              {showReferral ? (
+                <FormField
+                  id="referral"
+                  label="Referral code"
+                  placeholder="Optional"
+                  register={methods.register}
+                  className={cn(AUTH_FIELD, "[&_input]:pl-4")}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowReferral(true)}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-Green hover:underline"
+                >
+                  <Plus className="h-4 w-4" />
+                  Have a referral code?
+                </button>
+              )}
+              <ErrorLayout message={error?.message} />
+              <Button
+                type="submit"
+                disabled={!isValid}
+                variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
+                className={cn(AUTH_BUTTON, "max-sm:mt-auto")}
+              >
+                {isPending ? "Creating account…" : "Create account"}
+              </Button>
+            </>
+          )}
         </form>
       </FormProvider>
 
-      <div className="px-30 text-center max-sm:px-0">
-        <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
-          By signing up, you agree to our{" "}
-          <span className="text-Green">Terms of Service</span> &{" "}
-          <PrivacyPolicyLink />
-        </p>
-      </div>
+      <p className="text-center text-xs leading-5 text-placeholder">
+        By creating an account you agree to our <span className="text-Green">Terms of Service</span> and{" "}
+        <PrivacyPolicyLink />.
+      </p>
     </Card>
   );
 };
