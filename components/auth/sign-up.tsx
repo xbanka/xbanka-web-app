@@ -278,7 +278,7 @@ const SignUp = () => {
                         methods.setValue("gender", g.value, { shouldValidate: true, shouldDirty: true })
                       }
                       className={cn(
-                        "h-12 rounded-xl border text-[15px] transition-colors max-sm:h-13",
+                        "h-12 rounded-md border text-[15px] transition-colors max-sm:h-13",
                         gender === g.value
                           ? "border-Green bg-teal-light font-semibold text-teal-text"
                           : "border-input bg-input-background text-card-text hover:border-border-active/60",

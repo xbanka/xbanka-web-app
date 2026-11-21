@@ -9,6 +9,6 @@ export const AUTH_CARD =
 
 /** Taller fields with room for the icon, and a visible label colour. */
 export const AUTH_FIELD =
-  "[&_label]:text-[13px] [&_label]:font-medium [&_input]:h-12 [&_input]:rounded-xl [&_input]:pl-10 [&_input]:text-[15px] [&_select]:h-12 [&_select]:rounded-xl [&_select]:pl-10 [&_select]:text-[15px] max-sm:[&_input]:h-13 max-sm:[&_select]:h-13";
+  "[&_label]:text-[13px] [&_label]:font-medium [&_input]:h-12 [&_input]:pl-10 [&_input]:text-[15px] [&_select]:h-12 [&_select]:pl-10 [&_select]:text-[15px] max-sm:[&_input]:h-13 max-sm:[&_select]:h-13";
 
-export const AUTH_BUTTON = "h-12 w-full rounded-full text-[15px] font-semibold max-sm:h-13";
+export const AUTH_BUTTON = "h-12 w-full text-[15px] font-semibold max-sm:h-13";
