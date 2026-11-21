@@ -104,17 +104,17 @@ export function AuthHero({
         </div>
       </div>
 
-      <ul className={cn("flex flex-col", mobile ? "gap-4 px-1" : "gap-3 px-2")}>
+      <ul className={cn("flex flex-col", mobile ? "gap-3 px-1" : "gap-3 px-2")}>
         {POINTS.map((point) => (
           <li
             key={point}
             className={cn(
               "flex items-center gap-3 text-card-text",
-              mobile ? "text-[17px] font-medium" : "text-base",
+              mobile ? "text-[15px]" : "text-base",
             )}
           >
             <Check
-              className={cn("shrink-0 text-[#2DD4BF]", mobile ? "h-5 w-5" : "h-[18px] w-[18px]")}
+              className={cn("shrink-0 text-[#2DD4BF]", mobile ? "h-4 w-4" : "h-[18px] w-[18px]")}
               strokeWidth={2.6}
             />
             {point}
