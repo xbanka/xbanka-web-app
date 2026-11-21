@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
@@ -14,12 +14,14 @@ import { ProductTour } from "./product-tour";
 import { SettingsEffects } from "./settings-effects";
 import { DepositFlowHost } from "@/components/Dashboard/BankDeposit/deposit-flow-host";
 import { PendingDepositBanner } from "@/components/Dashboard/BankDeposit/pending-deposit-banner";
+import { PullToRefresh } from "@/components/pwa/PullToRefresh";
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const mainRef = useRef<HTMLElement>(null);
   useDepositAlerts();
   // Fiat and crypto balances update the moment money lands, no refresh.
   useLiveWalletBalances();
@@ -48,7 +50,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Under the top bar on every page, outside the scroll area so it
             stays put, while a bank deposit is pending. */}
         <PendingDepositBanner />
+        {/* Positioned under the banner; pulling the page down reloads. */}
+        <div className="relative flex min-h-0 flex-1 flex-col">
+        <PullToRefresh scrollRef={mainRef} />
         <main
+          ref={mainRef}
           data-sidebar={collapsed ? "collapsed" : "expanded"}
           className="flex-1 overflow-y-auto p-4 pb-[calc(env(safe-area-inset-bottom)+88px)] sm:py-6 sm:px-8 md:pb-6"
         >
@@ -57,6 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {children}
           </div>
         </main>
+        </div>
       </div>
     </div>
     </SplashGate>

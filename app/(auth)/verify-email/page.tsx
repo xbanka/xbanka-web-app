@@ -1,12 +1,13 @@
 import VerifyPage from "@/components/auth/verify-email";
+import { AuthSplit } from "@/components/auth/hero/auth-split";
 
 
 export default async function Verify({ searchParams }: { searchParams: Promise<{ token?: string }>; }) {
   const { token } = await searchParams;
   return (
-      <div className="min-h-screen grid place-items-center">
+      <AuthSplit>
         <VerifyPage token={token} />
-      </div>
+      </AuthSplit>
   );
 };
 

@@ -3,11 +3,17 @@
 import { useRouter } from "next/navigation";
 import LivenessDetector from "../../ui/LivenessDetector";
 import { LivenessQrPanel } from "@/components/ui/liveness-qr-panel";
-import { Button } from "@/components/ui/button";
 import { useIsMobileDevice } from "@/hooks/use-IsMobileDevice";
 import { useSkipStep } from "@/lib/services/onboarding.service";
 import { useUserIdStore } from "@/store/verify-id.store";
 import { ErrorField } from "@/components/ui/field-error";
+import { ChevronLeft, Glasses, ScanFace, Sun } from "lucide-react";
+
+const TIPS = [
+  { icon: Sun, label: "Good light" },
+  { icon: Glasses, label: "No glasses or hats" },
+  { icon: ScanFace, label: "Fill the oval" },
+];
 
 interface Step4Props {
   setStep: (n: number) => void;
@@ -25,8 +31,6 @@ function Step4({ setStep }: Step4Props) {
     mutate: skipMutate,
   } = useSkipStep();
   const userId = useUserIdStore((s) => s.userId);
-  // const userId = "ddccdaf1-859b-48b5-a73f-86118f46e9a9";
-  console.log("userId", userId)
 
   const handleSkip = () => {
     skipMutate(userId, {
@@ -36,66 +40,71 @@ function Step4({ setStep }: Step4Props) {
     });
   };
 
+  const header = (
+    <>
+      <button
+        type="button"
+        onClick={() => setStep(1)}
+        className="mb-4 inline-flex items-center gap-1 text-sm text-text hover:text-card-text"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Back
+      </button>
+      <div className="mb-5 space-y-2">
+        <h1 className="font-display text-[28px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[30px]">
+          Take a quick selfie
+        </h1>
+        <p className="text-[15px] leading-6 text-text">
+          {isMobileDevice
+            ? "We match your face to the photo on your ID. It’s only used to verify you."
+            : "Your computer may not have a good front camera, so finish this step on your phone: scan the code with its camera."}
+        </p>
+      </div>
+      <ul className="mb-5 flex flex-wrap gap-2">
+        {TIPS.map(({ icon: Icon, label }) => (
+          <li
+            key={label}
+            className="flex h-9 items-center gap-2 rounded-md border border-border bg-input-background px-3 text-[13px] text-card-text"
+          >
+            <Icon className="h-4 w-4 text-Green" />
+            {label}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+
+  const skip = (
+    <div className="space-y-1">
+      <button
+        type="button"
+        onClick={handleSkip}
+        disabled={skipPending}
+        className="h-11 w-full text-sm font-medium text-card-text hover:text-Green disabled:opacity-60"
+      >
+        {skipPending ? "Skipping…" : "Skip for now"}
+      </button>
+      {skipError && (
+        <ErrorField message={skipError?.message || "An error occurred while skipping the step."} />
+      )}
+    </div>
+  );
+
   if (!isMobileDevice) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center text-center space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-card-text">
-            Almost Done! Let&apos;s take a Selfie
-          </h2>
-          <p className="text-text">
-            Scan the QR code below with your phone to continue on a device
-            with a front-facing camera.
-          </p>
+      <div className="flex flex-1 flex-col">
+        {header}
+        <div className="flex justify-center rounded-lg border border-border bg-input-background p-6">
+          <LivenessQrPanel userId={userId} onCompleted={() => router.push("/welcome")} />
         </div>
-        <LivenessQrPanel userId={userId} onCompleted={() => router.push("/welcome")} />
-        <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:grid-cols-[126px_1fr] max-sm:gap-3.5 w-full">
-          <Button
-            variant="outline"
-            className="flex-1 max-sm:h-[50px] max-sm:text-[16px]"
-            onClick={() => setStep(1)}
-          >
-            Back
-          </Button>
-          <Button
-            size="lg"
-            className="hidden flex-3 sm:inline-flex"
-            onClick={handleSkip}
-            disabled={skipPending}
-          >
-            {skipPending ? "Skipping..." : "Skip for later"}
-          </Button>
-          <Button
-            size="lg"
-            className="h-[50px] text-[16px] sm:hidden"
-            onClick={handleSkip}
-            disabled={skipPending}
-          >
-            {skipPending ? "Skipping..." : "Skip for later"}
-          </Button>
-        </div>
-        {
-          skipError && (
-            <ErrorField message={skipError?.message || "An error occurred while skipping the step."} />
-          )
-        }
+        <div className="mt-4">{skip}</div>
       </div>
     );
   }
 
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
-      <div className="text-center space-y-2 mb-8 max-sm:mb-6 max-sm:text-left">
-        <h1 className="text-[26px] font-bold text-card-text leading-tight max-sm:text-[34px] max-sm:leading-10">
-          Almost Done!
-          <br />
-          Let&apos;s take a Selfie
-        </h1>
-        <p className="text-sm text-text leading-relaxed max-sm:text-[18px] max-sm:leading-7">
-          We&apos;ll match your photo with your ID to confirm it&apos;s really
-          you.
-        </p>
-      </div>
+      {header}
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <LivenessDetector
           userId={userId}
@@ -103,6 +112,7 @@ function Step4({ setStep }: Step4Props) {
           onSuccess={() => router.push("/welcome")}
           brandColor="#36b6ab"
         />
+        {skip}
       </div>
     </div>
   );
