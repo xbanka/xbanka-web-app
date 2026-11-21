@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const POINTS = [
+export const POINTS = [
   "Fund with a bank transfer",
   "Trade BTC, ETH and USDT",
   "Pay airtime, data, power and TV",
@@ -26,10 +26,15 @@ export function AuthHero({
   className,
   variant = "desktop",
   compact = false,
+  fill = false,
+  showPoints = true,
 }: {
   className?: string;
   variant?: "desktop" | "mobile";
   compact?: boolean;
+  /** Phone Welcome: the card grows to fill the space it's given. */
+  fill?: boolean;
+  showPoints?: boolean;
 }) {
   const mobile = variant === "mobile";
 
@@ -49,8 +54,10 @@ export function AuthHero({
             ? cn(
                 "shrink-0 rounded-[28px] transition-[height] duration-500 ease-out",
                 compact
-                  ? "h-[clamp(200px,28dvh,240px)]"
-                  : "h-[min(440px,50dvh)] min-h-[280px] [@media(max-height:700px)]:h-[44dvh]",
+                  ? "h-[clamp(140px,19dvh,170px)]"
+                  : fill
+                    ? "min-h-[260px] flex-1"
+                    : "h-[min(440px,50dvh)] min-h-[280px] [@media(max-height:700px)]:h-[44dvh]",
               )
             : "min-h-[480px] flex-1 rounded-[32px]",
         )}
@@ -62,7 +69,7 @@ export function AuthHero({
         <div
           className={cn(
             "relative flex flex-col",
-            mobile ? (compact ? "gap-2.5 px-4 pt-4" : "gap-4 px-5 pt-5") : "gap-10 px-10 pt-9",
+            mobile ? (compact ? "gap-1.5 px-4 pt-3" : "gap-4 px-5 pt-5") : "gap-10 px-10 pt-9",
           )}
         >
           <div className="flex items-center justify-between gap-3">
@@ -89,7 +96,7 @@ export function AuthHero({
               "font-display font-extrabold leading-[1.02] tracking-[-0.04em] text-[#0B4F4A] [text-wrap:balance]",
               mobile
                 ? compact
-                  ? "text-[21px]"
+                  ? "text-[18px]"
                   : "text-[30px]"
                 : "max-w-[540px] text-[clamp(40px,3.6vw,52px)]",
             )}
@@ -105,7 +112,7 @@ export function AuthHero({
             "absolute",
             mobile
               ? compact
-                ? "inset-x-2 bottom-1 h-[calc(100%_-_104px)]"
+                ? "inset-x-2 bottom-0.5 h-[calc(100%_-_82px)]"
                 : "inset-x-2 bottom-2 h-[calc(100%_-_150px)]"
               : "inset-x-6 bottom-[22px] h-[min(500px,calc(100%_-_300px))]",
           )}
@@ -118,7 +125,7 @@ export function AuthHero({
         </div>
       </div>
 
-      <ul className={cn("flex flex-col", mobile ? "gap-3 px-1" : "gap-3 px-2", compact && "hidden")}>
+      <ul className={cn("flex flex-col", mobile ? "gap-3 px-1" : "gap-3 px-2", (compact || !showPoints) && "hidden")}>
         {POINTS.map((point) => (
           <li
             key={point}

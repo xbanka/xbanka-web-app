@@ -8,7 +8,8 @@ import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 import SignIn from "../sign-in";
 import SignUp from "../sign-up";
-import { AuthHero } from "./auth-hero";
+import { AuthHero, POINTS } from "./auth-hero";
+import { Check } from "lucide-react";
 import { AuthFlowContext } from "./auth-flow-context";
 
 type Mode = "welcome" | "login" | "signup";
@@ -49,13 +50,30 @@ export function MobileWelcome({
 
   return (
     <AuthFlowContext.Provider value={flow}>
-      {/* Hero, phones only: full on Welcome, a banner above an open form */}
-      <div className="w-full px-3 pt-3 lg:hidden">
-        <AuthHero variant="mobile" compact={mode !== "welcome"} />
+      {/* Phones only. Welcome: the card fills the top of the screen and
+          everything else sits at the bottom, no gap. An open form: the card
+          is a small banner above it. */}
+      <div className={cn("flex w-full flex-col lg:hidden", mode === "welcome" && "min-h-dvh")}>
+      <div className={cn("flex w-full px-3 pt-3", mode === "welcome" && "flex-1")}>
+        <AuthHero
+          variant="mobile"
+          compact={mode !== "welcome"}
+          fill={mode === "welcome"}
+          showPoints={false}
+          className={cn("w-full", mode === "welcome" && "flex-1")}
+        />
       </div>
 
       {mode === "welcome" && (
-        <div className="flex w-full flex-col gap-3 px-4 pt-5 pb-[calc(env(safe-area-inset-bottom)+20px)] lg:hidden">
+        <div className="flex w-full flex-col gap-3 px-4 pt-5 pb-[calc(env(safe-area-inset-bottom)+20px)]">
+          <ul className="mb-2 flex flex-col gap-3 px-1">
+            {POINTS.map((point) => (
+              <li key={point} className="flex items-center gap-3 text-[15px] text-card-text">
+                <Check className="h-4 w-4 shrink-0 text-[#2DD4BF]" strokeWidth={2.6} />
+                {point}
+              </li>
+            ))}
+          </ul>
           <button
             type="button"
             onClick={() => loginWithGoogle("signin")}
@@ -88,10 +106,11 @@ export function MobileWelcome({
           </div>
           <p className="pt-1 text-center text-xs leading-5 text-placeholder">
             By continuing you agree to our <span className="text-Green">Terms of Service</span> and{" "}
-            <PrivacyPolicyLink />.
+            <PrivacyPolicyLink />
           </p>
         </div>
       )}
+      </div>
 
       {/* The form: this page's own one (always on wide screens), or the other
           one when a phone user switched to it. */}
