@@ -28,7 +28,7 @@ export function AuthHero({ className }: { className?: string }) {
       {/* data-xcard: the scene follows the pointer anywhere over the card */}
       <div
         data-xcard="1"
-        className="relative min-h-[560px] flex-1 overflow-hidden rounded-[32px] bg-[#D4E8E5] shadow-[inset_0_1px_0_rgba(255,255,255,.6)]"
+        className="relative min-h-[480px] flex-1 overflow-hidden rounded-[32px] bg-[#D4E8E5] shadow-[inset_0_1px_0_rgba(255,255,255,.6)]"
       >
         <div
           aria-hidden="true"
