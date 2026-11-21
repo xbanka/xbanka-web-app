@@ -1,7 +1,6 @@
 "use client";
 
 import { Card } from "../ui/FormCard";
-import { FormHeader } from "../ui/FormHeader";
 import Link from "next/link";
 import { FormField } from "../ui/FormField";
 import { Lock, Mail } from "lucide-react";
@@ -20,9 +19,14 @@ import { maskEmail } from "@/lib/maskEmail";
 import MailPic from "../../public/mail.svg";
 import { useRouter } from "next/navigation";
 import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
+import { cn } from "@/lib/utils";
+import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
+import { AuthMobileBar } from "./auth-mobile-bar";
+import { useAuthFlow } from "./hero/auth-flow-context";
 
 const SignIn = ({ urlError }: { urlError?: string }) => {
   const router = useRouter();
+  const flow = useAuthFlow();
   const isNoAccountError = urlError?.toLowerCase().includes("no account belongs to this google");
   const { loginWithGoogle } = useGoogleAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
@@ -122,7 +126,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
   if (isNoAccountError) {
     return (
       <Card className="space-y-6 text-center">
-        <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
+        <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0 lg:hidden" />
         <div className="pt-4 space-y-4">
           <h2 className="text-2xl font-bold text-card-text">Account Not Found</h2>
           <p className="text-text">
@@ -149,78 +153,87 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
   }
 
   return (
-    <Card className="space-y-6 max-sm:text-left">
-      <ThemeToggle className="max-sm:absolute max-sm:right-5 max-sm:top-5 max-sm:m-0" />
-      <FormHeader
-        className="max-sm:text-left"
-        title="Welcome to XBanka"
-        subtitle={
-          <span className="max-sm:text-[14px]">
-            <span>Don&apos;t have an account? </span>
+    <Card className={AUTH_CARD}>
+      <AuthMobileBar onBack={flow?.toWelcome} inFlow={!!flow} />
+      <div className="space-y-2">
+        <h1 className="font-display text-[30px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[34px] sm:leading-10">
+          Welcome back
+        </h1>
+        <p className="text-[15px] text-text">Sign in to your Xbanka account.</p>
+      </div>
 
-            <Link className="text-Green max-sm:text-[14px]" href="/sign-up">
-              Sign up
-            </Link>
-          </span>
-        }
-      />
-      <div className="space-y-3">
+      <div className="space-y-5">
         <Button
           onClick={() => loginWithGoogle("signin")}
           variant="outline"
-          className="p-2 w-full max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
+          className={cn(AUTH_BUTTON, "text-card-text")}
         >
-          <Image width={20} height={20} alt="google" src="/googleIcon.svg" unoptimized />
-          Sign in with Google
+          <Image width={18} height={18} alt="" src="/googleIcon.svg" unoptimized />
+          Continue with Google
         </Button>
-        <div className="flex items-center gap-4 text-text">
-          <span className="h-0.5 w-full bg-border"></span>
-          <span>OR</span>
-          <span className="h-0.5 w-full bg-border"></span>
+        <div className="flex items-center gap-3 text-xs text-placeholder">
+          <span className="h-px flex-1 bg-border" />
+          or with email
+          <span className="h-px flex-1 bg-border" />
         </div>
       </div>
+
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="space-y-4 max-sm:flex max-sm:flex-1 max-sm:flex-col max-sm:space-y-0"
+        className="space-y-5"
       >
-        <div className="space-y-4">
-          <FormField
-            id="email"
-            placeholder="Email"
-            icon={Mail}
-            register={methods.register}
-            error={methods.formState.errors.email}
-            className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
-          />
+        <FormField
+          id="email"
+          label="Email"
+          placeholder="you@example.com"
+          icon={Mail}
+          register={methods.register}
+          error={methods.formState.errors.email}
+          className={AUTH_FIELD}
+        />
+        <div className="space-y-2">
           <PasswordField
             id="password"
-            placeholder="Password"
+            label="Password"
+            placeholder="Your password"
             icon={Lock}
             register={methods.register}
             error={methods.formState.errors?.password}
-            className="[&_input]:max-sm:h-14 [&_input]:max-sm:rounded-lg [&_input]:max-sm:pl-12 [&_input]:max-sm:pr-12 [&_input]:max-sm:text-base [&_svg]:max-sm:h-5 [&_svg]:max-sm:w-5"
+            className={cn(AUTH_FIELD, "[&_input]:pr-12")}
           />
-          <ErrorLayout message={error?.message} />
+          <div className="flex justify-end">
+            <Link href="/forgot-password" className="text-sm font-medium text-Green hover:underline">
+              Forgot password?
+            </Link>
+          </div>
         </div>
-        <Link href="/forgot-password" className="text-Green text-sm w-fit flex justify-start">Forgot Password?</Link>
+        <ErrorLayout message={error?.message} />
         <Button
           type="submit"
-          size={"lg"}
           disabled={!isValid}
           variant={isPending ? "disabled" : isValid ? "default" : "disabled"}
-          className="w-full max-sm:mt-auto max-sm:h-14 max-sm:rounded-lg max-sm:text-base"
+          className={AUTH_BUTTON}
         >
-          {isPending ? "Signing In..." : "Sign In"}
+          {isPending ? "Signing in…" : "Sign in"}
         </Button>
+        <p className="text-center text-sm text-text">
+          New to Xbanka?{" "}
+          {flow ? (
+            <button type="button" onClick={flow.toSignup} className="font-semibold text-Green hover:underline">
+              Create an account
+            </button>
+          ) : (
+            <Link href="/sign-up" className="font-semibold text-Green hover:underline">
+              Create an account
+            </Link>
+          )}
+        </p>
       </form>
 
-      <div className="px-30 text-center max-sm:px-0">
-        <p className="font-normal text-[14px] leading-6 max-sm:text-base max-sm:leading-7">
-          By signing into your account, you agree to our{" "}
-          <span className="text-Green">Terms of Service</span> &{" "}
-          <PrivacyPolicyLink />
-        </p>
-      </div>
+      <p className="text-center text-xs leading-5 text-placeholder max-sm:mt-auto">
+        By signing in you agree to our <span className="text-Green">Terms of Service</span> and{" "}
+        <PrivacyPolicyLink />.
+      </p>
     </Card>
   );
 };

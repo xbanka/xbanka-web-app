@@ -1,4 +1,5 @@
 import ResetPassword from '@/components/auth/reset-password'
+import { AuthSplit } from "@/components/auth/hero/auth-split";
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -7,8 +8,8 @@ export default async function ResetPasswordPage({
 }) {
   const { email } = await searchParams;
   return (
-    <div className='bg-background min-h-dvh grid place-items-center max-sm:block'>
+    <AuthSplit>
       <ResetPassword email={email} />
-    </div>
+    </AuthSplit>
   )
 }

@@ -1,4 +1,4 @@
-import { IdCard } from "lucide-react";
+import { IdCard, Smartphone } from "lucide-react";
 import { FormField } from "../../ui/FormField";
 import { useForm } from "react-hook-form";
 import { useSkipStep, useVerifyBvn } from "@/lib/services/onboarding.service";
@@ -16,8 +16,9 @@ interface Step2Props {
   step: number;
 }
 
-const mobileFieldClass =
-  "max-sm:[&_input]:h-[50px] max-sm:[&_input]:rounded-lg max-sm:[&_input]:pl-14 max-sm:[&_input]:text-[18px] max-sm:[&_input]:leading-7 max-sm:[&_input]:shadow-none max-sm:[&_svg]:left-5 max-sm:[&_svg]:h-5 max-sm:[&_svg]:w-5";
+/** A taller field with wider letter spacing, so the 11 digits are easy to check. */
+const BVN_FIELD =
+  "[&_input]:h-13 [&_input]:pl-10 [&_input]:text-[17px] [&_input]:tracking-[0.12em] max-sm:[&_input]:h-14";
 
 function Step2({ setStep }: Step2Props) {
   const { mutate: verifyBvn, isPending, error } = useVerifyBvn();
@@ -32,6 +33,7 @@ function Step2({ setStep }: Step2Props) {
   const {
     register,
     reset,
+    watch,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<step2FormValues>({
@@ -58,59 +60,68 @@ function Step2({ setStep }: Step2Props) {
     });
   };
 
+  const digits = (watch("bvn") ?? "").replace(/\D/g, "").length;
+
   return (
     <div className="max-sm:flex max-sm:min-h-0 max-sm:flex-1 max-sm:flex-col">
-      <div className="text-center space-y-2 mb-8 max-sm:mb-6 max-sm:text-left">
-        <h1 className="text-[26px] font-bold text-card-text max-sm:text-[34px] max-sm:leading-10">
-          Verify Your BVN
+      <div className="mb-6 space-y-2">
+        <h1 className="font-display text-[28px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[30px]">
+          Verify your BVN
         </h1>
-        <p className="text-sm text-text leading-relaxed max-sm:text-[18px] max-sm:leading-7">
-          Your BVN helps us confirm your name and date of birth. We&apos;ll never
-          share it with anyone.
+        <p className="text-[15px] leading-6 text-text">
+          Your Bank Verification Number confirms your name and date of birth.
+          We&apos;ll never share it with anyone.
         </p>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-3 max-sm:min-h-0 max-sm:flex-1 max-sm:gap-0"
+        className="flex flex-col gap-5 max-sm:min-h-0 max-sm:flex-1"
       >
-        <div className="space-y-4 max-sm:space-y-5">
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
+            <label htmlFor="bvn" className="text-[13px] font-medium text-card-text">
+              BVN
+            </label>
+            <span className="text-xs tabular-nums text-text">{digits} of 11 digits</span>
+          </div>
           <FormField
             id="bvn"
             icon={IdCard}
-            placeholder="Enter BVN"
+            placeholder="11-digit BVN"
             error={errors.bvn}
             register={register}
-            className={mobileFieldClass}
+            className={BVN_FIELD}
           />
           <ErrorField message={error?.message || skipError?.message} />
         </div>
-        <div className="space-y-3.25 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
-          <div className="flex flex-col gap-4 mt-1 md:flex-row max-sm:mt-0 max-sm:grid max-sm:gap-3.5">
-            <Button
-              size="lg"
-              className="hidden flex-1 sm:inline-flex"
-              disabled={!isValid || isPending}
-              variant={isPending || !isValid ? "disabled" : "default"}
-              type="submit"
-            >
-              {isPending ? "Verifying..." : "Continue"}
-            </Button>
-            <Button
-              size="lg"
-              className="h-[50px] text-[16px] sm:hidden"
-              disabled={!isValid || isPending}
-              variant={isPending || !isValid ? "disabled" : "default"}
-              type="submit"
-            >
-              {isPending ? "Verifying..." : "Continue"}
-            </Button>
-          </div>
-          <h1
-            onClick={handleSkip}
-            className="font-medium text-[14px] leading-5.5 text-Green cursor-pointer max-sm:text-center max-sm:text-[18px] max-sm:leading-7"
+
+        <div className="flex gap-3 rounded-lg border border-border bg-input-background px-4 py-3.5">
+          <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-Green" />
+          <p className="text-[13px] leading-5 text-text">
+            <span className="font-semibold text-card-text">Don&apos;t know your BVN?</span>{" "}
+            Dial <span className="font-semibold text-Green">*565*0#</span> from the phone number
+            linked to your bank account.
+          </p>
+        </div>
+
+        <div className="space-y-2 max-sm:mt-auto max-sm:-mx-5 max-sm:border-t max-sm:border-border max-sm:px-5 max-sm:pt-4 max-sm:pb-4">
+          <Button
+            className="h-12 w-full text-[15px] font-semibold max-sm:h-13"
+            disabled={!isValid || isPending}
+            variant={isPending || !isValid ? "disabled" : "default"}
+            type="submit"
           >
-            {skipPending ? "Skipping..." : "Skip for later"}
-          </h1>
+            {isPending ? "Verifying…" : "Verify BVN"}
+          </Button>
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={skipPending}
+            className="h-11 w-full text-sm font-medium text-card-text hover:text-Green disabled:opacity-60"
+          >
+            {skipPending ? "Skipping…" : "Skip for now"}
+          </button>
+          <p className="text-center text-xs text-text">Your limits stay low until you verify.</p>
         </div>
       </form>
     </div>
