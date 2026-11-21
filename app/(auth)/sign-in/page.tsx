@@ -6,7 +6,8 @@ const page = async ({ searchParams }: { searchParams: Promise<{ [key: string]: s
   const error = resolvedParams?.error as string | undefined;
 
   return (
-    <AuthSplit>
+    // Phones open on the Welcome screen, unless there's an error to show.
+    <AuthSplit mobileWelcome={!error}>
       <SignIn urlError={error} />
     </AuthSplit>
   );

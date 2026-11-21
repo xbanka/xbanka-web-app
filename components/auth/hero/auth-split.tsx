@@ -1,5 +1,6 @@
 import { AuthHero } from "./auth-hero";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { MobileWelcome } from "./mobile-welcome";
 
 /**
  * Sign-in / sign-up layout: on wide screens the 3D Xbanka hero sits on the
@@ -8,7 +9,14 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
  * scrollbar hidden. Below `lg` it is just the form, as before. The theme
  * switch sits at the top right of the page on desktop.
  */
-export function AuthSplit({ children }: { children: React.ReactNode }) {
+export function AuthSplit({
+  children,
+  mobileWelcome = false,
+}: {
+  children: React.ReactNode;
+  /** Phones see the Welcome screen (hero + Log in / Sign up) first. */
+  mobileWelcome?: boolean;
+}) {
   return (
     <div className="relative min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6 lg:overflow-hidden lg:p-6 xl:grid-cols-[minmax(0,680px)_minmax(0,1fr)]">
       {/* Desktop: the theme switch lives at the page's top right (the forms
@@ -19,7 +27,7 @@ export function AuthSplit({ children }: { children: React.ReactNode }) {
       </aside>
       <div className="min-h-dvh lg:min-h-0 lg:overflow-y-auto lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
         <div className="grid min-h-dvh place-items-center max-sm:block lg:min-h-full lg:py-2">
-          {children}
+          {mobileWelcome ? <MobileWelcome>{children}</MobileWelcome> : children}
         </div>
       </div>
     </div>
