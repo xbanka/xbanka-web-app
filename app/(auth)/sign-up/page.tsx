@@ -1,11 +1,13 @@
 import SignUp from "@/components/auth/sign-up";
-import React from "react";
+import { AuthSplit } from "@/components/auth/hero/auth-split";
 
 const page = () => {
   return (
-    <div className="bg-background min-h-dvh grid place-items-center px-4 py-10 max-sm:block max-sm:p-0">
-      <SignUp />
-    </div>
+    <AuthSplit>
+      <div className="w-full px-4 py-10 max-sm:p-0 lg:px-0">
+        <SignUp />
+      </div>
+    </AuthSplit>
   );
 };
 
