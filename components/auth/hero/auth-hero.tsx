@@ -43,7 +43,7 @@ export function AuthHero({
         className={cn(
           "relative overflow-hidden bg-[#D4E8E5] shadow-[inset_0_1px_0_rgba(255,255,255,.6)]",
           mobile
-            ? "h-[min(440px,54dvh)] min-h-[340px] shrink-0 rounded-[28px]"
+            ? "h-[min(440px,50dvh)] min-h-[280px] shrink-0 [@media(max-height:700px)]:h-[44dvh] rounded-[28px]"
             : "min-h-[480px] flex-1 rounded-[32px]",
         )}
       >
