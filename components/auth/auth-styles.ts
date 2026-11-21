@@ -5,7 +5,7 @@
  * hero; on phones it fills the screen as before.
  */
 export const AUTH_CARD =
-  "space-y-7 text-left sm:max-w-[440px] max-sm:space-y-5 max-sm:px-5 max-sm:py-5 lg:border-0 lg:bg-transparent lg:px-0 lg:py-6";
+  "space-y-7 text-left sm:max-w-[440px] max-sm:min-h-0 max-sm:bg-transparent max-sm:space-y-5 max-sm:px-5 max-sm:py-5 lg:border-0 lg:bg-transparent lg:px-0 lg:py-6";
 
 /** Taller fields with room for the icon, and a visible label colour. */
 export const AUTH_FIELD =

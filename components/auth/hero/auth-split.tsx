@@ -11,11 +11,11 @@ import { MobileWelcome } from "./mobile-welcome";
  */
 export function AuthSplit({
   children,
-  mobileWelcome = false,
+  page,
 }: {
   children: React.ReactNode;
-  /** Phones see the Welcome screen (hero + Log in / Sign up) first. */
-  mobileWelcome?: boolean;
+  /** Sign-in / sign-up: phones get the hero and switch forms in place. */
+  page?: "signin" | "signup";
 }) {
   return (
     <div className="relative min-h-dvh bg-background lg:grid lg:h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6 lg:overflow-hidden lg:p-6 xl:grid-cols-[minmax(0,680px)_minmax(0,1fr)]">
@@ -27,7 +27,7 @@ export function AuthSplit({
       </aside>
       <div className="min-h-dvh lg:min-h-0 lg:overflow-y-auto lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
         <div className="grid min-h-dvh place-items-center max-sm:block lg:min-h-full lg:py-2">
-          {mobileWelcome ? <MobileWelcome>{children}</MobileWelcome> : children}
+          {page ? <MobileWelcome page={page}>{children}</MobileWelcome> : children}
         </div>
       </div>
     </div>

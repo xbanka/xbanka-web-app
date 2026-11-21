@@ -23,6 +23,7 @@ import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 import { cn } from "@/lib/utils";
 import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
 import { AuthMobileBar } from "./auth-mobile-bar";
+import { useAuthFlow } from "./hero/auth-flow-context";
 
 const GENDERS = [
   { value: "female", label: "Female" },
@@ -66,6 +67,7 @@ const SignUp = () => {
 
   const { data, error, mutate, isSuccess, isPending } = useSignup();
   const gender = methods.watch("gender");
+  const flow = useAuthFlow();
 
   const onSubmit = (data: SignupFormData) => {
     mutate(data, {
@@ -135,8 +137,9 @@ const SignUp = () => {
   return (
     <Card className={AUTH_CARD}>
       <AuthMobileBar
-        onBack={step === 2 ? () => setStep(1) : undefined}
-        backHref={step === 1 ? "/sign-in" : undefined}
+        onBack={step === 2 ? () => setStep(1) : flow?.toWelcome}
+        backHref={step === 1 && !flow ? "/sign-in" : undefined}
+        inFlow={!!flow}
       />
 
       <div className="space-y-4">
@@ -222,9 +225,15 @@ const SignUp = () => {
               </Button>
               <p className="text-center text-sm text-text">
                 Already have an account?{" "}
-                <Link href="/sign-in" className="font-semibold text-Green hover:underline">
-                  Sign in
-                </Link>
+                {flow ? (
+                  <button type="button" onClick={flow.toLogin} className="font-semibold text-Green hover:underline">
+                    Sign in
+                  </button>
+                ) : (
+                  <Link href="/sign-in" className="font-semibold text-Green hover:underline">
+                    Sign in
+                  </Link>
+                )}
               </p>
             </>
           ) : (

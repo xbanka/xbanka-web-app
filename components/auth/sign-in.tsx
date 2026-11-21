@@ -22,11 +22,11 @@ import { PrivacyPolicyLink } from "@/components/legal/privacy-policy-link";
 import { cn } from "@/lib/utils";
 import { AUTH_BUTTON, AUTH_CARD, AUTH_FIELD } from "./auth-styles";
 import { AuthMobileBar } from "./auth-mobile-bar";
-import { useBackToWelcome } from "./hero/mobile-welcome";
+import { useAuthFlow } from "./hero/auth-flow-context";
 
 const SignIn = ({ urlError }: { urlError?: string }) => {
   const router = useRouter();
-  const backToWelcome = useBackToWelcome();
+  const flow = useAuthFlow();
   const isNoAccountError = urlError?.toLowerCase().includes("no account belongs to this google");
   const { loginWithGoogle } = useGoogleAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
@@ -154,7 +154,7 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
 
   return (
     <Card className={AUTH_CARD}>
-      <AuthMobileBar onBack={backToWelcome} />
+      <AuthMobileBar onBack={flow?.toWelcome} inFlow={!!flow} />
       <div className="space-y-2">
         <h1 className="font-display text-[30px] font-bold leading-9 tracking-[-0.03em] text-card-text sm:text-[34px] sm:leading-10">
           Welcome back
@@ -218,9 +218,15 @@ const SignIn = ({ urlError }: { urlError?: string }) => {
         </Button>
         <p className="text-center text-sm text-text">
           New to Xbanka?{" "}
-          <Link href="/sign-up" className="font-semibold text-Green hover:underline">
-            Create an account
-          </Link>
+          {flow ? (
+            <button type="button" onClick={flow.toSignup} className="font-semibold text-Green hover:underline">
+              Create an account
+            </button>
+          ) : (
+            <Link href="/sign-up" className="font-semibold text-Green hover:underline">
+              Create an account
+            </Link>
+          )}
         </p>
       </form>
 
